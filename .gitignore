@@ -1,0 +1,17 @@
+#Editor generated files
+#*.sln
+#*.vcproj
+*.suo
+*.ncb
+*.user
+
+#Directories
+Release/
+Debug/
+
+#Project generated files
+*.db
+
+#Shell files
+*.bat
+*.sh
