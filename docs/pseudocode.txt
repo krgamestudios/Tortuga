@@ -1,0 +1,24 @@
+Client:
+	loops
+	handles input from the user
+	handles graphics and sound
+	communicates with the server (how?)
+
+-------------------------
+
+Server:
+	loops
+	accepts new connections, disconnections, and handles loss of connections
+	holds the positions/data of all players
+
+Player:
+	id
+	[graphical stuff]
+	position
+	velocity
+
+-------------------------
+
+Animations:
+	multiple cells in one animation (x-axis)
+	multiple animations in one sheet (y-axis)
