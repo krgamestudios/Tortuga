@@ -24,7 +24,7 @@ public:
 
 	int SetCurrentFrame(int i) { return currentFrame = i; };
 	int SetCurrentStrip(int i) { return currentStrip = i; };
-	int SetInterval(int i) { ticks = 0; return interval = i; }
+	int SetInterval(int i) { return interval = i; }
 
 	int GetCurrentFrame() const { return currentFrame; };
 	int GetCurrentStrip() const { return currentStrip; };

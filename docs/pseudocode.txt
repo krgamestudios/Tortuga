@@ -19,18 +19,26 @@ Player:
 
 -------------------------
 
-Animations:
-	multiple cells in one animation (x-axis)
-	multiple animations in one sheet (y-axis)
+Player's movement in a server
 
-Image:
-	SetSurface(surface)
-	GetSurface()
+#define PLAYER_FACE_DOWN 0
+#define PLAYER_FACE_UP 1
+#define PLAYER_FACE_LEFT 2
+#define PLAYER_FACE_RIGHT 3
 
-	SetClip
-	GetClip
 
-	//clips
+
+Player:
+	index --global index on the server
+	position
+	motion
+	image --avatar chosen by the player (later)
+	ShiftMotion(vector relativeMotion)
+
+
+PlayerManager:
+	Update(delta) //all player objects
+	Synchronize(dataArray) //possible
 
 -------------------------
 

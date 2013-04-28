@@ -15,4 +15,4 @@ clean:
 	-$(RM) *.o *.a *.exe
 
 unit:
-	$(CXX) $(CXXFLAGS) unit.cpp surface_manager.cpp image.cpp sprite_sheet.cpp -lmingw32 -lSDLmain -lSDL
+	$(CXX) $(CXXFLAGS) unit.cpp surface_manager.cpp image.cpp sprite_sheet.cpp player.cpp -lmingw32 -lSDLmain -lSDL

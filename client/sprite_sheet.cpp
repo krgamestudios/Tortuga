@@ -9,12 +9,12 @@ SpriteSheet::SpriteSheet(SDL_Surface* s, int w, int h)
 }
 
 void SpriteSheet::Update(int delta) {
-	if ((ticks += delta) > interval) {
+	if (interval && (ticks += delta) > interval) {
 		if (++currentFrame >= maxFrames) {
 			currentFrame = 0;
 		}
 		ticks = 0;
-		SetClipX(currentFrame * GetClipW());
-		SetClipY(currentStrip * GetClipH());
 	}
+	SetClipX(currentFrame * GetClipW());
+	SetClipY(currentStrip * GetClipH());
 }
