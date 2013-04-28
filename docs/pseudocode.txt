@@ -22,3 +22,30 @@ Player:
 Animations:
 	multiple cells in one animation (x-axis)
 	multiple animations in one sheet (y-axis)
+
+Image:
+	SetSurface(surface)
+	GetSurface()
+
+	SetClip
+	GetClip
+
+	//clips
+
+-------------------------
+
+Rememer: Top down programming/K.I.S.S.
+
+KeyDown:
+	up:
+		PlayerManager.ShiftMotion(playerIndex, up)
+	down:
+		PlayerManager.ShiftMotion(playerIndex, down)
+	...
+end
+
+Receive:
+	switch(message->type):
+		player update:
+			PlayerManager.Update(message)
+end
