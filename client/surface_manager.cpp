@@ -58,5 +58,6 @@ SDL_Surface* SurfaceManager::LoadSurface(std::string key, std::string fname) {
 	if (ptr == nullptr) {
 		throw(std::runtime_error(std::string("Failed to load file: ") + fname));
 	}
+	SDL_SetColorKey(ptr, SDL_SRCCOLORKEY, SDL_MapRGB(ptr->format, 255, 0, 255)); //default
 	return surfaceMap[key] = ptr;
 }

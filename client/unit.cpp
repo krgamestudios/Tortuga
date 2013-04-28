@@ -1,3 +1,4 @@
+#include "image.h"
 #include "surface_manager.h"
 
 #include "SDL/SDL.h"
@@ -14,8 +15,12 @@ int go(int, char**) {
 
 	SurfaceManager sMgr;
 
+	//load all resources
 	sMgr.Load("player", "rsc/graphics/sprites/elliot2.bmp");
 	sMgr.Load("tileset", "rsc/graphics/tilesets/MishMash.bmp");
+
+	Image player(sMgr.Get("player"));
+	Image tiles(sMgr.Get("tileset"));
 
 	bool running = true;
 	while (running) {
@@ -30,20 +35,14 @@ int go(int, char**) {
 						case SDLK_ESCAPE:
 							running = false;
 						break;
-						case SDLK_1:
-							sMgr.Reload("tileset","rsc/graphics/tilesets/terrain.bmp");
-						break;
-						case SDLK_2:
-							sMgr.Reload("tileset","rsc/graphics/tilesets/MishMash.bmp");
-						break;
 					}
 			}
 		}
 
 		SDL_FillRect(screen, 0, 0);
 
-		SDL_BlitSurface(sMgr.Get("tileset"), NULL, screen, NULL);
-		SDL_BlitSurface(sMgr.Get("player"), NULL, screen, NULL);
+		tiles.DrawTo(screen, 0, 0);
+		player.DrawTo(screen, 0, 0);
 
 		SDL_Flip(screen);
 	}
