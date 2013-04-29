@@ -9,6 +9,7 @@ enum class SceneList {
 
 	//custom indexes
 	TESTSYSTEMS,
+	INGAME,
 };
 
 #endif

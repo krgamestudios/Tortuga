@@ -8,6 +8,7 @@
 
 //Add the custom scene headers here
 #include "test_systems.h"
+#include "in_game.h"
 
 //-------------------------
 //Public access members
@@ -61,6 +62,9 @@ void SceneManager::LoadScene(SceneList sceneIndex) {
 	switch(sceneIndex) {
 		//add scene creation calls here
 		case SceneList::FIRST:
+		case SceneList::INGAME:
+			activeScene = new InGame();
+		break;
 		case SceneList::TESTSYSTEMS:
 			activeScene = new TestSystems();
 		break;

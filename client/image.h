@@ -13,7 +13,7 @@ public:
 	SDL_Surface* SetSurface(SDL_Surface*, SDL_Rect);
 	SDL_Surface* GetSurface() const;
 
-	void DrawTo(SDL_Surface*, Sint16 x, Sint16 y);
+	void DrawTo(SDL_Surface* const, Sint16 x, Sint16 y);
 
 	//Clip handlers
 	SDL_Rect SetClip(SDL_Rect r) { return clip = r; }

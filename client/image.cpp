@@ -14,7 +14,7 @@ SDL_Surface* Image::SetSurface(SDL_Surface* p) {
 	return surface;
 }
 
-SDL_Surface* Image::SetSurface(SDL_Surface* p, SDL_Rect r) {
+SDL_Surface* Image::SetSurface(SDL_Surface* const p, SDL_Rect r) {
 	surface = p;
 	clip = r;
 	return surface;

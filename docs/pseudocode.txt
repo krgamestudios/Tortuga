@@ -19,15 +19,6 @@ Player:
 
 -------------------------
 
-Player's movement in a server
-
-#define PLAYER_FACE_DOWN 0
-#define PLAYER_FACE_UP 1
-#define PLAYER_FACE_LEFT 2
-#define PLAYER_FACE_RIGHT 3
-
-
-
 Player:
 	index --global index on the server
 	position

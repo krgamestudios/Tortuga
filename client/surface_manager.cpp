@@ -7,10 +7,7 @@ SurfaceManager::SurfaceManager() {
 }
 
 SurfaceManager::~SurfaceManager() {
-	for (auto it : surfaceMap) {
-		SDL_FreeSurface(it.second);
-	}
-	surfaceMap.clear();
+	FreeAll();
 }
 
 SDL_Surface* SurfaceManager::Load(std::string key, std::string fname) {
@@ -51,6 +48,13 @@ void SurfaceManager::Free(std::string key) {
 		SDL_FreeSurface(it->second);
 		surfaceMap.erase(it);
 	}
+}
+
+void SurfaceManager::FreeAll() {
+	for (auto it : surfaceMap) {
+		SDL_FreeSurface(it.second);
+	}
+	surfaceMap.clear();
 }
 
 SDL_Surface* SurfaceManager::LoadSurface(std::string key, std::string fname) {

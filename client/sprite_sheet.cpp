@@ -1,7 +1,7 @@
 #include "sprite_sheet.h"
 
-SpriteSheet::SpriteSheet(SDL_Surface* s, int w, int h)
-	: Image(s, {0, 0, (Uint16)w, (Uint16)h})
+SpriteSheet::SpriteSheet(SDL_Surface* s, Uint16 w, Uint16 h)
+	: Image(s, {0, 0, w, h})
 {
 	currentFrame = 0; maxFrames = GetSurface()->w / GetClipW();
 	currentStrip = 0; maxStrips = GetSurface()->h / GetClipH();
@@ -17,4 +17,11 @@ void SpriteSheet::Update(int delta) {
 	}
 	SetClipX(currentFrame * GetClipW());
 	SetClipY(currentStrip * GetClipH());
+}
+
+void SpriteSheet::SetSurface(SDL_Surface* s, Uint16 w, Uint16 h) {
+	Image::SetSurface(s, {0, 0, w, h});
+	currentFrame = 0; maxFrames = GetSurface()->w / GetClipW();
+	currentStrip = 0; maxStrips = GetSurface()->h / GetClipH();
+	interval = ticks = 0;
 }

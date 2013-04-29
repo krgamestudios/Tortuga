@@ -1,15 +1,11 @@
 #ifndef PLAYER_H_
 #define PLAYER_H_
 
+#include "defines.h"
 #include "vector2.h"
 #include "sprite_sheet.h"
 
 #include "SDL/SDL.h"
-
-enum class Direction {
-	NORTH, SOUTH,
-	EAST, WEST
-};
 
 class Player {
 public:
@@ -27,7 +23,7 @@ public:
 	Vector2 ShiftMotion(Vector2 v) { return motion += v; }
 	Vector2 GetMotion() const { return motion; }
 
-	void DrawTo(SDL_Surface* s) { sprite.DrawTo(s, position.x, position.y); }
+	void DrawTo(SDL_Surface* const s) { sprite.DrawTo(s, position.x, position.y); }
 	void FaceDirection(Direction);
 
 	SpriteSheet* GetSpriteSheet() { return &sprite; };

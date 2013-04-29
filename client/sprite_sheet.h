@@ -5,13 +5,19 @@
 
 #include "SDL/SDL.h"
 
-class SpriteSheet : public Image {
+class SpriteSheet : protected Image {
 public:
-	SpriteSheet(SDL_Surface*, int w, int h);
+	SpriteSheet(SDL_Surface*, Uint16 w, Uint16 h);
 	virtual ~SpriteSheet() {}
 
 	void Update(int delta);
 
+	void SetSurface(SDL_Surface*, Uint16 w, Uint16 h);
+
+	using Image::GetSurface;
+	using Image::DrawTo;
+
+	//these aren't regulated; be careful
 	int SetWidth(int i) { return SetClipW(i); };
 	int SetHeight(int i) { return SetClipH(i); };
 	int SetFrames(int i) { currentFrame = 0; return maxFrames = i; };
