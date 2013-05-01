@@ -1,7 +1,7 @@
-#ifndef BASESCENE_H_
-#define BASESCENE_H_
+#ifndef BASESCENE_HPP_
+#define BASESCENE_HPP_
 
-#include "scene_list.h"
+#include "scene_list.hpp"
 
 #include "SDL/SDL.h"
 

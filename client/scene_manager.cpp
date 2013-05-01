@@ -1,4 +1,4 @@
-#include "scene_manager.h"
+#include "scene_manager.hpp"
 
 #include <stdexcept>
 
@@ -7,8 +7,8 @@
 //-------------------------
 
 //Add the custom scene headers here
-#include "test_systems.h"
-#include "in_game.h"
+#include "test_systems.hpp"
+#include "in_game.hpp"
 
 //-------------------------
 //Public access members

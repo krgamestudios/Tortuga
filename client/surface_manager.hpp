@@ -1,5 +1,5 @@
-#ifndef SURFACEMANAGER_H_
-#define SURFACEMANAGER_H_
+#ifndef SURFACEMANAGER_HPP_
+#define SURFACEMANAGER_HPP_
 
 #include "SDL/SDL.h"
 

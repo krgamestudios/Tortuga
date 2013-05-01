@@ -1,5 +1,5 @@
-#ifndef IMAGE_H_
-#define IMAGE_H_
+#ifndef IMAGE_HPP_
+#define IMAGE_HPP_
 
 #include "SDL/SDL.h"
 

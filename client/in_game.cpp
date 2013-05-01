@@ -1,4 +1,4 @@
-#include "in_game.h"
+#include "in_game.hpp"
 
 #include <iostream>
 

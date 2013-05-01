@@ -1,4 +1,4 @@
-#include "image.h"
+#include "image.hpp"
 
 Image::Image(SDL_Surface* p) {
 	SetSurface(p);

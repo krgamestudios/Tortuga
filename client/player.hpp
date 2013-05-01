@@ -1,9 +1,9 @@
-#ifndef PLAYER_H_
-#define PLAYER_H_
+#ifndef PLAYER_HPP_
+#define PLAYER_HPP_
 
-#include "defines.h"
-#include "vector2.h"
-#include "sprite_sheet.h"
+#include "defines.hpp"
+#include "vector2.hpp"
+#include "sprite_sheet.hpp"
 
 #include "SDL/SDL.h"
 

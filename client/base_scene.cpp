@@ -1,4 +1,4 @@
-#include "base_scene.h"
+#include "base_scene.hpp"
 
 #include <stdexcept>
 

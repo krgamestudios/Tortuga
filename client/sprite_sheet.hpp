@@ -1,7 +1,7 @@
-#ifndef SPRITESHEET_H_
-#define SPRITESHEET_H_
+#ifndef SPRITESHEET_HPP_
+#define SPRITESHEET_HPP_
 
-#include "image.h"
+#include "image.hpp"
 
 #include "SDL/SDL.h"
 

@@ -1,5 +1,5 @@
-#ifndef DELTA_H_
-#define DELTA_H_
+#ifndef DELTA_HPP_
+#define DELTA_HPP_
 
 #include <ctime>
 

@@ -1,4 +1,4 @@
-#include "sprite_sheet.h"
+#include "sprite_sheet.hpp"
 
 SpriteSheet::SpriteSheet(SDL_Surface* s, Uint16 w, Uint16 h)
 	: Image(s, {0, 0, w, h})

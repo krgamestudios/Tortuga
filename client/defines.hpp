@@ -1,5 +1,5 @@
-#ifndef DEFINES_H_
-#define DEFINES_H_
+#ifndef DEFINES_HPP_
+#define DEFINES_HPP_
 
 enum class Direction {
 	NORTH = 1, SOUTH = 2,

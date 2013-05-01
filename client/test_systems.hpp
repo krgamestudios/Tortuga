@@ -1,7 +1,7 @@
-#ifndef TESTSYSTEMS_H_
-#define TESTSYSTEMS_H_
+#ifndef TESTSYSTEMS_HPP_
+#define TESTSYSTEMS_HPP_
 
-#include "base_scene.h"
+#include "base_scene.hpp"
 
 class TestSystems : public BaseScene {
 public:

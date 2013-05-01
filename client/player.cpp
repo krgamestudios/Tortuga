@@ -1,4 +1,4 @@
-#include "player.h"
+#include "player.hpp"
 
 #define ANIMATION_SPEED 100
 #define WALKING_SPEED 0.14

@@ -1,8 +1,8 @@
-#ifndef SCENEMANAGER_H_
-#define SCENEMANAGER_H_
+#ifndef SCENEMANAGER_HPP_
+#define SCENEMANAGER_HPP_
 
-#include "scene_list.h"
-#include "base_scene.h"
+#include "scene_list.hpp"
+#include "base_scene.hpp"
 
 #include "SDL/SDL.h"
 

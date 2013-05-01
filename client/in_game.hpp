@@ -1,11 +1,11 @@
-#ifndef INGAME_H_
-#define INGAME_H_
+#ifndef INGAME_HPP_
+#define INGAME_HPP_
 
-#include "base_scene.h"
+#include "base_scene.hpp"
 
-#include "delta.h"
-#include "player.h"
-#include "surface_manager.h"
+#include "delta.hpp"
+#include "player.hpp"
+#include "surface_manager.hpp"
 
 class InGame : public BaseScene {
 public:
