@@ -8,7 +8,7 @@
 #Directories
 Release/
 Debug/
-client/rsc/
+Out/
 
 #Project generated files
 *.db
