@@ -17,6 +17,8 @@ public:
 	SDL_Surface* Set(std::string key, SDL_Surface* ptr);
 	void Free(std::string key);
 	void FreeAll();
+
+	SDL_Surface* operator[](std::string key) { return Get(key); };
 private:
 	SDL_Surface* LoadSurface(std::string key, std::string fname);
 	typedef std::map<std::string, SDL_Surface*> mapType;

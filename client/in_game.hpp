@@ -39,7 +39,8 @@ protected:
 	SurfaceManager surfaceMgr;
 	PlayerManager playerMgr;
 
-	Player* player;
+	int playerCounter;
+	int currentPlayer;
 };
 
 #endif

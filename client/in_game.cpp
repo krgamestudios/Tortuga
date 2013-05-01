@@ -15,11 +15,16 @@ InGame::InGame() {
 	surfaceMgr.Load("player", "rsc/graphics/sprites/elliot2.bmp");
 	surfaceMgr.Load("flower", "rsc/graphics/sprites/aniflower.bmp");
 
-	player = new Player(surfaceMgr.Get("player"), 32, 48);
+	playerCounter = currentPlayer = 0;
+
+	playerMgr.New(playerCounter++, surfaceMgr["player"]);
+	playerMgr.New(playerCounter++, surfaceMgr["player"]);
+	playerMgr.New(playerCounter++, surfaceMgr["player"]);
+	playerMgr.New(playerCounter++, surfaceMgr["player"]);
 }
 
 InGame::~InGame() {
-	delete player;
+	playerMgr.DeleteAll();
 	surfaceMgr.FreeAll();
 #ifdef DEBUG
 	cout << "leaving InGame" << endl;
@@ -40,12 +45,12 @@ void InGame::FrameEnd() {
 
 void InGame::Update() {
 	delta.Calculate();
-	player->Update(delta.GetDelta());
+	playerMgr.UpdateAll(delta.GetDelta());
 }
 
 void InGame::Render(SDL_Surface* const screen) {
 	SDL_FillRect(screen, 0, 0);
-	player->DrawTo(screen);
+	playerMgr.DrawAllTo(screen);
 }
 
 //-------------------------
@@ -69,17 +74,31 @@ void InGame::KeyDown(SDL_KeyboardEvent const& key) {
 		case SDLK_ESCAPE:
 			QuitEvent();
 		break;
+
 		case SDLK_w:
-			player->WalkInDirection(Direction::NORTH);
+			playerMgr[currentPlayer]->WalkInDirection(Direction::NORTH);
 		break;
 		case SDLK_s:
-			player->WalkInDirection(Direction::SOUTH);
+			playerMgr[currentPlayer]->WalkInDirection(Direction::SOUTH);
 		break;
 		case SDLK_a:
-			player->WalkInDirection(Direction::WEST);
+			playerMgr[currentPlayer]->WalkInDirection(Direction::WEST);
 		break;
 		case SDLK_d:
-			player->WalkInDirection(Direction::EAST);
+			playerMgr[currentPlayer]->WalkInDirection(Direction::EAST);
+		break;
+
+		case SDLK_1:
+			currentPlayer = 0;
+		break;
+		case SDLK_2:
+			currentPlayer = 1;
+		break;
+		case SDLK_3:
+			currentPlayer = 2;
+		break;
+		case SDLK_4:
+			currentPlayer = 3;
 		break;
 	}
 }
@@ -87,16 +106,16 @@ void InGame::KeyDown(SDL_KeyboardEvent const& key) {
 void InGame::KeyUp(SDL_KeyboardEvent const& key) {
 	switch(key.keysym.sym) {
 		case SDLK_w:
-			player->WalkInDirection(Direction::SOUTH);
+			playerMgr[currentPlayer]->WalkInDirection(Direction::SOUTH);
 		break;
 		case SDLK_s:
-			player->WalkInDirection(Direction::NORTH);
+			playerMgr[currentPlayer]->WalkInDirection(Direction::NORTH);
 		break;
 		case SDLK_a:
-			player->WalkInDirection(Direction::EAST);
+			playerMgr[currentPlayer]->WalkInDirection(Direction::EAST);
 		break;
 		case SDLK_d:
-			player->WalkInDirection(Direction::WEST);
+			playerMgr[currentPlayer]->WalkInDirection(Direction::WEST);
 		break;
 	}
 }
@@ -106,5 +125,6 @@ void InGame::KeyUp(SDL_KeyboardEvent const& key) {
 //-------------------------
 
 void InGame::NewPlayer(int index, std::string avatarName, int x, int y) {
-	//
+	Player* p = playerMgr.New(index, surfaceMgr[avatarName]);
+	p->SetPosition(Vector2(x, y));
 }
