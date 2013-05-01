@@ -28,6 +28,7 @@ Player:
 
 
 PlayerManager:
+	NewPlayer(index, avatar, x, y)
 	Update(delta) //all player objects
 	Synchronize(dataArray) //possible
 
@@ -48,3 +49,6 @@ Receive:
 		player update:
 			PlayerManager.Update(message)
 end
+
+-------------------------
+

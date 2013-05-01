@@ -4,8 +4,11 @@
 #include "base_scene.hpp"
 
 #include "delta.hpp"
-#include "player.hpp"
+#include "frame_rate.hpp"
+#include "player_manager.hpp"
 #include "surface_manager.hpp"
+
+#include <string>
 
 class InGame : public BaseScene {
 public:
@@ -27,9 +30,15 @@ protected:
 	virtual void KeyDown			(SDL_KeyboardEvent const&);
 	virtual void KeyUp				(SDL_KeyboardEvent const&);
 
+	//utilities
+	void NewPlayer(int index, std::string avatarName, int x, int y);
+
 	//members
 	Delta delta;
+	FrameRate frameRate;
 	SurfaceManager surfaceMgr;
+	PlayerManager playerMgr;
+
 	Player* player;
 };
 

@@ -31,7 +31,7 @@ InGame::~InGame() {
 //-------------------------
 
 void InGame::FrameStart() {
-	//
+	frameRate.Calculate();
 }
 
 void InGame::FrameEnd() {
@@ -99,4 +99,12 @@ void InGame::KeyUp(SDL_KeyboardEvent const& key) {
 			player->WalkInDirection(Direction::WEST);
 		break;
 	}
+}
+
+//-------------------------
+//Utilities
+//-------------------------
+
+void InGame::NewPlayer(int index, std::string avatarName, int x, int y) {
+	//
 }

@@ -11,7 +11,7 @@ OUTDIR=out
 OUT=$(addprefix $(OUTDIR)/,a)
 
 #source
-SRC=test_systems.cpp in_game.cpp
+SRC=test_systems.cpp in_game.cpp player_manager.cpp
 
 #targets
 all: $(OBJ) $(OUT)
