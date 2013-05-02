@@ -11,7 +11,7 @@ public:
 	void Init(int maxConnections);
 	void Quit();
 
-	int AcceptConnections();
+	int AcceptConnection();
 	int CheckSockets();
 
 	int Send(int index, const void* data, int len);
