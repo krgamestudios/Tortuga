@@ -4,7 +4,7 @@ LIB=-lmingw32 -lSDL_net -lSDLmain -lSDL -lwsock32 -liphlpapi
 
 #objects
 OBJDIR=obj
-OBJ=$(addprefix $(OBJDIR)/,main.o)
+OBJ=$(addprefix $(OBJDIR)/,main.o config_utility.o)
 
 #output
 OUTDIR=out

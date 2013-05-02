@@ -4,14 +4,14 @@ LIB=-lmingw32 -lSDL_net -lSDLmain -lSDL -lwsock32 -liphlpapi
 
 #objects
 OBJDIR=obj
-OBJ=$(addprefix $(OBJDIR)/,base_scene.o scene_manager.o main.o surface_manager.o image.o sprite_sheet.o player.o)
+OBJ=$(addprefix $(OBJDIR)/,base_scene.o scene_manager.o main.o surface_manager.o image.o sprite_sheet.o player.o player_manager.o config_utility.o)
 
 #output
 OUTDIR=out
 OUT=$(addprefix $(OUTDIR)/,a)
 
 #source
-SRC=test_systems.cpp in_game.cpp player_manager.cpp
+SRC=test_systems.cpp in_game.cpp
 
 #targets
 all: $(OBJ) $(OUT)
