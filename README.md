@@ -1,14 +1,14 @@
 Tortuga is a 3/4 top down multiplayer RPG set in a large archipelago occupied by warring pirate clans. The emphasis of this game is on multiplayer competition, exploration in an open world, and solo adventuring. The game runs on a Minecraft like server system with a goal of about 50-100 players on a single server. The player characters are tied to the server where they are created, and are susceptible to permadeath: deletion of a character upon death. The servers are designed to allow a large amount of modification by the hosts.
 
-## Dependencies
+## Libraries
 
-SDL  
-SDL_net  
-[Codebase](https://github.com/Ratstail91/Codebase) (I'll probably just include the necessary modules directly, rather than linking them)  
+* [SDL](http://www.libsdl.org/) - Simple DirectMedia Layer API
+* [SDL_net](http://www.libsdl.org/projects/SDL_net/) - Source included in this project under libs/SDL_net
+* [Codebase](https://github.com/Ratstail91/Codebase) - A local modified version; modifications will be included upstream further into this project.
 
 ## Instructions
 
-I'm trying to keep this as IDE agnostic as possible, so if you use an IDE, please add it's files to .gitignore.
+This project uses C++11, which is available via GNU (or MinGW) 4.7, or Visual Studio 2012. Personally, I'm using MinGW 4.7.2. I'm trying to keep this as IDE agnostic as possible, so if you use an IDE, please add it's files to .gitignore. You can read more details on the GitHub wiki [here](https://github.com/Ratstail91/Tortuga/wiki).
 
 ## Copyright
 
