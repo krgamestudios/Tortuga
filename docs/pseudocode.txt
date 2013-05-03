@@ -55,7 +55,7 @@ end
 
 TCP systems
 
-TCPNetworkManager:
+TCPNetworkManager: //NOPE
 	Init //opens the TCP server socket, and allocates the socket set
 	Quit //close the TCP server socket, and free the socket set
 	AcceptConnections //accept new connections

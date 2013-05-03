@@ -17,15 +17,15 @@ public:
 	int Send(int index, const void* data, int len);
 	int SendAll(const void* data, int len);
 
-	int OpenSocket(const char* host, int port);
+	int AddSocket(const char* host, int port);
 	TCPsocket GetSocket(int index);
 	int CloseSocket(int index);
 
 	int GetMaxConnections() const;
 	int GetCurrentConnections() const;
 private:
-	TCPsocket sock;
-	SDLNet_SocketSet clientSocks;
+	TCPsocket server;
+	SDLNet_SocketSet socketSet;
 };
 
 #endif

@@ -22,3 +22,10 @@ If a player is in motion, the server will update their internal position, but th
 
 This outline is only the most basic example of the server's operation possible, but it's a good start. I'll need to consider things such as server-specific map data, scripts and other resources being sent to new connections.
 
+-------------------------
+
+class Client:
+	ID --unique, incremental
+	socket --connection socket
+	[stuff]
+	[things]
