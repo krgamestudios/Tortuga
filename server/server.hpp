@@ -2,6 +2,7 @@
 #define SERVER_HPP_
 
 #include "tcp_network_manager.hpp"
+#include "config_utility.hpp"
 
 class Server {
 public:
@@ -18,6 +19,7 @@ public:
 private:
 	bool running;
 	TCPNetworkManager netMgr;
+	ConfigUtility config;
 };
 
 #endif

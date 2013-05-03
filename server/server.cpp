@@ -10,6 +10,7 @@ using namespace std;
 
 Server::Server() {
 	running = true;
+	config.Load("config.cfg");
 }
 
 Server::~Server() {
@@ -20,7 +21,7 @@ void Server::Init() {
 	if (SDLNet_Init()) {
 		throw(runtime_error("Failed to init SDL_net"));
 	}
-	netMgr.Init(100);
+	netMgr.Init(config.Integer("port"), config.Integer("maxplayers"));
 }
 
 void Server::Proc() {
@@ -28,6 +29,9 @@ void Server::Proc() {
 		HandleInput();
 		UpdateWorld();
 		HandleOutput();
+
+		//debug
+		running = false;
 	}
 }
 
@@ -38,7 +42,11 @@ void Server::Quit() {
 
 void Server::HandleInput() {
 	//accept new connections
+	netMgr.AcceptConnections();
 	//accept updates from the clients
+	netMgr.CheckSockets();
+	//read the updates from the clients into internal containers
+	//...
 }
 
 void Server::UpdateWorld() {

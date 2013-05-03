@@ -8,10 +8,10 @@ public:
 	TCPNetworkManager();
 	~TCPNetworkManager();
 
-	void Init(int maxConnections);
+	void Init(Uint16 port, int maxSockets);
 	void Quit();
 
-	int AcceptConnection();
+	int AcceptConnections();
 	int CheckSockets();
 
 	int Send(int index, const void* data, int len);
@@ -21,12 +21,11 @@ public:
 	TCPsocket GetSocket(int index);
 	int CloseSocket(int index);
 
-	int GetMaxConnections();
-	int GetCurrentConnections();
+	int GetMaxConnections() const;
+	int GetCurrentConnections() const;
 private:
-	TCPsocket serverSocket;
-	SDLNet_SocketSet socketSet;
-	int maxConnections, currentConnections;
+	TCPsocket sock;
+	SDLNet_SocketSet clientSocks;
 };
 
 #endif
