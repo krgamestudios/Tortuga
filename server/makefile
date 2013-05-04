@@ -4,14 +4,14 @@ LIB=-lmingw32 -lSDL_net -lSDLmain -lSDL -lwsock32 -liphlpapi
 
 #objects
 OBJDIR=obj
-OBJ=$(addprefix $(OBJDIR)/,main.o config_utility.o)
+OBJ=$(addprefix $(OBJDIR)/,main.o config_utility.o client.o)
 
 #output
 OUTDIR=out
 OUT=$(addprefix $(OUTDIR)/,a)
 
 #source
-SRC=server.cpp tcp_network_manager.cpp
+SRC=server.cpp
 
 #targets
 all: $(OBJ) $(OUT)

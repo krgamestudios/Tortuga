@@ -27,5 +27,33 @@ This outline is only the most basic example of the server's operation possible, 
 class Client:
 	ID --unique, incremental
 	socket --connection socket
+
+	GetID
+	GetSocket
+	GetIP --wrapper for GetPeerAddress
+
+	--handle dropped connections by destroying this client
+	int Send(data, len);
+	int Recv(data, maxlen);
+
+	--close the socket, and cleanup any other stuff
+	CloseSocket()
+
 	[stuff]
 	[things]
+
+class ClientManager:
+	Init(max)
+	Quit()
+
+	CheckNewClients()
+	Send(id, data, len)
+	SendAll(data, len)
+	Recv(id, data, maxlen)
+
+	Get(id)
+	Close(id)
+
+	GetRaw() --the internal container
+
+	--iteratable
