@@ -1,6 +1,6 @@
 #config
 CXXFLAGS+=-std=c++11 -DDEBUG
-LIB=-lmingw32 -lSDL_net -lSDLmain -lSDL -lwsock32 -liphlpapi
+LIB=-lmingw32 -lSDLmain -lSDL -lwsock32 -liphlpapi
 
 #objects
 OBJDIR=obj

@@ -1,10 +1,10 @@
 #config
 CXXFLAGS+=-std=c++11 -DDEBUG
-LIB=-lmingw32 -lSDL_net -lSDLmain -lSDL -lwsock32 -liphlpapi
+LIB=-lmingw32 -lSDLmain -lSDL -lwsock32 -liphlpapi
 
 #objects
 OBJDIR=obj
-OBJ=$(addprefix $(OBJDIR)/,main.o config_utility.o client.o)
+OBJ=$(addprefix $(OBJDIR)/,main.o config_utility.o)
 
 #output
 OUTDIR=out
