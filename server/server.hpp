@@ -2,6 +2,9 @@
 #define SERVER_HPP_
 
 #include "config_utility.hpp"
+#include "network.hpp"
+
+#include <vector>
 
 class Server {
 public:
@@ -18,6 +21,8 @@ public:
 private:
 	bool running;
 	ConfigUtility config;
+	TCPServerSocket servSock;
+	std::vector<TCPSocket*> sockVec;
 };
 
 #endif

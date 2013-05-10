@@ -24,36 +24,35 @@ This outline is only the most basic example of the server's operation possible, 
 
 -------------------------
 
-class Client:
+Player:
 	ID --unique, incremental
-	socket --connection socket
+	position
+	motion
+	avatarName --make sure you've transfered the assets first
 
-	GetID
-	GetSocket
-	GetIP --wrapper for GetPeerAddress
+	Update(int)
 
-	--handle dropped connections by destroying this client
-	int Send(data, len);
-	int Recv(data, maxlen);
+	Set
+	Get
 
-	--close the socket, and cleanup any other stuff
-	CloseSocket()
+	GetPosition()
+	GetMotion()
+	GetAvatarName()
+end
 
-	[stuff]
-	[things]
+class PlayerManager:
+	maxPlayers
+	currentPlayers
+	ticker --incremental
 
-class ClientManager:
-	Init(max)
+	Init(maxPlayers)
 	Quit()
 
-	CheckNewClients()
-	Send(id, data, len)
-	SendAll(data, len)
-	Recv(id, data, maxlen)
+	UpdateAll(int)
 
-	Get(id)
-	Close(id)
+	NewPlayer(...)
+	GetPlayer(index)
+	DeletePlayer(...)
 
-	GetRaw() --the internal container
-
-	--iteratable
+	DeleteAll()
+end

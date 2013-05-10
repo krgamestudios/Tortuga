@@ -9,8 +9,8 @@ int main(int, char**) {
 #ifdef DEBUG
 	cout << "Beginning server" << endl;
 #endif
-	Server app;
 	try {
+		Server app;
 		app.Init();
 		app.Proc();
 		app.Quit();

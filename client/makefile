@@ -1,17 +1,17 @@
 #config
 CXXFLAGS+=-std=c++11 -DDEBUG
-LIB=-lmingw32 -lSDLmain -lSDL -lwsock32 -liphlpapi
+LIB=-lmingw32 -lSDLmain -lSDL -lwsock32 -lWS2_32
 
 #objects
 OBJDIR=obj
-OBJ=$(addprefix $(OBJDIR)/,base_scene.o scene_manager.o main.o surface_manager.o image.o sprite_sheet.o player.o player_manager.o config_utility.o)
+OBJ=$(addprefix $(OBJDIR)/,base_scene.o scene_manager.o surface_manager.o image.o sprite_sheet.o player.o player_manager.o config_utility.o network.o network_tcp.o)
 
 #output
 OUTDIR=out
 OUT=$(addprefix $(OUTDIR)/,a)
 
 #source
-SRC=test_systems.cpp in_game.cpp
+SRC=test_systems.cpp in_game.cpp main.cpp
 
 #targets
 all: $(OBJ) $(OUT)

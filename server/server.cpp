@@ -1,16 +1,12 @@
 #include "server.hpp"
 
-#include "SDL/SDL.h"
-#include "SDL_net/SDL_net.h"
-
 #include <stdexcept>
 #include <iostream>
 
 using namespace std;
 
 Server::Server() {
-	running = true;
-	config.Load("config.cfg");
+	running = false;
 }
 
 Server::~Server() {
@@ -18,9 +14,12 @@ Server::~Server() {
 }
 
 void Server::Init() {
-	if (SDLNet_Init()) {
-		throw(runtime_error("Failed to init SDL_net"));
-	}
+	NetworkInit();
+
+	config.Load("config.cfg");
+	servSock.Open(config.Int("port"));
+
+	running = true;
 }
 
 void Server::Proc() {
@@ -30,17 +29,25 @@ void Server::Proc() {
 		HandleOutput();
 
 		//debug
-		running = false;
+//		running = false;
 	}
 }
 
 void Server::Quit() {
-	SDLNet_Quit();
+	for (auto it : sockVec) {
+		it->Close();
+		delete it;
+	}
+	servSock.Close();
+	NetworkQuit();
 }
 
 void Server::HandleInput() {
 	//accept new connections
-	//...
+	TCPSocket* sock = new TCPSocket;
+	if (servSock.Accept(sock)) {
+		sockVec.push_back(sock);
+	}
 	//accept updates from the clients
 	//...
 	//read the updates from the clients into internal containers
@@ -55,5 +62,10 @@ void Server::UpdateWorld() {
 
 void Server::HandleOutput() {
 	//send all information to new connections
+	//...
 	//selective updates to existing connectons
+	string s = "hello world";
+	for (auto it : sockVec) {
+		it->Send(s.c_str(), s.length());
+	}
 }
