@@ -12,58 +12,43 @@ Splash::Splash() {
 #ifdef DEBUG
 	cout << "entering Splash" << endl;
 #endif
+	loaded = false;
+	start = clock();
+	configUtil = GetSingletonPtr<ConfigUtility>();
+	surfaceMgr = GetSingletonPtr<SurfaceManager>();
+
+	logo = new Image(surfaceMgr->Load("logo", configUtil->String("logos") + "/krstudios.bmp"));
 }
 
 Splash::~Splash() {
+	delete logo;
+	surfaceMgr->Free("logo");
 #ifdef DEBUG
 	cout << "leaving Splash" << endl;
 #endif
 }
 
-//-------------------------
-//Frame loop
-//-------------------------
+void Splash::RunFrame() {
+	//skip any event handling here
 
-void Splash::FrameStart() {
-	//
-}
+	//draw the logo in the middle of the screen
+	int x = (GetScreen()->w - logo->GetClipW()) / 2;
+	int y = (GetScreen()->h - logo->GetClipH()) / 2;
 
-void Splash::FrameEnd() {
-	//
-}
+	logo->DrawTo(GetScreen(),x,y);
+	SDL_Flip(GetScreen());
 
-void Splash::Update() {
-	//
-}
+	if (!loaded) {
+		LoadResources();
+	}
 
-void Splash::Render(SDL_Surface* const screen) {
-	//
-}
-
-//-------------------------
-//Event handlers
-//-------------------------
-
-void Splash::MouseMotion(SDL_MouseMotionEvent const& motion) {
-	//
-}
-
-void Splash::MouseButtonDown(SDL_MouseButtonEvent const& button) {
-	//
-}
-
-void Splash::MouseButtonUp(SDL_MouseButtonEvent const& button) {
-	//
-}
-
-void Splash::KeyDown(SDL_KeyboardEvent const& key) {
-	switch(key.keysym.sym) {
-		case SDLK_ESCAPE:
-			QuitEvent();
-		break;
+	if (clock() - start > CLOCKS_PER_SEC*3) {
+		SetNextScene(SceneList::MAINMENU);
 	}
 }
 
-void Splash::KeyUp(SDL_KeyboardEvent const& key) {
-	//
+void Splash::LoadResources() {
+	//load the resources during the splash screen
+	//TODO
+	loaded = true;
 }
