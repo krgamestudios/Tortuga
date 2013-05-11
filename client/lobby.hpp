@@ -1,13 +1,13 @@
-#ifndef TESTSYSTEMS_HPP_
-#define TESTSYSTEMS_HPP_
+#ifndef LOBBY_HPP_
+#define LOBBY_HPP_
 
 #include "base_scene.hpp"
 
-class TestSystems : public BaseScene {
+class Lobby : public BaseScene {
 public:
 	/* Public access members */
-	TestSystems();
-	virtual ~TestSystems();
+	Lobby();
+	virtual ~Lobby();
 
 protected:
 	/* Frame loop */

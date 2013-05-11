@@ -1,13 +1,13 @@
-#ifndef TESTSYSTEMS_HPP_
-#define TESTSYSTEMS_HPP_
+#ifndef SPLASH_HPP_
+#define SPLASH_HPP_
 
 #include "base_scene.hpp"
 
-class TestSystems : public BaseScene {
+class Splash : public BaseScene {
 public:
 	/* Public access members */
-	TestSystems();
-	virtual ~TestSystems();
+	Splash();
+	virtual ~Splash();
 
 protected:
 	/* Frame loop */

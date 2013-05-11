@@ -1,13 +1,13 @@
-#ifndef TESTSYSTEMS_HPP_
-#define TESTSYSTEMS_HPP_
+#ifndef COMBAT_HPP_
+#define COMBAT_HPP_
 
 #include "base_scene.hpp"
 
-class TestSystems : public BaseScene {
+class Combat : public BaseScene {
 public:
 	/* Public access members */
-	TestSystems();
-	virtual ~TestSystems();
+	Combat();
+	virtual ~Combat();
 
 protected:
 	/* Frame loop */

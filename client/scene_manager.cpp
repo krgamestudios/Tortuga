@@ -7,8 +7,18 @@
 //-------------------------
 
 //Add the custom scene headers here
+#ifdef DEBUG
 #include "test_systems.hpp"
+#endif
+
+#include "splash.hpp"
+#include "main_menu.hpp"
 #include "in_game.hpp"
+
+#ifdef DEBUG
+#include "lobby.hpp"
+#include "combat.hpp"
+#endif
 
 //-------------------------
 //Public access members
@@ -61,13 +71,31 @@ void SceneManager::LoadScene(SceneList sceneIndex) {
 
 	switch(sceneIndex) {
 		//add scene creation calls here
-		case SceneList::FIRST:
-		case SceneList::INGAME:
-			activeScene = new InGame();
-		break;
+#ifdef DEBUG
 		case SceneList::TESTSYSTEMS:
 			activeScene = new TestSystems();
 		break;
+#endif
+
+		case SceneList::FIRST:
+		case SceneList::SPLASH:
+			activeScene = new Splash();
+		break;
+		case SceneList::MAINMENU:
+			activeScene = new MainMenu();
+		break;
+		case SceneList::INGAME:
+			activeScene = new InGame();
+		break;
+
+#ifdef DEBUG
+		case SceneList::LOBBY:
+			activeScene = new Lobby();
+		break;
+		case SceneList::COMBAT:
+			activeScene = new Combat();
+		break;
+#endif
 
 		default:
 			throw(std::logic_error("Failed to recognize the scene index"));

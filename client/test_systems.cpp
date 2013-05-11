@@ -1,15 +1,23 @@
 #include "test_systems.hpp"
 
+#include <iostream>
+
+using namespace std;
+
 //-------------------------
 //Public access members
 //-------------------------
 
 TestSystems::TestSystems() {
-	//
+#ifdef DEBUG
+	cout << "entering TestSystems" << endl;
+#endif
 }
 
 TestSystems::~TestSystems() {
-	//
+#ifdef DEBUG
+	cout << "leaving TestSystems" << endl;
+#endif
 }
 
 //-------------------------

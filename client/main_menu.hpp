@@ -1,13 +1,13 @@
-#ifndef TESTSYSTEMS_HPP_
-#define TESTSYSTEMS_HPP_
+#ifndef MAINMENU_HPP_
+#define MAINMENU_HPP_
 
 #include "base_scene.hpp"
 
-class TestSystems : public BaseScene {
+class MainMenu : public BaseScene {
 public:
 	/* Public access members */
-	TestSystems();
-	virtual ~TestSystems();
+	MainMenu();
+	virtual ~MainMenu();
 
 protected:
 	/* Frame loop */

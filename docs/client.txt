@@ -1,0 +1,9 @@
+Architecture
+
+SceneManager:
+-	Splash
+-	MainMenu
+	-	Lobby
+-	InGame
+	-	Combat
+-	TestSystems (debug scene)
