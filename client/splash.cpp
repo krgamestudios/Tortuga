@@ -43,7 +43,7 @@ void Splash::RunFrame() {
 	}
 
 	if (clock() - start > CLOCKS_PER_SEC*3) {
-		SetNextScene(SceneList::MAINMENU);
+		SetNextScene(SceneList::INGAME);
 	}
 }
 
