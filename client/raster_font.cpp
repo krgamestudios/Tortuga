@@ -19,46 +19,35 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#include "image.hpp"
+#include "raster_font.hpp"
 
- Image::Image() {
- 	SetSurface(nullptr);
- }
-
-Image::Image(SDL_Surface* p) {
-	SetSurface(p);
+void RasterFont::DrawStringTo(std::string s, SDL_Surface* const dest, Sint16 x, Sint16 y) {
+	if (!surface) {
+		return;
+	}
+	//character size won't change here
+	const Sint16 w = surface->w/16;
+	const Sint16 h = surface->h/16;
+	SDL_Rect sclip, dclip = {x,y,0,0};
+	for (auto c : s) {
+		//TODO: inefficient
+		sclip = {Sint16(c%w*w), Sint16(c/h*h), clip.w, clip.h};
+//		sclip.x = c % w;
+//		sclip.h = c / h;
+//		sclip.w = clip.w;
+//		sclip.h = clip.h;
+		SDL_BlitSurface(surface, &sclip, dest, &dclip);
+		dclip.x += w;
+	}
 }
 
-Image::Image(SDL_Surface* p, SDL_Rect r) {
-	SetSurface(p, r);
-}
-
-SDL_Surface* Image::SetSurface(SDL_Surface* p) {
+SDL_Surface* RasterFont::SetSurface(SDL_Surface* p) {
 	surface = p;
 	if (!surface) {
 		clip = {0, 0, 0, 0};
 	}
 	else {
-		clip = {0, 0, (Uint16)surface->w, (Uint16)surface->h};
+		clip = {0, 0, Uint16(surface->w/16), Uint16(surface->h/16)};
 	}
 	return surface;
-}
-
-SDL_Surface* Image::SetSurface(SDL_Surface* const p, SDL_Rect r) {
-	surface = p;
-	clip = r;
-	return surface;
-}
-
-SDL_Surface* Image::GetSurface() const {
-	return surface;
-}
-
-void Image::DrawTo(SDL_Surface* dest, Sint16 x, Sint16 y) {
-	if (!surface) {
-		return;
-	}
-	SDL_Rect sclip = clip, dclip = {x,y};
-
-	SDL_BlitSurface(surface, &sclip, dest, &dclip);
 }

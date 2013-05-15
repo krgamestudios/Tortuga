@@ -39,7 +39,7 @@ void SceneManager::Init() {
 	if (SDL_Init(SDL_INIT_VIDEO))
 		throw(std::runtime_error("Failed to initialize SDL"));
 
-	GetSingletonPtr<ConfigUtility>()->Load("rsc\\config.cfg");
+	GetSingletonPtr<ConfigUtility>()->Load("rsc/config.cfg");
 
 	//set the screen from the config file
 	int flags = SDL_HWSURFACE|SDL_DOUBLEBUF;

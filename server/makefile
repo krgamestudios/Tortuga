@@ -2,20 +2,19 @@
 CXXFLAGS+=-std=c++11 -DDEBUG
 LIB=-lwsock32 -lWS2_32
 
+#source
+SRC=$(filter-out unit.cpp main.cpp, $(wildcard *.cpp))
+
 #objects
 OBJDIR=obj
-OBJ=$(addprefix $(OBJDIR)/,config_utility.o network.o network_tcp.o)
+OBJ=$(addprefix $(OBJDIR)/,$(SRC:.cpp=.o))
 
 #output
 OUTDIR=out
-OUT=$(addprefix $(OUTDIR)/,server)
-
-#source
-SRC=server.cpp main.cpp
 
 #targets
 all: $(OBJ) $(OUT)
-	$(CXX) $(CXXFLAGS) -o $(OUT) $(SRC) $(OBJ) $(LIB)
+	$(CXX) $(CXXFLAGS) -o $(OUTDIR)/server main.cpp $(OBJ) $(LIB)
 
 $(OBJ): | $(OBJDIR)
 
@@ -28,12 +27,12 @@ $(OUTDIR):
 	mkdir $(OUTDIR)
 
 $(OBJDIR)/%.o: %.cpp
-	$(CXX) $(CXXFLAGS) -c -o $(@) $<
+	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
 clean:
 	$(RM) *.o *.a *.exe
 
-rebuild: clean all
+rebuild: clean all unit
 
-unit:
+unit: $(OBJ) $(OUT)
 	$(CXX) $(CXXFLAGS) -o $(OUTDIR)\unit unit.cpp $(OBJ) $(LIB)
