@@ -79,6 +79,7 @@ void BaseScene::RunFrame() {
 	FrameStart();
 	HandleEvents();
 	Update();
+	SDL_FillRect(screen, 0, 0);
 	Render(screen);
 	SDL_Flip(screen);
 	FrameEnd();

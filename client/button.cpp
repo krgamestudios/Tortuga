@@ -41,7 +41,7 @@ Button::Button(Sint16 i, Sint16 j, SDL_Surface* imageSurface, SDL_Surface* fontS
 	SetText(s);
 }
 
-Button::State Button::MouseMotion(SDL_MouseMotionEvent& motion) {
+Button::State Button::MouseMotion(SDL_MouseMotionEvent const& motion) {
 	if (motion.state & SDL_BUTTON_LMASK) {
 		return CalcState(motion.x, motion.y, true);
 	}
@@ -51,14 +51,14 @@ Button::State Button::MouseMotion(SDL_MouseMotionEvent& motion) {
 	return state;
 }
 
-Button::State Button::MouseButtonDown(SDL_MouseButtonEvent& button) {
+Button::State Button::MouseButtonDown(SDL_MouseButtonEvent const& button) {
 	if (button.button == SDL_BUTTON_LEFT) {
 		return CalcState(button.x, button.y, true);
 	}
 	return state;
 }
 
-Button::State Button::MouseButtonUp(SDL_MouseButtonEvent& button) {
+Button::State Button::MouseButtonUp(SDL_MouseButtonEvent const& button) {
 	if (button.button == SDL_BUTTON_LEFT) {
 		return CalcState(button.x, button.y, false);
 	}

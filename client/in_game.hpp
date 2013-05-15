@@ -32,6 +32,7 @@ protected:
 
 	//utilities
 	void NewPlayer(int index, std::string avatarName, int x, int y);
+	void SwitchToPlayer(int index);
 
 	//members
 	Delta delta;

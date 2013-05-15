@@ -38,9 +38,9 @@ public:
 	Button(Sint16 x, Sint16 y, SDL_Surface* imageSurface, SDL_Surface* fontSurface, std::string text = "");
 
 	//return the current state
-	State MouseMotion(SDL_MouseMotionEvent&);
-	State MouseButtonDown(SDL_MouseButtonEvent&);
-	State MouseButtonUp(SDL_MouseButtonEvent&);
+	State MouseMotion(SDL_MouseMotionEvent const&);
+	State MouseButtonDown(SDL_MouseButtonEvent const&);
+	State MouseButtonUp(SDL_MouseButtonEvent const&);
 	State GetState() const {
 		return state;
 	}

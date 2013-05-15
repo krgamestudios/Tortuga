@@ -30,6 +30,8 @@ Splash::~Splash() {
 
 void Splash::RunFrame() {
 	//skip any event handling here
+	SDL_Event event;
+	while(SDL_PollEvent(&event));
 
 	//draw the logo in the middle of the screen
 	int x = (GetScreen()->w - logo->GetClipW()) / 2;
@@ -40,15 +42,16 @@ void Splash::RunFrame() {
 
 	if (!loaded) {
 		LoadResources();
+		loaded = true;
 	}
 
 	if (clock() - start > CLOCKS_PER_SEC*3) {
-		SetNextScene(SceneList::INGAME);
+		SetNextScene(SceneList::MAINMENU);
 	}
 }
 
 void Splash::LoadResources() {
-	//load the resources during the splash screen
+	//load the global resources here
+	surfaceMgr->Load("font", configUtil->String("fonts") + "/pokemon_dark_font.bmp");
 	//TODO
-	loaded = true;
 }

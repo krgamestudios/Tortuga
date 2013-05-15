@@ -1,8 +1,5 @@
 #include "scene_manager.hpp"
 
-#include "singleton.hpp"
-#include "config_utility.hpp"
-
 #include <stdexcept>
 
 //-------------------------
@@ -39,19 +36,16 @@ void SceneManager::Init() {
 	if (SDL_Init(SDL_INIT_VIDEO))
 		throw(std::runtime_error("Failed to initialize SDL"));
 
-	GetSingletonPtr<ConfigUtility>()->Load("rsc/config.cfg");
+	configUtil = GetSingletonPtr<ConfigUtility>();
+
+	configUtil->Load("rsc/config.cfg");
 
 	//set the screen from the config file
 	int flags = SDL_HWSURFACE|SDL_DOUBLEBUF;
-	if (GetSingletonPtr<ConfigUtility>()->Boolean("screen.f")) {
+	if (configUtil->Boolean("screen.f")) {
 		flags |= SDL_FULLSCREEN;
 	}
-	BaseScene::SetScreen(
-		GetSingletonPtr<ConfigUtility>()->Integer("screen.w"),
-		GetSingletonPtr<ConfigUtility>()->Integer("screen.h"),
-		0,
-		flags
-		);
+	BaseScene::SetScreen(configUtil->Integer("screen.w"),configUtil->Integer("screen.h"),0,flags);
 }
 
 void SceneManager::Proc() {

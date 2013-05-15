@@ -49,7 +49,6 @@ void InGame::Update() {
 }
 
 void InGame::Render(SDL_Surface* const screen) {
-	SDL_FillRect(screen, 0, 0);
 	playerMgr.DrawAllTo(screen);
 }
 
@@ -89,16 +88,16 @@ void InGame::KeyDown(SDL_KeyboardEvent const& key) {
 		break;
 
 		case SDLK_1:
-			currentPlayer = 0;
+			SwitchToPlayer(0);
 		break;
 		case SDLK_2:
-			currentPlayer = 1;
+			SwitchToPlayer(1);
 		break;
 		case SDLK_3:
-			currentPlayer = 2;
+			SwitchToPlayer(2);
 		break;
 		case SDLK_4:
-			currentPlayer = 3;
+			SwitchToPlayer(3);
 		break;
 	}
 }
@@ -127,4 +126,25 @@ void InGame::KeyUp(SDL_KeyboardEvent const& key) {
 void InGame::NewPlayer(int index, std::string avatarName, int x, int y) {
 	Player* p = playerMgr.New(index, surfaceMgr[avatarName]);
 	p->SetPosition(Vector2(x, y));
+}
+
+void InGame::SwitchToPlayer(int index) {
+	//dirty hacks for smooth movement
+	playerMgr[currentPlayer]->SetMotion(Vector2(0,0));
+	currentPlayer = index;
+
+	Uint8* key = SDL_GetKeyState(NULL);
+
+	if (key[SDLK_w]) {
+		playerMgr[currentPlayer]->WalkInDirection(Direction::NORTH);
+	}
+	if (key[SDLK_s]) {
+		playerMgr[currentPlayer]->WalkInDirection(Direction::SOUTH);
+	}
+	if (key[SDLK_a]) {
+		playerMgr[currentPlayer]->WalkInDirection(Direction::WEST);
+	}
+	if (key[SDLK_d]) {
+		playerMgr[currentPlayer]->WalkInDirection(Direction::EAST);
+	}
 }
