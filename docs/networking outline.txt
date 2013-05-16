@@ -1,0 +1,16 @@
+Client:
+	SceneManager:
+		TCPSocket
+	end
+end
+
+Server:
+	TCPServerSocket
+	SocketList --list of all client sockets if one is closed, remove it.
+end
+
+When the player enters the lobby, they can choose what server to connect to. When they connect to the server, they'll enter a sort of character creation screen. Once that is done, they will enter the game world proper.
+
+This is controlled through the config files for now.
+
+using ';' delimited commands, how can I get it to work?

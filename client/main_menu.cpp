@@ -70,7 +70,7 @@ void MainMenu::MouseButtonDown(SDL_MouseButtonEvent const& button) {
 void MainMenu::MouseButtonUp(SDL_MouseButtonEvent const& button) {
 	if (buttonMap["start"]->MouseButtonUp(button) == Button::State::HOVER) {
 		//TODO
-		SetNextScene(SceneList::INGAME);
+		SetNextScene(SceneList::TESTSYSTEMS);
 		cout << "start" << endl;
 	}
 	if (buttonMap["options"]->MouseButtonUp(button) == Button::State::HOVER) {
