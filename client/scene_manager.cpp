@@ -36,16 +36,14 @@ void SceneManager::Init() {
 	if (SDL_Init(SDL_INIT_VIDEO))
 		throw(std::runtime_error("Failed to initialize SDL"));
 
-	configUtil = GetSingletonPtr<ConfigUtility>();
-
-	configUtil->Load("rsc/config.cfg");
+	configUtil.Load("rsc/config.cfg");
 
 	//set the screen from the config file
 	int flags = SDL_HWSURFACE|SDL_DOUBLEBUF;
-	if (configUtil->Boolean("screen.f")) {
+	if (configUtil.Boolean("screen.f")) {
 		flags |= SDL_FULLSCREEN;
 	}
-	BaseScene::SetScreen(configUtil->Integer("screen.w"),configUtil->Integer("screen.h"),0,flags);
+	BaseScene::SetScreen(configUtil.Integer("screen.w"),configUtil.Integer("screen.h"),0,flags);
 }
 
 void SceneManager::Proc() {
@@ -82,19 +80,19 @@ void SceneManager::LoadScene(SceneList sceneIndex) {
 		//add scene creation calls here
 #ifdef DEBUG
 		case SceneList::TESTSYSTEMS:
-			activeScene = new TestSystems();
+			activeScene = new TestSystems(&configUtil, &surfaceMgr);
 		break;
 #endif
 
 		case SceneList::FIRST:
 		case SceneList::SPLASH:
-			activeScene = new Splash();
+			activeScene = new Splash(&configUtil, &surfaceMgr);
 		break;
 		case SceneList::MAINMENU:
-			activeScene = new MainMenu();
+			activeScene = new MainMenu(&configUtil, &surfaceMgr);
 		break;
 		case SceneList::INGAME:
-			activeScene = new InGame();
+			activeScene = new InGame(&configUtil, &surfaceMgr);
 		break;
 
 #ifdef DEBUG

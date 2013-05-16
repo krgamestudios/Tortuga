@@ -3,7 +3,6 @@
 
 #include "base_scene.hpp"
 
-#include "singleton.hpp"
 #include "config_utility.hpp"
 #include "surface_manager.hpp"
 
@@ -15,7 +14,7 @@
 class MainMenu : public BaseScene {
 public:
 	//Public access members
-	MainMenu();
+	MainMenu(ConfigUtility*, SurfaceManager*);
 	virtual ~MainMenu();
 
 protected:

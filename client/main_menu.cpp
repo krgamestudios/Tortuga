@@ -8,14 +8,12 @@ using namespace std;
 //Public access members
 //-------------------------
 
-MainMenu::MainMenu() {
+MainMenu::MainMenu(ConfigUtility* cUtil, SurfaceManager* sMgr) {
 #ifdef DEBUG
 	cout << "entering MainMenu" << endl;
 #endif
-	configUtil = GetSingletonPtr<ConfigUtility>();
-	surfaceMgr = GetSingletonPtr<SurfaceManager>();
-
-	surfaceMgr->Load("button", configUtil->String("interface") + "/button.bmp");
+	configUtil = cUtil;
+	surfaceMgr = sMgr;
 
 	buttonMap["start"] = new Button(50, 50, surfaceMgr->Get("button"), surfaceMgr->Get("font"), "start");
 	buttonMap["options"] = new Button(50, 100, surfaceMgr->Get("button"), surfaceMgr->Get("font"), "options");
@@ -81,7 +79,7 @@ void MainMenu::MouseButtonUp(SDL_MouseButtonEvent const& button) {
 	}
 	if (buttonMap["quit"]->MouseButtonUp(button) == Button::State::HOVER) {
 		//TODO
-		SetNextScene(SceneList::QUIT);
+		QuitEvent();
 		cout << "quit" << endl;
 	}
 }

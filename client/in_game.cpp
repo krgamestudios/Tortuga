@@ -8,24 +8,23 @@ using namespace std;
 //Public access members
 //-------------------------
 
-InGame::InGame() {
+InGame::InGame(ConfigUtility* cUtil, SurfaceManager* sMgr) {
 #ifdef DEBUG
 	cout << "entering InGame" << endl;
 #endif
-	surfaceMgr.Load("player", "rsc/graphics/sprites/elliot2.bmp");
-	surfaceMgr.Load("flower", "rsc/graphics/sprites/aniflower.bmp");
+	configUtil = cUtil;
+	surfaceMgr = sMgr;
 
 	playerCounter = currentPlayer = 0;
 
-	playerMgr.New(playerCounter++, surfaceMgr["player"]);
-	playerMgr.New(playerCounter++, surfaceMgr["player"]);
-	playerMgr.New(playerCounter++, surfaceMgr["player"]);
-	playerMgr.New(playerCounter++, surfaceMgr["player"]);
+	playerMgr.New(playerCounter++, surfaceMgr->Get("elliot"));
+	playerMgr.New(playerCounter++, surfaceMgr->Get("elliot"));
+	playerMgr.New(playerCounter++, surfaceMgr->Get("coa"));
+	playerMgr.New(playerCounter++, surfaceMgr->Get("coa"));
 }
 
 InGame::~InGame() {
 	playerMgr.DeleteAll();
-	surfaceMgr.FreeAll();
 #ifdef DEBUG
 	cout << "leaving InGame" << endl;
 #endif
@@ -71,7 +70,7 @@ void InGame::MouseButtonUp(SDL_MouseButtonEvent const& button) {
 void InGame::KeyDown(SDL_KeyboardEvent const& key) {
 	switch(key.keysym.sym) {
 		case SDLK_ESCAPE:
-			QuitEvent();
+			SetNextScene(SceneList::MAINMENU);
 		break;
 
 		case SDLK_w:
@@ -124,7 +123,7 @@ void InGame::KeyUp(SDL_KeyboardEvent const& key) {
 //-------------------------
 
 void InGame::NewPlayer(int index, std::string avatarName, int x, int y) {
-	Player* p = playerMgr.New(index, surfaceMgr[avatarName]);
+	Player* p = playerMgr.New(index, surfaceMgr->Get(avatarName));
 	p->SetPosition(Vector2(x, y));
 }
 
@@ -133,7 +132,7 @@ void InGame::SwitchToPlayer(int index) {
 	playerMgr[currentPlayer]->SetMotion(Vector2(0,0));
 	currentPlayer = index;
 
-	Uint8* key = SDL_GetKeyState(NULL);
+	Uint8* key = SDL_GetKeyState(nullptr);
 
 	if (key[SDLK_w]) {
 		playerMgr[currentPlayer]->WalkInDirection(Direction::NORTH);

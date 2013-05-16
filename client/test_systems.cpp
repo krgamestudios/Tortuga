@@ -8,10 +8,12 @@ using namespace std;
 //Public access members
 //-------------------------
 
-TestSystems::TestSystems() {
+TestSystems::TestSystems(ConfigUtility* cUtil, SurfaceManager* sMgr) {
 #ifdef DEBUG
 	cout << "entering TestSystems" << endl;
 #endif
+	configUtil = cUtil;
+	surfaceMgr = sMgr;
 }
 
 TestSystems::~TestSystems() {

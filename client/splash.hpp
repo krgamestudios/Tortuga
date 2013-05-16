@@ -3,7 +3,6 @@
 
 #include "base_scene.hpp"
 
-#include "singleton.hpp"
 #include "config_utility.hpp"
 #include "surface_manager.hpp"
 #include "image.hpp"
@@ -12,7 +11,7 @@
 
 class Splash : public BaseScene {
 public:
-	Splash();
+	Splash(ConfigUtility*, SurfaceManager*);
 	virtual ~Splash();
 
 protected:

@@ -8,21 +8,21 @@ using namespace std;
 //Public access members
 //-------------------------
 
-Splash::Splash() {
+Splash::Splash(ConfigUtility* cUtil, SurfaceManager* sMgr) {
 #ifdef DEBUG
 	cout << "entering Splash" << endl;
 #endif
 	loaded = false;
 	start = clock();
-	configUtil = GetSingletonPtr<ConfigUtility>();
-	surfaceMgr = GetSingletonPtr<SurfaceManager>();
+	configUtil = cUtil;
+	surfaceMgr = sMgr;
 
-	logo = new Image(surfaceMgr->Load("logo", configUtil->String("logos") + "/krstudios.bmp"));
+	logo = new Image(surfaceMgr->Load("splash-logo", configUtil->String("logos") + "/krstudios.bmp"));
 }
 
 Splash::~Splash() {
 	delete logo;
-	surfaceMgr->Free("logo");
+	surfaceMgr->Free("splash-logo");
 #ifdef DEBUG
 	cout << "leaving Splash" << endl;
 #endif
@@ -53,5 +53,10 @@ void Splash::RunFrame() {
 void Splash::LoadResources() {
 	//load the global resources here
 	surfaceMgr->Load("font", configUtil->String("fonts") + "/pokemon_dark_font.bmp");
+	surfaceMgr->Load("button", configUtil->String("interface") + "/button.bmp");
+	surfaceMgr->Load("elliot", configUtil->String("sprites") + "/elliot2.bmp");
+	surfaceMgr->Load("coa", configUtil->String("sprites") + "/coa2.bmp");
+	surfaceMgr->Load("flower", configUtil->String("sprites") + "/aniflower.bmp");
+	surfaceMgr->Load("terrain", configUtil->String("tilesets") + "/terrain.bmp");
 	//TODO
 }
