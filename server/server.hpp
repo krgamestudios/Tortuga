@@ -4,12 +4,12 @@
 #include "config_utility.hpp"
 #include "network.hpp"
 
-#include <vector>
+#include <list>
 
 class Server {
 public:
-	Server();
-	~Server();
+	Server() = default;
+	~Server() = default;
 
 	void Init();
 	void Proc();
@@ -19,10 +19,10 @@ public:
 	void UpdateWorld();
 	void HandleOutput();
 private:
-	bool running;
+	bool running = false;
 	ConfigUtility config;
 	TCPServerSocket servSock;
-	std::vector<TCPSocket*> sockVec;
+	std::list<TCPSocket*> socketList;
 };
 
 #endif

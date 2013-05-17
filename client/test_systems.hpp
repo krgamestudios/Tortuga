@@ -3,19 +3,21 @@
 
 #include "base_scene.hpp"
 
-#include "player_manager.hpp"
-
-#include "delta.hpp"
-#include "frame_rate.hpp"
 #include "config_utility.hpp"
 #include "surface_manager.hpp"
+#include "network.hpp"
+
+#include "player_manager.hpp"
+#include "delta.hpp"
+#include "frame_rate.hpp"
+#include "raster_font.hpp"
 
 #include <string>
 
 class TestSystems : public BaseScene {
 public:
 	//Public access members
-	TestSystems(ConfigUtility*, SurfaceManager*);
+	TestSystems(ConfigUtility*, SurfaceManager*, TCPSocket*);
 	virtual ~TestSystems();
 
 protected:
@@ -35,14 +37,18 @@ protected:
 	//utilities
 	void NewPlayer(int index, std::string avatarName, int x, int y);
 	void SwitchToPlayer(int index);
+	void SendMessage(std::string);
 
 	//members
+	ConfigUtility* configUtil;
+	SurfaceManager* surfaceMgr;
+	TCPSocket* socket;
+
 	PlayerManager playerMgr;
 
 	Delta delta;
 	FrameRate frameRate;
-	ConfigUtility* configUtil;
-	SurfaceManager* surfaceMgr;
+	RasterFont font;
 
 	int playerCounter;
 	int currentPlayer;

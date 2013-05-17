@@ -38,6 +38,8 @@ void SceneManager::Init() {
 
 	configUtil.Load("rsc/config.cfg");
 
+	NetworkInit();
+
 	//set the screen from the config file
 	int flags = SDL_HWSURFACE|SDL_DOUBLEBUF;
 	if (configUtil.Boolean("screen.f")) {
@@ -66,6 +68,7 @@ void SceneManager::Proc() {
 
 void SceneManager::Quit() {
 	UnloadScene();
+	NetworkQuit();
 	SDL_Quit();
 }
 
@@ -80,7 +83,7 @@ void SceneManager::LoadScene(SceneList sceneIndex) {
 		//add scene creation calls here
 #ifdef DEBUG
 		case SceneList::TESTSYSTEMS:
-			activeScene = new TestSystems(&configUtil, &surfaceMgr);
+			activeScene = new TestSystems(&configUtil, &surfaceMgr, &socket);
 		break;
 #endif
 
@@ -94,11 +97,11 @@ void SceneManager::LoadScene(SceneList sceneIndex) {
 		case SceneList::INGAME:
 			activeScene = new InGame(&configUtil, &surfaceMgr);
 		break;
+		case SceneList::LOBBY:
+			activeScene = new Lobby(&configUtil, &surfaceMgr, &socket);
+		break;
 
 #ifdef DEBUG
-		case SceneList::LOBBY:
-			activeScene = new Lobby();
-		break;
 		case SceneList::COMBAT:
 			activeScene = new Combat();
 		break;

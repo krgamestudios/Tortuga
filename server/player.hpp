@@ -5,18 +5,37 @@
 
 #include <string>
 
-//TODO
-
 class Player {
 public:
-	Player();
-	~Player();
+	Player(int id);
+	~Player() = default;
 
 	void Update(int);
 
-	Vector2 GetPosition();
+	int GetClientID() const {
+		return clientID;
+	}
+
+	Vector2 SetPosition(Vector2 v) {
+		return position = v;
+	}
+	Vector2 GetPosition() const {
+		return position;
+	}
+	Vector2 SetMotion(Vector2 v) {
+		return motion = v;
+	}
+	Vector2 GetMotion() const {
+		return motion;
+	}
+	std::string SetAvatarName(std::string s) {
+		return avatarName = s;
+	}
+	std::string GetAvatarName() {
+		return avatarName;
+	}
 private:
-	int clientID;
+	const int clientID;
 	Vector2 position;
 	Vector2 motion;
 	std::string avatarName;

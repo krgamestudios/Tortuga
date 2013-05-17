@@ -1,5 +1,6 @@
 #include "lobby.hpp"
 
+#include <exception>
 #include <iostream>
 
 using namespace std;
@@ -8,10 +9,26 @@ using namespace std;
 //Public access members
 //-------------------------
 
-Lobby::Lobby() {
+Lobby::Lobby(ConfigUtility* cUtil, SurfaceManager* sMgr, TCPSocket* sock) {
 #ifdef DEBUG
 	cout << "entering Lobby" << endl;
 #endif
+	configUtil = cUtil;
+	surfaceMgr = sMgr;
+	socket = sock;
+
+	//ping the network, ping the preset "phone home" servers
+	//generate the server list
+	//eventually
+
+	try {
+		socket->Open(configUtil->CString("ip"), configUtil->Integer("port"));
+	}
+	catch(exception& e) {
+		cerr << "Network Error: " << e.what() << endl;
+	}
+
+	SetNextScene(SceneList::TESTSYSTEMS);
 }
 
 Lobby::~Lobby() {

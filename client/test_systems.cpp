@@ -8,12 +8,13 @@ using namespace std;
 //Public access members
 //-------------------------
 
-TestSystems::TestSystems(ConfigUtility* cUtil, SurfaceManager* sMgr) {
+TestSystems::TestSystems(ConfigUtility* cUtil, SurfaceManager* sMgr, TCPSocket* sock) {
 #ifdef DEBUG
 	cout << "entering TestSystems" << endl;
 #endif
 	configUtil = cUtil;
 	surfaceMgr = sMgr;
+	socket = sock;
 
 	playerCounter = currentPlayer = 0;
 
@@ -21,10 +22,13 @@ TestSystems::TestSystems(ConfigUtility* cUtil, SurfaceManager* sMgr) {
 	playerMgr.New(playerCounter++, surfaceMgr->Get("elliot"));
 	playerMgr.New(playerCounter++, surfaceMgr->Get("coa"));
 	playerMgr.New(playerCounter++, surfaceMgr->Get("coa"));
+
+	font.SetSurface(surfaceMgr->Get("font"));
 }
 
 TestSystems::~TestSystems() {
 	playerMgr.DeleteAll();
+	socket->Close();
 #ifdef DEBUG
 	cout << "leaving TestSystems" << endl;
 #endif
@@ -47,8 +51,16 @@ void TestSystems::Update() {
 	playerMgr.UpdateAll(delta.GetDelta());
 }
 
+string IToS(int i) {
+	char buffer[20];
+	memset(buffer, 0, 20);
+	sprintf(buffer, "%d", i);
+	return string(buffer);
+}
+
 void TestSystems::Render(SDL_Surface* const screen) {
 	playerMgr.DrawAllTo(screen);
+	font.DrawStringTo("FPS: " + IToS(frameRate.GetFrameRate()), screen, 16, 16);
 }
 
 //-------------------------
@@ -75,15 +87,19 @@ void TestSystems::KeyDown(SDL_KeyboardEvent const& key) {
 
 		case SDLK_w:
 			playerMgr[currentPlayer]->WalkInDirection(Direction::NORTH);
+			SendMessage("move up");
 		break;
 		case SDLK_s:
 			playerMgr[currentPlayer]->WalkInDirection(Direction::SOUTH);
+			SendMessage("move down");
 		break;
 		case SDLK_a:
 			playerMgr[currentPlayer]->WalkInDirection(Direction::WEST);
+			SendMessage("move left");
 		break;
 		case SDLK_d:
 			playerMgr[currentPlayer]->WalkInDirection(Direction::EAST);
+			SendMessage("move right");
 		break;
 
 		case SDLK_1:
@@ -146,4 +162,9 @@ void TestSystems::SwitchToPlayer(int index) {
 	if (key[SDLK_d]) {
 		playerMgr[currentPlayer]->WalkInDirection(Direction::EAST);
 	}
+}
+
+void TestSystems::SendMessage(std::string s) {
+	s += ';';
+	socket->Send(s.c_str(), s.length());
 }
