@@ -14,3 +14,15 @@ When the player enters the lobby, they can choose what server to connect to. Whe
 This is controlled through the config files for now.
 
 using ';' delimited commands, how can I get it to work?
+
+-------------------------
+
+UDPNetworkManager: //don't worry at this stage
+	Open(port)
+	Close()
+
+	Send(ip, port)
+	Receive()
+
+	GetOutData()
+	GetInData()
