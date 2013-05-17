@@ -2,7 +2,6 @@
 #define SERVER_HPP_
 
 #include "config_utility.hpp"
-#include "network.hpp"
 
 #include <list>
 
@@ -21,8 +20,6 @@ public:
 private:
 	bool running = false;
 	ConfigUtility config;
-	TCPServerSocket servSock;
-	std::list<TCPSocket*> socketList;
 };
 
 #endif

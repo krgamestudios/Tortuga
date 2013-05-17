@@ -5,7 +5,6 @@
 
 #include "config_utility.hpp"
 #include "surface_manager.hpp"
-#include "network.hpp"
 
 #include "player_manager.hpp"
 #include "delta.hpp"
@@ -17,7 +16,7 @@
 class TestSystems : public BaseScene {
 public:
 	//Public access members
-	TestSystems(ConfigUtility*, SurfaceManager*, TCPSocket*);
+	TestSystems(ConfigUtility*, SurfaceManager*);
 	virtual ~TestSystems();
 
 protected:
@@ -42,7 +41,6 @@ protected:
 	//members
 	ConfigUtility* configUtil;
 	SurfaceManager* surfaceMgr;
-	TCPSocket* socket;
 
 	PlayerManager playerMgr;
 

@@ -9,24 +9,16 @@ using namespace std;
 //Public access members
 //-------------------------
 
-Lobby::Lobby(ConfigUtility* cUtil, SurfaceManager* sMgr, TCPSocket* sock) {
+Lobby::Lobby(ConfigUtility* cUtil, SurfaceManager* sMgr) {
 #ifdef DEBUG
 	cout << "entering Lobby" << endl;
 #endif
 	configUtil = cUtil;
 	surfaceMgr = sMgr;
-	socket = sock;
 
 	//ping the network, ping the preset "phone home" servers
 	//generate the server list
 	//eventually
-
-	try {
-		socket->Open(configUtil->CString("ip"), configUtil->Integer("port"));
-	}
-	catch(exception& e) {
-		cerr << "Network Error: " << e.what() << endl;
-	}
 
 	SetNextScene(SceneList::TESTSYSTEMS);
 }
@@ -84,5 +76,3 @@ void Lobby::KeyDown(SDL_KeyboardEvent const& key) {
 void Lobby::KeyUp(SDL_KeyboardEvent const& key) {
 	//
 }
-
-

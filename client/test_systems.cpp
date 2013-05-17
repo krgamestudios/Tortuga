@@ -8,13 +8,12 @@ using namespace std;
 //Public access members
 //-------------------------
 
-TestSystems::TestSystems(ConfigUtility* cUtil, SurfaceManager* sMgr, TCPSocket* sock) {
+TestSystems::TestSystems(ConfigUtility* cUtil, SurfaceManager* sMgr) {
 #ifdef DEBUG
 	cout << "entering TestSystems" << endl;
 #endif
 	configUtil = cUtil;
 	surfaceMgr = sMgr;
-	socket = sock;
 
 	playerCounter = currentPlayer = 0;
 
@@ -28,7 +27,6 @@ TestSystems::TestSystems(ConfigUtility* cUtil, SurfaceManager* sMgr, TCPSocket* 
 
 TestSystems::~TestSystems() {
 	playerMgr.DeleteAll();
-	socket->Close();
 #ifdef DEBUG
 	cout << "leaving TestSystems" << endl;
 #endif
@@ -165,6 +163,5 @@ void TestSystems::SwitchToPlayer(int index) {
 }
 
 void TestSystems::SendMessage(std::string s) {
-	s += ';';
-	socket->Send(s.c_str(), s.length());
+	//
 }

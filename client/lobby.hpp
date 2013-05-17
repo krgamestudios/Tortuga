@@ -5,12 +5,11 @@
 
 #include "config_utility.hpp"
 #include "surface_manager.hpp"
-#include "network.hpp"
 
 class Lobby : public BaseScene {
 public:
 	//Public access members
-	Lobby(ConfigUtility*, SurfaceManager*, TCPSocket*);
+	Lobby(ConfigUtility*, SurfaceManager*);
 	virtual ~Lobby();
 
 protected:
@@ -30,7 +29,6 @@ protected:
 	//members
 	ConfigUtility* configUtil;
 	SurfaceManager* surfaceMgr;
-	TCPSocket* socket;
 };
 
 #endif

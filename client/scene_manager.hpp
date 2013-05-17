@@ -6,7 +6,6 @@
 
 #include "config_utility.hpp"
 #include "surface_manager.hpp"
-#include "network.hpp"
 
 #include "SDL/SDL.h"
 
@@ -29,7 +28,6 @@ private:
 
 	ConfigUtility configUtil;
 	SurfaceManager surfaceMgr;
-	TCPSocket socket;
 };
 
 #endif
