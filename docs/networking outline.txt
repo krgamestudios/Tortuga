@@ -17,12 +17,32 @@ using ';' delimited commands, how can I get it to work?
 
 -------------------------
 
-UDPNetworkManager: //don't worry at this stage
-	Open(port)
-	Close()
+UDPNetworkUtility:
+	void Open(port, packSize)
+	void Close()
 
-	Send(ip, port)
-	Receive()
+	//bind to an available channel
+	int Bind(ip, port)
+	int Bind(address)
+
+	//bind to a certain channel
+	int Bind(ip, port, channel)
+	int Bind(address, channel)
+	void Unbind(channel)
+
+	int Send(channel, data, len)
+	int Receive()
+
+	GetIPAddress(channel)
 
 	GetOutData()
 	GetInData()
+
+	GetOutPacket()
+	GetInPacket()
+
+	UDPsocket socket
+	UDPpacket packOut
+	UDPpacket packIn
+end
+

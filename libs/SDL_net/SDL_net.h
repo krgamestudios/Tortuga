@@ -24,10 +24,10 @@
 #ifndef _SDL_NET_H
 #define _SDL_NET_H
 
-#include "SDL.h"
-#include "SDL_endian.h"
-#include "SDL_version.h"
-#include "begin_code.h"
+#include "SDL/SDL.h"
+#include "SDL/SDL_endian.h"
+#include "SDL/SDL_version.h"
+#include "SDL/begin_code.h"
 
 
 
@@ -157,9 +157,9 @@ extern DECLSPEC void SDLCALL SDLNet_TCP_Close(TCPsocket sock);
 /***********************************************************************/
 
 /* The maximum channels on a a UDP socket */
-#define SDLNET_MAX_UDPCHANNELS	32
+#define SDLNET_MAX_UDPCHANNELS	150
 /* The maximum addresses bound to a single UDP socket channel */
-#define SDLNET_MAX_UDPADDRESSES	4
+#define SDLNET_MAX_UDPADDRESSES	1
 
 typedef struct _UDPsocket *UDPsocket;
 typedef struct {
@@ -447,6 +447,6 @@ do					\
 #ifdef __cplusplus
 }
 #endif
-#include "close_code.h"
+#include "SDL/close_code.h"
 
 #endif /* _SDL_NET_H */
