@@ -1,6 +1,7 @@
 #config
-CXXFLAGS+=-std=c++11 -DDEBUG
-LIB=-lmingw32 -lSDL_net -lSDLmain -lSDL -lwsock32 -liphlpapi
+INCLUDES=../common
+CXXFLAGS+=-std=c++11 -DDEBUG $(addprefix -I,$(INCLUDES))
+LIB=../common/out/common.a -lmingw32 -lSDL_net -lSDLmain -lSDL -lwsock32 -liphlpapi
 
 #source
 SRC=$(filter-out unit.cpp, $(wildcard *.cpp))

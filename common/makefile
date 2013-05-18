@@ -1,10 +1,10 @@
 #config
-INCLUDES=../common
+INCLUDES=
 CXXFLAGS+=-std=c++11 -DDEBUG $(addprefix -I,$(INCLUDES))
-LIB=../common/out/common.a -lmingw32 -lSDL_net -lSDLmain -lSDL -lwsock32 -liphlpapi
+LIB=
 
 #source
-SRC=$(filter-out unit.cpp main.cpp, $(wildcard *.cpp))
+SRC=$(wildcard *.cpp)
 
 #objects
 OBJDIR=obj
@@ -12,10 +12,11 @@ OBJ=$(addprefix $(OBJDIR)/,$(SRC:.cpp=.o))
 
 #output
 OUTDIR=out
+OUT=$(addprefix $(OUTDIR)/,common.a)
 
 #targets
 all: $(OBJ) $(OUT)
-	$(CXX) $(CXXFLAGS) -o $(OUTDIR)/server main.cpp $(OBJ) $(LIB)
+	ar -crs $(OUT) $(OBJ)
 
 $(OBJ): | $(OBJDIR)
 
@@ -33,7 +34,4 @@ $(OBJDIR)/%.o: %.cpp
 clean:
 	$(RM) *.o *.a *.exe
 
-rebuild: clean all unit
-
-unit: $(OBJ) $(OUT)
-	$(CXX) $(CXXFLAGS) -o $(OUTDIR)\unit unit.cpp $(OBJ) $(LIB)
+rebuild: clean all
