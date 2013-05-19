@@ -27,10 +27,8 @@
 
 class Vector2 {
 public:
-	double x, y;
-	Vector2() {
-		x = y = 0;
-	}
+	double x = 0, y = 0;
+	Vector2() = default;
 	Vector2(double i, double j) {
 		x = i; y = j;
 	}
@@ -40,11 +38,13 @@ public:
 	double SquaredLength() const {
 		return x*x+y*y;
 	}
+
 	double operator[](size_t i) {
 		if (i >= 2)
 			throw(std::runtime_error("Out of range"));
 		return *(&x+i);
 	}
+
 	//Arithmetic operators
 	Vector2 operator+(Vector2 v) const { return Vector2(x + v.x, y + v.y); }
 	Vector2 operator-(Vector2 v) const { return Vector2(x - v.x, y - v.y); }
@@ -65,6 +65,7 @@ public:
 	bool operator==(Vector2 v) { return (x == v.x && y == v.y); }
 	bool operator!=(Vector2 v) { return (x != v.x || y != v.y); }
 
+	//templates
 	template<typename T> Vector2 operator+=(T t) { return *this = *this + t; }
 	template<typename T> Vector2 operator-=(T t) { return *this = *this - t; }
 	template<typename T> Vector2 operator*=(T t) { return *this = *this * t; }
