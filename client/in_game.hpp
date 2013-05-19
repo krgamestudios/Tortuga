@@ -5,11 +5,13 @@
 
 #include "config_utility.hpp"
 #include "surface_manager.hpp"
+#include "udp_network_utility.hpp"
+#include "packet_list.hpp"
 
 class InGame : public BaseScene {
 public:
 	//Public access members
-	InGame(ConfigUtility*, SurfaceManager*);
+	InGame(ConfigUtility*, SurfaceManager*, UDPNetworkUtility*);
 	virtual ~InGame();
 
 protected:
@@ -27,8 +29,9 @@ protected:
 	virtual void KeyUp(SDL_KeyboardEvent const&);
 
 	//members
-	ConfigUtility* configUtil;
-	SurfaceManager* surfaceMgr;
+	ConfigUtility* configUtil = nullptr;
+	SurfaceManager* surfaceMgr = nullptr;
+	UDPNetworkUtility* netUtil = nullptr;
 };
 
 #endif

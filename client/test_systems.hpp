@@ -5,6 +5,8 @@
 
 #include "config_utility.hpp"
 #include "surface_manager.hpp"
+#include "udp_network_utility.hpp"
+#include "packet_list.hpp"
 
 #include "player_manager.hpp"
 #include "delta.hpp"
@@ -16,7 +18,7 @@
 class TestSystems : public BaseScene {
 public:
 	//Public access members
-	TestSystems(ConfigUtility*, SurfaceManager*);
+	TestSystems(ConfigUtility*, SurfaceManager*, UDPNetworkUtility*);
 	virtual ~TestSystems();
 
 protected:
@@ -39,8 +41,9 @@ protected:
 	void SendMessage(std::string);
 
 	//members
-	ConfigUtility* configUtil;
-	SurfaceManager* surfaceMgr;
+	ConfigUtility* configUtil = nullptr;
+	SurfaceManager* surfaceMgr = nullptr;
+	UDPNetworkUtility* netUtil = nullptr;
 
 	PlayerManager playerMgr;
 

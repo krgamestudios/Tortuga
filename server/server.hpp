@@ -1,8 +1,12 @@
 #ifndef SERVER_HPP_
 #define SERVER_HPP_
 
-#include "udp_network_utility.hpp"
+#include "delta.hpp"
+#include "packet_list.hpp"
+
 #include "config_utility.hpp"
+#include "udp_network_utility.hpp"
+#include "player_manager.hpp"
 
 class Server {
 public:
@@ -18,8 +22,11 @@ public:
 	void HandleOutput();
 private:
 	bool running = false;
-	ConfigUtility config;
+	Delta delta;
+
+	ConfigUtility configUtil;
 	UDPNetworkUtility netUtil;
+	PlayerManager playerMgr;
 };
 
 #endif

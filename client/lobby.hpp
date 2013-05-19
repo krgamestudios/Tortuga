@@ -5,11 +5,16 @@
 
 #include "config_utility.hpp"
 #include "surface_manager.hpp"
+#include "udp_network_utility.hpp"
+#include "packet_list.hpp"
+
+#include "raster_font.hpp"
+#include "button.hpp"
 
 class Lobby : public BaseScene {
 public:
 	//Public access members
-	Lobby(ConfigUtility*, SurfaceManager*);
+	Lobby(ConfigUtility*, SurfaceManager*, UDPNetworkUtility*);
 	virtual ~Lobby();
 
 protected:
@@ -17,6 +22,7 @@ protected:
 	virtual void FrameStart();
 	virtual void FrameEnd();
 	virtual void Update();
+	virtual void Receive();
 	virtual void Render(SDL_Surface* const);
 
 	//Event handlers
@@ -27,8 +33,12 @@ protected:
 	virtual void KeyUp(SDL_KeyboardEvent const&);
 
 	//members
-	ConfigUtility* configUtil;
-	SurfaceManager* surfaceMgr;
+	ConfigUtility* configUtil = nullptr;
+	SurfaceManager* surfaceMgr = nullptr;
+	UDPNetworkUtility* netUtil = nullptr;
+
+	RasterFont font;
+	Button pingButton;
 };
 
 #endif

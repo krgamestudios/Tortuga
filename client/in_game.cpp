@@ -8,12 +8,13 @@ using namespace std;
 //Public access members
 //-------------------------
 
-InGame::InGame(ConfigUtility* cUtil, SurfaceManager* sMgr) {
+InGame::InGame(ConfigUtility* cUtil, SurfaceManager* sMgr, UDPNetworkUtility* nUtil) {
 #ifdef DEBUG
 	cout << "entering InGame" << endl;
 #endif
 	configUtil = cUtil;
 	surfaceMgr = sMgr;
+	netUtil = nUtil;
 }
 
 InGame::~InGame() {

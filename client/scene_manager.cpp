@@ -33,10 +33,15 @@ SceneManager::~SceneManager() {
 }
 
 void SceneManager::Init() {
-	if (SDL_Init(SDL_INIT_VIDEO))
+	if (SDL_Init(SDL_INIT_VIDEO)) {
 		throw(std::runtime_error("Failed to initialize SDL"));
+	}
+	if (SDLNet_Init()) {
+		throw(std::runtime_error("Failed to initialize SDL_net"));
+	}
 
 	configUtil.Load("rsc/config.cfg");
+	netUtil.Open(0, sizeof(Packet));
 
 	//set the screen from the config file
 	int flags = SDL_HWSURFACE|SDL_DOUBLEBUF;
@@ -66,6 +71,7 @@ void SceneManager::Proc() {
 
 void SceneManager::Quit() {
 	UnloadScene();
+	SDLNet_Quit();
 	SDL_Quit();
 }
 
@@ -80,7 +86,7 @@ void SceneManager::LoadScene(SceneList sceneIndex) {
 		//add scene creation calls here
 #ifdef DEBUG
 		case SceneList::TESTSYSTEMS:
-			activeScene = new TestSystems(&configUtil, &surfaceMgr);
+			activeScene = new TestSystems(&configUtil, &surfaceMgr, &netUtil);
 		break;
 #endif
 
@@ -92,10 +98,10 @@ void SceneManager::LoadScene(SceneList sceneIndex) {
 			activeScene = new MainMenu(&configUtil, &surfaceMgr);
 		break;
 		case SceneList::INGAME:
-			activeScene = new InGame(&configUtil, &surfaceMgr);
+			activeScene = new InGame(&configUtil, &surfaceMgr, &netUtil);
 		break;
 		case SceneList::LOBBY:
-			activeScene = new Lobby(&configUtil, &surfaceMgr);
+			activeScene = new Lobby(&configUtil, &surfaceMgr, &netUtil);
 		break;
 
 #ifdef DEBUG

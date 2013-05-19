@@ -6,6 +6,8 @@
 
 #include "config_utility.hpp"
 #include "surface_manager.hpp"
+#include "udp_network_utility.hpp"
+#include "packet_list.hpp"
 
 #include "SDL/SDL.h"
 
@@ -28,6 +30,7 @@ private:
 
 	ConfigUtility configUtil;
 	SurfaceManager surfaceMgr;
+	UDPNetworkUtility netUtil;
 };
 
 #endif

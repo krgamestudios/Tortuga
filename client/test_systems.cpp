@@ -8,12 +8,13 @@ using namespace std;
 //Public access members
 //-------------------------
 
-TestSystems::TestSystems(ConfigUtility* cUtil, SurfaceManager* sMgr) {
+TestSystems::TestSystems(ConfigUtility* cUtil, SurfaceManager* sMgr, UDPNetworkUtility* nUtil) {
 #ifdef DEBUG
 	cout << "entering TestSystems" << endl;
 #endif
 	configUtil = cUtil;
 	surfaceMgr = sMgr;
+	netUtil = nUtil;
 
 	playerCounter = currentPlayer = 0;
 

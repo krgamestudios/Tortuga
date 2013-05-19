@@ -46,3 +46,35 @@ UDPNetworkUtility:
 	UDPpacket packIn
 end
 
+-------------------------
+
+packet_list.hpp:
+	Ping:
+	end
+	Pong:
+	end
+	JoinRequest:
+		avatarName
+		...
+	end
+	JoinConfirm:
+		yourID
+	end
+	NewPlayer:
+		id
+		position
+		motion
+		avatarName
+	end
+	MotionUpdate:
+		id
+		position
+		motion
+	end
+	union Packet:
+		MotionUpdate
+	end
+end
+
+-------------------------
+

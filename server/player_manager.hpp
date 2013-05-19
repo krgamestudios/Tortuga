@@ -3,21 +3,37 @@
 
 #include "player.hpp"
 
-#include <map>
+#include <list>
 #include <string>
 
 class PlayerManager {
-public:
-	PlayerManager() = default;
-	~PlayerManager() = default;
 private:
 	//utilities
-	typedef std::map<std::string, Player*> PlayerMap;
+	typedef std::list<Player*> PlayerList;
+public:
+	PlayerManager() = default;
+	PlayerManager(int maxPlayers);
+	~PlayerManager();
+
+	void UpdateAll(int delta);
+
+	Player* New(int playerID, int channel, std::string handle, std::string avatar);
+	Player* Get(int playerID);
+	void Delete(int playerID);
+
+	void DeleteAll();
+
+	PlayerList* GetPlayerList() {
+		return &playerList;
+	}
+private:
+	//utilities
+	//...
 
 	//members
-	PlayerMap playerMap;
-	int maxPlayers;
-	int ticker;
+	PlayerList playerList;
+	int maxPlayers = 0;
+	int ticker = 0;
 };
 
 #endif
