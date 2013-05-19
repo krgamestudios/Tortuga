@@ -20,7 +20,8 @@ Lobby::Lobby(ConfigUtility* cUtil, SurfaceManager* sMgr, UDPNetworkUtility* nUti
 
 	//members
 	font.SetSurface(surfaceMgr->Get("font"));
-	pingButton.GetImage()->SetSurface(surfaceMgr->Get("button"));
+	pingButton.SetSurfaces(surfaceMgr->Get("button"), surfaceMgr->Get("font"));
+	pingButton.SetText("Refresh");
 	pingButton.SetX(50);
 	pingButton.SetY(50);
 
@@ -57,10 +58,12 @@ void Lobby::Receive() {
 	while(netUtil->Receive()) {
 		memcpy(&packet, netUtil->GetInData(), sizeof(Packet));
 
+		cout << "receiving" << endl;
+
 		switch(packet.type) {
 			case PacketList::PONG:
 				cout << "dumping..." << endl;
-				cout << packet.pong.buffer << endl;
+				cout << packet.pong.serverName << endl;
 			break;
 			//...
 		}
@@ -76,15 +79,17 @@ void Lobby::Render(SDL_Surface* const screen) {
 //-------------------------
 
 void Lobby::MouseMotion(SDL_MouseMotionEvent const& motion) {
-	//
+	pingButton.MouseMotion(motion);
 }
 
 void Lobby::MouseButtonDown(SDL_MouseButtonEvent const& button) {
-	//
+	pingButton.MouseButtonDown(button);
 }
 
 void Lobby::MouseButtonUp(SDL_MouseButtonEvent const& button) {
-	//
+	if (pingButton.MouseButtonUp(button) == Button::State::HOVER) {
+		PingNetwork();
+	}
 }
 
 void Lobby::KeyDown(SDL_KeyboardEvent const& key) {
@@ -92,15 +97,20 @@ void Lobby::KeyDown(SDL_KeyboardEvent const& key) {
 		case SDLK_ESCAPE:
 			QuitEvent();
 		break;
-		case SDLK_SPACE:
-			//debugging
-			Packet packet;
-			packet.type = PacketList::PING;
-			netUtil->Send("127.0.0.1", 2000, reinterpret_cast<void*>(&packet), sizeof(Packet));
-		break;
 	}
 }
 
 void Lobby::KeyUp(SDL_KeyboardEvent const& key) {
 	//
+}
+
+//-------------------------
+//Utilities
+//-------------------------
+
+void Lobby::PingNetwork() {
+	//ing the network
+	Packet packet;
+	packet.type = PacketList::PING;
+	netUtil->Send("255.255.255.255", configUtil->Integer("server.port"), reinterpret_cast<void*>(&packet), sizeof(Packet));
 }

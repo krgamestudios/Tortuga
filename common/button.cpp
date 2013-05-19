@@ -33,10 +33,7 @@ Button::Button(Sint16 i, Sint16 j, SDL_Surface* imageSurface, SDL_Surface* fontS
 	y = j;
 	state = State::NORMAL;
 
-	//graphical stuff
-	image.SetSurface(imageSurface);
-	image.SetClipH(image.GetClipH() / 3); //3 phases
-	font.SetSurface(fontSurface);
+	SetSurfaces(imageSurface, fontSurface);
 
 	SetText(s);
 }
@@ -67,14 +64,24 @@ Button::State Button::MouseButtonUp(SDL_MouseButtonEvent const& button) {
 
 void Button::DrawTo(SDL_Surface* const dest) {
 	image.DrawTo(dest, x, y);
-	font.DrawStringTo(text, dest, textX, textY);
+	font.DrawStringTo(text, dest, textX + x, textY + y);
+}
+
+void Button::SetSurfaces(SDL_Surface* imageSurface, SDL_Surface* fontSurface) {
+	//graphical stuff
+	image.SetSurface(imageSurface);
+	image.SetClipH(image.GetClipH() / 3); //3 phases
+	font.SetSurface(fontSurface);
+
+	//reset textX & textY
+	SetText(text);
 }
 
 std::string Button::SetText(std::string s) {
 	//one line
 	text = s;
-	textX = (image.GetClipW() / 2 + x) - (font.GetClipW() * text.size() / 2);
-	textY = (image.GetClipH() / 2 + y) - (font.GetClipH() / 2);
+	textX = (image.GetClipW() / 2) - (font.GetClipW() * text.size() / 2);
+	textY = (image.GetClipH() / 2) - (font.GetClipH() / 2);
 	return text;
 }
 

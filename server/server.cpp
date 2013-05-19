@@ -10,7 +10,7 @@ void Server::Init() {
 		throw(runtime_error("Failed to initialize SDL_net"));
 	}
 	configUtil.Load("config.cfg");
-	netUtil.Open(configUtil.Integer("port"), sizeof(Packet));
+	netUtil.Open(configUtil.Integer("server.port"), sizeof(Packet));
 	running = true;
 }
 
@@ -39,23 +39,16 @@ void Server::HandleInput() {
 		memcpy(reinterpret_cast<void*>(&packet), netUtil.GetInData(), sizeof(Packet));
 		switch(packet.type) {
 			case PacketList::PING:
-				//respond to pings with the server name
-				cout << "responding to ping..." << endl;
-				packet.type = PacketList::PONG;
-				sprintf(packet.pong.buffer, "%s",configUtil.CString("servername"));
-				netUtil.Send(&netUtil.GetInPacket()->address, reinterpret_cast<void*>(&packet), sizeof(Packet));
+				Ping(&packet);
 			break;
 			case PacketList::JOINREQUEST:
-				//
+				JoinRequest(&packet);
 			break;
-			case PacketList::NEWPLAYER:
-				//
+			case PacketList::DISCONNECT:
+				Disconnect(&packet);
 			break;
-			case PacketList::DELETEPLAYER:
-				//
-			break;
-			case PacketList::MOTIONUPDATE:
-				//
+			case PacketList::MOVEMENT:
+				Movement(&packet);
 			break;
 		}
 	} 
@@ -72,4 +65,28 @@ void Server::UpdateWorld() {
 void Server::HandleOutput() {
 	//send all information to new connections
 	//selective updates to existing connectons
+}
+
+//-------------------------
+//network commands
+//-------------------------
+
+void Server::Ping(Packet* packet) {
+	//respond to pings with the server name
+	cout << "responding to ping..." << endl;
+	packet->type = PacketList::PONG;
+	sprintf(packet->pong.serverName, "%s",configUtil.CString("servername"));
+	netUtil.Send(&netUtil.GetInPacket()->address, reinterpret_cast<void*>(packet), sizeof(Packet));
+}
+
+void Server::JoinRequest(Packet* packet) {
+	//
+}
+
+void Server::Disconnect(Packet* packet) {
+	//
+}
+
+void Server::Movement(Packet* packet) {
+	//
 }

@@ -11,6 +11,9 @@
 #include "raster_font.hpp"
 #include "button.hpp"
 
+#include <vector>
+#include <string>
+
 class Lobby : public BaseScene {
 public:
 	//Public access members
@@ -31,6 +34,10 @@ protected:
 	virtual void MouseButtonUp(SDL_MouseButtonEvent const&);
 	virtual void KeyDown(SDL_KeyboardEvent const&);
 	virtual void KeyUp(SDL_KeyboardEvent const&);
+
+	//utilities
+	void PingNetwork();
+//	void JoinRequest();
 
 	//members
 	ConfigUtility* configUtil = nullptr;

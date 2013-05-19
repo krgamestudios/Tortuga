@@ -5,34 +5,35 @@
 
 #include <string>
 
-#define PACKET_STRING_SIZE 256
+#define PACKET_STRING_SIZE 100
 
 enum class PacketList {
-	//networking systems
-	PING, PONG,
-	JOINREQUEST,
-	JOINCONFIRM,
+	NONE,
 
 	//connections
+	PING,
+	PONG,
+	JOINREQUEST,
+	JOINCONFIRM,
+	DISCONNECT,
+
+	//player controls
 	NEWPLAYER,
 	DELETEPLAYER,
-
-	//play updates
-	MOTIONUPDATE,
+	MOVEMENT,
 };
 
 //-------------------------
-//networking systems
+//connections
 //-------------------------
 
 struct Ping {
 	PacketList type = PacketList::PING;
-	char buffer[PACKET_STRING_SIZE];
 };
 
 struct Pong {
 	PacketList type = PacketList::PONG;
-	char buffer[PACKET_STRING_SIZE];
+	char serverName[PACKET_STRING_SIZE];
 };
 
 struct JoinRequest {
@@ -46,8 +47,12 @@ struct JoinConfirm {
 	int playerID;
 };
 
+struct Disconnect {
+	PacketList type = PacketList::DISCONNECT;
+};
+
 //-------------------------
-//connections
+//player controls
 //-------------------------
 
 struct NewPlayer {
@@ -55,6 +60,7 @@ struct NewPlayer {
 	int playerID;
 	char handle[PACKET_STRING_SIZE];
 	char avatar[PACKET_STRING_SIZE];
+	Vector2 position;
 };
 
 struct DeletePlayer {
@@ -62,12 +68,8 @@ struct DeletePlayer {
 	int playerID;
 };
 
-//-------------------------
-//play updates
-//-------------------------
-
-struct MotionUpdate {
-	PacketList type = PacketList::MOTIONUPDATE;
+struct Movement {
+	PacketList type = PacketList::MOVEMENT;
 	int playerID;
 	Vector2 position;
 	Vector2 motion;
@@ -78,19 +80,22 @@ struct MotionUpdate {
 //-------------------------
 
 union Packet {
-	Packet() {};
-	~Packet() {};
-	PacketList type;
-	//networking systems
+	Packet () {}
+	~Packet() {}
+
+	PacketList type = PacketList::NONE;
+
+	//connections
 	Ping ping;
 	Pong pong;
 	JoinRequest joinRequest;
 	JoinConfirm joinConfirm;
-	//connections
+	Disconnect disconnect;
+
+	//player controls
 	NewPlayer newPlayer;
 	DeletePlayer deletePlayer;
-	//play updates
-	MotionUpdate motionUpdate;
+	Movement movement;
 };
 
 #endif

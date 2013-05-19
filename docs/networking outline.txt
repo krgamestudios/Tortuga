@@ -78,3 +78,15 @@ end
 
 -------------------------
 
+Networking protocol:
+	//connections
+	ping - ping the server
+	pong - a response to a ping, carries the server name
+	join request - from client to server, this is the initial contact the client makes. it carries all of the client's information, like the handle, avatar, etc.
+	join confirm - the response to a join request, this makes the client enter the game proper, and carries the client's playerID.
+	disconnect - from either the client or server, his officially ends communications between the two programs
+
+	//player controls
+	new player - a new player enters the world. carries all player info
+	delete player - a player leaves the world, carries the player ID
+	movement - this is the initial position and motion of a player in the world. it is relayed to all clients, and progresses using delta progression

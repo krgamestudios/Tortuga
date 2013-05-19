@@ -54,6 +54,8 @@ public:
 	Sint16 GetX() const { return x; }
 	Sint16 GetY() const { return y; }
 
+	void SetSurfaces(SDL_Surface* image, SDL_Surface* font);
+
 	std::string SetText(std::string s);
 	std::string GetText() const { return text; }
 

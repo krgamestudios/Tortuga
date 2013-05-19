@@ -17,10 +17,17 @@ public:
 	void Proc();
 	void Quit();
 
+private:
 	void HandleInput();
 	void UpdateWorld();
 	void HandleOutput();
-private:
+
+	//network commands
+	void Ping(Packet*);
+	void JoinRequest(Packet*);
+	void Disconnect(Packet*);
+	void Movement(Packet*);
+
 	bool running = false;
 	Delta delta;
 
