@@ -14,8 +14,13 @@ OBJ=$(addprefix $(OBJDIR)/,$(SRC:.cpp=.o))
 OUTDIR=out
 
 #targets
-all: $(OBJ) $(OUT)
-	$(CXX) $(CXXFLAGS) -o $(OUTDIR)/server main.cpp $(OBJ) $(LIB)
+all: server unit
+
+server: $(OBJ) $(OUT)
+	$(CXX) $(CXXFLAGS) -o $(OUTDIR)/$@ main.cpp $(OBJ) $(LIB)
+
+unit: $(OBJ) $(OUT)
+	$(CXX) $(CXXFLAGS) -o $(OUTDIR)/$@ unit.cpp $(OBJ) $(LIB)
 
 $(OBJ): | $(OBJDIR)
 
@@ -33,7 +38,4 @@ $(OBJDIR)/%.o: %.cpp
 clean:
 	$(RM) *.o *.a *.exe
 
-rebuild: clean all unit
-
-unit: $(OBJ) $(OUT)
-	$(CXX) $(CXXFLAGS) -o $(OUTDIR)\unit unit.cpp $(OBJ) $(LIB)
+rebuild: clean all

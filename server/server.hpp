@@ -1,9 +1,8 @@
 #ifndef SERVER_HPP_
 #define SERVER_HPP_
 
+#include "udp_network_utility.hpp"
 #include "config_utility.hpp"
-
-#include <list>
 
 class Server {
 public:
@@ -20,6 +19,7 @@ public:
 private:
 	bool running = false;
 	ConfigUtility config;
+	UDPNetworkUtility netUtil;
 };
 
 #endif

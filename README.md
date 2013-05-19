@@ -3,12 +3,15 @@ Tortuga is a 3/4 top down multiplayer RPG set in a large archipelago occupied by
 ## Libraries
 
 * [SDL](http://www.libsdl.org/) - Simple DirectMedia Layer API
-* [SDL_net](http://www.libsdl.org/projects/SDL_net/) - SDL's networking extension; source included under libs/SDL_net
+* [SDL_net](http://www.libsdl.org/projects/SDL_net/) - SDL's networking extension; modified source included under libs/SDL_net
 * [Codebase](https://github.com/Ratstail91/Codebase) - files included locally; modifications will be included upstream further into this project.
 
 ## Instructions
 
-This project uses C++11, which is available via GNU (or MinGW) 4.7, or Visual Studio 2012. Personally, I'm using MinGW 4.7.2. I'm trying to keep this as IDE agnostic as possible, so if you use an IDE, please add it's files to .gitignore. You can read more details on the GitHub wiki [here](https://github.com/Ratstail91/Tortuga/wiki).
+* This project uses C++11, which is available via GNU (or MinGW) 4.7, or Visual Studio 2012. Personally, I'm using MinGW 4.7.2.
+* You need to build the library in the common/ directroy before any others.
+* I'm trying to keep this as IDE agnostic as possible, so if you use an IDE, please add it's files to .gitignore.
+* You can read more details on the GitHub wiki [here](https://github.com/Ratstail91/Tortuga/wiki).
 
 ## Copyright
 
