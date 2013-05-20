@@ -15,9 +15,9 @@ MainMenu::MainMenu(ConfigUtility* cUtil, SurfaceManager* sMgr) {
 	configUtil = cUtil;
 	surfaceMgr = sMgr;
 
-	buttonMap["start"] = new Button(50, 50, surfaceMgr->Get("button"), surfaceMgr->Get("font"), "start");
-	buttonMap["options"] = new Button(50, 100, surfaceMgr->Get("button"), surfaceMgr->Get("font"), "options");
-	buttonMap["quit"] = new Button(50, 150, surfaceMgr->Get("button"), surfaceMgr->Get("font"), "quit");
+	buttonMap["start"] = new Button(50, 50, surfaceMgr->Get("button"), surfaceMgr->Get("font"), "Start");
+	buttonMap["options"] = new Button(50, 100, surfaceMgr->Get("button"), surfaceMgr->Get("font"), "Options");
+	buttonMap["quit"] = new Button(50, 150, surfaceMgr->Get("button"), surfaceMgr->Get("font"), "Quit");
 }
 
 MainMenu::~MainMenu() {
@@ -69,18 +69,13 @@ void MainMenu::MouseButtonDown(SDL_MouseButtonEvent const& button) {
 
 void MainMenu::MouseButtonUp(SDL_MouseButtonEvent const& button) {
 	if (buttonMap["start"]->MouseButtonUp(button) == Button::State::HOVER) {
-		//TODO
 		SetNextScene(SceneList::LOBBY);
-		cout << "start" << endl;
 	}
 	if (buttonMap["options"]->MouseButtonUp(button) == Button::State::HOVER) {
 		//TODO
-		cout << "options" << endl;
 	}
 	if (buttonMap["quit"]->MouseButtonUp(button) == Button::State::HOVER) {
-		//TODO
 		QuitEvent();
-		cout << "quit" << endl;
 	}
 }
 

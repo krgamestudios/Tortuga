@@ -12,6 +12,7 @@
 #include "button.hpp"
 
 #include <vector>
+#include <map>
 #include <string>
 
 struct Server {
@@ -43,6 +44,7 @@ protected:
 	//utilities
 	void PingNetwork();
 	void PushServer(Packet*);
+	typedef std::map<std::string, Button*> ButtonMap;
 
 	//members
 	ConfigUtility* configUtil = nullptr;
@@ -50,9 +52,10 @@ protected:
 	UDPNetworkUtility* netUtil = nullptr;
 
 	RasterFont font;
-	Button pingButton;
+	ButtonMap buttonMap;
 
 	std::vector<Server> serverVector;
+	Server* selectedServer = nullptr;
 };
 
 #endif
