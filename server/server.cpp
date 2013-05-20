@@ -22,6 +22,7 @@ void Server::Proc() {
 
 		//debug
 //		running = false;
+		SDL_Delay(10);
 	}
 }
 

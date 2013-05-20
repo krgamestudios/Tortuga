@@ -1,4 +1,2 @@
-Button:
-	SetImageSurface()
-	SetFontSurface()
-end
+Build an interface for the lobby
+Have multiple players moving around the server at the same time

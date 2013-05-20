@@ -62,8 +62,14 @@ void SceneManager::Proc() {
 			continue;
 		}
 
+		//wipe the screen
+		SDL_FillRect(activeScene->GetScreen(), 0, 0);
+
 		//call each user defined function
 		activeScene->RunFrame();
+
+		//give the computer a break
+		SDL_Delay(10);
 	}
 
 	UnloadScene();

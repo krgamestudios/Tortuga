@@ -57,13 +57,9 @@ void Lobby::Receive() {
 	Packet packet;
 	while(netUtil->Receive()) {
 		memcpy(&packet, netUtil->GetInData(), sizeof(Packet));
-
-		cout << "receiving" << endl;
-
 		switch(packet.type) {
 			case PacketList::PONG:
-				cout << "dumping..." << endl;
-				cout << packet.pong.serverName << endl;
+				PushServer(&packet);
 			break;
 			//...
 		}
@@ -72,6 +68,9 @@ void Lobby::Receive() {
 
 void Lobby::Render(SDL_Surface* const screen) {
 	pingButton.DrawTo(screen);
+	for (int i = 0; i < serverVector.size(); i++) {
+		font.DrawStringTo(serverVector[i].name, screen, 50, 16*i + 100);
+	}
 }
 
 //-------------------------
@@ -109,8 +108,17 @@ void Lobby::KeyUp(SDL_KeyboardEvent const& key) {
 //-------------------------
 
 void Lobby::PingNetwork() {
-	//ing the network
+	//ping the network
 	Packet packet;
 	packet.type = PacketList::PING;
 	netUtil->Send("255.255.255.255", configUtil->Integer("server.port"), reinterpret_cast<void*>(&packet), sizeof(Packet));
+	//reset the server list
+	serverVector.clear();
+}
+
+void Lobby::PushServer(Packet* packet) {
+	Server s;
+	s.name = packet->pong.serverName;
+	s.add = netUtil->GetInPacket()->address;
+	serverVector.push_back(s);
 }

@@ -14,6 +14,11 @@
 #include <vector>
 #include <string>
 
+struct Server {
+	std::string name;
+	IPaddress add;
+};
+
 class Lobby : public BaseScene {
 public:
 	//Public access members
@@ -37,7 +42,7 @@ protected:
 
 	//utilities
 	void PingNetwork();
-//	void JoinRequest();
+	void PushServer(Packet*);
 
 	//members
 	ConfigUtility* configUtil = nullptr;
@@ -46,6 +51,8 @@ protected:
 
 	RasterFont font;
 	Button pingButton;
+
+	std::vector<Server> serverVector;
 };
 
 #endif
