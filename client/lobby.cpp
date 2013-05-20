@@ -21,9 +21,16 @@ Lobby::Lobby(ConfigUtility* cUtil, SurfaceManager* sMgr, UDPNetworkUtility* nUti
 	//members
 	font.SetSurface(surfaceMgr->Get("font"));
 
+	//the buttons
 	buttonMap["ping"] = new Button(50, 50 , surfaceMgr->Get("button"), surfaceMgr->Get("font"), "Refresh");
 	buttonMap["join"] = new Button(50, 100, surfaceMgr->Get("button"), surfaceMgr->Get("font"), "Join");
 	buttonMap["back"] = new Button(50, 150, surfaceMgr->Get("button"), surfaceMgr->Get("font"), "Back");
+
+	//drawing information for the server list
+	listBox.x = 250;
+	listBox.y = 50;
+	listBox.w = GetScreen()->w - listBox.x;
+	listBox.h = font.GetClipH();
 
 	//ping the network
 	PingNetwork();
@@ -72,13 +79,18 @@ void Lobby::Render(SDL_Surface* const screen) {
 	for (auto it : buttonMap) {
 		it.second->DrawTo(screen);
 	}
+
 	//draw the server list, highlighting the selected server
+	SDL_Rect clip;
 	for (int i = 0; i < serverVector.size(); i++) {
+		clip = listBox;
+		clip.y += i * font.GetClipH();
+
+		//if a server has  been selected, and this is the selected server
 		if (selectedServer && selectedServer == &serverVector[i]) {
-			SDL_Rect clip = {250, Sint16(16*i + 50), Uint16(screen->w - 250), 16};
 			SDL_FillRect(screen, &clip, SDL_MapRGB(screen->format, 255, 127, 39));
 		}
-		font.DrawStringTo(serverVector[i].name, screen, 250, 16*i + 50);
+		font.DrawStringTo(serverVector[i].name, screen, clip.x, clip.y);
 	}
 }
 
@@ -111,9 +123,9 @@ void Lobby::MouseButtonUp(SDL_MouseButtonEvent const& button) {
 	if (buttonMap["back"]->MouseButtonUp(button) == Button::State::HOVER) {
 		SetNextScene(SceneList::MAINMENU);
 	}
-	//select a server
-	if (button.x >= 250 && button.y >= 50 && button.y < serverVector.size() * 16 + 50) {
-		selectedServer = &serverVector[(button.y-50)/16];
+	//select a server (clicked within the bounds of the server box)
+	if (button.x > listBox.x && button.y > listBox.y && button.y < serverVector.size() * font.GetClipH() + listBox.y) {
+		selectedServer = &serverVector[(button.y-listBox.y)/font.GetClipH()];
 	}
 	else {
 		selectedServer = nullptr;

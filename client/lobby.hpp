@@ -54,8 +54,10 @@ protected:
 	RasterFont font;
 	ButtonMap buttonMap;
 
+	//the list of servers on the screen
 	std::vector<Server> serverVector;
 	Server* selectedServer = nullptr;
+	SDL_Rect listBox;
 };
 
 #endif
