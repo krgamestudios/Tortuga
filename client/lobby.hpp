@@ -44,6 +44,7 @@ protected:
 	//utilities
 	void PingNetwork();
 	void PushServer(Packet*);
+	void JoinRequest(Server*);
 	typedef std::map<std::string, Button*> ButtonMap;
 
 	//members

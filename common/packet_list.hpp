@@ -17,7 +17,8 @@ enum class PacketList {
 	JOINCONFIRM,
 	DISCONNECT,
 
-	//player controls
+	//information control
+	SYNCHRONIZE,
 	NEWPLAYER,
 	DELETEPLAYER,
 	MOVEMENT,
@@ -29,11 +30,12 @@ enum class PacketList {
 
 struct Ping {
 	PacketList type = PacketList::PING;
+	char metadata[PACKET_STRING_SIZE];
 };
 
 struct Pong {
 	PacketList type = PacketList::PONG;
-	char serverName[PACKET_STRING_SIZE];
+	char metadata[PACKET_STRING_SIZE];
 };
 
 struct JoinRequest {
@@ -52,8 +54,12 @@ struct Disconnect {
 };
 
 //-------------------------
-//player controls
+//information control
 //-------------------------
+
+struct Synchronize {
+	PacketList type = PacketList::SYNCHRONIZE;
+};
 
 struct NewPlayer {
 	PacketList type = PacketList::NEWPLAYER;
@@ -92,7 +98,8 @@ union Packet {
 	JoinConfirm joinConfirm;
 	Disconnect disconnect;
 
-	//player controls
+	//information control
+	Synchronize synchronize;
 	NewPlayer newPlayer;
 	DeletePlayer deletePlayer;
 	Movement movement;

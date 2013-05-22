@@ -23,17 +23,17 @@ public:
 	Vector2 ShiftMotion(Vector2 v) {return motion += v;}
 	Vector2 GetMotion() const {return motion;}
 
-	std::string SetAvatar(std::string s) {return avatar = s;}
-	std::string GetAvatar() const {return avatar;}
 	std::string SetHandle(std::string s) {return handle = s;}
 	std::string GetHandle() const {return handle;}
+	std::string SetAvatar(std::string s) {return avatar = s;}
+	std::string GetAvatar() const {return avatar;}
 private:
 	int playerID = -1;
 	int channel = -1; //for networking
 	Vector2 position;
 	Vector2 motion;
-	std::string avatar;
 	std::string handle;
+	std::string avatar;
 };
 
 #endif

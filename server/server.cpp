@@ -11,6 +11,7 @@ void Server::Init() {
 	}
 	configUtil.Load("config.cfg");
 	netUtil.Open(configUtil.Integer("server.port"), sizeof(Packet));
+	playerMgr.SetMaxPlayers(SDLNET_MAX_UDPCHANNELS);
 	running = true;
 }
 
@@ -74,20 +75,26 @@ void Server::HandleOutput() {
 
 void Server::Ping(Packet* packet) {
 	//respond to pings with the server name
-	cout << "responding to ping..." << endl;
 	packet->type = PacketList::PONG;
-	sprintf(packet->pong.serverName, "%s",configUtil.CString("servername"));
+	sprintf(packet->pong.metadata, "%s",configUtil.CString("servername"));
 	netUtil.Send(&netUtil.GetInPacket()->address, reinterpret_cast<void*>(packet), sizeof(Packet));
 }
 
 void Server::JoinRequest(Packet* packet) {
-	//
+	//TODO
+	cout << "Join request..." << endl;
+//	if (playerMgr.GetPlayerMap()->size() >= playerMgr.GetMaxPlayers()) {
+//		//rejection
+//		return;
+//	}
+//	int ch = netUtil.Bind(&netUtil.GetInPacket()->address, -1);
+//	cout << ch << endl;
 }
 
 void Server::Disconnect(Packet* packet) {
-	//
+	//TODO
 }
 
 void Server::Movement(Packet* packet) {
-	//
+	//TODO
 }

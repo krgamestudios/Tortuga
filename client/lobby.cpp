@@ -70,7 +70,9 @@ void Lobby::Receive() {
 			case PacketList::PONG:
 				PushServer(&packet);
 			break;
-			//...
+			case PacketList::JOINCONFIRM:
+				//TODO: enter the game
+			break;
 		}
 	}
 }
@@ -115,10 +117,7 @@ void Lobby::MouseButtonUp(SDL_MouseButtonEvent const& button) {
 		PingNetwork();
 	}
 	if (buttonMap["join"]->MouseButtonUp(button) == Button::State::HOVER) {
-		//join...
-		if (selectedServer) {
-			cout << "joining server: " << selectedServer->name << endl;
-		}
+		JoinRequest(selectedServer);
 	}
 	if (buttonMap["back"]->MouseButtonUp(button) == Button::State::HOVER) {
 		SetNextScene(SceneList::MAINMENU);
@@ -159,7 +158,15 @@ void Lobby::PingNetwork() {
 
 void Lobby::PushServer(Packet* packet) {
 	Server s;
-	s.name = packet->pong.serverName;
+	s.name = packet->pong.metadata;
 	s.add = netUtil->GetInPacket()->address;
 	serverVector.push_back(s);
+}
+
+void Lobby::JoinRequest(Server* server) {
+	Packet packet;
+	packet.type = PacketList::JOINREQUEST;
+	snprintf(packet.joinRequest.handle, PACKET_STRING_SIZE, "%s", configUtil->CString("handle"));
+	snprintf(packet.joinRequest.avatar, PACKET_STRING_SIZE, "%s", configUtil->CString("avatar"));
+	netUtil->Send(&server->add, reinterpret_cast<void*>(&packet), sizeof(Packet));
 }

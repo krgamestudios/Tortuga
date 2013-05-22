@@ -34,6 +34,8 @@ private:
 	ConfigUtility configUtil;
 	UDPNetworkUtility netUtil;
 	PlayerManager playerMgr;
+
+	int uniqueIndex = 0;
 };
 
 #endif

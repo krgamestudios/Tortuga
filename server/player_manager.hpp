@@ -3,17 +3,17 @@
 
 #include "player.hpp"
 
-#include <list>
+#include <map>
 #include <string>
 
 class PlayerManager {
 private:
 	//utilities
-	typedef std::list<Player*> PlayerList;
+	typedef std::map<int, Player*> PlayerMap;
 public:
 	PlayerManager() = default;
-	PlayerManager(int maxPlayers);
-	~PlayerManager();
+	PlayerManager(int max) {SetMaxPlayers(max);}
+	~PlayerManager() {DeleteAll();}
 
 	void UpdateAll(int delta);
 
@@ -23,17 +23,16 @@ public:
 
 	void DeleteAll();
 
-	PlayerList* GetPlayerList() {
-		return &playerList;
-	}
+	PlayerMap* GetPlayerMap() {return &playerMap;}
+	int SetMaxPlayers(int max) {return maxPlayers = max;}
+	int GetMaxPlayers() const {return maxPlayers;}
 private:
 	//utilities
 	//...
 
 	//members
-	PlayerList playerList;
+	PlayerMap playerMap;
 	int maxPlayers = 0;
-	int ticker = 0;
 };
 
 #endif
