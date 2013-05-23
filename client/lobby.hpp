@@ -15,11 +15,6 @@
 #include <map>
 #include <string>
 
-struct Server {
-	std::string name;
-	IPaddress add;
-};
-
 class Lobby : public BaseScene {
 public:
 	//Public access members
@@ -42,10 +37,14 @@ protected:
 	virtual void KeyUp(SDL_KeyboardEvent const&);
 
 	//utilities
+	struct ServerData {
+		std::string name;
+		IPaddress address;
+	};
+
 	void PingNetwork();
-	void PushServer(Packet*);
-	void JoinRequest(Server*);
-	typedef std::map<std::string, Button*> ButtonMap;
+	void PushServer(PacketData*);
+	void JoinRequest(ServerData*);
 
 	//members
 	ConfigUtility* configUtil = nullptr;
@@ -53,11 +52,11 @@ protected:
 	UDPNetworkUtility* netUtil = nullptr;
 
 	RasterFont font;
-	ButtonMap buttonMap;
+	std::map<std::string, Button*> buttonMap;
 
 	//the list of servers on the screen
-	std::vector<Server> serverVector;
-	Server* selectedServer = nullptr;
+	std::vector<ServerData> serverVector;
+	ServerData* selectedServer = nullptr;
 	SDL_Rect listBox;
 };
 

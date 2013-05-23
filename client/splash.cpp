@@ -12,8 +12,6 @@ Splash::Splash(ConfigUtility* cUtil, SurfaceManager* sMgr) {
 #ifdef DEBUG
 	cout << "entering Splash" << endl;
 #endif
-	loaded = false;
-	start = clock();
 	configUtil = cUtil;
 	surfaceMgr = sMgr;
 

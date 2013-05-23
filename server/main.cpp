@@ -1,4 +1,4 @@
-#include "server.hpp"
+#include "server_application.hpp"
 
 #include <stdexcept>
 #include <iostream>
@@ -10,7 +10,7 @@ int main(int, char**) {
 	cout << "Beginning server" << endl;
 #endif
 	try {
-		Server app;
+		ServerApplication app;
 		app.Init();
 		app.Proc();
 		app.Quit();

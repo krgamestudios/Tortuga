@@ -26,8 +26,9 @@ private:
 	void LoadScene(SceneList sceneIndex);
 	void UnloadScene();
 
-	BaseScene* activeScene;
+	BaseScene* activeScene = nullptr;
 
+	//globals
 	ConfigUtility configUtil;
 	SurfaceManager surfaceMgr;
 	UDPNetworkUtility netUtil;

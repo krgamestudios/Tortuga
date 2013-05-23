@@ -85,10 +85,8 @@ struct Movement {
 //this state of this is great
 //-------------------------
 
-union Packet {
-	Packet () {}
-	~Packet() {}
-
+union PacketData {
+	PacketData() {};
 	PacketList type = PacketList::NONE;
 
 	//connections

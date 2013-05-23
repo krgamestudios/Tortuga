@@ -63,9 +63,9 @@ void Lobby::Update() {
 
 void Lobby::Receive() {
 	//dump to the console
-	Packet packet;
+	PacketData packet;
 	while(netUtil->Receive()) {
-		memcpy(&packet, netUtil->GetInData(), sizeof(Packet));
+		memcpy(&packet, netUtil->GetInData(), sizeof(PacketData));
 		switch(packet.type) {
 			case PacketList::PONG:
 				PushServer(&packet);
@@ -149,24 +149,24 @@ void Lobby::KeyUp(SDL_KeyboardEvent const& key) {
 
 void Lobby::PingNetwork() {
 	//ping the network
-	Packet packet;
+	PacketData packet;
 	packet.type = PacketList::PING;
-	netUtil->Send("255.255.255.255", configUtil->Integer("server.port"), reinterpret_cast<void*>(&packet), sizeof(Packet));
+	netUtil->Send("255.255.255.255", configUtil->Integer("server.port"), reinterpret_cast<void*>(&packet), sizeof(PacketData));
 	//reset the server list
 //	serverVector.clear();
 }
 
-void Lobby::PushServer(Packet* packet) {
-	Server s;
+void Lobby::PushServer(PacketData* packet) {
+	ServerData s;
 	s.name = packet->pong.metadata;
-	s.add = netUtil->GetInPacket()->address;
+	s.address = netUtil->GetInPacket()->address;
 	serverVector.push_back(s);
 }
 
-void Lobby::JoinRequest(Server* server) {
-	Packet packet;
+void Lobby::JoinRequest(ServerData* server) {
+	PacketData packet;
 	packet.type = PacketList::JOINREQUEST;
 	snprintf(packet.joinRequest.handle, PACKET_STRING_SIZE, "%s", configUtil->CString("handle"));
 	snprintf(packet.joinRequest.avatar, PACKET_STRING_SIZE, "%s", configUtil->CString("avatar"));
-	netUtil->Send(&server->add, reinterpret_cast<void*>(&packet), sizeof(Packet));
+	netUtil->Send(&server->address, reinterpret_cast<void*>(&packet), sizeof(PacketData));
 }

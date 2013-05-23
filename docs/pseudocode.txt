@@ -50,17 +50,3 @@ Receive:
 		player update:
 			PlayerManager.Update(message)
 end
-
--------------------------
-
-TCP systems
-
-TCPNetworkManager: //NOPE
-	Init //opens the TCP server socket, and allocates the socket set
-	Quit //close the TCP server socket, and free the socket set
-	AcceptConnections //accept new connections
-	Send //send to a specific client, closing the connection if an error occured
-	SendAll //send to all clients
-	CheckSockets //non-blocking
-	GetSocket() //get a specific socket
-	total connections in the packet

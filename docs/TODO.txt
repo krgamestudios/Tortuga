@@ -1,2 +1,2 @@
-Build an interface for the lobby
 Have multiple players moving around the server at the same time
+keep the docs up to date!!!!!

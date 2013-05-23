@@ -19,12 +19,14 @@ protected:
 
 	void LoadResources();
 
-	bool loaded;
-	time_t start;
-
+	//globals
 	ConfigUtility* configUtil;
 	SurfaceManager* surfaceMgr;
-	Image* logo;
+
+	//members
+	bool loaded = false;
+	time_t start = clock();
+	Image* logo = nullptr;
 };
 
 #endif

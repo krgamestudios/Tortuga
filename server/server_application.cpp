@@ -1,21 +1,20 @@
-#include "server.hpp"
+#include "server_application.hpp"
 
 #include <stdexcept>
 #include <iostream>
 
 using namespace std;
 
-void Server::Init() {
+void ServerApplication::Init() {
 	if (SDLNet_Init()) {
 		throw(runtime_error("Failed to initialize SDL_net"));
 	}
 	configUtil.Load("config.cfg");
-	netUtil.Open(configUtil.Integer("server.port"), sizeof(Packet));
-	playerMgr.SetMaxPlayers(SDLNET_MAX_UDPCHANNELS);
+	netUtil.Open(configUtil.Integer("server.port"), sizeof(PacketData));
 	running = true;
 }
 
-void Server::Proc() {
+void ServerApplication::Proc() {
 	while(running) {
 		HandleInput();
 		UpdateWorld();
@@ -27,18 +26,18 @@ void Server::Proc() {
 	}
 }
 
-void Server::Quit() {
+void ServerApplication::Quit() {
 	netUtil.Close();
 	SDLNet_Quit();
 }
 
-void Server::HandleInput() {
+void ServerApplication::HandleInput() {
 	//accept new connections
 	//accept updates from the clients
 	//read the updates from the clients into internal containers
-	Packet packet;
+	PacketData packet;
 	while(netUtil.Receive()) {
-		memcpy(reinterpret_cast<void*>(&packet), netUtil.GetInData(), sizeof(Packet));
+		memcpy(reinterpret_cast<void*>(&packet), netUtil.GetInData(), sizeof(PacketData));
 		switch(packet.type) {
 			case PacketList::PING:
 				Ping(&packet);
@@ -56,15 +55,17 @@ void Server::HandleInput() {
 	} 
 }
 
-void Server::UpdateWorld() {
+void ServerApplication::UpdateWorld() {
 	//update internals ie.
 	//	ai
 	//	loot drops
 	delta.Calculate();
-	playerMgr.UpdateAll(delta.GetDelta());
+	for (auto it : clientMap) {
+		it.second.Update(delta.GetDelta());
+	}
 }
 
-void Server::HandleOutput() {
+void ServerApplication::HandleOutput() {
 	//send all information to new connections
 	//selective updates to existing connectons
 }
@@ -73,14 +74,14 @@ void Server::HandleOutput() {
 //network commands
 //-------------------------
 
-void Server::Ping(Packet* packet) {
+void ServerApplication::Ping(PacketData* packet) {
 	//respond to pings with the server name
 	packet->type = PacketList::PONG;
 	sprintf(packet->pong.metadata, "%s",configUtil.CString("servername"));
-	netUtil.Send(&netUtil.GetInPacket()->address, reinterpret_cast<void*>(packet), sizeof(Packet));
+	netUtil.Send(&netUtil.GetInPacket()->address, reinterpret_cast<void*>(packet), sizeof(PacketData));
 }
 
-void Server::JoinRequest(Packet* packet) {
+void ServerApplication::JoinRequest(PacketData* packet) {
 	//TODO
 	cout << "Join request..." << endl;
 //	if (playerMgr.GetPlayerMap()->size() >= playerMgr.GetMaxPlayers()) {
@@ -91,10 +92,10 @@ void Server::JoinRequest(Packet* packet) {
 //	cout << ch << endl;
 }
 
-void Server::Disconnect(Packet* packet) {
+void ServerApplication::Disconnect(PacketData* packet) {
 	//TODO
 }
 
-void Server::Movement(Packet* packet) {
+void ServerApplication::Movement(PacketData* packet) {
 	//TODO
 }

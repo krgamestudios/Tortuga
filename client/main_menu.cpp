@@ -24,6 +24,7 @@ MainMenu::~MainMenu() {
 	for (auto it : buttonMap) {
 		delete it.second;
 	}
+	buttonMap.clear();
 #ifdef DEBUG
 	cout << "leaving MainMenu" << endl;
 #endif

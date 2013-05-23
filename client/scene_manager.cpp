@@ -25,7 +25,7 @@
 //-------------------------
 
 SceneManager::SceneManager() {
-	activeScene = nullptr;
+	//
 }
 
 SceneManager::~SceneManager() {
@@ -41,7 +41,7 @@ void SceneManager::Init() {
 	}
 
 	configUtil.Load("rsc/config.cfg");
-	netUtil.Open(0, sizeof(Packet));
+	netUtil.Open(0, sizeof(PacketData));
 
 	//set the screen from the config file
 	int flags = SDL_HWSURFACE|SDL_DOUBLEBUF;
@@ -103,11 +103,11 @@ void SceneManager::LoadScene(SceneList sceneIndex) {
 		case SceneList::MAINMENU:
 			activeScene = new MainMenu(&configUtil, &surfaceMgr);
 		break;
-		case SceneList::INGAME:
-			activeScene = new InGame(&configUtil, &surfaceMgr, &netUtil);
-		break;
 		case SceneList::LOBBY:
 			activeScene = new Lobby(&configUtil, &surfaceMgr, &netUtil);
+		break;
+		case SceneList::INGAME:
+			activeScene = new InGame(&configUtil, &surfaceMgr, &netUtil);
 		break;
 
 #ifdef DEBUG

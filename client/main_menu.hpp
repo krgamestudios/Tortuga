@@ -31,15 +31,12 @@ protected:
 	virtual void KeyDown(SDL_KeyboardEvent const&);
 	virtual void KeyUp(SDL_KeyboardEvent const&);
 
-	//utilities
-	typedef std::map<std::string, Button*> ButtonMap;
-
-	//singletons
+	//globals
 	ConfigUtility* configUtil;
 	SurfaceManager* surfaceMgr;
 
 	//members
-	ButtonMap buttonMap;
+	std::map<std::string, Button*> buttonMap;
 };
 
 #endif
