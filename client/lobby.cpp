@@ -63,7 +63,6 @@ void Lobby::Update() {
 }
 
 void Lobby::Receive() {
-	//dump to the console
 	PacketData packet;
 	while(netUtil->Receive()) {
 		memcpy(&packet, netUtil->GetInData(), sizeof(PacketData));
@@ -80,12 +79,13 @@ void Lobby::Receive() {
 //			case PacketList::JOINREQUEST:
 //				//
 //			break;
-			case PacketList::JOINCONFIRM:
+			case PacketList::JOINCONFIRM: {
 				PacketData p;
 				memcpy(&p, netUtil->GetInData(), sizeof(PacketData));
 				*playerID = p.joinConfirm.playerID;
 				netUtil->Bind(&netUtil->GetInPacket()->address, 0);
 				SetNextScene(SceneList::INGAME);
+			}
 			break;
 //			case PacketList::DISCONNECT:
 //				//
@@ -93,9 +93,12 @@ void Lobby::Receive() {
 //			case PacketList::SYNCHRONIZE:
 //				//
 //			break;
-//			case PacketList::NEWPLAYER:
-//				//
-//			break;
+#ifdef DEBUG
+			//this might not be the end of the world; it only happens when the game ping is too low
+			case PacketList::NEWPLAYER:
+				cout << "WARNING: new player triggered unexpectedly" << endl;
+			break;
+#endif
 //			case PacketList::DELETEPLAYER:
 //				//
 //			break;
@@ -195,6 +198,7 @@ void Lobby::PushServer(PacketData* packet) {
 
 void Lobby::JoinRequest(ServerData* server) {
 	if (!server) {
+		//CAN receive null
 		return;
 	}
 	PacketData p;

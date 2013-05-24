@@ -25,8 +25,7 @@ struct ClientData {
 	std::string avatar;
 	enum class Command {
 		NORMAL,
-		SYNCHRONIZE,
-		PING,
+		CHANGED,
 	}command = Command::NORMAL;
 };
 

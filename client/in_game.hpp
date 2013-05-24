@@ -19,6 +19,7 @@ protected:
 	virtual void FrameStart();
 	virtual void FrameEnd();
 	virtual void Update();
+	virtual void Receive();
 	virtual void Render(SDL_Surface* const);
 
 	//Event handlers

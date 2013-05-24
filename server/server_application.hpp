@@ -27,14 +27,17 @@ private:
 	void Disconnect(int playerID);
 	void Movement(PacketData*);
 
-	bool running = false;
-	Delta delta;
+	void NewClientData(int playerID);
+	void SendClientData(int playerID);
+	void SynchronizeClient(int playerID);
 
 	//globals
 	ConfigUtility configUtil;
 	UDPNetworkUtility netUtil;
 
 	//members
+	bool running = false;
+	Delta delta;
 	std::map<int, ClientData> clientMap;
 	int maxClients = SDLNET_MAX_UDPCHANNELS;
 	int uniqueIndex = 0;

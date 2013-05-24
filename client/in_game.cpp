@@ -20,6 +20,7 @@ InGame::InGame(ConfigUtility* cUtil, SurfaceManager* sMgr, UDPNetworkUtility* nU
 }
 
 InGame::~InGame() {
+	//placeholder disconnect
 	PacketData p;
 	p.type = PacketList::DISCONNECT;
 	p.disconnect.playerID = *playerID;
@@ -44,7 +45,46 @@ void InGame::FrameEnd() {
 }
 
 void InGame::Update() {
-	//
+	Receive();
+}
+
+void InGame::Receive() {
+	PacketData packet;
+	while(netUtil->Receive()) {
+		memcpy(&packet, netUtil->GetInData(), sizeof(PacketData));
+		switch(packet.type) {
+//			case PacketList::NONE:
+//				//
+//			break;
+//			case PacketList::PING:
+//				//
+//			break;
+//			case PacketList::PONG:
+//				//
+//			break;
+//			case PacketList::JOINREQUEST:
+//				//
+//			break;
+//			case PacketList::JOINCONFIRM:
+//				//
+//			break;
+//			case PacketList::DISCONNECT:
+//				//
+//			break;
+//			case PacketList::SYNCHRONIZE:
+//				//
+//			break;
+			case PacketList::NEWPLAYER:
+				cout << "NEWPLAYER triggered" << endl;
+			break;
+//			case PacketList::DELETEPLAYER:
+//				//
+//			break;
+//			case PacketList::MOVEMENT:
+//				//
+//			break;
+		}
+	}
 }
 
 void InGame::Render(SDL_Surface* const screen) {

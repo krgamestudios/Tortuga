@@ -78,7 +78,7 @@ void ServerApplication::Quit() {
 void ServerApplication::Ping(PacketData* packet) {
 	//respond to pings with the server name
 	if (!packet) {
-		return;
+		throw(runtime_error("Ping() received null"));
 	}
 	packet->type = PacketList::PONG;
 	snprintf(packet->pong.metadata,PACKET_STRING_SIZE, "%s",configUtil.CString("servername"));
@@ -114,7 +114,8 @@ void ServerApplication::JoinRequest(PacketData* packet) {
 	p.joinConfirm.playerID = clientMap[playerID].playerID;
 	netUtil.Send(clientMap[playerID].channel, &p, sizeof(PacketData));
 
-	//TODO: NewPlayer()
+	//send it out to the clients
+	NewClientData(playerID);
 
 #ifdef DEBUG
 	cout << "current players: " << clientMap.size() << endl;
@@ -138,12 +139,40 @@ void ServerApplication::Disconnect(int playerID) {
 
 void ServerApplication::Movement(PacketData* packet) {
 	if (!packet) {
-		return;
+		throw(runtime_error("Movement() received null"));
 	}
 	clientMap[packet->movement.playerID].position = packet->movement.position;
 	clientMap[packet->movement.playerID].motion = packet->movement.motion;
 	//simple relay
+	//TODO: SendClientData(packet->movement.playerID);
 	for (auto it : clientMap) {
 		netUtil.Send(it.second.channel, packet, sizeof(PacketData));
 	}
+}
+
+void ServerApplication::NewClientData(int playerID) {
+	if (clientMap.find(playerID) == clientMap.end()) {
+		throw(runtime_error("NewClientData() Failed to find the client"));
+	}
+	//create the packet to send
+	PacketData p;
+	p.type = PacketList::NEWPLAYER;
+	p.newPlayer.playerID = clientMap[playerID].playerID;
+	snprintf(p.newPlayer.handle, PACKET_STRING_SIZE, "%s", clientMap[playerID].handle.c_str());
+	snprintf(p.newPlayer.avatar, PACKET_STRING_SIZE, "%s", clientMap[playerID].avatar.c_str());
+	p.newPlayer.position = clientMap[playerID].position;
+	p.newPlayer.motion = clientMap[playerID].motion;
+
+	//send the packet
+	for (auto it : clientMap) {
+		netUtil.Send(it.second.channel, &p, sizeof(PacketData));
+	}
+}
+
+void ServerApplication::SendClientData(int playerID) {
+	//TODO
+}
+
+void ServerApplication::SynchronizeClient(int playerID) {
+	//TODO
 }

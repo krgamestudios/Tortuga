@@ -50,3 +50,25 @@ Receive:
 		player update:
 			PlayerManager.Update(message)
 end
+
+-------------------------
+
+--send info about the specified client to all clients
+--use this for new connections, movement, etc.
+SendClientData(int playerID):
+	for (clientMap):
+		Send(it.channel, clientMap[playerID])
+	end
+end
+
+NewClientData := SendClientData
+
+
+--send all info about the server to the specified client
+--send this to new connections
+SynchronizeClient(int playerID):
+	for (clientMap):
+		Send(clientMap[playerID].channel, it)
+	end
+end
+
