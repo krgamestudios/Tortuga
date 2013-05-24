@@ -46,13 +46,13 @@ void ServerApplication::HandleInput() {
 				JoinRequest(&packet);
 			break;
 			case PacketList::DISCONNECT:
-				Disconnect(&packet);
+				Disconnect(packet.disconnect.playerID);
 			break;
 			case PacketList::MOVEMENT:
 				Movement(&packet);
 			break;
 		}
-	} 
+	}
 }
 
 void ServerApplication::UpdateWorld() {
@@ -75,6 +75,9 @@ void ServerApplication::HandleOutput() {
 //-------------------------
 
 void ServerApplication::Ping(PacketData* packet) {
+	if (!packet) {
+		return;
+	}
 	//respond to pings with the server name
 	packet->type = PacketList::PONG;
 	sprintf(packet->pong.metadata, "%s",configUtil.CString("servername"));
@@ -82,40 +85,54 @@ void ServerApplication::Ping(PacketData* packet) {
 }
 
 void ServerApplication::JoinRequest(PacketData* packet) {
-	//TODO
-	cout << "Join request..." << endl;
-	if (clientMap.size() >= maxClients) {
+	if (!packet || clientMap.size() >= maxClients) {
 		//rejection
 		return;
 	}
+	//add the player
 	int playerID = uniqueIndex++;
 	clientMap[playerID].playerID = playerID;
 	clientMap[playerID].channel = netUtil.Bind(&netUtil.GetInPacket()->address, -1);
 	clientMap[playerID].handle = packet->joinRequest.handle;
 	clientMap[playerID].avatar = packet->joinRequest.avatar;
+	cout << "New player: " << playerID << endl;
 
 	//debug
-	cout << "playerID: " << playerID << ", " << clientMap[playerID].playerID << endl;
+#ifdef DEBUG
+	cout << "playerID: " << clientMap[playerID].playerID << endl;
 	cout << "channel: " << clientMap[playerID].channel << endl;
 	cout << "handle: " << clientMap[playerID].handle << endl;
 	cout << "avatar: " << clientMap[playerID].avatar << endl;
+#endif
 
 	//join confirm
-	PacketData jc;
-	jc.type = PacketList::JOINCONFIRM;
-	jc.joinConfirm.playerID = clientMap[playerID].playerID;
-	netUtil.Send(clientMap[playerID].channel, &jc, sizeof(PacketData));
+	PacketData p;
+	p.type = PacketList::JOINCONFIRM;
+	p.joinConfirm.playerID = clientMap[playerID].playerID;
+	netUtil.Send(clientMap[playerID].channel, &p, sizeof(PacketData));
 }
 
-void ServerApplication::Disconnect(PacketData* packet) { //TODO: use playerID here
+void ServerApplication::Disconnect(int playerID) {
 	//TODO: Delete player
-	int playerID = packet->disconnect.playerID;
+	if (clientMap.find(playerID) == clientMap.end()) {
+		return;
+	}
 	cout << "disconnecting: " << playerID << endl;
 	netUtil.Unbind(clientMap[playerID].channel);
 	clientMap.erase(playerID);
+#ifdef DEBUG
 	cout << "current players: " << clientMap.size() << endl;
+#endif
 }
 
 void ServerApplication::Movement(PacketData* packet) {
-	//TODO
+	if (!packet) {
+		return;
+	}
+	clientMap[packet->movement.playerID].position = packet->movement.position;
+	clientMap[packet->movement.playerID].motion = packet->movement.motion;
+	//simple relay
+	for (auto it : clientMap) {
+		netUtil.Send(it.second.channel, packet, sizeof(PacketData));
+	}
 }

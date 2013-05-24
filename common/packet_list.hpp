@@ -60,6 +60,7 @@ struct Disconnect {
 
 struct Synchronize {
 	PacketList type = PacketList::SYNCHRONIZE;
+	int playerID;
 };
 
 struct NewPlayer {

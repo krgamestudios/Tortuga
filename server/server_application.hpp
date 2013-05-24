@@ -28,7 +28,7 @@ private:
 	//network commands
 	void Ping(PacketData*);
 	void JoinRequest(PacketData*);
-	void Disconnect(PacketData*);
+	void Disconnect(int playerID);
 	void Movement(PacketData*);
 
 	bool running = false;
