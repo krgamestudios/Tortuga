@@ -8,20 +8,20 @@
 #define PACKET_STRING_SIZE 100
 
 enum class PacketList {
-	NONE,
+	NONE = 0,
 
 	//connections
-	PING,
-	PONG,
-	JOINREQUEST,
-	JOINCONFIRM,
-	DISCONNECT,
+	PING = 1,
+	PONG = 2,
+	JOINREQUEST = 3,
+	JOINCONFIRM = 4,
+	DISCONNECT = 5,
 
 	//information control
-	SYNCHRONIZE,
-	NEWPLAYER,
-	DELETEPLAYER,
-	MOVEMENT,
+	SYNCHRONIZE = 6,
+	NEWPLAYER = 7,
+	DELETEPLAYER = 8,
+	MOVEMENT = 9,
 };
 
 //-------------------------

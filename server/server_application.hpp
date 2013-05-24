@@ -21,10 +21,6 @@ public:
 	void Quit();
 
 private:
-	void HandleInput();
-	void UpdateWorld();
-	void HandleOutput();
-
 	//network commands
 	void Ping(PacketData*);
 	void JoinRequest(PacketData*);

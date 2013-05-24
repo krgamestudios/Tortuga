@@ -68,17 +68,40 @@ void Lobby::Receive() {
 	while(netUtil->Receive()) {
 		memcpy(&packet, netUtil->GetInData(), sizeof(PacketData));
 		switch(packet.type) {
+//			case PacketList::NONE:
+//				//
+//			break;
+//			case PacketList::PING:
+//				//
+//			break;
 			case PacketList::PONG:
 				PushServer(&packet);
 			break;
+//			case PacketList::JOINREQUEST:
+//				//
+//			break;
 			case PacketList::JOINCONFIRM:
-				//TODO: enter the game
-				PacketData jc;
-				memcpy(&jc, netUtil->GetInData(), sizeof(PacketData));
-				*playerID = jc.joinConfirm.playerID;
+				PacketData p;
+				memcpy(&p, netUtil->GetInData(), sizeof(PacketData));
+				*playerID = p.joinConfirm.playerID;
 				netUtil->Bind(&netUtil->GetInPacket()->address, 0);
 				SetNextScene(SceneList::INGAME);
 			break;
+//			case PacketList::DISCONNECT:
+//				//
+//			break;
+//			case PacketList::SYNCHRONIZE:
+//				//
+//			break;
+//			case PacketList::NEWPLAYER:
+//				//
+//			break;
+//			case PacketList::DELETEPLAYER:
+//				//
+//			break;
+//			case PacketList::MOVEMENT:
+//				//
+//			break;
 		}
 	}
 }
@@ -155,10 +178,11 @@ void Lobby::KeyUp(SDL_KeyboardEvent const& key) {
 
 void Lobby::PingNetwork() {
 	//ping the network
-	PacketData packet;
-	packet.type = PacketList::PING;
-	netUtil->Send("255.255.255.255", configUtil->Integer("server.port"), reinterpret_cast<void*>(&packet), sizeof(PacketData));
+	PacketData p;
+	p.type = PacketList::PING;
+	netUtil->Send("255.255.255.255", configUtil->Integer("server.port"), reinterpret_cast<void*>(&p), sizeof(PacketData));
 	//reset the server list
+	//TODO: enable this
 //	serverVector.clear();
 }
 
@@ -173,9 +197,9 @@ void Lobby::JoinRequest(ServerData* server) {
 	if (!server) {
 		return;
 	}
-	PacketData packet;
-	packet.type = PacketList::JOINREQUEST;
-	snprintf(packet.joinRequest.handle, PACKET_STRING_SIZE, "%s", configUtil->CString("handle"));
-	snprintf(packet.joinRequest.avatar, PACKET_STRING_SIZE, "%s", configUtil->CString("avatar"));
-	netUtil->Send(&server->address, reinterpret_cast<void*>(&packet), sizeof(PacketData));
+	PacketData p;
+	p.type = PacketList::JOINREQUEST;
+	snprintf(p.joinRequest.handle, PACKET_STRING_SIZE, "%s", configUtil->CString("handle"));
+	snprintf(p.joinRequest.avatar, PACKET_STRING_SIZE, "%s", configUtil->CString("avatar"));
+	netUtil->Send(&server->address, reinterpret_cast<void*>(&p), sizeof(PacketData));
 }
