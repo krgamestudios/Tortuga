@@ -84,16 +84,36 @@ void ServerApplication::Ping(PacketData* packet) {
 void ServerApplication::JoinRequest(PacketData* packet) {
 	//TODO
 	cout << "Join request..." << endl;
-//	if (playerMgr.GetPlayerMap()->size() >= playerMgr.GetMaxPlayers()) {
-//		//rejection
-//		return;
-//	}
-//	int ch = netUtil.Bind(&netUtil.GetInPacket()->address, -1);
-//	cout << ch << endl;
+	if (clientMap.size() >= maxClients) {
+		//rejection
+		return;
+	}
+	int playerID = uniqueIndex++;
+	clientMap[playerID].playerID = playerID;
+	clientMap[playerID].channel = netUtil.Bind(&netUtil.GetInPacket()->address, -1);
+	clientMap[playerID].handle = packet->joinRequest.handle;
+	clientMap[playerID].avatar = packet->joinRequest.avatar;
+
+	//debug
+	cout << "playerID: " << playerID << ", " << clientMap[playerID].playerID << endl;
+	cout << "channel: " << clientMap[playerID].channel << endl;
+	cout << "handle: " << clientMap[playerID].handle << endl;
+	cout << "avatar: " << clientMap[playerID].avatar << endl;
+
+	//join confirm
+	PacketData jc;
+	jc.type = PacketList::JOINCONFIRM;
+	jc.joinConfirm.playerID = clientMap[playerID].playerID;
+	netUtil.Send(clientMap[playerID].channel, &jc, sizeof(PacketData));
 }
 
-void ServerApplication::Disconnect(PacketData* packet) {
-	//TODO
+void ServerApplication::Disconnect(PacketData* packet) { //TODO: use playerID here
+	//TODO: Delete player
+	int playerID = packet->disconnect.playerID;
+	cout << "disconnecting: " << playerID << endl;
+	netUtil.Unbind(clientMap[playerID].channel);
+	clientMap.erase(playerID);
+	cout << "current players: " << clientMap.size() << endl;
 }
 
 void ServerApplication::Movement(PacketData* packet) {

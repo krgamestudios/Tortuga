@@ -32,6 +32,7 @@ private:
 	ConfigUtility configUtil;
 	SurfaceManager surfaceMgr;
 	UDPNetworkUtility netUtil;
+	int playerID = -1;
 };
 
 #endif

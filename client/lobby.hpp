@@ -18,7 +18,7 @@
 class Lobby : public BaseScene {
 public:
 	//Public access members
-	Lobby(ConfigUtility*, SurfaceManager*, UDPNetworkUtility*);
+	Lobby(ConfigUtility*, SurfaceManager*, UDPNetworkUtility*, int* playerID);
 	virtual ~Lobby();
 
 protected:
@@ -46,11 +46,13 @@ protected:
 	void PushServer(PacketData*);
 	void JoinRequest(ServerData*);
 
-	//members
+	//globals
 	ConfigUtility* configUtil = nullptr;
 	SurfaceManager* surfaceMgr = nullptr;
 	UDPNetworkUtility* netUtil = nullptr;
+	int* playerID;
 
+	//members
 	RasterFont font;
 	std::map<std::string, Button*> buttonMap;
 

@@ -51,6 +51,7 @@ struct JoinConfirm {
 
 struct Disconnect {
 	PacketList type = PacketList::DISCONNECT;
+	int playerID;
 };
 
 //-------------------------

@@ -23,6 +23,11 @@ struct ClientData {
 	Vector2 motion;
 	std::string handle;
 	std::string avatar;
+	enum class Command {
+		NORMAL,
+		SYNCHRONIZE,
+		PING,
+	}command = Command::NORMAL;
 };
 
 #endif

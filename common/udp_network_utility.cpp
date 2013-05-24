@@ -96,6 +96,7 @@ int UDPNetworkUtility::Send(int channel, void* data, int len) {
 }
 
 int UDPNetworkUtility::Receive() {
+	memset(packIn->data, 0, packIn->maxlen);
 	int ret = SDLNet_UDP_Recv(socket, packIn);
 
 	if (ret < 0) {

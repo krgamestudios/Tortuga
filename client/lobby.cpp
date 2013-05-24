@@ -9,7 +9,7 @@ using namespace std;
 //Public access members
 //-------------------------
 
-Lobby::Lobby(ConfigUtility* cUtil, SurfaceManager* sMgr, UDPNetworkUtility* nUtil) {
+Lobby::Lobby(ConfigUtility* cUtil, SurfaceManager* sMgr, UDPNetworkUtility* nUtil, int* ID) {
 #ifdef DEBUG
 	cout << "entering Lobby" << endl;
 #endif
@@ -17,6 +17,7 @@ Lobby::Lobby(ConfigUtility* cUtil, SurfaceManager* sMgr, UDPNetworkUtility* nUti
 	configUtil = cUtil;
 	surfaceMgr = sMgr;
 	netUtil = nUtil;
+	playerID = ID;
 
 	//members
 	font.SetSurface(surfaceMgr->Get("font"));
@@ -72,6 +73,11 @@ void Lobby::Receive() {
 			break;
 			case PacketList::JOINCONFIRM:
 				//TODO: enter the game
+				PacketData jc;
+				memcpy(&jc, netUtil->GetInData(), sizeof(PacketData));
+				*playerID = jc.joinConfirm.playerID;
+				netUtil->Bind(&netUtil->GetInPacket()->address, 0);
+				SetNextScene(SceneList::INGAME);
 			break;
 		}
 	}
@@ -164,6 +170,9 @@ void Lobby::PushServer(PacketData* packet) {
 }
 
 void Lobby::JoinRequest(ServerData* server) {
+	if (!server) {
+		return;
+	}
 	PacketData packet;
 	packet.type = PacketList::JOINREQUEST;
 	snprintf(packet.joinRequest.handle, PACKET_STRING_SIZE, "%s", configUtil->CString("handle"));

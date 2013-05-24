@@ -11,7 +11,7 @@
 class InGame : public BaseScene {
 public:
 	//Public access members
-	InGame(ConfigUtility*, SurfaceManager*, UDPNetworkUtility*);
+	InGame(ConfigUtility*, SurfaceManager*, UDPNetworkUtility*, int* playerID);
 	virtual ~InGame();
 
 protected:
@@ -32,6 +32,7 @@ protected:
 	ConfigUtility* configUtil = nullptr;
 	SurfaceManager* surfaceMgr = nullptr;
 	UDPNetworkUtility* netUtil = nullptr;
+	int* playerID;
 };
 
 #endif

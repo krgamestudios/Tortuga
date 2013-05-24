@@ -8,16 +8,24 @@ using namespace std;
 //Public access members
 //-------------------------
 
-InGame::InGame(ConfigUtility* cUtil, SurfaceManager* sMgr, UDPNetworkUtility* nUtil) {
+InGame::InGame(ConfigUtility* cUtil, SurfaceManager* sMgr, UDPNetworkUtility* nUtil, int* ID) {
 #ifdef DEBUG
 	cout << "entering InGame" << endl;
 #endif
 	configUtil = cUtil;
 	surfaceMgr = sMgr;
 	netUtil = nUtil;
+	playerID = ID;
+	cout << "playerID: " << *playerID << endl;
 }
 
 InGame::~InGame() {
+	PacketData p;
+	p.type = PacketList::DISCONNECT;
+	p.disconnect.playerID = *playerID;
+	*playerID = -1;
+	netUtil->Send(0, &p, sizeof(PacketData));
+	netUtil->Unbind(0);
 #ifdef DEBUG
 	cout << "leaving InGame" << endl;
 #endif

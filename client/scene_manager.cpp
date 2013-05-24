@@ -104,10 +104,10 @@ void SceneManager::LoadScene(SceneList sceneIndex) {
 			activeScene = new MainMenu(&configUtil, &surfaceMgr);
 		break;
 		case SceneList::LOBBY:
-			activeScene = new Lobby(&configUtil, &surfaceMgr, &netUtil);
+			activeScene = new Lobby(&configUtil, &surfaceMgr, &netUtil, &playerID);
 		break;
 		case SceneList::INGAME:
-			activeScene = new InGame(&configUtil, &surfaceMgr, &netUtil);
+			activeScene = new InGame(&configUtil, &surfaceMgr, &netUtil, &playerID);
 		break;
 
 #ifdef DEBUG
