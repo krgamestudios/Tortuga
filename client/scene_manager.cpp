@@ -13,12 +13,8 @@
 
 #include "splash.hpp"
 #include "main_menu.hpp"
-#include "in_game.hpp"
-
-#ifdef DEBUG
 #include "lobby.hpp"
-#include "combat.hpp"
-#endif
+#include "in_game.hpp"
 
 //-------------------------
 //Public access members
@@ -109,12 +105,6 @@ void SceneManager::LoadScene(SceneList sceneIndex) {
 		case SceneList::INGAME:
 			activeScene = new InGame(&configUtil, &surfaceMgr, &netUtil, &playerID);
 		break;
-
-#ifdef DEBUG
-		case SceneList::COMBAT:
-			activeScene = new Combat();
-		break;
-#endif
 
 		default:
 			throw(std::logic_error("Failed to recognize the scene index"));
