@@ -3,3 +3,5 @@ Each client needs to know about each other client now.
 
 Have multiple players moving around the server at the same time
 keep the docs up to date!!!!!
+
+Player's internals a weird.

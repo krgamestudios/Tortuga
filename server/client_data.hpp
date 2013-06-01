@@ -13,7 +13,7 @@ struct ClientData {
 		handle = h;
 		avatar = a;
 	}
-	void Update(int delta) {
+	void Update(double delta) {
 		position += motion * delta;
 	}
 

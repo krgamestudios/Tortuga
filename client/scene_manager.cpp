@@ -86,13 +86,13 @@ void SceneManager::LoadScene(SceneList sceneIndex) {
 
 	switch(sceneIndex) {
 		//add scene creation calls here
+		case SceneList::FIRST:
 #ifdef DEBUG
 		case SceneList::TESTSYSTEMS:
 			activeScene = new TestSystems(&configUtil, &surfaceMgr, &netUtil);
 		break;
 #endif
 
-		case SceneList::FIRST:
 		case SceneList::SPLASH:
 			activeScene = new Splash(&configUtil, &surfaceMgr);
 		break;

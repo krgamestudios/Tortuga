@@ -54,10 +54,10 @@ void ServerApplication::Proc() {
 			}
 		}
 		//update the world
-		delta.Calculate();
-		for (auto it : clientMap) {
-			it.second.Update(delta.GetDelta());
-		}
+//TODO	Delta::Calculate();
+//		for (auto it : clientMap) {
+//			it.second.Update(Delta::GetTime());
+//		}
 
 		//handle output...
 		//TODO...

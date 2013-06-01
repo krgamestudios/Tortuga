@@ -1,7 +1,7 @@
 #include "player.hpp"
 
 #define ANIMATION_SPEED 100
-#define WALKING_SPEED 0.14
+#define WALKING_SPEED 140
 
 Player::Player(SDL_Surface* s, int w, int h)
 	: sprite(s, w, h)
@@ -22,10 +22,9 @@ void Player::Update(int delta) {
 		FaceDirection(Direction::EAST);
 	}
 
-	constexpr double d = 1/sqrt(2);
-
 	if (motion.x != 0 && motion.y != 0) {
 		sprite.SetInterval(ANIMATION_SPEED);
+		constexpr double d = 1/sqrt(2);
 		position += motion * d * delta;
 	}
 	else if (motion != 0) {

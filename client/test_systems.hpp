@@ -9,7 +9,6 @@
 #include "packet_list.hpp"
 
 #include "player_manager.hpp"
-#include "delta.hpp"
 #include "frame_rate.hpp"
 #include "raster_font.hpp"
 
@@ -47,7 +46,6 @@ protected:
 
 	PlayerManager playerMgr;
 
-	Delta delta;
 	FrameRate frameRate;
 	RasterFont font;
 

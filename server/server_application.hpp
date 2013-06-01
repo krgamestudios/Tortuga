@@ -3,7 +3,6 @@
 
 #include "client_data.hpp"
 
-#include "delta.hpp"
 #include "packet_list.hpp"
 #include "config_utility.hpp"
 #include "udp_network_utility.hpp"
@@ -37,7 +36,6 @@ private:
 
 	//members
 	bool running = false;
-	Delta delta;
 	std::map<int, ClientData> clientMap;
 	int maxClients = SDLNET_MAX_UDPCHANNELS;
 	int uniqueIndex = 0;

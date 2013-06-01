@@ -4,6 +4,8 @@
 
 using namespace std;
 
+#include "splash.hpp"
+
 //-------------------------
 //Public access members
 //-------------------------
@@ -15,6 +17,20 @@ TestSystems::TestSystems(ConfigUtility* cUtil, SurfaceManager* sMgr, UDPNetworkU
 	configUtil = cUtil;
 	surfaceMgr = sMgr;
 	netUtil = nUtil;
+
+	//subscene; load the resources
+	Splash* splash = new Splash(configUtil, surfaceMgr);
+
+	while(splash->GetNextScene() == SceneList::CONTINUE) {
+		//wipe the screen
+		SDL_FillRect(splash->GetScreen(), 0, 0);
+		//call each user defined function
+		((BaseScene*)(splash))->RunFrame();
+		//give the computer a break
+		SDL_Delay(10);
+	}
+	delete splash;
+	SetNextScene(SceneList::CONTINUE);
 
 	playerCounter = currentPlayer = 0;
 
@@ -46,8 +62,8 @@ void TestSystems::FrameEnd() {
 }
 
 void TestSystems::Update() {
-	delta.Calculate();
-	playerMgr.UpdateAll(delta.GetDelta());
+//	Delta::Calculate();
+//	playerMgr.UpdateAll(Delta::GetTime());
 }
 
 string IToS(int i) {
@@ -81,7 +97,7 @@ void TestSystems::MouseButtonUp(SDL_MouseButtonEvent const& button) {
 void TestSystems::KeyDown(SDL_KeyboardEvent const& key) {
 	switch(key.keysym.sym) {
 		case SDLK_ESCAPE:
-			SetNextScene(SceneList::MAINMENU);
+			QuitEvent();
 		break;
 
 		case SDLK_w:
@@ -164,5 +180,5 @@ void TestSystems::SwitchToPlayer(int index) {
 }
 
 void TestSystems::SendMessage(std::string s) {
-	//
+	cout << s << endl;
 }
