@@ -21,33 +21,29 @@
 */
 #include "raster_font.hpp"
 
+#include <stdexcept>
+
+RasterFont::RasterFont(SDL_Surface* p) {
+	SetSurface(p);
+}
+
 void RasterFont::DrawStringTo(std::string s, SDL_Surface* const dest, Sint16 x, Sint16 y) {
-	if (!surface) {
-		return;
+	if (!image.GetSurface()) {
+		throw(std::runtime_error("RasterFont not loaded"));
 	}
-	//character size won't change here
-	const Sint16 w = surface->w/16;
-	const Sint16 h = surface->h/16;
-	SDL_Rect sclip, dclip = {x,y,0,0};
-	for (auto c : s) {
-		//TODO: inefficient
-		sclip = {Sint16(c%w*w), Sint16(c/h*h), clip.w, clip.h};
-//		sclip.x = c % w;
-//		sclip.h = c / h;
-//		sclip.w = clip.w;
-//		sclip.h = clip.h;
-		SDL_BlitSurface(surface, &sclip, dest, &dclip);
-		dclip.x += w;
+	const Uint16 w = image.GetClipW();
+	const Uint16 h = image.GetClipH();
+	for (int i = 0; i < s.size(); i++) {
+		image.SetClipX(s[i] % w * w);
+		image.SetClipY(s[i] / h * h);
+		image.DrawTo(dest, x + i * w, y);
 	}
 }
 
 SDL_Surface* RasterFont::SetSurface(SDL_Surface* p) {
-	surface = p;
-	if (!surface) {
-		clip = {0, 0, 0, 0};
+	if (image.SetSurface(p)) {
+		image.SetClipW(image.GetSurface()->w/16);
+		image.SetClipH(image.GetSurface()->h/16);
 	}
-	else {
-		clip = {0, 0, Uint16(surface->w/16), Uint16(surface->h/16)};
-	}
-	return surface;
+	return image.GetSurface();
 }

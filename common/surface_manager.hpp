@@ -29,8 +29,8 @@
 
 class SurfaceManager {
 public:
-	SurfaceManager();
-	~SurfaceManager();
+	SurfaceManager() = default;
+	~SurfaceManager() noexcept;
 
 	SDL_Surface* Load(std::string key, std::string fname);
 	SDL_Surface* Reload(std::string key, std::string fname);
@@ -42,8 +42,8 @@ public:
 	SDL_Surface* operator[](std::string key) { return Get(key); };
 private:
 	SDL_Surface* LoadSurface(std::string key, std::string fname);
-	typedef std::map<std::string, SDL_Surface*> mapType;
-	mapType surfaceMap;
+	typedef std::map<std::string, SDL_Surface*> MapType;
+	MapType surfaceMap;
 };
 
 #endif

@@ -26,40 +26,41 @@
 
 #include "SDL/SDL.h"
 
-class SpriteSheet : protected Image {
+class SpriteSheet {
 public:
+	SpriteSheet() = default;
 	SpriteSheet(SDL_Surface*, Uint16 w, Uint16 h);
-	virtual ~SpriteSheet() {}
+	~SpriteSheet() = default;
 
-	void Update(int delta);
+	void Update(double delta);
 
-	void SetSurface(SDL_Surface*, Uint16 w, Uint16 h);
+	SDL_Surface* SetSurface(SDL_Surface* const, Uint16 w, Uint16 h);
+	SDL_Surface* GetSurface() const {
+		return image.GetSurface();
+	}
 
-	using Image::GetSurface;
-	using Image::DrawTo;
+	void DrawTo(SDL_Surface* const dest, Sint16 x, Sint16 y) {
+		image.DrawTo(dest, x, y);
+	}
 
-	//TODO: these aren't regulated; be careful
-	int SetWidth(int i) { return SetClipW(i); };
-	int SetHeight(int i) { return SetClipH(i); };
-	int SetFrames(int i) { currentFrame = 0; return maxFrames = i; };
-	int SetStrips(int i) { currentStrip = 0; return maxStrips = i; };
+	//Accessors and Mutators
+	double SetInterval(double i) { return interval = i; }
+	double GetInterval() const { return interval; }
 
-	int GetWidth() const { return GetClipW(); }
-	int GetHeight() const { return GetClipH(); }
-	int GetFrames() const { return maxFrames; }
-	int GetStrips() const { return maxStrips; }
+	int SetCurrentFrame(int i) { return currentFrame = i; }
+	int SetCurrentStrip(int i) { return currentStrip = i; }
 
-	int SetCurrentFrame(int i) { return currentFrame = i; };
-	int SetCurrentStrip(int i) { return currentStrip = i; };
-	int SetInterval(int i) { return interval = i; }
-
+	Uint16 GetFrameWidth() const { return image.GetClipW(); }
+	Uint16 GetFrameHeight() const { return image.GetClipH(); }
 	int GetCurrentFrame() const { return currentFrame; };
 	int GetCurrentStrip() const { return currentStrip; };
-	int GetInterval() const { return interval; };
+	int GetMaxFrames() const { return maxFrames; }
+	int GetMaxStrips() const { return maxStrips; }
 private:
-	int currentFrame, maxFrames;
-	int currentStrip, maxStrips;
-	int interval, ticks;
+	Image image;
+	int currentFrame = 0, maxFrames = 0;
+	int currentStrip = 0, maxStrips = 0;
+	 double interval = 0, ticks = 0;
 };
 
 #endif

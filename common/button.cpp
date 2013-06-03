@@ -80,8 +80,8 @@ void Button::SetSurfaces(SDL_Surface* imageSurface, SDL_Surface* fontSurface) {
 std::string Button::SetText(std::string s) {
 	//one line
 	text = s;
-	textX = (image.GetClipW() / 2) - (font.GetClipW() * text.size() / 2);
-	textY = (image.GetClipH() / 2) - (font.GetClipH() / 2);
+	textX = (image.GetClipW() / 2) - (font.GetCharW() * text.size() / 2);
+	textY = (image.GetClipH() / 2) - (font.GetCharH() / 2);
 	return text;
 }
 

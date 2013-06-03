@@ -21,10 +21,6 @@
 */
 #include "image.hpp"
 
- Image::Image() {
- 	SetSurface(nullptr);
- }
-
 Image::Image(SDL_Surface* p) {
 	SetSurface(p);
 }
@@ -34,8 +30,7 @@ Image::Image(SDL_Surface* p, SDL_Rect r) {
 }
 
 SDL_Surface* Image::SetSurface(SDL_Surface* p) {
-	surface = p;
-	if (!surface) {
+	if (!(surface = p)) {
 		clip = {0, 0, 0, 0};
 	}
 	else {
@@ -50,15 +45,10 @@ SDL_Surface* Image::SetSurface(SDL_Surface* const p, SDL_Rect r) {
 	return surface;
 }
 
-SDL_Surface* Image::GetSurface() const {
-	return surface;
-}
-
 void Image::DrawTo(SDL_Surface* dest, Sint16 x, Sint16 y) {
 	if (!surface) {
 		return;
 	}
 	SDL_Rect sclip = clip, dclip = {x,y};
-
 	SDL_BlitSurface(surface, &sclip, dest, &dclip);
 }

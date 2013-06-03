@@ -26,18 +26,21 @@
 
 #include <string>
 
-class RasterFont : protected Image {
+class RasterFont {
 public:
-	RasterFont() {}
-	RasterFont(SDL_Surface* p) {SetSurface(p);}
-	virtual ~RasterFont() {}
-	virtual void DrawStringTo(std::string, SDL_Surface* const, Sint16 x, Sint16 y);
-	virtual SDL_Surface* SetSurface(SDL_Surface*) override;
+	RasterFont() = default;
+	RasterFont(SDL_Surface* p);
+	~RasterFont() = default;
 
-	using Image::GetSurface;
-	using Image::GetClip;
-	using Image::GetClipW;
-	using Image::GetClipH;
+	void DrawStringTo(std::string, SDL_Surface* const, Sint16 x, Sint16 y);
+
+	//Accessors and Mutators
+	SDL_Surface* SetSurface(SDL_Surface*);
+	SDL_Surface* GetSurface() const { return image.GetSurface(); }
+	Uint16 GetCharW() { return image.GetClipW(); }
+	Uint16 GetCharH() { return image.GetClipH(); }
+private:
+	Image image;
 };
 
 #endif
