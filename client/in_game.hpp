@@ -33,7 +33,7 @@ protected:
 	ConfigUtility* configUtil = nullptr;
 	SurfaceManager* surfaceMgr = nullptr;
 	UDPNetworkUtility* netUtil = nullptr;
-	int* playerID;
+	int* playerID = nullptr;
 };
 
 #endif

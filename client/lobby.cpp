@@ -122,6 +122,7 @@ void Lobby::Render(SDL_Surface* const screen) {
 
 		//if a server has  been selected, and this is the selected server
 		if (selectedServer && selectedServer == &serverVector[i]) {
+			//draw the orange box
 			SDL_FillRect(screen, &clip, SDL_MapRGB(screen->format, 255, 127, 39));
 		}
 		font.DrawStringTo(serverVector[i].name, screen, clip.x, clip.y);
@@ -148,14 +149,14 @@ void Lobby::MouseButtonUp(SDL_MouseButtonEvent const& button) {
 	if (buttonMap["ping"]->MouseButtonUp(button) == Button::State::HOVER) {
 		PingNetwork();
 	}
-	if (buttonMap["join"]->MouseButtonUp(button) == Button::State::HOVER) {
+	else if (buttonMap["join"]->MouseButtonUp(button) == Button::State::HOVER) {
 		JoinRequest(selectedServer);
 	}
-	if (buttonMap["back"]->MouseButtonUp(button) == Button::State::HOVER) {
+	else if (buttonMap["back"]->MouseButtonUp(button) == Button::State::HOVER) {
 		SetNextScene(SceneList::MAINMENU);
 	}
 	//select a server (clicked within the bounds of the server box)
-	if (button.x > listBox.x && button.y > listBox.y && button.y < serverVector.size() * font.GetCharH() + listBox.y) {
+	else if (button.x > listBox.x && button.y > listBox.y && button.y < serverVector.size() * font.GetCharH() + listBox.y) {
 		selectedServer = &serverVector[(button.y-listBox.y)/font.GetCharH()];
 	}
 	else {
