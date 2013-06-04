@@ -40,7 +40,7 @@ TestSystems::~TestSystems() {
 //-------------------------
 
 void TestSystems::FrameStart() {
-	frameRate.Calculate();
+	FrameRate::Calculate();
 }
 
 void TestSystems::Update(double delta) {
@@ -60,7 +60,7 @@ string IToS(int i) {
 
 void TestSystems::Render(SDL_Surface* const screen) {
 	playerMgr.DrawAllTo(screen);
-	font.DrawStringTo("FPS: " + IToS(frameRate.GetFrameRate()), screen, 16, 16);
+	font.DrawStringTo("FPS: " + IToS(FrameRate::GetFrameRate()), screen, 16, 16);
 }
 
 //-------------------------

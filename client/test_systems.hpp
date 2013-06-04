@@ -45,8 +45,6 @@ protected:
 	UDPNetworkUtility* netUtil = nullptr;
 
 	PlayerManager playerMgr;
-
-	FrameRate frameRate;
 	RasterFont font;
 
 	int playerCounter;

@@ -19,30 +19,8 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef FRAMERATE_HPP_
-#define FRAMERATE_HPP_
+#include "frame_rate.hpp"
 
-#include <chrono>
-
-class FrameRate {
-public:
-	typedef std::chrono::high_resolution_clock Clock;
-
-	FrameRate() = delete;
-	static int Calculate() {
-		frameCount++;
-		if (Clock::now() - tick >= std::chrono::duration<int>(1)) {
-			lastFrameRate = frameCount;
-			frameCount = 0;
-			tick = Clock::now();
-		}
-		return lastFrameRate;
-	}
-	static int GetFrameRate() { return lastFrameRate; }
-private:
-	static int frameCount;
-	static int lastFrameRate;
-	static Clock::time_point tick;
-};
-
-#endif
+int FrameRate::frameCount = 0;
+int FrameRate::lastFrameRate = 0;
+FrameRate::Clock::time_point FrameRate::tick = FrameRate::Clock::now();
