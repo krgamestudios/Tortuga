@@ -1,6 +1,6 @@
 #include "player.hpp"
 
-#define ANIMATION_SPEED 100
+#define ANIMATION_SPEED 0.1
 #define WALKING_SPEED 140
 
 Player::Player(SDL_Surface* s, int w, int h)

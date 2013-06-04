@@ -44,8 +44,7 @@ void TestSystems::FrameStart() {
 }
 
 void TestSystems::Update(double delta) {
-//	Delta::Calculate();
-//	playerMgr.UpdateAll(Delta::GetTime());
+	playerMgr.UpdateAll(delta);
 }
 
 void TestSystems::FrameEnd() {
@@ -83,7 +82,7 @@ void TestSystems::MouseButtonUp(SDL_MouseButtonEvent const& button) {
 void TestSystems::KeyDown(SDL_KeyboardEvent const& key) {
 	switch(key.keysym.sym) {
 		case SDLK_ESCAPE:
-			QuitEvent();
+			SetNextScene(SceneList::MAINMENU);
 		break;
 
 		case SDLK_w:
