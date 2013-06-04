@@ -26,7 +26,7 @@ Splash::~Splash() {
 #endif
 }
 
-void Splash::RunFrame() {
+void Splash::RunFrame(double delta) {
 	//skip any event handling here
 	SDL_Event event;
 	while(SDL_PollEvent(&event));
@@ -38,12 +38,14 @@ void Splash::RunFrame() {
 	logo->DrawTo(GetScreen(),x,y);
 	SDL_Flip(GetScreen());
 
+	//load the resources ONCE
 	if (!loaded) {
-		LoadResources();
 		loaded = true;
+		LoadResources();
 	}
 
-	if (clock() - start > CLOCKS_PER_SEC*3) {
+	//wait X seconds
+	if (Clock::now() - start > std::chrono::duration<int>(1)) {
 		SetNextScene(SceneList::MAINMENU);
 	}
 }

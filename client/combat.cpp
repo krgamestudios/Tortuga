@@ -28,11 +28,11 @@ void Combat::FrameStart() {
 	//
 }
 
-void Combat::FrameEnd() {
+void Combat::Update(double delta) {
 	//
 }
 
-void Combat::Update() {
+void Combat::FrameEnd() {
 	//
 }
 

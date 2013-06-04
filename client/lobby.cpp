@@ -31,7 +31,7 @@ Lobby::Lobby(ConfigUtility* cUtil, SurfaceManager* sMgr, UDPNetworkUtility* nUti
 	listBox.x = 250;
 	listBox.y = 50;
 	listBox.w = GetScreen()->w - listBox.x;
-	listBox.h = font.GetClipH();
+	listBox.h = font.GetCharH();
 
 	//ping the network
 	PingNetwork();
@@ -54,11 +54,7 @@ void Lobby::FrameStart() {
 	//
 }
 
-void Lobby::FrameEnd() {
-	//
-}
-
-void Lobby::Update() {
+void Lobby::Update(double delta) {
 	Receive();
 }
 
@@ -109,6 +105,10 @@ void Lobby::Receive() {
 	}
 }
 
+void Lobby::FrameEnd() {
+	//
+}
+
 void Lobby::Render(SDL_Surface* const screen) {
 	for (auto it : buttonMap) {
 		it.second->DrawTo(screen);
@@ -118,7 +118,7 @@ void Lobby::Render(SDL_Surface* const screen) {
 	SDL_Rect clip;
 	for (int i = 0; i < serverVector.size(); i++) {
 		clip = listBox;
-		clip.y += i * font.GetClipH();
+		clip.y += i * font.GetCharH();
 
 		//if a server has  been selected, and this is the selected server
 		if (selectedServer && selectedServer == &serverVector[i]) {
@@ -155,8 +155,8 @@ void Lobby::MouseButtonUp(SDL_MouseButtonEvent const& button) {
 		SetNextScene(SceneList::MAINMENU);
 	}
 	//select a server (clicked within the bounds of the server box)
-	if (button.x > listBox.x && button.y > listBox.y && button.y < serverVector.size() * font.GetClipH() + listBox.y) {
-		selectedServer = &serverVector[(button.y-listBox.y)/font.GetClipH()];
+	if (button.x > listBox.x && button.y > listBox.y && button.y < serverVector.size() * font.GetCharH() + listBox.y) {
+		selectedServer = &serverVector[(button.y-listBox.y)/font.GetCharH()];
 	}
 	else {
 		selectedServer = nullptr;

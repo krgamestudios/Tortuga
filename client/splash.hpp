@@ -7,15 +7,17 @@
 #include "surface_manager.hpp"
 #include "image.hpp"
 
-#include <ctime>
+#include <chrono>
 
 class Splash : public BaseScene {
 public:
 	Splash(ConfigUtility*, SurfaceManager*);
-	virtual ~Splash();
+	~Splash();
 
 protected:
-	virtual void RunFrame();
+	typedef std::chrono::high_resolution_clock Clock;
+	void RunFrame(double delta);
+	void RenderFrame() {};
 
 	void LoadResources();
 
@@ -25,7 +27,7 @@ protected:
 
 	//members
 	bool loaded = false;
-	time_t start = clock();
+	Clock::time_point start = Clock::now();
 	Image* logo = nullptr;
 };
 

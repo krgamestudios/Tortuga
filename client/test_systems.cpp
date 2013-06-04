@@ -18,20 +18,6 @@ TestSystems::TestSystems(ConfigUtility* cUtil, SurfaceManager* sMgr, UDPNetworkU
 	surfaceMgr = sMgr;
 	netUtil = nUtil;
 
-	//subscene; load the resources
-	Splash* splash = new Splash(configUtil, surfaceMgr);
-
-	while(splash->GetNextScene() == SceneList::CONTINUE) {
-		//wipe the screen
-		SDL_FillRect(splash->GetScreen(), 0, 0);
-		//call each user defined function
-		((BaseScene*)(splash))->RunFrame();
-		//give the computer a break
-		SDL_Delay(10);
-	}
-	delete splash;
-	SetNextScene(SceneList::CONTINUE);
-
 	playerCounter = currentPlayer = 0;
 
 	playerMgr.New(playerCounter++, surfaceMgr->Get("elliot"));
@@ -57,13 +43,13 @@ void TestSystems::FrameStart() {
 	frameRate.Calculate();
 }
 
-void TestSystems::FrameEnd() {
-	//
-}
-
-void TestSystems::Update() {
+void TestSystems::Update(double delta) {
 //	Delta::Calculate();
 //	playerMgr.UpdateAll(Delta::GetTime());
+}
+
+void TestSystems::FrameEnd() {
+	//
 }
 
 string IToS(int i) {

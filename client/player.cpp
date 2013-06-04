@@ -8,7 +8,7 @@ Player::Player(SDL_Surface* s, int w, int h)
 {
 }
 
-void Player::Update(int delta) {
+void Player::Update(double delta) {
 	if (motion.y > 0) {
 		FaceDirection(Direction::SOUTH);
 	}

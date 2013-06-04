@@ -14,7 +14,7 @@ public:
 	Player* Get(int index);
 	void Delete(int index);
 
-	void UpdateAll(int delta);
+	void UpdateAll(double delta);
 	void DrawAllTo(SDL_Surface* dest);
 	void DeleteAll();
 

@@ -1,15 +1,14 @@
 #include "scene_manager.hpp"
 
 #include <stdexcept>
+#include <chrono>
 
 //-------------------------
 //Scene headers
 //-------------------------
 
 //Add the custom scene headers here
-#ifdef DEBUG
 #include "test_systems.hpp"
-#endif
 
 #include "splash.hpp"
 #include "main_menu.hpp"
@@ -50,6 +49,13 @@ void SceneManager::Init() {
 void SceneManager::Proc() {
 	LoadScene(SceneList::FIRST);
 
+	//prepare the time system
+	typedef std::chrono::high_resolution_clock Clock;
+
+	Clock::duration delta(16 * Clock::duration::period::den / std::milli::den);
+	Clock::time_point simTime = Clock::now();
+	Clock::time_point realTime;
+
 	//The main loop
 	while(activeScene->GetNextScene() != SceneList::QUIT) {
 		//switch scenes when necessary
@@ -58,11 +64,18 @@ void SceneManager::Proc() {
 			continue;
 		}
 
-		//wipe the screen
-		SDL_FillRect(activeScene->GetScreen(), 0, 0);
+		//update the current time
+		realTime = Clock::now();
 
-		//call each user defined function
-		activeScene->RunFrame();
+		//simulate game time
+		while (simTime < realTime) {
+			//call each user defined function
+			activeScene->RunFrame(double(delta.count()) / Clock::duration::period::den);
+			simTime += delta;
+		}
+
+		//draw the game to the screen
+		activeScene->RenderFrame();
 
 		//give the computer a break
 		SDL_Delay(10);
@@ -86,13 +99,11 @@ void SceneManager::LoadScene(SceneList sceneIndex) {
 
 	switch(sceneIndex) {
 		//add scene creation calls here
-		case SceneList::FIRST:
-#ifdef DEBUG
 		case SceneList::TESTSYSTEMS:
 			activeScene = new TestSystems(&configUtil, &surfaceMgr, &netUtil);
 		break;
-#endif
 
+		case SceneList::FIRST:
 		case SceneList::SPLASH:
 			activeScene = new Splash(&configUtil, &surfaceMgr);
 		break;

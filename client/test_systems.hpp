@@ -18,21 +18,21 @@ class TestSystems : public BaseScene {
 public:
 	//Public access members
 	TestSystems(ConfigUtility*, SurfaceManager*, UDPNetworkUtility*);
-	virtual ~TestSystems();
+	~TestSystems();
 
 protected:
 	//Frame loop
-	virtual void FrameStart();
-	virtual void FrameEnd();
-	virtual void Update();
-	virtual void Render(SDL_Surface* const);
+	void FrameStart();
+	void Update(double delta);
+	void FrameEnd();
+	void Render(SDL_Surface* const);
 
 	//Event handlers
-	virtual void MouseMotion(SDL_MouseMotionEvent const&);
-	virtual void MouseButtonDown(SDL_MouseButtonEvent const&);
-	virtual void MouseButtonUp(SDL_MouseButtonEvent const&);
-	virtual void KeyDown(SDL_KeyboardEvent const&);
-	virtual void KeyUp(SDL_KeyboardEvent const&);
+	void MouseMotion(SDL_MouseMotionEvent const&);
+	void MouseButtonDown(SDL_MouseButtonEvent const&);
+	void MouseButtonUp(SDL_MouseButtonEvent const&);
+	void KeyDown(SDL_KeyboardEvent const&);
+	void KeyUp(SDL_KeyboardEvent const&);
 
 	//utilities
 	void NewPlayer(int index, std::string avatarName, int x, int y);

@@ -18,6 +18,8 @@ MainMenu::MainMenu(ConfigUtility* cUtil, SurfaceManager* sMgr) {
 	buttonMap["start"] = new Button(50, 50, surfaceMgr->Get("button"), surfaceMgr->Get("font"), "Start");
 	buttonMap["options"] = new Button(50, 100, surfaceMgr->Get("button"), surfaceMgr->Get("font"), "Options");
 	buttonMap["quit"] = new Button(50, 150, surfaceMgr->Get("button"), surfaceMgr->Get("font"), "Quit");
+
+	buttonMap["testsystems"] = new Button(50, 250, surfaceMgr->Get("button"), surfaceMgr->Get("font"), "TestSystems");
 }
 
 MainMenu::~MainMenu() {
@@ -38,11 +40,11 @@ void MainMenu::FrameStart() {
 	//
 }
 
-void MainMenu::FrameEnd() {
+void MainMenu::Update(double delta) {
 	//
 }
 
-void MainMenu::Update() {
+void MainMenu::FrameEnd() {
 	//
 }
 
@@ -77,6 +79,9 @@ void MainMenu::MouseButtonUp(SDL_MouseButtonEvent const& button) {
 	}
 	if (buttonMap["quit"]->MouseButtonUp(button) == Button::State::HOVER) {
 		QuitEvent();
+	}
+	if (buttonMap["testsystems"]->MouseButtonUp(button) == Button::State::HOVER) {
+		SetNextScene(SceneList::TESTSYSTEMS);
 	}
 }
 

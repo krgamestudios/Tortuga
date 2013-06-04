@@ -40,11 +40,7 @@ void InGame::FrameStart() {
 	//
 }
 
-void InGame::FrameEnd() {
-	//
-}
-
-void InGame::Update() {
+void InGame::Update(double delta) {
 	Receive();
 }
 
@@ -85,6 +81,10 @@ void InGame::Receive() {
 //			break;
 		}
 	}
+}
+
+void InGame::FrameEnd() {
+	//
 }
 
 void InGame::Render(SDL_Surface* const screen) {

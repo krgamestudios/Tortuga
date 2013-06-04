@@ -33,7 +33,7 @@ void PlayerManager::Delete(int index) {
 	playerMap.erase(it);
 }
 
-void PlayerManager::UpdateAll(int delta) {
+void PlayerManager::UpdateAll(double delta) {
 	for (auto it : playerMap) {
 		it.second->Update(delta);
 	}

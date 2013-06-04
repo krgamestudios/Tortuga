@@ -75,13 +75,17 @@ SceneList BaseScene::GetNextScene() const {
 //Frame loop
 //-------------------------
 
-void BaseScene::RunFrame() {
+void BaseScene::RunFrame(double delta) {
 	FrameStart();
 	HandleEvents();
-	Update();
+	Update(delta);
+	FrameEnd();
+}
+
+void BaseScene::RenderFrame() {
+	SDL_FillRect(screen, 0, 0);
 	Render(screen);
 	SDL_Flip(screen);
-	FrameEnd();
 }
 
 //-------------------------

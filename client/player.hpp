@@ -11,7 +11,7 @@ class Player {
 public:
 	Player(SDL_Surface*, int w, int h);
 
-	void Update(int delta);
+	void Update(double delta);
 
 	void WalkInDirection(Direction);
 
