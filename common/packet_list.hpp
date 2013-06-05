@@ -85,7 +85,7 @@ struct Movement {
 };
 
 //-------------------------
-//this state of this is great
+//the packet itself
 //-------------------------
 
 union PacketData {
