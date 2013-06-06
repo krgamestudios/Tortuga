@@ -127,10 +127,17 @@ void ServerApplication::Disconnect(int playerID) {
 		return;
 	}
 	cout << "disconnecting: " << playerID << endl;
+
+	//delete the player from all clients
+	PacketData p;
+	p.type = PacketList::DELETEPLAYER;
+	p.deletePlayer.playerID = playerID;
+
+	netUtil.SendAll(&p, sizeof(PacketData));
+
+	//remove the player from the server
 	netUtil.Unbind(clientMap[playerID].channel);
 	clientMap.erase(playerID);
-
-	//TODO: Delete player
 
 #ifdef DEBUG
 	cout << "current players: " << clientMap.size() << endl;
@@ -170,9 +177,9 @@ void ServerApplication::NewClientData(int playerID) {
 }
 
 void ServerApplication::SendClientData(int playerID) {
-	//TODO
+	//relay a client's data
 }
 
 void ServerApplication::SynchronizeClient(int playerID) {
-	//TODO
+	//send all server data to a specific client
 }

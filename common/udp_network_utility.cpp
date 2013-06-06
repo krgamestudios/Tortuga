@@ -116,6 +116,26 @@ int UDPNetworkUtility::Send(int channel, void* data, int len) {
 	return ret;
 }
 
+int UDPNetworkUtility::SendAll(void* data, int len) {
+	if (len > packOut->maxlen) {
+		throw(std::runtime_error("Failed to copy the data into the packet"));
+	}
+	memset(packOut->data, 0, packOut->maxlen);
+	memcpy(packOut->data, data, len);
+	packOut->len = len;
+
+	int sent = 0;
+
+	//send to all bound channels
+	for (int i = 0; i < SDLNET_MAX_UDPCHANNELS; i++) {
+		if (SDLNet_UDP_GetPeerAddress(socket, i)) {
+			sent += SDLNet_UDP_Send(socket, i, packOut);
+		}
+	}
+
+	return sent;
+}
+
 int UDPNetworkUtility::Receive() {
 	memset(packIn->data, 0, packIn->maxlen);
 	int ret = SDLNet_UDP_Recv(socket, packIn);

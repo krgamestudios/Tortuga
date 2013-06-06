@@ -52,6 +52,7 @@ public:
 	int Send(const char* ip, int port, void* data, int len);
 	int Send(IPaddress* add, void* data, int len);
 	int Send(int channel, void* data, int len);
+	int SendAll(void* data, int len);
 	int Receive();
 
 	void* GetOutData() const {
