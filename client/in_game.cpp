@@ -73,9 +73,9 @@ void InGame::Receive() {
 			case PacketList::NEWPLAYER:
 				cout << "NEWPLAYER triggered" << endl;
 			break;
-//			case PacketList::DELETEPLAYER:
-//				//
-//			break;
+			case PacketList::DELETEPLAYER:
+				cout << "DELETEPLAYER triggered" << endl;
+			break;
 //			case PacketList::MOVEMENT:
 //				//
 //			break;
