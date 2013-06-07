@@ -1,7 +1,8 @@
 #config
-INCLUDES=
+LIBDIR=../libs
+LIB=-lmingw32 -lSDLmain -lSDL $(LIBDIR)/out/libCodebase.a $(LIBDIR)/out/libSDL_net.a
+INCLUDES=$(LIBDIR)/Codebase $(LIBDIR)/SDL_net
 CXXFLAGS+=-std=c++11 -DDEBUG $(addprefix -I,$(INCLUDES))
-LIB=
 
 #source
 SRC=$(wildcard *.cpp)
@@ -12,11 +13,11 @@ OBJ=$(addprefix $(OBJDIR)/,$(SRC:.cpp=.o))
 
 #output
 OUTDIR=../out
-OUT=$(addprefix $(OUTDIR)/,libCodebase.a)
+OUT=$(addprefix $(OUTDIR)/,client)
 
 #targets
 all: $(OBJ) $(OUT)
-	ar -crs $(OUT) $(OBJ)
+	$(CXX) $(CXXFLAGS) -o $(OUT) $(OBJ) $(LIB)
 
 $(OBJ): | $(OBJDIR)
 
