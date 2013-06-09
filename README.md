@@ -1,3 +1,5 @@
+_This project is currently in it's early prototype stage. You can see other versions in various branches, tagged as prototype-X._
+
 Tortuga is a 3/4 top down multiplayer RPG set in a large archipelago occupied by warring pirate clans. The emphasis of this game is on multiplayer competition, exploration in an open world, and solo adventuring. The game runs on a Minecraft like server system with a goal of about 50-100 players on a single server. The player characters are tied to the server where they are created, and are susceptible to permadeath: deletion of a character upon death. The servers are designed to allow a large amount of modification by the hosts.
 
 ## Libraries
