@@ -23,66 +23,65 @@ enum class PacketType {
 	PLAYER_NEW = 9,
 	PLAYER_DELETE = 10,
 	PLAYER_MOVE = 11,
-
 };
 
 struct Ping {
-	PacketType type = PacketType::PING;
+	PacketType type;
 };
 
 struct Pong {
-	PacketType type = PacketType::PONG;
+	PacketType type;
 };
 
 struct BroadcastRequest {
-	PacketType type = PacketType::BROADCAST_REQUEST;
+	PacketType type;
 };
 
 struct BroadcastResponse {
-	PacketType type = PacketType::BROADCAST_RESPONSE;
+	PacketType type;
 	char name[PACKET_STRING_SIZE];
 	//TODO: version
 };
 
 struct JoinRequest {
-	PacketType type = PacketType::JOIN_REQUEST;
+	PacketType type;
 	//TODO: player data
 };
 
 struct JoinResponse {
-	PacketType type = PacketType::JOIN_RESPONSE;
+	PacketType type;
 	int playerIndex;
 	//resource list
 };
 
 struct Disconnect {
-	PacketType type = PacketType::DISCONNECT;
+	PacketType type;
 };
 
 struct Synchronize {
-	PacketType type = PacketType::SYNCHRONIZE;
+	PacketType type;
 };
 
 struct PlayerNew {
-	PacketType type = PacketType::PLAYER_NEW;
+	PacketType type;
 	int playerIndex;
 	//TODO Playerdata
 };
 
 struct PlayerDelete {
-	PacketType type = PacketType::PLAYER_DELETE;
+	PacketType type;
 	int playerIndex;
 };
 
 struct PlayerMove {
-	PacketType type = PacketType::PLAYER_MOVE;
+	PacketType type;
 	int playerIndex;
 	Vector2 position;
 	Vector2 motion;
 };
 
 union Packet {
-	Packet() {}
+	Packet() {};
 	PacketType type = PacketType::NONE;
 
 	Ping ping;
