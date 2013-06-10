@@ -28,9 +28,11 @@ void ServerApplication::Init() {
 }
 
 void ServerApplication::Proc() {
+	Clock::duration delta = Clock::now() - lastTick;
+	lastTick = Clock::now();
 	while(running) {
 		HandleNetwork();
-		UpdateWorld();
+		UpdateWorld(double(delta.count()) / Clock::duration::period::den);
 		SDL_Delay(10);
 	}
 }
@@ -49,51 +51,52 @@ void ServerApplication::HandleNetwork() {
 	while(netUtil.Receive()) {
 		memcpy(&p, netUtil.GetInData(), sizeof(Packet));
 		switch(p.type) {
-			case PacketType::PING:
-				//
+			case PacketType::PING: {
+				//quick pong
+				Packet p;
+				p.type = PacketType::PONG;
+				netUtil.Send(&netUtil.GetInPacket()->address, &p, sizeof(Packet));
+			}
 			break;
 			case PacketType::PONG:
 				//
 			break;
 			case PacketType::BROADCAST_REQUEST:
-				//
+				Broadcast(p.broadcastRequest);
 			break;
-			case PacketType::BROADCAST_RESPONSE:
-				//
-			break;
-			case PacketType::JOIN_REQUEST:
-				//
-			break;
-			case PacketType::JOIN_RESPONSE:
-				//
-			break;
-			case PacketType::DISCONNECT:
-				//
-			break;
-			case PacketType::SYNCHRONIZE:
-				//
-			break;
-			case PacketType::PLAYER_NEW:
-				//
-			break;
-			case PacketType::PLAYER_DELETE:
-				//
-			break;
-			case PacketType::PLAYER_MOVE:
-				//
-			break;
+//			case PacketType::BROADCAST_RESPONSE:
+//				//
+//			break;
+//			case PacketType::JOIN_REQUEST:
+//				//
+//			break;
+//			case PacketType::JOIN_RESPONSE:
+//				//
+//			break;
+//			case PacketType::DISCONNECT:
+//				//
+//			break;
+//			case PacketType::SYNCHRONIZE:
+//				//
+//			break;
+//			case PacketType::PLAYER_NEW:
+//				//
+//			break;
+//			case PacketType::PLAYER_DELETE:
+//				//
+//			break;
+//			case PacketType::PLAYER_MOVE:
+//				//
+//			break;
 			default:
 				throw(runtime_error("Failed to recognize the packet type"));
 		}
 	}
 }
 
-void ServerApplication::UpdateWorld() {
-	Clock::duration delta = Clock::now() - lastTick;
-	lastTick = Clock::now();
-	double d = double(delta.count()) / Clock::duration::period::den;
+void ServerApplication::UpdateWorld(double delta) {
 	for (auto it : players) {
-		it.second.Update(d);
+		it.second.Update(delta);
 	}
 }
 
@@ -101,4 +104,11 @@ void ServerApplication::UpdateWorld() {
 //Network loop
 //-------------------------
 
-//...
+void ServerApplication::Broadcast(BroadcastRequest& bcast) {
+	//respond to a broadcast request with the server's data
+	Packet p;
+	p.type = PacketType::BROADCAST_RESPONSE;
+	snprintf(p.broadcastResponse.name, PACKET_STRING_SIZE, "%s", configUtil.CString("servername"));
+	//TODO version information
+	netUtil.Send(&netUtil.GetInPacket()->address, &p, sizeof(Packet));
+}

@@ -11,6 +11,23 @@
 #include <map>
 #include <chrono>
 
+struct ClientData {
+	int index;
+	int channel;
+	int playerIndex;
+};
+
+struct PlayerData {
+	int index;
+	int clientIndex;
+	Vector2 position;
+	Vector2 motion;
+
+	void Update(double delta) {
+		position += motion * delta;
+	}
+};
+
 class ServerApplication {
 public:
 	ServerApplication();
@@ -21,28 +38,12 @@ public:
 
 	ServerApplication(ServerApplication const&) = delete;
 private:
-	struct ClientData {
-		int index;
-		int channel;
-		int playerIndex;
-	};
-	struct PlayerData {
-		int index;
-		int clientIndex;
-		Vector2 position;
-		Vector2 motion;
-
-		void Update(double delta) {
-			position += motion * delta;
-		}
-	};
-
 	//game loop
 	void HandleNetwork();
-	void UpdateWorld();
+	void UpdateWorld(double delta);
 
 	//network loop
-	//...
+	void Broadcast(BroadcastRequest&);
 
 	Clock::time_point lastTick = Clock::now();
 
