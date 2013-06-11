@@ -23,8 +23,16 @@ void ServerApplication::Init() {
 	}
 
 	configUtil.Load("rsc/config.cfg");
-	netUtil.Open(configUtil.Int("serverport"), sizeof(Packet));
-	running = true;
+
+	//check the port is valid
+	if (configUtil.Int("server.port") <= 0) {
+		throw(runtime_error("Cannot open the server on an invalid port or port 0"));
+	}
+	cout << "Opening on port " << configUtil["server.port"] << endl;
+	netUtil.Open(configUtil.Int("server.port"), sizeof(Packet));
+
+	//disabled for debugging
+//	running = true;
 }
 
 void ServerApplication::Proc() {
