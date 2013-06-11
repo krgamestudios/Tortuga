@@ -41,18 +41,60 @@
 //-------------------------
 
 SceneManager::SceneManager() {
-	activeScene = nullptr;
+	//
 }
 
 SceneManager::~SceneManager() {
 	UnloadScene();
 }
 
-void SceneManager::Init() {
-	if (SDL_Init(SDL_INIT_VIDEO))
-		throw(std::runtime_error("Failed to initialize SDL"));
+/* SceneManager::Init()
+ * This function initializes the entire program. There are a number of things
+ * that could go wrong here, which is why there is such an unusual order of
+ * operations.
+ * Important things to note:
+ *   The APIs are initiated here.
+ *   The global objects are created here.
+ *   The game's screen is created here, based on information loaded from the config file.
+ *   The ConfigUtility's call to Load() also ensures that the "rsc\" folder is in the directory. It's easy to forget it.
+*/
 
-	BaseScene::SetScreen(800, 600);
+void SceneManager::Init() {
+	//load the config file
+	try {
+		configUtil = ServiceLocator<ConfigUtility>::Set(new ConfigUtility());
+		configUtil->Load("rsc/config.cfg");
+	}
+	catch(std::runtime_error& e) {
+		std::string s = e.what();
+		s += "; Ensure that the \"rsc\" directory is present";
+		throw(std::runtime_error(s));
+	}
+
+	//initialize the APIs
+	if (SDL_Init(SDL_INIT_VIDEO)) {
+		throw(std::runtime_error("Failed to initialize SDL"));
+	}
+	if (SDLNet_Init()) {
+		throw(std::runtime_error("Failed to initialize SDL_net"));
+	}
+
+	//create the screen
+	Uint32 flags = SDL_HWSURFACE | SDL_DOUBLEBUF;
+	flags |= configUtil->Bool("screen.f") ? SDL_FULLSCREEN : 0;
+
+	BaseScene::SetScreen(
+		configUtil->Int("screen.w"),
+		configUtil->Int("screen.h"),
+		SDL_GetVideoInfo()->vfmt->BitsPerPixel,
+		flags);
+
+	//instanciate the remaining services
+	surfaceMgr = ServiceLocator<SurfaceManager>::Set(new SurfaceManager());
+	netUtil = ServiceLocator<UDPNetworkUtility>::Set(new UDPNetworkUtility());
+
+	//initiate the remaining services
+	netUtil->Open(0, sizeof(Packet));
 }
 
 void SceneManager::Proc() {
@@ -94,7 +136,13 @@ void SceneManager::Proc() {
 }
 
 void SceneManager::Quit() {
+	//clean up the services
+	configUtil = ServiceLocator<ConfigUtility>::Set(nullptr);
+	surfaceMgr = ServiceLocator<SurfaceManager>::Set(nullptr);
+	netUtil = ServiceLocator<UDPNetworkUtility>::Set(nullptr);
+
 	UnloadScene();
+	SDLNet_Quit();
 	SDL_Quit();
 }
 

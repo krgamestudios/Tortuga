@@ -24,6 +24,12 @@
 
 #include "scene_list.hpp"
 #include "base_scene.hpp"
+#include "service_locator.hpp"
+#include "packet_type.hpp"
+
+#include "config_utility.hpp"
+#include "surface_manager.hpp"
+#include "udp_network_utility.hpp"
 
 #include "SDL/SDL.h"
 
@@ -42,7 +48,11 @@ private:
 	void LoadScene(SceneList sceneIndex);
 	void UnloadScene();
 
-	BaseScene* activeScene;
+	BaseScene* activeScene = nullptr;
+
+	ConfigUtility* configUtil = nullptr;
+	SurfaceManager* surfaceMgr = nullptr;
+	UDPNetworkUtility* netUtil = nullptr;
 };
 
 #endif
