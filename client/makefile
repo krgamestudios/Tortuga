@@ -1,7 +1,8 @@
 #config
 LIBDIR=../libs
-LIB=-lmingw32 -lSDLmain -lSDL $(LIBDIR)/out/libCodebase.a $(LIBDIR)/out/libSDL_net.a
-INCLUDES=$(LIBDIR)/Codebase $(LIBDIR)/SDL_net ../common
+LOCALLIBS=$(LIBDIR)/out/libCodebase.a
+LIB=$(LOCALLIBS) -lSDL_net -lwsock32 -liphlpapi -lmingw32 -lSDLmain -lSDL
+INCLUDES=$(LIBDIR)/Codebase ../common
 CXXFLAGS+=-std=c++11 -DDEBUG $(addprefix -I,$(INCLUDES))
 
 #source

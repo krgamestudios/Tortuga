@@ -1,8 +1,8 @@
 OUTDIR=out
 
 all: $(OUTDIR)
-	$(MAKE) -C codebase
 	$(MAKE) -C SDL_net
+	$(MAKE) -C codebase
 
 $(OUTDIR):
 	mkdir $(OUTDIR)
