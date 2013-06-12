@@ -2,6 +2,10 @@
 #define MAINMENU_HPP_
 
 #include "base_scene.hpp"
+#include "service_locator.hpp"
+
+#include "surface_manager.hpp"
+#include "button.hpp"
 
 class MainMenu : public BaseScene {
 public:
@@ -21,7 +25,12 @@ protected:
 	void MouseButtonDown(SDL_MouseButtonEvent const&);
 	void MouseButtonUp(SDL_MouseButtonEvent const&);
 	void KeyDown(SDL_KeyboardEvent const&);
-	void KeyUp(SDL_KeyboardEvent const&);
+
+	SurfaceManager* surfaceMgr = ServiceLocator<SurfaceManager>::Get();
+
+	Button startButton;
+	Button optionsButton;
+	Button quitButton;
 };
 
 #endif

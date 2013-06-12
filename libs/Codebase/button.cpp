@@ -23,15 +23,13 @@
 
 #include <stdexcept>
 
-Button::Button():
-	Button(0,0, nullptr, nullptr)
-{
+Button::Button(Sint16 i, Sint16 j, SDL_Surface* imageSurface, SDL_Surface* fontSurface, std::string s) {
+	Setup(i, j, imageSurface, fontSurface, s);
 }
 
-Button::Button(Sint16 i, Sint16 j, SDL_Surface* imageSurface, SDL_Surface* fontSurface, std::string s) {
+void Button::Setup(Sint16 i, Sint16 j, SDL_Surface* imageSurface, SDL_Surface* fontSurface, std::string s) {
 	x = i;
 	y = j;
-	state = State::NORMAL;
 
 	SetSurfaces(imageSurface, fontSurface);
 

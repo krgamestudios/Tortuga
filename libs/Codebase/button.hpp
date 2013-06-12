@@ -34,8 +34,10 @@ public:
 		NORMAL, HOVER, PRESSED
 	};
 
-	Button();
+	Button() = default;
 	Button(Sint16 x, Sint16 y, SDL_Surface* imageSurface, SDL_Surface* fontSurface, std::string text = "");
+
+	void Setup(Sint16 x, Sint16 y, SDL_Surface* imageSurface, SDL_Surface* fontSurface, std::string text = "");
 
 	//return the current state
 	State MouseMotion(SDL_MouseMotionEvent const&);
@@ -69,11 +71,11 @@ public:
 private:
 	State CalcState(Sint16 x, Sint16 y, bool leftPressed);
 
-	Sint16 x, y;
-	Sint16 textX, textY; //prevent recalc every loop
+	Sint16 x = 0, y = 0;
+	Sint16 textX = 0, textY = 0; //prevent recalc every loop
 	Image image;
 	RasterFont font;
-	State state;
+	State state = State::NORMAL;
 	std::string text;
 };
 
