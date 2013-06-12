@@ -137,6 +137,10 @@ void SceneManager::Proc() {
 
 void SceneManager::Quit() {
 	//clean up the services
+	netUtil->Close();
+	surfaceMgr->FreeAll();
+
+	//delete the services
 	configUtil = ServiceLocator<ConfigUtility>::Set(nullptr);
 	surfaceMgr = ServiceLocator<SurfaceManager>::Set(nullptr);
 	netUtil = ServiceLocator<UDPNetworkUtility>::Set(nullptr);

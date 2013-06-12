@@ -2,6 +2,14 @@
 #define SPLASHSCREEN_HPP_
 
 #include "base_scene.hpp"
+#include "service_locator.hpp"
+#include "defines.hpp"
+
+#include "config_utility.hpp"
+#include "surface_manager.hpp"
+#include "image.hpp"
+
+#include <chrono>
 
 class SplashScreen : public BaseScene {
 public:
@@ -11,17 +19,15 @@ public:
 
 protected:
 	/* Frame loop */
-	void FrameStart();
-	void Update(double delta);
-	void FrameEnd();
-	void Render(SDL_Surface* const);
+	void RunFrame(double delta);
+	void RenderFrame();
+	void LoadResources();
 
-	/* Event handlers */
-	void MouseMotion(SDL_MouseMotionEvent const&);
-	void MouseButtonDown(SDL_MouseButtonEvent const&);
-	void MouseButtonUp(SDL_MouseButtonEvent const&);
-	void KeyDown(SDL_KeyboardEvent const&);
-	void KeyUp(SDL_KeyboardEvent const&);
+	bool loaded = false;
+	ConfigUtility* configUtil = ServiceLocator<ConfigUtility>::Get();
+	SurfaceManager* surfaceMgr = ServiceLocator<SurfaceManager>::Get();
+	Image logo;
+	Clock::time_point start = Clock::now();
 };
 
 #endif
