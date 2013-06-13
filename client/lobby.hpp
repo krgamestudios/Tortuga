@@ -32,7 +32,6 @@ protected:
 	void Render(SDL_Surface* const);
 
 	//Event handlers
-	void QuitEvent() { SetNextScene(SceneList::MAINMENU); }
 	void MouseMotion(SDL_MouseMotionEvent const&);
 	void MouseButtonDown(SDL_MouseButtonEvent const&);
 	void MouseButtonUp(SDL_MouseButtonEvent const&);

@@ -43,14 +43,14 @@ void OptionScreen::MouseButtonDown(SDL_MouseButtonEvent const& button) {
 
 void OptionScreen::MouseButtonUp(SDL_MouseButtonEvent const& button) {
 	if (backButton.MouseButtonUp(button) == Button::State::HOVER) {
-		QuitEvent();
+		SetNextScene(SceneList::MAINMENU);
 	}
 }
 
 void OptionScreen::KeyDown(SDL_KeyboardEvent const& key) {
 	switch(key.keysym.sym) {
 		case SDLK_ESCAPE:
-			QuitEvent();
+			SetNextScene(SceneList::MAINMENU);
 			break;
 	}
 }

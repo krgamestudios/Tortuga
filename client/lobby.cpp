@@ -91,7 +91,7 @@ void Lobby::MouseButtonUp(SDL_MouseButtonEvent const& button) {
 		//TODO: join a server
 	}
 	else if (backButton.MouseButtonUp(button) == Button::State::HOVER) {
-		QuitEvent();
+		SetNextScene(SceneList::MAINMENU);
 	}
 	else if (
 		//clicked within bounds TODO: make the damn collision system
@@ -113,7 +113,7 @@ void Lobby::MouseButtonUp(SDL_MouseButtonEvent const& button) {
 void Lobby::KeyDown(SDL_KeyboardEvent const& key) {
 	switch(key.keysym.sym) {
 		case SDLK_ESCAPE:
-			QuitEvent();
+			SetNextScene(SceneList::MAINMENU);
 			break;
 	}
 }
