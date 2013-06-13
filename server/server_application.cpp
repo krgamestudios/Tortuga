@@ -28,6 +28,7 @@ void ServerApplication::Init() {
 	if (configUtil.Int("server.port") <= 0) {
 		throw(runtime_error("Cannot open the server on an invalid port or port 0"));
 	}
+	cout << configUtil["server.name"] << endl;
 	cout << "Opening on port " << configUtil["server.port"] << endl;
 	netUtil.Open(configUtil.Int("server.port"), sizeof(Packet));
 
@@ -116,7 +117,7 @@ void ServerApplication::Broadcast(BroadcastRequest& bcast) {
 	//respond to a broadcast request with the server's data
 	Packet p;
 	p.type = PacketType::BROADCAST_RESPONSE;
-	snprintf(p.broadcastResponse.name, PACKET_STRING_SIZE, "%s", configUtil.CString("servername"));
+	snprintf(p.broadcastResponse.name, PACKET_STRING_SIZE, "%s", configUtil.CString("server.name"));
 	//TODO version information
 	netUtil.Send(&netUtil.GetInPacket()->address, &p, sizeof(Packet));
 }
