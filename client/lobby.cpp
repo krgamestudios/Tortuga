@@ -44,7 +44,7 @@ void Lobby::FrameStart() {
 }
 
 void Lobby::Update(double delta) {
-	//
+	Receive();
 }
 
 void Lobby::FrameEnd() {
@@ -126,6 +126,62 @@ void Lobby::KeyUp(SDL_KeyboardEvent const& key) {
 //Utilities
 //-------------------------
 
+void Lobby::Receive() {
+	Packet p;
+	while(netUtil->Receive()) {
+		memcpy(&p, netUtil->GetInData(), sizeof(Packet));
+		switch(p.type) {
+			case PacketType::PING:
+				//quick pong
+				p.type = PacketType::PONG;
+				netUtil->Send(&netUtil->GetInPacket()->address, &p, sizeof(Packet));
+			break;
+			case PacketType::PONG:
+				//
+			break;
+//			case PacketType::BROADCAST_REQUEST:
+//				//
+//			break;
+			case PacketType::BROADCAST_RESPONSE:
+				PushServer(p.broadcastResponse);
+			break;
+//			case PacketType::JOIN_REQUEST:
+//				//
+//			break;
+//			case PacketType::JOIN_RESPONSE:
+//				//
+//			break;
+//			case PacketType::DISCONNECT:
+//				//
+//			break;
+//			case PacketType::SYNCHRONIZE:
+//				//
+//			break;
+//			case PacketType::PLAYER_NEW:
+//				//
+//			break;
+//			case PacketType::PLAYER_DELETE:
+//				//
+//			break;
+//			case PacketType::PLAYER_MOVE:
+//				//
+//			break;
+			default:
+				throw(runtime_error("Failed to recognize the packet type"));
+		}
+	}
+}
+
 void Lobby::BroadcastNetwork() {
-	//
+	Packet p;
+	p.type = PacketType::BROADCAST_REQUEST;
+	netUtil->Send("255.255.255.255", configUtil->Int("server.port"), &p, sizeof(Packet));
+	serverList.clear();
+}
+
+void Lobby::PushServer(BroadcastResponse& bcast) {
+	ServerEntry entry;
+	entry.name = bcast.name;
+	entry.address = netUtil->GetInPacket()->address;
+	serverList.push_back(entry);
 }

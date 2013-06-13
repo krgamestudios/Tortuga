@@ -33,7 +33,7 @@ void ServerApplication::Init() {
 	netUtil.Open(configUtil.Int("server.port"), sizeof(Packet));
 
 	//disabled for debugging
-//	running = true;
+	running = true;
 }
 
 void ServerApplication::Proc() {
@@ -60,12 +60,10 @@ void ServerApplication::HandleNetwork() {
 	while(netUtil.Receive()) {
 		memcpy(&p, netUtil.GetInData(), sizeof(Packet));
 		switch(p.type) {
-			case PacketType::PING: {
+			case PacketType::PING:
 				//quick pong
-				Packet p;
 				p.type = PacketType::PONG;
 				netUtil.Send(&netUtil.GetInPacket()->address, &p, sizeof(Packet));
-			}
 			break;
 			case PacketType::PONG:
 				//

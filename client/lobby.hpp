@@ -3,6 +3,7 @@
 
 #include "base_scene.hpp"
 #include "service_locator.hpp"
+#include "packet_type.hpp"
 
 #include "config_utility.hpp"
 #include "surface_manager.hpp"
@@ -39,7 +40,9 @@ protected:
 	void KeyUp(SDL_KeyboardEvent const&);
 
 	//utilities
+	void Receive();
 	void BroadcastNetwork();
+	void PushServer(BroadcastResponse&);
 
 	//services
 	ConfigUtility* configUtil = ServiceLocator<ConfigUtility>::Get();
