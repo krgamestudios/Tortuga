@@ -13,10 +13,10 @@ static std::deque<Packet> queue;
 
 int networkQueue(void*) {
 	UDPNetworkUtility* netUtil = ServiceLocator<UDPNetworkUtility>::Get();
-	Packet p;
 	for(;;) {
 		SDL_SemWait(lock);
 		while(netUtil->Receive()) {
+			Packet p;
 			memcpy(&p, netUtil->GetInData(), sizeof(Packet));
 			queue.push_back(p);
 		}

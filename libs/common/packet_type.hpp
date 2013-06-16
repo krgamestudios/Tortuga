@@ -81,8 +81,8 @@ struct PlayerMove {
 };
 
 union Packet {
-	Packet() {};
-	PacketType type = PacketType::NONE;
+	Packet() { type = PacketType::NONE; };
+	PacketType type;
 
 	Ping ping;
 	Pong pong;
