@@ -5,8 +5,8 @@ Tortuga is a 3/4 top down multiplayer RPG set in a large archipelago occupied by
 ## Libraries
 
 * [SDL](http://www.libsdl.org/) - Simple DirectMedia Layer API
-* [SDL_net](http://www.libsdl.org/projects/SDL_net/) - SDL's networking extension, modified; libs/SDL_net
-* [Codebase](https://github.com/Ratstail91/Codebase) - generic reusable code modules; libs/Codebase
+* [SDL_net](http://www.libsdl.org/projects/SDL_net/) - SDL's networking extension, slightly modified. This must be installed first.
+* [Codebase](https://github.com/Ratstail91/Codebase) - generic reusable code modules
 
 ## Instructions
 

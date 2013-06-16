@@ -1,8 +1,8 @@
 #config
 LIBDIR=..
-LOCALLIBS=
+LOCALLIBS=$(LIBDIR)/out/libCodebase.a
 LIB=
-INCLUDES=
+INCLUDES=$(LIBDIR)/Codebase
 CXXFLAGS+=-std=c++11 -DDEBUG $(addprefix -I,$(INCLUDES))
 
 #source
@@ -14,7 +14,7 @@ OBJ=$(addprefix $(OBJDIR)/,$(SRC:.cpp=.o))
 
 #output
 OUTDIR=../out
-OUT=$(addprefix $(OUTDIR)/,libCodebase.a)
+OUT=$(addprefix $(OUTDIR)/,libCommon.a)
 
 #targets
 all: $(OBJ) $(OUT)

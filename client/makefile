@@ -1,8 +1,8 @@
 #config
 LIBDIR=../libs
-LOCALLIBS=$(LIBDIR)/out/libCodebase.a
+LOCALLIBS=$(LIBDIR)/out/libCodebase.a $(LIBDIR)/out/libCommon.a
 LIB=$(LOCALLIBS) -lSDL_net -lwsock32 -liphlpapi -lmingw32 -lSDLmain -lSDL
-INCLUDES=$(LIBDIR)/Codebase ../common
+INCLUDES=$(LIBDIR)/Codebase $(LIBDIR)/common
 CXXFLAGS+=-std=c++11 -DDEBUG $(addprefix -I,$(INCLUDES))
 
 #source

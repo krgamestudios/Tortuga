@@ -1,7 +1,9 @@
 #config
+LIBDIR=..
+LOCALLIBS=
+LIB=
 INCLUDES=
 CFLAGS+=$(addprefix -I,$(INCLUDES))
-LIB=
 
 #source
 SRC=$(wildcard *.c)
