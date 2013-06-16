@@ -12,6 +12,9 @@ Out/
 
 #Project generated files
 *.db
+*.o
+*.a
+*.exe
 
 #Shell files
 *.bat
