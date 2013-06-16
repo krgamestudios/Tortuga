@@ -26,10 +26,17 @@ Lobby::Lobby() {
 	serverList.push_back({"bar",{0,0}});
 	serverList.push_back({"foobar",{0,0}});
 
+	queueThread = SDL_CreateThread(networkQueue, nullptr);
+
+	if (!queueThread) {
+		throw(runtime_error("Failed to create the network thread"));
+	}
+
 	BroadcastNetwork();
 }
 
 Lobby::~Lobby() {
+	SDL_KillThread(queueThread);
 #ifdef DEBUG
 	cout << "leaving Lobby" << endl;
 #endif
@@ -44,7 +51,13 @@ void Lobby::FrameStart() {
 }
 
 void Lobby::Update(double delta) {
-	Receive();
+	try {
+		//process all packets on the network queue
+		while(HandlePacket(popNetworkPacket()));
+	}
+	catch(exception& e) {
+		cerr << "Network Error: " << e.what() << endl;
+	}
 }
 
 void Lobby::FrameEnd() {
@@ -126,50 +139,51 @@ void Lobby::KeyUp(SDL_KeyboardEvent const& key) {
 //Utilities
 //-------------------------
 
-void Lobby::Receive() {
-	Packet p;
-	while(netUtil->Receive()) {
-		memcpy(&p, netUtil->GetInData(), sizeof(Packet));
-		switch(p.type) {
-			case PacketType::PING:
-				//quick pong
-				p.type = PacketType::PONG;
-				netUtil->Send(&netUtil->GetInPacket()->address, &p, sizeof(Packet));
-			break;
-			case PacketType::PONG:
-				//
-			break;
-//			case PacketType::BROADCAST_REQUEST:
-//				//
-//			break;
-			case PacketType::BROADCAST_RESPONSE:
-				PushServer(p.broadcastResponse);
-			break;
-//			case PacketType::JOIN_REQUEST:
-//				//
-//			break;
-//			case PacketType::JOIN_RESPONSE:
-//				//
-//			break;
-//			case PacketType::DISCONNECT:
-//				//
-//			break;
-//			case PacketType::SYNCHRONIZE:
-//				//
-//			break;
-//			case PacketType::PLAYER_NEW:
-//				//
-//			break;
-//			case PacketType::PLAYER_DELETE:
-//				//
-//			break;
-//			case PacketType::PLAYER_MOVE:
-//				//
-//			break;
-			default:
-				throw(runtime_error("Failed to recognize the packet type"));
-		}
+int Lobby::HandlePacket(Packet p) {
+	switch(p.type) {
+		case PacketType::NONE:
+			//DO NOTHING
+			return 0;
+		break;
+		case PacketType::PING:
+			//quick pong
+			p.type = PacketType::PONG;
+			netUtil->Send(&netUtil->GetInPacket()->address, &p, sizeof(Packet));
+		break;
+		case PacketType::PONG:
+			//
+		break;
+//		case PacketType::BROADCAST_REQUEST:
+//			//
+//		break;
+		case PacketType::BROADCAST_RESPONSE:
+			PushServer(p.broadcastResponse);
+		break;
+//		case PacketType::JOIN_REQUEST:
+//			//
+//		break;
+//		case PacketType::JOIN_RESPONSE:
+//			//
+//		break;
+//		case PacketType::DISCONNECT:
+//			//
+//		break;
+//		case PacketType::SYNCHRONIZE:
+//			//
+//		break;
+//		case PacketType::PLAYER_NEW:
+//			//
+//		break;
+//		case PacketType::PLAYER_DELETE:
+//			//
+//		break;
+//		case PacketType::PLAYER_MOVE:
+//			//
+//		break;
+		default:
+			throw(runtime_error("Failed to recognize the packet type"));
 	}
+	return 1;
 }
 
 void Lobby::BroadcastNetwork() {

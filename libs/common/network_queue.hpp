@@ -4,6 +4,6 @@
 #include "packet_type.hpp"
 
 int networkQueue(void*);
-Packet getPacket();
+Packet popNetworkPacket();
 
 #endif

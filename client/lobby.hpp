@@ -4,12 +4,15 @@
 #include "base_scene.hpp"
 #include "service_locator.hpp"
 #include "packet_type.hpp"
+#include "network_queue.hpp"
 
 #include "config_utility.hpp"
 #include "surface_manager.hpp"
 #include "udp_network_utility.hpp"
 #include "button.hpp"
 #include "raster_font.hpp"
+
+#include "SDL/SDL_thread.h"
 
 #include <vector>
 #include <string>
@@ -40,7 +43,7 @@ protected:
 	void KeyUp(SDL_KeyboardEvent const&);
 
 	//utilities
-	void Receive();
+	int HandlePacket(Packet p);
 	void BroadcastNetwork();
 	void PushServer(BroadcastResponse&);
 
@@ -58,6 +61,8 @@ protected:
 	SDL_Rect listBox;
 	std::vector<ServerEntry> serverList;
 	ServerEntry* selectedServer = nullptr;
+
+	SDL_Thread* queueThread = nullptr;
 };
 
 #endif
