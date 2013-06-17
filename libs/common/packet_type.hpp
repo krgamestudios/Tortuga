@@ -97,6 +97,10 @@ union Packet {
 	PlayerNew playerNew;
 	PlayerDelete playerDelete;
 	PlayerMove playerMove;
+
+#ifdef DEBUG
+	char buffer[1024];
+#endif
 };
 
 #pragma pack(pop)
