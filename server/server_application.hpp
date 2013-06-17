@@ -61,6 +61,9 @@ private:
 	std::map<int, PlayerData> players;
 
 	bool running = false;
+
+	int clientTicker = 0;
+	int playerTicker = 0;
 };
 
 #endif

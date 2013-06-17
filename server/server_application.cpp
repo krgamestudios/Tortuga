@@ -168,5 +168,13 @@ void ServerApplication::Broadcast(BroadcastRequest& bcast) {
 }
 
 void ServerApplication::HandleConnection(JoinRequest& request) {
-	cout << "request received" << endl;
+	//create the containers
+	ClientData client = { clientTicker++ };
+	PlayerData player = { playerTicker++ };
+
+	//link the containers
+	client.playerIndex = player.index;
+	player.clientIndex = client.index;
+
+	//??? oh fuck
 }
