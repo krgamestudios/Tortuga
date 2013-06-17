@@ -62,6 +62,7 @@ protected:
 	std::vector<ServerEntry> serverList;
 	ServerEntry* selectedServer = nullptr;
 
+	//threads
 	SDL_Thread* queueThread = nullptr;
 };
 

@@ -7,12 +7,19 @@
 
 #include <deque>
 
+#ifdef DEBUG
+#include <iostream>
+#endif
+
 static SDL_sem* lock = SDL_CreateSemaphore(1);
 
 static std::deque<Packet> queue;
 
 int networkQueue(void*) {
 	UDPNetworkUtility* netUtil = ServiceLocator<UDPNetworkUtility>::Get();
+#ifdef DEBUG
+	std::cout << "int networkQueue(void*) active" << std::endl;
+#endif
 	for(;;) {
 		SDL_SemWait(lock);
 		while(netUtil->Receive()) {

@@ -26,9 +26,7 @@ Lobby::Lobby() {
 	serverList.push_back({"bar",{0,0}});
 	serverList.push_back({"foobar",{0,0}});
 
-	queueThread = SDL_CreateThread(networkQueue, nullptr);
-
-	if (!queueThread) {
+	if (!(queueThread = SDL_CreateThread(networkQueue, nullptr))) {
 		throw(runtime_error("Failed to create the network thread"));
 	}
 

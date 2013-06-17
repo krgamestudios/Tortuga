@@ -145,7 +145,10 @@ void SceneManager::Quit() {
 	surfaceMgr = ServiceLocator<SurfaceManager>::Set(nullptr);
 	netUtil = ServiceLocator<UDPNetworkUtility>::Set(nullptr);
 
+	//clean up the scene
 	UnloadScene();
+
+	//deinitialize the APIs
 	SDLNet_Quit();
 	SDL_Quit();
 }

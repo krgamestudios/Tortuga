@@ -3,10 +3,14 @@
 
 #include "defines.hpp"
 #include "packet_type.hpp"
+#include "service_locator.hpp"
+#include "network_queue.hpp"
 
 #include "config_Utility.hpp"
 #include "udp_network_utility.hpp"
 #include "vector2.hpp"
+
+#include "SDL/SDL_thread.h"
 
 #include <map>
 #include <chrono>
@@ -39,20 +43,26 @@ public:
 	ServerApplication(ServerApplication const&) = delete;
 private:
 	//game loop
-	void HandleNetwork();
 	void UpdateWorld(double delta);
 
 	//network loop
+	int HandlePacket(Packet p);
 	void Broadcast(BroadcastRequest&);
 
+	//services
+	ConfigUtility* configUtil = nullptr;
+	UDPNetworkUtility* netUtil = nullptr;
+
+	//members
 	Clock::time_point lastTick = Clock::now();
 
 	std::map<int, ClientData> clients;
 	std::map<int, PlayerData> players;
 
-	ConfigUtility configUtil;
-	UDPNetworkUtility netUtil;
 	bool running = false;
+
+	//threads
+	SDL_Thread* queueThread = nullptr;
 };
 
 #endif

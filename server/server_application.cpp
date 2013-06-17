@@ -17,22 +17,54 @@ ServerApplication::~ServerApplication() {
 	//
 }
 
-void ServerApplication::Init() {
-	if (SDLNet_Init()) {
-		throw(runtime_error("Failed to initialide SDL_net"));
-	}
+/* ServerApplication::Init()
+ * This function initializes the entire program. There are a number of things
+ * that could go wrong here, which is why there is such an unusual order of
+ * operations.
+ * Important things to note:
+ *   The APIs are initiated here.
+ *   The global objects are created here.
+ *   The ConfigUtility's call to Load() also ensures that the "rsc\" folder is in the directory. It's easy to forget it.
+*/
 
-	configUtil.Load("rsc/config.cfg");
+void ServerApplication::Init() {
+	//load the config file
+	try {
+		configUtil = ServiceLocator<ConfigUtility>::Set(new ConfigUtility());
+		configUtil->Load("rsc/config.cfg");
+	}
+	catch(std::runtime_error& e) {
+		std::string s = e.what();
+		s += "; Ensure that the \"rsc\" directory is present";
+		throw(std::runtime_error(s));
+	}
 
 	//check the port is valid
-	if (configUtil.Int("server.port") <= 0) {
+	if (configUtil->Int("server.port") <= 0) {
 		throw(runtime_error("Cannot open the server on an invalid port or port 0"));
 	}
-	cout << configUtil["server.name"] << endl;
-	cout << "Opening on port " << configUtil["server.port"] << endl;
-	netUtil.Open(configUtil.Int("server.port"), sizeof(Packet));
 
-	//disabled for debugging
+	//initialize the APIs
+	if (SDLNet_Init()) {
+		throw(runtime_error("Failed to initialize SDL_net"));
+	}
+
+	//instanciate the remaining services
+	netUtil = ServiceLocator<UDPNetworkUtility>::Set(new UDPNetworkUtility());
+
+	//initiate the remaining services
+	netUtil->Open(configUtil->Int("server.port"), sizeof(Packet));
+
+	//create the threads
+	if (!(queueThread = SDL_CreateThread(networkQueue, nullptr))) {
+		throw(runtime_error("Failed to create the network thread"));
+	}
+
+	//output the server information
+	cout << configUtil->String("server.name") << endl;
+	cout << "Open on port " << configUtil->String("server.port") << endl;
+
+	//disable this for debugging
 	running = true;
 }
 
@@ -40,66 +72,36 @@ void ServerApplication::Proc() {
 	Clock::duration delta = Clock::now() - lastTick;
 	lastTick = Clock::now();
 	while(running) {
-		HandleNetwork();
+		try {
+			//process all packets on the network queue
+			while(HandlePacket(popNetworkPacket()));
+		}
+		catch(exception& e) {
+			cerr << "Network Error: " << e.what() << endl;
+		}
 		UpdateWorld(double(delta.count()) / Clock::duration::period::den);
 		SDL_Delay(10);
 	}
 }
 
 void ServerApplication::Quit() {
-	netUtil.Close();
+	//close the threads
+	SDL_KillThread(queueThread);
+
+	//clean up the services
+	netUtil->Close();
+
+	//delete the services
+	configUtil = ServiceLocator<ConfigUtility>::Set(nullptr);
+	netUtil = ServiceLocator<UDPNetworkUtility>::Set(nullptr);
+
+	//deinitialize the APIs
 	SDLNet_Quit();
 }
 
 //-------------------------
 //Game loop
 //-------------------------
-
-void ServerApplication::HandleNetwork() {
-	Packet p;
-	while(netUtil.Receive()) {
-		memcpy(&p, netUtil.GetInData(), sizeof(Packet));
-		switch(p.type) {
-			case PacketType::PING:
-				//quick pong
-				p.type = PacketType::PONG;
-				netUtil.Send(&netUtil.GetInPacket()->address, &p, sizeof(Packet));
-			break;
-			case PacketType::PONG:
-				//
-			break;
-			case PacketType::BROADCAST_REQUEST:
-				Broadcast(p.broadcastRequest);
-			break;
-//			case PacketType::BROADCAST_RESPONSE:
-//				//
-//			break;
-//			case PacketType::JOIN_REQUEST:
-//				//
-//			break;
-//			case PacketType::JOIN_RESPONSE:
-//				//
-//			break;
-//			case PacketType::DISCONNECT:
-//				//
-//			break;
-//			case PacketType::SYNCHRONIZE:
-//				//
-//			break;
-//			case PacketType::PLAYER_NEW:
-//				//
-//			break;
-//			case PacketType::PLAYER_DELETE:
-//				//
-//			break;
-//			case PacketType::PLAYER_MOVE:
-//				//
-//			break;
-			default:
-				throw(runtime_error("Failed to recognize the packet type"));
-		}
-	}
-}
 
 void ServerApplication::UpdateWorld(double delta) {
 	for (auto it : players) {
@@ -111,11 +113,58 @@ void ServerApplication::UpdateWorld(double delta) {
 //Network loop
 //-------------------------
 
+int ServerApplication::HandlePacket(Packet p) {
+	switch(p.type) {
+		case PacketType::NONE:
+			//DO NOTHING
+			return 0;
+		break;
+		case PacketType::PING:
+			//quick pong
+			p.type = PacketType::PONG;
+			netUtil->Send(&netUtil->GetInPacket()->address, &p, sizeof(Packet));
+		break;
+		case PacketType::PONG:
+			//
+		break;
+		case PacketType::BROADCAST_REQUEST:
+			Broadcast(p.broadcastRequest);
+		break;
+//		case PacketType::BROADCAST_RESPONSE:
+//			//
+//		break;
+//		case PacketType::JOIN_REQUEST:
+//			//
+//		break;
+//		case PacketType::JOIN_RESPONSE:
+//			//
+//		break;
+//		case PacketType::DISCONNECT:
+//			//
+//		break;
+//		case PacketType::SYNCHRONIZE:
+//			//
+//		break;
+//		case PacketType::PLAYER_NEW:
+//			//
+//		break;
+//		case PacketType::PLAYER_DELETE:
+//			//
+//		break;
+//		case PacketType::PLAYER_MOVE:
+//			//
+//		break;
+		default:
+			throw(runtime_error("Failed to recognize the packet type"));
+	}
+	return 1;
+}
+
 void ServerApplication::Broadcast(BroadcastRequest& bcast) {
 	//respond to a broadcast request with the server's data
 	Packet p;
 	p.type = PacketType::BROADCAST_RESPONSE;
-	snprintf(p.broadcastResponse.name, PACKET_STRING_SIZE, "%s", configUtil.CString("server.name"));
+	snprintf(p.broadcastResponse.name, PACKET_STRING_SIZE, "%s", configUtil->CString("server.name"));
 	//TODO version information
-	netUtil.Send(&netUtil.GetInPacket()->address, &p, sizeof(Packet));
+	netUtil->Send(&netUtil->GetInPacket()->address, &p, sizeof(Packet));
 }
