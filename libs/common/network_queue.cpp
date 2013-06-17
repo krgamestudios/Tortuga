@@ -32,6 +32,16 @@ int networkQueue(void*) {
 	}
 }
 
+Packet peekNetworkPacket() {
+	SDL_SemWait(lock);
+	Packet p;
+	if (queue.size() > 0) {
+		Packet p = queue[0];
+	}
+	SDL_SemPost(lock);
+	return p;
+}
+
 Packet popNetworkPacket() {
 	SDL_SemWait(lock);
 	Packet p;
