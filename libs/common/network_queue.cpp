@@ -7,7 +7,6 @@
 
 #include <stdexcept>
 #include <deque>
-#include <iostream>
 
 static SDL_sem* lock = SDL_CreateSemaphore(1);
 static SDL_Thread* queueThread = nullptr;
@@ -18,8 +17,6 @@ static bool running = false;
 
 static int networkQueue(void*) {
 	UDPNetworkUtility* netUtil = ServiceLocator<UDPNetworkUtility>::Get();
-	//this line is the fix for the quirk
-//	std::cout << "thread running" << std::endl;
 	while(running) {
 		SDL_SemWait(lock);
 		while(netUtil->Receive()) {
@@ -34,10 +31,10 @@ static int networkQueue(void*) {
 }
 
 void BeginQueueThread() {
+	running = true;
 	if (!(queueThread = SDL_CreateThread(networkQueue, nullptr))) {
 		throw(std::runtime_error("Failed to create the network thread"));
 	}
-	running = true;
 }
 
 void EndQueueThread() {
