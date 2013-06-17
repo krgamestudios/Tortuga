@@ -159,9 +159,9 @@ int Lobby::HandlePacket(Packet p) {
 //		case PacketType::JOIN_REQUEST:
 //			//
 //		break;
-//		case PacketType::JOIN_RESPONSE:
-//			//
-//		break;
+		case PacketType::JOIN_RESPONSE:
+			//TODO
+		break;
 //		case PacketType::DISCONNECT:
 //			//
 //		break;
@@ -198,8 +198,7 @@ void Lobby::PushServer(BroadcastResponse& bcast) {
 }
 
 void Lobby::ConnectToServer(ServerEntry* server) {
-	/* _attempt_ to connect to a server
-	*/
+	//_attempt_ to connect to a server
 	if (!server) {
 		throw(runtime_error("No server received"));
 	}

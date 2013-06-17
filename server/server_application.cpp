@@ -168,5 +168,5 @@ void ServerApplication::Broadcast(BroadcastRequest& bcast) {
 }
 
 void ServerApplication::HandleConnection(JoinRequest& request) {
-	//
+	cout << "request received" << endl;
 }
