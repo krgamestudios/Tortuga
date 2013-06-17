@@ -3,6 +3,8 @@
 
 #include "vector2.hpp"
 
+#include "SDL_net/SDL_net.h"
+
 #define PACKET_STRING_SIZE 100
 
 #pragma pack(push, 0)
@@ -25,66 +27,75 @@ enum class PacketType {
 	PLAYER_MOVE = 11,
 };
 
-struct Ping {
+struct Metadata {
 	PacketType type;
+	IPaddress address;
+};
+
+struct Ping {
+	Metadata meta;
 };
 
 struct Pong {
-	PacketType type;
+	Metadata meta;
 };
 
 struct BroadcastRequest {
-	PacketType type;
+	Metadata meta;
 };
 
 struct BroadcastResponse {
-	PacketType type;
+	Metadata meta;
 	char name[PACKET_STRING_SIZE];
 	//TODO: version
 };
 
 struct JoinRequest {
-	PacketType type;
+	Metadata meta;
 	char playerHandle[PACKET_STRING_SIZE];
 	char playerAvatar[PACKET_STRING_SIZE];
 	//TODO: player data
 };
 
 struct JoinResponse {
-	PacketType type;
+	Metadata meta;
 	int playerIndex;
 	//resource list
 };
 
 struct Disconnect {
-	PacketType type;
+	Metadata meta;
 };
 
 struct Synchronize {
-	PacketType type;
+	Metadata meta;
 };
 
 struct PlayerNew {
-	PacketType type;
+	Metadata meta;
 	int playerIndex;
 	//TODO Playerdata
 };
 
 struct PlayerDelete {
-	PacketType type;
+	Metadata meta;
 	int playerIndex;
 };
 
 struct PlayerMove {
-	PacketType type;
+	Metadata meta;
 	int playerIndex;
 	Vector2 position;
 	Vector2 motion;
 };
 
 union Packet {
-	Packet() { type = PacketType::NONE; };
-	PacketType type;
+	Packet() {
+		meta.type = PacketType::NONE;
+		meta.address.host = 0;
+		meta.address.port = 0;
+	};
+	Metadata meta;
 
 	Ping ping;
 	Pong pong;

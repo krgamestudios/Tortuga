@@ -112,15 +112,15 @@ void ServerApplication::UpdateWorld(double delta) {
 //-------------------------
 
 int ServerApplication::HandlePacket(Packet p) {
-	switch(p.type) {
+	switch(p.meta.type) {
 		case PacketType::NONE:
 			//DO NOTHING
 			return 0;
 		break;
 		case PacketType::PING:
 			//quick pong
-			p.type = PacketType::PONG;
-			netUtil->Send(&netUtil->GetInPacket()->address, &p, sizeof(Packet));
+			p.meta.type = PacketType::PONG;
+			netUtil->Send(&p.meta.address, &p, sizeof(Packet));
 		break;
 		case PacketType::PONG:
 			//
@@ -161,10 +161,10 @@ int ServerApplication::HandlePacket(Packet p) {
 void ServerApplication::Broadcast(BroadcastRequest& bcast) {
 	//respond to a broadcast request with the server's data
 	Packet p;
-	p.type = PacketType::BROADCAST_RESPONSE;
+	p.meta.type = PacketType::BROADCAST_RESPONSE;
 	snprintf(p.broadcastResponse.name, PACKET_STRING_SIZE, "%s", configUtil->CString("server.name"));
 	//TODO version information
-	netUtil->Send(&netUtil->GetInPacket()->address, &p, sizeof(Packet));
+	netUtil->Send(&bcast.meta.address, &p, sizeof(Packet));
 }
 
 void ServerApplication::HandleConnection(JoinRequest& request) {

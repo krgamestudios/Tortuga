@@ -22,6 +22,7 @@ static int networkQueue(void*) {
 		while(netUtil->Receive()) {
 			Packet p;
 			memcpy(&p, netUtil->GetInData(), sizeof(Packet));
+			p.meta.address = netUtil->GetInPacket()->address;
 			queue.push_back(p);
 		}
 		SDL_SemPost(lock);

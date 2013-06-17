@@ -137,15 +137,15 @@ void Lobby::KeyUp(SDL_KeyboardEvent const& key) {
 //-------------------------
 
 int Lobby::HandlePacket(Packet p) {
-	switch(p.type) {
+	switch(p.meta.type) {
 		case PacketType::NONE:
 			//DO NOTHING
 			return 0;
 		break;
 		case PacketType::PING:
 			//quick pong
-			p.type = PacketType::PONG;
-			netUtil->Send(&netUtil->GetInPacket()->address, &p, sizeof(Packet));
+			p.meta.type = PacketType::PONG;
+			netUtil->Send(&p.meta.address, &p, sizeof(Packet));
 		break;
 		case PacketType::PONG:
 			//
@@ -185,7 +185,7 @@ int Lobby::HandlePacket(Packet p) {
 
 void Lobby::BroadcastNetwork() {
 	Packet p;
-	p.type = PacketType::BROADCAST_REQUEST;
+	p.meta.type = PacketType::BROADCAST_REQUEST;
 	netUtil->Send("255.255.255.255", configUtil->Int("server.port"), &p, sizeof(Packet));
 	serverList.clear();
 }
@@ -193,7 +193,7 @@ void Lobby::BroadcastNetwork() {
 void Lobby::PushServer(BroadcastResponse& bcast) {
 	ServerEntry entry;
 	entry.name = bcast.name;
-	entry.address = netUtil->GetInPacket()->address;
+	entry.address = bcast.meta.address;
 	serverList.push_back(entry);
 }
 
@@ -203,7 +203,7 @@ void Lobby::ConnectToServer(ServerEntry* server) {
 		throw(runtime_error("No server received"));
 	}
 	Packet p;
-	p.type = PacketType::JOIN_REQUEST;
+	p.meta.type = PacketType::JOIN_REQUEST;
 	snprintf(p.joinRequest.playerHandle, PACKET_STRING_SIZE, "%s", configUtil->CString("handle"));
 	snprintf(p.joinRequest.playerAvatar, PACKET_STRING_SIZE, "%s", configUtil->CString("avatar"));
 	netUtil->Send(&server->address, reinterpret_cast<void*>(&p), sizeof(Packet));

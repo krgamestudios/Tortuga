@@ -4,8 +4,8 @@
 
 using namespace std;
 
-int main() {
+int main(int, char**) {
 	Packet p;
-	cout << int(p.type) << endl;
+	cout << int(p.meta.type) << endl;
 	return 0;
 }
