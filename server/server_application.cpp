@@ -168,13 +168,37 @@ void ServerApplication::Broadcast(BroadcastRequest& bcast) {
 }
 
 void ServerApplication::HandleConnection(JoinRequest& request) {
+	if (clients.size() >= SDLNET_MAX_UDPCHANNELS) {
+		//ignore the new connection if there's too many clients connected
+		return;
+	}
 	//create the containers
-	ClientData client = { clientTicker++ };
-	PlayerData player = { playerTicker++ };
+	ClientData client = { uniqueIndex };
+	PlayerData player = { uniqueIndex };
+
+	uniqueIndex++;
 
 	//link the containers
 	client.playerIndex = player.index;
 	player.clientIndex = client.index;
 
-	//??? oh fuck
+	//fill the containers
+	player.handle = request.playerHandle;
+	player.avatar = request.playerAvatar;
+
+	//bind the address
+	client.channel = netUtil->Bind(&request.meta.address);
+
+	//push this information
+	clients[client.index] = client;
+	players[player.index] = player;
+
+	//send the player their information
+	Packet p;
+	p.meta.type = PacketType::JOIN_RESPONSE;
+	p.joinResponse.playerIndex = player.index;
+	netUtil->Send(client.channel, &p, sizeof(Packet));
+
+	//send it out to new players
+	//TODO
 }

@@ -14,6 +14,7 @@
 
 #include <map>
 #include <chrono>
+#include <string>
 
 struct ClientData {
 	int index;
@@ -24,6 +25,8 @@ struct ClientData {
 struct PlayerData {
 	int index;
 	int clientIndex;
+	std::string handle;
+	std::string avatar;
 	Vector2 position;
 	Vector2 motion;
 
@@ -62,8 +65,7 @@ private:
 
 	bool running = false;
 
-	int clientTicker = 0;
-	int playerTicker = 0;
+	int uniqueIndex = 0;
 };
 
 #endif
