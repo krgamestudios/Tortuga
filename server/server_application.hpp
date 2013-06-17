@@ -48,6 +48,7 @@ private:
 	//network loop
 	int HandlePacket(Packet p);
 	void Broadcast(BroadcastRequest&);
+	void HandleConnection(JoinRequest&);
 
 	//services
 	ConfigUtility* configUtil = nullptr;
@@ -60,9 +61,6 @@ private:
 	std::map<int, PlayerData> players;
 
 	bool running = false;
-
-	//threads
-	SDL_Thread* queueThread = nullptr;
 };
 
 #endif

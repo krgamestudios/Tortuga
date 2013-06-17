@@ -45,6 +45,8 @@ struct BroadcastResponse {
 
 struct JoinRequest {
 	PacketType type;
+	char playerHandle[PACKET_STRING_SIZE];
+	char playerAvatar[PACKET_STRING_SIZE];
 	//TODO: player data
 };
 

@@ -26,15 +26,12 @@ Lobby::Lobby() {
 	serverList.push_back({"bar",{0,0}});
 	serverList.push_back({"foobar",{0,0}});
 
-	if (!(queueThread = SDL_CreateThread(networkQueue, nullptr))) {
-		throw(runtime_error("Failed to create the network thread"));
-	}
-
+	BeginQueueThread();
 	BroadcastNetwork();
 }
 
 Lobby::~Lobby() {
-	SDL_KillThread(queueThread);
+	EndQueueThread();
 #ifdef DEBUG
 	cout << "leaving Lobby" << endl;
 #endif
@@ -99,7 +96,9 @@ void Lobby::MouseButtonUp(SDL_MouseButtonEvent const& button) {
 		BroadcastNetwork();
 	}
 	else if (joinButton.MouseButtonUp(button) == Button::State::HOVER) {
-		//TODO: join a server
+		if (selectedServer) {
+			ConnectToServer(selectedServer);
+		}
 	}
 	else if (backButton.MouseButtonUp(button) == Button::State::HOVER) {
 		SetNextScene(SceneList::MAINMENU);
@@ -196,4 +195,17 @@ void Lobby::PushServer(BroadcastResponse& bcast) {
 	entry.name = bcast.name;
 	entry.address = netUtil->GetInPacket()->address;
 	serverList.push_back(entry);
+}
+
+void Lobby::ConnectToServer(ServerEntry* server) {
+	/* _attempt_ to connect to a server
+	*/
+	if (!server) {
+		throw(runtime_error("No server received"));
+	}
+	Packet p;
+	p.type = PacketType::JOIN_REQUEST;
+	snprintf(p.joinRequest.playerHandle, PACKET_STRING_SIZE, "%s", configUtil->CString("handle"));
+	snprintf(p.joinRequest.playerAvatar, PACKET_STRING_SIZE, "%s", configUtil->CString("avatar"));
+	netUtil->Send(&server->address, reinterpret_cast<void*>(&p), sizeof(Packet));
 }

@@ -3,7 +3,9 @@
 
 #include "packet_type.hpp"
 
-int networkQueue(void*);
+void BeginQueueThread();
+void EndQueueThread();
+void KillQueueThread();
 Packet peekNetworkPacket();
 Packet popNetworkPacket();
 

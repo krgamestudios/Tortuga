@@ -46,6 +46,7 @@ protected:
 	int HandlePacket(Packet p);
 	void BroadcastNetwork();
 	void PushServer(BroadcastResponse&);
+	void ConnectToServer(ServerEntry*);
 
 	//services
 	ConfigUtility* configUtil = ServiceLocator<ConfigUtility>::Get();
@@ -61,9 +62,6 @@ protected:
 	SDL_Rect listBox;
 	std::vector<ServerEntry> serverList;
 	ServerEntry* selectedServer = nullptr;
-
-	//threads
-	SDL_Thread* queueThread = nullptr;
 };
 
 #endif

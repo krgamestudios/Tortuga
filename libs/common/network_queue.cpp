@@ -5,15 +5,22 @@
 
 #include "SDL/SDL_thread.h"
 
+#include <stdexcept>
 #include <deque>
+#include <iostream>
 
 static SDL_sem* lock = SDL_CreateSemaphore(1);
+static SDL_Thread* queueThread = nullptr;
 
 static std::deque<Packet> queue;
 
-int networkQueue(void*) {
+static bool running = false;
+
+static int networkQueue(void*) {
 	UDPNetworkUtility* netUtil = ServiceLocator<UDPNetworkUtility>::Get();
-	for(;;) {
+	//this line is the fix for the quirk
+//	std::cout << "thread running" << std::endl;
+	while(running) {
 		SDL_SemWait(lock);
 		while(netUtil->Receive()) {
 			Packet p;
@@ -23,6 +30,26 @@ int networkQueue(void*) {
 		SDL_SemPost(lock);
 		SDL_Delay(10);
 	}
+	return 0;
+}
+
+void BeginQueueThread() {
+	if (!(queueThread = SDL_CreateThread(networkQueue, nullptr))) {
+		throw(std::runtime_error("Failed to create the network thread"));
+	}
+	running = true;
+}
+
+void EndQueueThread() {
+	running = false;
+	SDL_WaitThread(queueThread, nullptr);
+	queueThread = nullptr;
+}
+
+void KillQueueThread() {
+	running = false;
+	SDL_KillThread(queueThread);
+	queueThread = nullptr;
 }
 
 Packet peekNetworkPacket() {

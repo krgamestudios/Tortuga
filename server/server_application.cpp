@@ -56,9 +56,7 @@ void ServerApplication::Init() {
 	netUtil->Open(configUtil->Int("server.port"), sizeof(Packet));
 
 	//create the threads
-	if (!(queueThread = SDL_CreateThread(networkQueue, nullptr))) {
-		throw(runtime_error("Failed to create the network thread"));
-	}
+	BeginQueueThread();
 
 	//output the server information
 	cout << configUtil->String("server.name") << endl;
@@ -86,7 +84,7 @@ void ServerApplication::Proc() {
 
 void ServerApplication::Quit() {
 	//close the threads
-	SDL_KillThread(queueThread);
+	EndQueueThread();
 
 	//clean up the services
 	netUtil->Close();
@@ -133,9 +131,9 @@ int ServerApplication::HandlePacket(Packet p) {
 //		case PacketType::BROADCAST_RESPONSE:
 //			//
 //		break;
-//		case PacketType::JOIN_REQUEST:
-//			//
-//		break;
+		case PacketType::JOIN_REQUEST:
+			HandleConnection(p.joinRequest);
+		break;
 //		case PacketType::JOIN_RESPONSE:
 //			//
 //		break;
@@ -167,4 +165,8 @@ void ServerApplication::Broadcast(BroadcastRequest& bcast) {
 	snprintf(p.broadcastResponse.name, PACKET_STRING_SIZE, "%s", configUtil->CString("server.name"));
 	//TODO version information
 	netUtil->Send(&netUtil->GetInPacket()->address, &p, sizeof(Packet));
+}
+
+void ServerApplication::HandleConnection(JoinRequest& request) {
+	//
 }
