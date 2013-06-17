@@ -173,32 +173,22 @@ void ServerApplication::HandleConnection(JoinRequest& request) {
 		return;
 	}
 	//create the containers
-	ClientData client = { uniqueIndex };
-	PlayerData player = { uniqueIndex };
-
-	uniqueIndex++;
-
-	//link the containers
-	client.playerIndex = player.index;
-	player.clientIndex = client.index;
-
-	//fill the containers
-	player.handle = request.playerHandle;
-	player.avatar = request.playerAvatar;
+	ClientData client = { uniqueIndex++ };
 
 	//bind the address
 	client.channel = netUtil->Bind(&request.meta.address);
 
 	//push this information
 	clients[client.index] = client;
-	players[player.index] = player;
 
 	//send the player their information
 	Packet p;
 	p.meta.type = PacketType::JOIN_RESPONSE;
-	p.joinResponse.playerIndex = player.index;
+	p.joinResponse.clientIndex = client.index;
+	//TODO: resource list
 	netUtil->Send(client.channel, &p, sizeof(Packet));
 
-	//send it out to new players
-	//TODO
+	//pretty
+	cout << "New connection" << endl;
+	cout << "number of clients: " << clients.size() << endl;
 }

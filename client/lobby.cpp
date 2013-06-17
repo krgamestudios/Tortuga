@@ -160,7 +160,7 @@ int Lobby::HandlePacket(Packet p) {
 //			//
 //		break;
 		case PacketType::JOIN_RESPONSE:
-			//TODO
+			BeginGame(p.joinResponse);
 		break;
 //		case PacketType::DISCONNECT:
 //			//
@@ -204,7 +204,12 @@ void Lobby::ConnectToServer(ServerEntry* server) {
 	}
 	Packet p;
 	p.meta.type = PacketType::JOIN_REQUEST;
-	snprintf(p.joinRequest.playerHandle, PACKET_STRING_SIZE, "%s", configUtil->CString("handle"));
-	snprintf(p.joinRequest.playerAvatar, PACKET_STRING_SIZE, "%s", configUtil->CString("avatar"));
 	netUtil->Send(&server->address, reinterpret_cast<void*>(&p), sizeof(Packet));
+}
+
+void Lobby::BeginGame(JoinResponse& response) {
+	//should be downloading the resources here as well
+	infoMgr->SetClientIndex(response.clientIndex);
+	netUtil->Bind(&response.meta.address, GAME_CHANNEL);
+	SetNextScene(SceneList::INWORLD);
 }

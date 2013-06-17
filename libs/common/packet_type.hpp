@@ -52,14 +52,11 @@ struct BroadcastResponse {
 
 struct JoinRequest {
 	Metadata meta;
-	char playerHandle[PACKET_STRING_SIZE];
-	char playerAvatar[PACKET_STRING_SIZE];
-	//TODO: player data
 };
 
 struct JoinResponse {
 	Metadata meta;
-	int playerIndex;
+	int clientIndex;
 	//resource list
 };
 

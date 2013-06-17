@@ -1,10 +1,12 @@
 #ifndef LOBBY_HPP_
 #define LOBBY_HPP_
 
+#include "defines.hpp"
 #include "base_scene.hpp"
 #include "service_locator.hpp"
 #include "packet_type.hpp"
 #include "network_queue.hpp"
+#include "information_manager.hpp"
 
 #include "config_utility.hpp"
 #include "surface_manager.hpp"
@@ -47,11 +49,13 @@ protected:
 	void BroadcastNetwork();
 	void PushServer(BroadcastResponse&);
 	void ConnectToServer(ServerEntry*);
+	void BeginGame(JoinResponse&);
 
 	//services
 	ConfigUtility* configUtil = ServiceLocator<ConfigUtility>::Get();
 	SurfaceManager* surfaceMgr = ServiceLocator<SurfaceManager>::Get();
 	UDPNetworkUtility* netUtil = ServiceLocator<UDPNetworkUtility>::Get();
+	InformationManager* infoMgr = ServiceLocator<InformationManager>::Get();
 
 	//members
 	Button refreshButton;

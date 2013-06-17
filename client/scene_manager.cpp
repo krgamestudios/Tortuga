@@ -92,6 +92,7 @@ void SceneManager::Init() {
 	//instanciate the remaining services
 	surfaceMgr = ServiceLocator<SurfaceManager>::Set(new SurfaceManager());
 	netUtil = ServiceLocator<UDPNetworkUtility>::Set(new UDPNetworkUtility());
+	infoMgr = ServiceLocator<InformationManager>::Set(new InformationManager());
 
 	//initiate the remaining services
 	netUtil->Open(0, sizeof(Packet));
@@ -144,6 +145,7 @@ void SceneManager::Quit() {
 	configUtil = ServiceLocator<ConfigUtility>::Set(nullptr);
 	surfaceMgr = ServiceLocator<SurfaceManager>::Set(nullptr);
 	netUtil = ServiceLocator<UDPNetworkUtility>::Set(nullptr);
+	infoMgr = ServiceLocator<InformationManager>::Set(nullptr);
 
 	//clean up the scene
 	UnloadScene();

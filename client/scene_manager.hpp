@@ -26,6 +26,7 @@
 #include "base_scene.hpp"
 #include "service_locator.hpp"
 #include "packet_type.hpp"
+#include "information_manager.hpp"
 
 #include "config_utility.hpp"
 #include "surface_manager.hpp"
@@ -53,6 +54,7 @@ private:
 	ConfigUtility* configUtil = nullptr;
 	SurfaceManager* surfaceMgr = nullptr;
 	UDPNetworkUtility* netUtil = nullptr;
+	InformationManager* infoMgr = nullptr;
 };
 
 #endif
