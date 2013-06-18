@@ -32,6 +32,9 @@ static int networkQueue(void*) {
 }
 
 void BeginQueueThread() {
+	if (running) {
+		return;
+	}
 	running = true;
 	if (!(queueThread = SDL_CreateThread(networkQueue, nullptr))) {
 		throw(std::runtime_error("Failed to create the network thread"));
@@ -39,12 +42,18 @@ void BeginQueueThread() {
 }
 
 void EndQueueThread() {
+	if (!running) {
+		return;
+	}
 	running = false;
 	SDL_WaitThread(queueThread, nullptr);
 	queueThread = nullptr;
 }
 
 void KillQueueThread() {
+	if (!running) {
+		return;
+	}
 	running = false;
 	SDL_KillThread(queueThread);
 	queueThread = nullptr;
