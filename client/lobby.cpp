@@ -109,15 +109,18 @@ void Lobby::MouseButtonDown(SDL_MouseButtonEvent const& button) {
 void Lobby::MouseButtonUp(SDL_MouseButtonEvent const& button) {
 	if (refreshButton.MouseButtonUp(button) == Button::State::HOVER) {
 		BroadcastNetwork();
+		selectedServer = nullptr;
 	}
 	else if (joinButton.MouseButtonUp(button) == Button::State::HOVER) {
 		if (selectedServer) {
 			ConnectToServer(selectedServer);
+			selectedServer = nullptr;
 		}
 	}
 	else if (backButton.MouseButtonUp(button) == Button::State::HOVER) {
 		SetNextScene(SceneList::MAINMENU);
 		endQueueThread();
+		selectedServer = nullptr;
 	}
 	else if (
 		//clicked within bounds TODO: make the damn collision system
