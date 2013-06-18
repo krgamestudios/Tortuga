@@ -62,6 +62,7 @@ struct JoinResponse {
 
 struct Disconnect {
 	Metadata meta;
+	int clientIndex;
 };
 
 struct Synchronize {

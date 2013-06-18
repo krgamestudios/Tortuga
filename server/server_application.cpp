@@ -56,7 +56,7 @@ void ServerApplication::Init() {
 	netUtil->Open(configUtil->Int("server.port"), sizeof(Packet));
 
 	//create the threads
-	BeginQueueThread();
+	beginQueueThread();
 
 	//output the server information
 	cout << configUtil->String("server.name") << endl;
@@ -84,7 +84,7 @@ void ServerApplication::Proc() {
 
 void ServerApplication::Quit() {
 	//close the threads
-	EndQueueThread();
+	endQueueThread();
 
 	//clean up the services
 	netUtil->Close();
@@ -126,7 +126,7 @@ int ServerApplication::HandlePacket(Packet p) {
 			//
 		break;
 		case PacketType::BROADCAST_REQUEST:
-			Broadcast(p.broadcastRequest);
+			HandleBroadcast(p.broadcastRequest);
 		break;
 //		case PacketType::BROADCAST_RESPONSE:
 //			//
@@ -137,9 +137,9 @@ int ServerApplication::HandlePacket(Packet p) {
 //		case PacketType::JOIN_RESPONSE:
 //			//
 //		break;
-//		case PacketType::DISCONNECT:
-//			//
-//		break;
+		case PacketType::DISCONNECT:
+			HandleDisconnection(p.disconnect);
+		break;
 //		case PacketType::SYNCHRONIZE:
 //			//
 //		break;
@@ -153,12 +153,12 @@ int ServerApplication::HandlePacket(Packet p) {
 //			//
 //		break;
 		default:
-			throw(runtime_error("Failed to recognize the packet type"));
+			throw(runtime_error("Failed to recognize the packet type: " + itos(int(p.meta.type))));
 	}
 	return 1;
 }
 
-void ServerApplication::Broadcast(BroadcastRequest& bcast) {
+void ServerApplication::HandleBroadcast(BroadcastRequest& bcast) {
 	//respond to a broadcast request with the server's data
 	Packet p;
 	p.meta.type = PacketType::BROADCAST_RESPONSE;
@@ -189,6 +189,19 @@ void ServerApplication::HandleConnection(JoinRequest& request) {
 	netUtil->Send(client.channel, &p, sizeof(Packet));
 
 	//pretty
-	cout << "New connection" << endl;
+	cout << "New connection: index " << client.index << endl;
+	cout << "number of clients: " << clients.size() << endl;
+}
+
+void ServerApplication::HandleDisconnection(Disconnect& disconnect) {
+	//disconnect a client (redundant message)
+	netUtil->Send(clients[disconnect.clientIndex].channel, &disconnect, sizeof(Packet));
+	netUtil->Unbind(clients[disconnect.clientIndex].channel);
+	clients.erase(disconnect.clientIndex);
+
+	//remove the player...
+
+	//pretty
+	cout << "Lost connection: index " << disconnect.clientIndex << endl;
 	cout << "number of clients: " << clients.size() << endl;
 }

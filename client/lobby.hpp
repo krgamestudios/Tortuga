@@ -1,8 +1,8 @@
 #ifndef LOBBY_HPP_
 #define LOBBY_HPP_
 
-#include "defines.hpp"
 #include "base_scene.hpp"
+#include "defines.hpp"
 #include "service_locator.hpp"
 #include "packet_type.hpp"
 #include "network_queue.hpp"
@@ -13,8 +13,6 @@
 #include "udp_network_utility.hpp"
 #include "button.hpp"
 #include "raster_font.hpp"
-
-#include "SDL/SDL_thread.h"
 
 #include <vector>
 #include <string>

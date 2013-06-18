@@ -50,8 +50,9 @@ private:
 
 	//network loop
 	int HandlePacket(Packet p);
-	void Broadcast(BroadcastRequest&);
+	void HandleBroadcast(BroadcastRequest&);
 	void HandleConnection(JoinRequest&);
+	void HandleDisconnection(Disconnect&);
 
 	//services
 	ConfigUtility* configUtil = nullptr;

@@ -3,10 +3,11 @@
 
 #include "packet_type.hpp"
 
-void BeginQueueThread();
-void EndQueueThread();
-void KillQueueThread();
+void beginQueueThread();
+void endQueueThread();
+void killQueueThread();
 Packet peekNetworkPacket();
 Packet popNetworkPacket();
+void flushNetworkQueue();
 
 #endif

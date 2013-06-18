@@ -26,12 +26,12 @@ Lobby::Lobby() {
 	serverList.push_back({"bar",{0,0}});
 	serverList.push_back({"foobar",{0,0}});
 
-	BeginQueueThread();
+	flushNetworkQueue();
+	beginQueueThread();
 	BroadcastNetwork();
 }
 
 Lobby::~Lobby() {
-	EndQueueThread();
 #ifdef DEBUG
 	cout << "leaving Lobby" << endl;
 #endif
@@ -46,13 +46,7 @@ void Lobby::FrameStart() {
 }
 
 void Lobby::Update(double delta) {
-	try {
-		//process all packets on the network queue
-		while(HandlePacket(popNetworkPacket()));
-	}
-	catch(exception& e) {
-		cerr << "Network Error: " << e.what() << endl;
-	}
+	while(HandlePacket(popNetworkPacket()));
 }
 
 void Lobby::FrameEnd() {
@@ -102,6 +96,7 @@ void Lobby::MouseButtonUp(SDL_MouseButtonEvent const& button) {
 	}
 	else if (backButton.MouseButtonUp(button) == Button::State::HOVER) {
 		SetNextScene(SceneList::MAINMENU);
+		endQueueThread();
 	}
 	else if (
 		//clicked within bounds TODO: make the damn collision system
@@ -178,7 +173,7 @@ int Lobby::HandlePacket(Packet p) {
 //			//
 //		break;
 		default:
-			throw(runtime_error("Failed to recognize the packet type"));
+			throw(runtime_error("Failed to recognize the packet type: " + itos(int(p.meta.type))));
 	}
 	return 1;
 }

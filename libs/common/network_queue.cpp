@@ -31,7 +31,7 @@ static int networkQueue(void*) {
 	return 0;
 }
 
-void BeginQueueThread() {
+void beginQueueThread() {
 	if (running) {
 		return;
 	}
@@ -41,7 +41,7 @@ void BeginQueueThread() {
 	}
 }
 
-void EndQueueThread() {
+void endQueueThread() {
 	if (!running) {
 		return;
 	}
@@ -50,7 +50,7 @@ void EndQueueThread() {
 	queueThread = nullptr;
 }
 
-void KillQueueThread() {
+void killQueueThread() {
 	if (!running) {
 		return;
 	}
@@ -78,4 +78,12 @@ Packet popNetworkPacket() {
 	}
 	SDL_SemPost(lock);
 	return p;
+}
+
+void flushNetworkQueue() {
+	UDPNetworkUtility* netUtil = ServiceLocator<UDPNetworkUtility>::Get();
+	SDL_SemWait(lock);
+	while(netUtil->Receive());
+	queue.clear();
+	SDL_SemPost(lock);
 }

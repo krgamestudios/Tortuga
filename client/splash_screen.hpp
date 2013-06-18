@@ -2,8 +2,8 @@
 #define SPLASHSCREEN_HPP_
 
 #include "base_scene.hpp"
-#include "service_locator.hpp"
 #include "defines.hpp"
+#include "service_locator.hpp"
 
 #include "config_utility.hpp"
 #include "surface_manager.hpp"

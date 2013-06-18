@@ -1,11 +1,7 @@
-#include "packet_type.hpp"
+#include "defines.hpp"
 
-#include <iostream>
-
-using namespace std;
 
 int main(int, char**) {
-	Packet p;
-	cout << int(p.meta.type) << endl;
+	std::string s = itos(5);
 	return 0;
 }
