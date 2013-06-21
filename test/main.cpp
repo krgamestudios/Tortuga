@@ -1,7 +1,12 @@
-#include "defines.hpp"
+#include "vector2.hpp"
 
+#include <iostream>
+
+using namespace std;
 
 int main(int, char**) {
-	std::string s = itos(5);
+	Vector2 v = {1, 1};
+	Vector2 a = 99 * v;
+	cout << a.x << ", " << a.y << endl;
 	return 0;
 }

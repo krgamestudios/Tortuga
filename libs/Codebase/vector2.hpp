@@ -27,21 +27,21 @@
 
 class Vector2 {
 public:
-	double x = 0, y = 0;
+	float x = 0, y = 0;
 	Vector2() = default;
-	Vector2(double i, double j) {
+	Vector2(float i, float j) {
 		x = i; y = j;
 	}
-	double Length() const {
+	float Length() const {
 		return sqrt(x*x+y*y);
 	}
-	double SquaredLength() const {
+	float SquaredLength() const {
 		return x*x+y*y;
 	}
 
-	double operator[](size_t i) {
+	float operator[](size_t i) {
 		if (i >= 2)
-			throw(std::runtime_error("Out of range"));
+			throw(std::domain_error("Out of range"));
 		return *(&x+i);
 	}
 
@@ -49,23 +49,23 @@ public:
 	Vector2 operator+(Vector2 v) const { return Vector2(x + v.x, y + v.y); }
 	Vector2 operator-(Vector2 v) const { return Vector2(x - v.x, y - v.y); }
 	Vector2 operator*(Vector2 v) const { return Vector2(x * v.x, y * v.y); }
-	Vector2 operator*(double d) const { return Vector2(x * d, y * d); }
+	Vector2 operator*(float d) const { return Vector2(x * d, y * d); }
 
 	Vector2 operator/(Vector2 v) {
 		if (!v.x || !v.y)
-			throw(std::runtime_error("Divide by zero"));
+			throw(std::domain_error("Divide by zero"));
 		return Vector2(x / v.x, y / v.y);
 	}
-	Vector2 operator/(double d) {
+	Vector2 operator/(float d) {
 		if (!d)
-			throw(std::runtime_error("Divide by zero"));
+			throw(std::domain_error("Divide by zero"));
 		return Vector2(x / d, y / d);
 	}
 
 	bool operator==(Vector2 v) { return (x == v.x && y == v.y); }
 	bool operator!=(Vector2 v) { return (x != v.x || y != v.y); }
 
-	//templates
+	//member templates
 	template<typename T> Vector2 operator+=(T t) { return *this = *this + t; }
 	template<typename T> Vector2 operator-=(T t) { return *this = *this - t; }
 	template<typename T> Vector2 operator*=(T t) { return *this = *this * t; }
@@ -73,5 +73,14 @@ public:
 	template<typename T> bool operator==(T t) { return (x == t && y == t); }
 	template<typename T> bool operator!=(T t) { return (x != t || y != t); }
 };
+
+//non-member templates
+template<typename T> Vector2 operator+(T t, Vector2 v) { return v + t; }
+template<typename T> Vector2 operator-(T t, Vector2 v) { return v - t; }
+template<typename T> Vector2 operator*(T t, Vector2 v) { return v * t; }
+template<typename T> Vector2 operator/(T t, Vector2 v) { return v / t; }
+
+template<typename T> bool operator==(T t, Vector2 v) { return v == t; }
+template<typename T> bool operator!=(T t, Vector2 v) { return v != t; }
 
 #endif
