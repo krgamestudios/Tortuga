@@ -59,7 +59,7 @@ void SplashScreen::RunFrame(double delta) {
 		LoadResources();
 	}
 
-	if (Clock::now() - start > std::chrono::duration<int>(1)) {
+	if (std::chrono::steady_clock::now() - start > std::chrono::duration<int>(1)) {
 		SetNextScene(SceneList::MAINMENU);
 	}
 }

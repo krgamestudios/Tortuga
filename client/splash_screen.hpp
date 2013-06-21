@@ -23,7 +23,6 @@
 #define SPLASHSCREEN_HPP_
 
 #include "base_scene.hpp"
-#include "defines.hpp"
 #include "service_locator.hpp"
 
 #include "config_utility.hpp"
@@ -48,7 +47,7 @@ protected:
 	ConfigUtility* configUtil = ServiceLocator<ConfigUtility>::Get();
 	SurfaceManager* surfaceMgr = ServiceLocator<SurfaceManager>::Get();
 	Image logo;
-	Clock::time_point start = Clock::now();
+	std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
 };
 
 #endif

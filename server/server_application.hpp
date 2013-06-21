@@ -22,7 +22,7 @@
 #ifndef SERVERAPPLICATION_HPP_
 #define SERVERAPPLICATION_HPP_
 
-#include "defines.hpp"
+#include "utilities.hpp"
 #include "packet_type.hpp"
 #include "service_locator.hpp"
 #include "network_queue.hpp"
@@ -36,6 +36,9 @@
 #include <map>
 #include <chrono>
 #include <string>
+
+//lazy
+typedef std::chrono::high_resolution_clock Clock;
 
 struct ClientData {
 	int index;

@@ -19,10 +19,14 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef DEFINES_HPP_
-#define DEFINES_HPP
+ #ifndef CHARACTER_HPP_
+ #define CHARACTER_HPP_
 
-#define GAME_CHANNEL 0
-#define CHAT_CHANNEL 1
+class Character {
+public:
+	Character();
+	~Character();
+private:
+};
 
-#endif
+ #endif

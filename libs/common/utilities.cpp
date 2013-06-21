@@ -19,10 +19,12 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef DEFINES_HPP_
-#define DEFINES_HPP
+#include "utilities.hpp"
 
-#define GAME_CHANNEL 0
-#define CHAT_CHANNEL 1
+#include <cstdio>
 
-#endif
+std::string itos(int i) {
+	char buffer[20];
+	snprintf(buffer, 20, "%d", i);
+	return std::string(buffer);
+}

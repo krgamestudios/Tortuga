@@ -23,6 +23,7 @@
 #define INWORLD_HPP_
 
 #include "base_scene.hpp"
+#include "utilities.hpp"
 #include "defines.hpp"
 #include "service_locator.hpp"
 #include "packet_type.hpp"

@@ -19,10 +19,11 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef DEFINES_HPP_
-#define DEFINES_HPP
+#ifndef UTILITIES_HPP_
+#define UTILITIES_HPP_
 
-#define GAME_CHANNEL 0
-#define CHAT_CHANNEL 1
+#include <string>
+
+std::string itos(int i);
 
 #endif

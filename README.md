@@ -22,7 +22,8 @@ modules
 Studio 2012. Personally, I'm using MinGW 4.7.2.
 * I'm trying to keep this as IDE agnostic as possible, so if you use an IDE,
 please add it's files to .gitignore.
-* You can read more details on the GitHub wiki [here](https://github.com/Ratstail91/Tortuga/wiki).
+* You can read more details on the Tortuga wiki
+[here](https://github.com/Ratstail91/Tortuga/wiki).
 
 ## Copyright
 
