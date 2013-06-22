@@ -20,7 +20,7 @@
  * distribution.
 */
 #ifndef DEFINES_HPP_
-#define DEFINES_HPP
+#define DEFINES_HPP_
 
 #define GAME_CHANNEL 0
 #define CHAT_CHANNEL 1
