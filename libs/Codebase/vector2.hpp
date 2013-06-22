@@ -27,19 +27,19 @@
 
 class Vector2 {
 public:
-	float x = 0, y = 0;
+	double x = 0, y = 0;
 	Vector2() = default;
-	Vector2(float i, float j) {
+	Vector2(double i, double j) {
 		x = i; y = j;
 	}
-	float Length() const {
+	double Length() const {
 		return sqrt(x*x+y*y);
 	}
-	float SquaredLength() const {
+	double SquaredLength() const {
 		return x*x+y*y;
 	}
 
-	float operator[](size_t i) {
+	double operator[](size_t i) {
 		if (i >= 2)
 			throw(std::domain_error("Out of range"));
 		return *(&x+i);
@@ -49,14 +49,14 @@ public:
 	Vector2 operator+(Vector2 v) const { return Vector2(x + v.x, y + v.y); }
 	Vector2 operator-(Vector2 v) const { return Vector2(x - v.x, y - v.y); }
 	Vector2 operator*(Vector2 v) const { return Vector2(x * v.x, y * v.y); }
-	Vector2 operator*(float d) const { return Vector2(x * d, y * d); }
+	Vector2 operator*(double d) const { return Vector2(x * d, y * d); }
 
 	Vector2 operator/(Vector2 v) {
 		if (!v.x || !v.y)
 			throw(std::domain_error("Divide by zero"));
 		return Vector2(x / v.x, y / v.y);
 	}
-	Vector2 operator/(float d) {
+	Vector2 operator/(double d) {
 		if (!d)
 			throw(std::domain_error("Divide by zero"));
 		return Vector2(x / d, y / d);
