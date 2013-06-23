@@ -34,6 +34,7 @@ InWorld::InWorld() {
 	cout << "entering InWorld" << endl;
 #endif
 	cout << "Client Index: " << infoMgr->GetClientIndex() << endl;
+	font.SetSurface(surfaceMgr->Get("font"));
 	pc.GetSprite()->SetSurface(surfaceMgr->Get("elliot"), 32, 48);
 }
 
@@ -61,7 +62,13 @@ void InWorld::FrameEnd() {
 }
 
 void InWorld::Render(SDL_Surface* const screen) {
+	ClockFrameRate();
+
 	pc.DrawTo(screen);
+
+	//since we're using this twice, make a tmp var
+	string fps = itos(GetFrameRate());
+	font.DrawStringTo(fps, screen, screen->w - fps.size() * font.GetCharW(), 0);
 }
 
 //-------------------------

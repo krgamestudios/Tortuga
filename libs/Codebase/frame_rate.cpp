@@ -21,6 +21,24 @@
 */
 #include "frame_rate.hpp"
 
-int FrameRate::frameCount = 0;
-int FrameRate::lastFrameRate = 0;
-FrameRate::Clock::time_point FrameRate::tick = FrameRate::Clock::now();
+#include <chrono>
+
+typedef std::chrono::high_resolution_clock Clock;
+
+static int frameCount = 0;
+static int lastFrameRate = 0;
+static Clock::time_point tick = Clock::now();
+
+int ClockFrameRate() {
+	frameCount++;
+	if (Clock::now() - tick >= std::chrono::duration<int>(1)) {
+		lastFrameRate = frameCount;
+		frameCount = 0;
+		tick = Clock::now();
+	}
+	return lastFrameRate;
+}
+
+int GetFrameRate() {
+	return lastFrameRate;
+}
