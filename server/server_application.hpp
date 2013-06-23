@@ -68,6 +68,7 @@ public:
 	void Quit();
 
 	ServerApplication(ServerApplication const&) = delete;
+	ServerApplication(ServerApplication const&&) = delete;
 private:
 	//game loop
 	void UpdateWorld(double delta);
