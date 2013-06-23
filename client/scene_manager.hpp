@@ -44,6 +44,8 @@ public:
 	void Proc();
 	void Quit();
 
+	SceneManager(SceneManager const&) = delete;
+	SceneManager(SceneManager const&&) = delete;
 private:
 	/* Private access members */
 	void LoadScene(SceneList sceneIndex);
