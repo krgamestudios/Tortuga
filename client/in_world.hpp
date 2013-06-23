@@ -36,6 +36,9 @@
 #include "button.hpp"
 #include "raster_font.hpp"
 
+//debugging
+#include "player_character.hpp"
+
 class InWorld : public BaseScene {
 public:
 	//Public access members
@@ -70,7 +73,7 @@ protected:
 	InformationManager* infoMgr = ServiceLocator<InformationManager>::Get();
 
 	//members
-	//...
+	PlayerCharacter pc;
 };
 
 #endif

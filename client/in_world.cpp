@@ -34,6 +34,7 @@ InWorld::InWorld() {
 	cout << "entering InWorld" << endl;
 #endif
 	cout << "Client Index: " << infoMgr->GetClientIndex() << endl;
+	pc.GetSprite()->SetSurface(surfaceMgr->Get("elliot"), 32, 48);
 }
 
 InWorld::~InWorld() {
@@ -52,6 +53,7 @@ void InWorld::FrameStart() {
 
 void InWorld::Update(double delta) {
 	while(HandlePacket(popNetworkPacket()));
+	pc.Update(delta);
 }
 
 void InWorld::FrameEnd() {
@@ -59,7 +61,7 @@ void InWorld::FrameEnd() {
 }
 
 void InWorld::Render(SDL_Surface* const screen) {
-	//
+	pc.DrawTo(screen);
 }
 
 //-------------------------
@@ -89,11 +91,37 @@ void InWorld::KeyDown(SDL_KeyboardEvent const& key) {
 		case SDLK_ESCAPE:
 			ExitGame();
 			break;
+		case SDLK_w:
+			pc.MoveDirection(CardinalDirection::NORTH);
+		break;
+		case SDLK_s:
+			pc.MoveDirection(CardinalDirection::SOUTH);
+		break;
+		case SDLK_a:
+			pc.MoveDirection(CardinalDirection::EAST);
+		break;
+		case SDLK_d:
+			pc.MoveDirection(CardinalDirection::WEST);
+		break;
 	}
 }
 
 void InWorld::KeyUp(SDL_KeyboardEvent const& key) {
-	//
+	//reversed
+	switch(key.keysym.sym) {
+		case SDLK_w:
+			pc.MoveDirection(CardinalDirection::SOUTH);
+		break;
+		case SDLK_s:
+			pc.MoveDirection(CardinalDirection::NORTH);
+		break;
+		case SDLK_a:
+			pc.MoveDirection(CardinalDirection::WEST);
+		break;
+		case SDLK_d:
+			pc.MoveDirection(CardinalDirection::EAST);
+		break;
+	}
 }
 
 //-------------------------

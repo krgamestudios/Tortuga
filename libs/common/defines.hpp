@@ -25,4 +25,10 @@
 #define GAME_CHANNEL 0
 #define CHAT_CHANNEL 1
 
+#define WALKING_SPEED 140
+
+enum class CardinalDirection {
+	NORTH, SOUTH, EAST, WEST
+};
+
 #endif
