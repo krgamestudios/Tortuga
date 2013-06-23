@@ -35,6 +35,7 @@
 #include "udp_network_utility.hpp"
 #include "button.hpp"
 #include "raster_font.hpp"
+#include "frame_rate.hpp"
 
 class InWorld : public BaseScene {
 public:
@@ -70,7 +71,7 @@ protected:
 	InformationManager* infoMgr = ServiceLocator<InformationManager>::Get();
 
 	//members
-	//...
+	RasterFont font;
 };
 
 #endif

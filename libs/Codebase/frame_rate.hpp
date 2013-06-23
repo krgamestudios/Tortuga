@@ -22,27 +22,7 @@
 #ifndef FRAMERATE_HPP_
 #define FRAMERATE_HPP_
 
-#include <chrono>
-
-class FrameRate {
-public:
-	typedef std::chrono::high_resolution_clock Clock;
-
-	FrameRate() = delete;
-	static int Calculate() {
-		frameCount++;
-		if (Clock::now() - tick >= std::chrono::duration<int>(1)) {
-			lastFrameRate = frameCount;
-			frameCount = 0;
-			tick = Clock::now();
-		}
-		return lastFrameRate;
-	}
-	static int GetFrameRate() { return lastFrameRate; }
-private:
-	static int frameCount;
-	static int lastFrameRate;
-	static Clock::time_point tick;
-};
+int ClockFrameRate();
+int GetFrameRate();
 
 #endif
