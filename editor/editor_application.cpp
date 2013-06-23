@@ -19,7 +19,7 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#include "scene_manager.hpp"
+#include "editor_application.hpp"
 
 #include <stdexcept>
 #include <chrono>
@@ -35,22 +35,22 @@
 //Public access members
 //-------------------------
 
-SceneManager::SceneManager() {
+EditorApplication::EditorApplication() {
 	//
 }
 
-SceneManager::~SceneManager() {
+EditorApplication::~EditorApplication() {
 	UnloadScene();
 }
 
-void SceneManager::Init() {
+void EditorApplication::Init() {
 	if (SDL_Init(SDL_INIT_VIDEO))
 		throw(std::runtime_error("Failed to initialize SDL"));
 
 	BaseScene::SetScreen(800, 600);
 }
 
-void SceneManager::Proc() {
+void EditorApplication::Proc() {
 	LoadScene(SceneList::FIRST);
 
 	//prepare the time system
@@ -88,7 +88,7 @@ void SceneManager::Proc() {
 	UnloadScene();
 }
 
-void SceneManager::Quit() {
+void EditorApplication::Quit() {
 	UnloadScene();
 	SDL_Quit();
 }
@@ -97,7 +97,7 @@ void SceneManager::Quit() {
 //Private access members
 //-------------------------
 
-void SceneManager::LoadScene(SceneList sceneIndex) {
+void EditorApplication::LoadScene(SceneList sceneIndex) {
 	UnloadScene();
 
 	switch(sceneIndex) {
@@ -112,7 +112,7 @@ void SceneManager::LoadScene(SceneList sceneIndex) {
 	}
 }
 
-void SceneManager::UnloadScene() {
+void EditorApplication::UnloadScene() {
 	delete activeScene;
 	activeScene = nullptr;
 }
