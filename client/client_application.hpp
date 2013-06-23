@@ -19,8 +19,8 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef SCENEMANAGER_HPP_
-#define SCENEMANAGER_HPP_
+#ifndef CLIENTAPPLICATION_HPP_
+#define CLIENTAPPLICATION_HPP_
 
 #include "scene_list.hpp"
 #include "base_scene.hpp"
@@ -34,18 +34,18 @@
 
 #include "SDL/SDL.h"
 
-class SceneManager {
+class ClientApplication {
 public:
 	/* Public access members */
-	SceneManager();
-	~SceneManager();
+	ClientApplication();
+	~ClientApplication();
 
 	void Init();
 	void Proc();
 	void Quit();
 
-	SceneManager(SceneManager const&) = delete;
-	SceneManager(SceneManager const&&) = delete;
+	ClientApplication(ClientApplication const&) = delete;
+	ClientApplication(ClientApplication const&&) = delete;
 private:
 	/* Private access members */
 	void LoadScene(SceneList sceneIndex);

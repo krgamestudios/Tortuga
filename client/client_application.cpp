@@ -19,7 +19,7 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#include "scene_manager.hpp"
+#include "client_application.hpp"
 
 #include <stdexcept>
 #include <chrono>
@@ -40,15 +40,15 @@
 //Public access members
 //-------------------------
 
-SceneManager::SceneManager() {
+ClientApplication::ClientApplication() {
 	//
 }
 
-SceneManager::~SceneManager() {
+ClientApplication::~ClientApplication() {
 	UnloadScene();
 }
 
-/* SceneManager::Init()
+/* ClientApplication::Init()
  * This function initializes the entire program. There are a number of things
  * that could go wrong here, which is why there is such an unusual order of
  * operations.
@@ -59,7 +59,7 @@ SceneManager::~SceneManager() {
  *   The ConfigUtility's call to Load() also ensures that the "rsc\" folder is in the directory. It's easy to forget it.
 */
 
-void SceneManager::Init() {
+void ClientApplication::Init() {
 	//load the config file
 	try {
 		configUtil->Load("rsc/config.cfg");
@@ -92,7 +92,7 @@ void SceneManager::Init() {
 	netUtil->Open(0, sizeof(Packet));
 }
 
-void SceneManager::Proc() {
+void ClientApplication::Proc() {
 	LoadScene(SceneList::FIRST);
 
 	//prepare the time system
@@ -130,7 +130,7 @@ void SceneManager::Proc() {
 	UnloadScene();
 }
 
-void SceneManager::Quit() {
+void ClientApplication::Quit() {
 	//clean up the singletons
 	netUtil->Close();
 	surfaceMgr->FreeAll();
@@ -147,7 +147,7 @@ void SceneManager::Quit() {
 //Private access members
 //-------------------------
 
-void SceneManager::LoadScene(SceneList sceneIndex) {
+void ClientApplication::LoadScene(SceneList sceneIndex) {
 	UnloadScene();
 
 	switch(sceneIndex) {
@@ -177,7 +177,7 @@ void SceneManager::LoadScene(SceneList sceneIndex) {
 	}
 }
 
-void SceneManager::UnloadScene() {
+void ClientApplication::UnloadScene() {
 	delete activeScene;
 	activeScene = nullptr;
 }

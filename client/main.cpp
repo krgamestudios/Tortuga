@@ -19,7 +19,7 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#include "scene_manager.hpp"
+#include "client_application.hpp"
 
 #include <stdexcept>
 #include <iostream>
@@ -31,7 +31,7 @@ int main(int, char**) {
 	cout << "Beginning program" << endl;
 #endif
 	try {
-		SceneManager app;
+		ClientApplication app;
 		app.Init();
 		app.Proc();
 		app.Quit();
