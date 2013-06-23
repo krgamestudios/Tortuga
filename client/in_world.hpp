@@ -25,7 +25,7 @@
 #include "base_scene.hpp"
 #include "utilities.hpp"
 #include "defines.hpp"
-#include "service_locator.hpp"
+#include "singleton.hpp"
 #include "packet_type.hpp"
 #include "network_queue.hpp"
 #include "information_manager.hpp"
@@ -68,10 +68,10 @@ protected:
 	void HandleDisconnection(::Disconnect&);
 
 	//services
-	ConfigUtility* configUtil = ServiceLocator<ConfigUtility>::Get();
-	SurfaceManager* surfaceMgr = ServiceLocator<SurfaceManager>::Get();
-	UDPNetworkUtility* netUtil = ServiceLocator<UDPNetworkUtility>::Get();
-	InformationManager* infoMgr = ServiceLocator<InformationManager>::Get();
+	ConfigUtility* configUtil = Singleton<ConfigUtility>::Get();
+	SurfaceManager* surfaceMgr = Singleton<SurfaceManager>::Get();
+	UDPNetworkUtility* netUtil = Singleton<UDPNetworkUtility>::Get();
+	InformationManager* infoMgr = Singleton<InformationManager>::Get();
 
 	//members
 	RasterFont font;

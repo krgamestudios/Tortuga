@@ -23,7 +23,7 @@
 #define MAINMENU_HPP_
 
 #include "base_scene.hpp"
-#include "service_locator.hpp"
+#include "singleton.hpp"
 
 #include "surface_manager.hpp"
 #include "button.hpp"
@@ -47,7 +47,7 @@ protected:
 	void MouseButtonUp(SDL_MouseButtonEvent const&);
 	void KeyDown(SDL_KeyboardEvent const&);
 
-	SurfaceManager* surfaceMgr = ServiceLocator<SurfaceManager>::Get();
+	SurfaceManager* surfaceMgr = Singleton<SurfaceManager>::Get();
 
 	Button startButton;
 	Button optionsButton;

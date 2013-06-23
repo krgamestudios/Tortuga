@@ -54,7 +54,7 @@ SceneManager::~SceneManager() {
  * operations.
  * Important things to note:
  *   The APIs are initiated here.
- *   The global objects are created here.
+ *   The global objects are initialized here.
  *   The game's screen is created here, based on information loaded from the config file.
  *   The ConfigUtility's call to Load() also ensures that the "rsc\" folder is in the directory. It's easy to forget it.
 */
@@ -62,7 +62,6 @@ SceneManager::~SceneManager() {
 void SceneManager::Init() {
 	//load the config file
 	try {
-		configUtil = ServiceLocator<ConfigUtility>::Set(new ConfigUtility());
 		configUtil->Load("rsc/config.cfg");
 	}
 	catch(std::runtime_error& e) {
@@ -89,12 +88,7 @@ void SceneManager::Init() {
 		SDL_GetVideoInfo()->vfmt->BitsPerPixel,
 		flags);
 
-	//instanciate the remaining services
-	surfaceMgr = ServiceLocator<SurfaceManager>::Set(new SurfaceManager());
-	netUtil = ServiceLocator<UDPNetworkUtility>::Set(new UDPNetworkUtility());
-	infoMgr = ServiceLocator<InformationManager>::Set(new InformationManager());
-
-	//initiate the remaining services
+	//initiate the remaining singletons
 	netUtil->Open(0, sizeof(Packet));
 }
 
@@ -137,15 +131,9 @@ void SceneManager::Proc() {
 }
 
 void SceneManager::Quit() {
-	//clean up the services
+	//clean up the singletons
 	netUtil->Close();
 	surfaceMgr->FreeAll();
-
-	//delete the services
-	configUtil = ServiceLocator<ConfigUtility>::Set(nullptr);
-	surfaceMgr = ServiceLocator<SurfaceManager>::Set(nullptr);
-	netUtil = ServiceLocator<UDPNetworkUtility>::Set(nullptr);
-	infoMgr = ServiceLocator<InformationManager>::Set(nullptr);
 
 	//clean up the scene
 	UnloadScene();
