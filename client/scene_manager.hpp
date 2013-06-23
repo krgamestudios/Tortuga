@@ -24,7 +24,7 @@
 
 #include "scene_list.hpp"
 #include "base_scene.hpp"
-#include "service_locator.hpp"
+#include "singleton.hpp"
 #include "packet_type.hpp"
 #include "information_manager.hpp"
 
@@ -51,10 +51,10 @@ private:
 
 	BaseScene* activeScene = nullptr;
 
-	ConfigUtility* configUtil = nullptr;
-	SurfaceManager* surfaceMgr = nullptr;
-	UDPNetworkUtility* netUtil = nullptr;
-	InformationManager* infoMgr = nullptr;
+	ConfigUtility* configUtil = Singleton<ConfigUtility>::Get();
+	SurfaceManager* surfaceMgr = Singleton<SurfaceManager>::Get();
+	UDPNetworkUtility* netUtil = Singleton<UDPNetworkUtility>::Get();
+	InformationManager* infoMgr = Singleton<InformationManager>::Get();
 };
 
 #endif

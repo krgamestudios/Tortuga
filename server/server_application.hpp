@@ -24,7 +24,7 @@
 
 #include "utilities.hpp"
 #include "packet_type.hpp"
-#include "service_locator.hpp"
+#include "singleton.hpp"
 #include "network_queue.hpp"
 
 #include "config_Utility.hpp"
@@ -79,8 +79,8 @@ private:
 	void HandleDisconnection(Disconnect&);
 
 	//services
-	ConfigUtility* configUtil = nullptr;
-	UDPNetworkUtility* netUtil = nullptr;
+	ConfigUtility* configUtil = Singleton<ConfigUtility>::Get();
+	UDPNetworkUtility* netUtil = Singleton<UDPNetworkUtility>::Get();
 
 	//members
 	Clock::time_point lastTick = Clock::now();
