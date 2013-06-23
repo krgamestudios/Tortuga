@@ -19,24 +19,20 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef SERVICELOCATOR_HPP_
-#define SERVICELOCATOR_HPP_
+#ifndef SINGLETON_HPP_
+#define SINGLETON_HPP_
 
 template<typename T>
-class ServiceLocator {
+class Singleton {
 public:
-	static T* Set(T* t) {
-		delete service;
-		return service = t;
-	}
 	static T* Get() {
-		return service;
+		return &instance;
 	}
 private:
-	static T* service;
+	static T instance;
 };
 
 template<typename T>
-T* ServiceLocator<T>::service = nullptr;
+T Singleton<T>::instance;
 
 #endif

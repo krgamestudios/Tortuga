@@ -44,14 +44,13 @@ ServerApplication::~ServerApplication() {
  * operations.
  * Important things to note:
  *   The APIs are initiated here.
- *   The global objects are created here.
+ *   The global objects are initialized here.
  *   The ConfigUtility's call to Load() also ensures that the "rsc\" folder is in the directory. It's easy to forget it.
 */
 
 void ServerApplication::Init() {
 	//load the config file
 	try {
-		configUtil = ServiceLocator<ConfigUtility>::Set(new ConfigUtility());
 		configUtil->Load("rsc/config.cfg");
 	}
 	catch(std::runtime_error& e) {
@@ -70,10 +69,7 @@ void ServerApplication::Init() {
 		throw(runtime_error("Failed to initialize SDL_net"));
 	}
 
-	//instanciate the remaining services
-	netUtil = ServiceLocator<UDPNetworkUtility>::Set(new UDPNetworkUtility());
-
-	//initiate the remaining services
+	//initiate the remaining singletons
 	netUtil->Open(configUtil->Int("server.port"), sizeof(Packet));
 
 	//create the threads
@@ -107,12 +103,8 @@ void ServerApplication::Quit() {
 	//close the threads
 	endQueueThread();
 
-	//clean up the services
+	//clean up the singletons
 	netUtil->Close();
-
-	//delete the services
-	configUtil = ServiceLocator<ConfigUtility>::Set(nullptr);
-	netUtil = ServiceLocator<UDPNetworkUtility>::Set(nullptr);
 
 	//deinitialize the APIs
 	SDLNet_Quit();

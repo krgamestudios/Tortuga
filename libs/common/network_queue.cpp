@@ -20,7 +20,7 @@
  * distribution.
 */
 #include "network_queue.hpp"
-#include "service_locator.hpp"
+#include "singleton.hpp"
 
 #include "udp_network_utility.hpp"
 
@@ -37,7 +37,7 @@ static std::deque<Packet> queue;
 static bool running = false;
 
 static int networkQueue(void*) {
-	UDPNetworkUtility* netUtil = ServiceLocator<UDPNetworkUtility>::Get();
+	UDPNetworkUtility* netUtil = Singleton<UDPNetworkUtility>::Get();
 	while(running) {
 		SDL_SemWait(lock);
 		while(netUtil->Receive()) {
@@ -102,7 +102,7 @@ Packet popNetworkPacket() {
 }
 
 void flushNetworkQueue() {
-	UDPNetworkUtility* netUtil = ServiceLocator<UDPNetworkUtility>::Get();
+	UDPNetworkUtility* netUtil = Singleton<UDPNetworkUtility>::Get();
 	SDL_SemWait(lock);
 	while(netUtil->Receive());
 	queue.clear();
