@@ -174,11 +174,11 @@ int ServerApplication::HandlePacket(Packet::Packet p) {
 		case Packet::Type::DISCONNECT:
 			HandleDisconnection(p.disconnect);
 		break;
-//		case Packet::Type::SYNCHRONIZE:
-//			//
-//		break;
+		case Packet::Type::SYNCHRONIZE:
+			SynchronizeEverything(p.synchronize);
+		break;
 		case Packet::Type::PLAYER_NEW:
-			AddPlayer(p.playerNew);
+			AddPlayer(p.playerData);
 			RelayPacket(p);
 		break;
 		case Packet::Type::PLAYER_DELETE:
@@ -186,7 +186,7 @@ int ServerApplication::HandlePacket(Packet::Packet p) {
 			RelayPacket(p);
 		break;
 		case Packet::Type::PLAYER_UPDATE:
-			UpdatePlayer(p.playerUpdate);
+			UpdatePlayer(p.playerData);
 			RelayPacket(p);
 		break;
 		default:
@@ -199,6 +199,25 @@ void ServerApplication::RelayPacket(Packet::Packet& p) {
 	//pump this packet to all clients
 	for (auto& it : clients) {
 		netUtil->Send(&it.second.address, &p, sizeof(Packet::Packet));
+	}
+}
+
+void ServerApplication::SynchronizeEverything(Packet::Synchronize& sync) {
+	//send all known data to this client
+	//TODO multithreading?
+
+	//all players
+	Packet::Packet p;
+	p.meta.type = Packet::Type::PLAYER_UPDATE;
+	for (auto& it : players) {
+		p.playerData.playerIndex = it.second.index;
+		p.playerData.clientIndex = it.second.clientIndex;
+		snprintf(p.playerData.handle, PACKET_STRING_SIZE, "%s", it.second.handle.c_str());
+		snprintf(p.playerData.avatar, PACKET_STRING_SIZE, "%s", it.second.avatar.c_str());
+		p.playerData.position = it.second.position;
+		p.playerData.motion = it.second.motion;
+
+		netUtil->Send(&clients[sync.clientIndex].address, &p, sizeof(Packet::Packet));
 	}
 }
 
@@ -248,7 +267,7 @@ void ServerApplication::HandleDisconnection(Packet::Disconnect& disconnect) {
 	cout << "number of clients: " << clients.size() << endl;
 }
 
-void ServerApplication::AddPlayer(Packet::PlayerNew& p) {
+void ServerApplication::AddPlayer(Packet::PlayerData& p) {
 	//add the player
 	PlayerEntry newPlayer = {
 		uniqueIndex++,
@@ -273,6 +292,6 @@ void ServerApplication::RemovePlayer(Packet::PlayerDelete& p) {
 	//TODO remove a player
 }
 
-void ServerApplication::UpdatePlayer(Packet::PlayerUpdate& p) {
+void ServerApplication::UpdatePlayer(Packet::PlayerData& p) {
 	//TODO update a player
 }

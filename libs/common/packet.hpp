@@ -90,9 +90,10 @@ struct Disconnect {
 
 struct Synchronize {
 	Metadata meta;
+	int clientIndex;
 };
 
-struct PlayerNew {
+struct PlayerData {
 	Metadata meta;
 	int playerIndex;
 	int clientIndex;
@@ -107,14 +108,6 @@ struct PlayerDelete {
 	Metadata meta;
 	int playerIndex;
 	int clientIndex;
-};
-
-struct PlayerUpdate {
-	Metadata meta;
-	int playerIndex;
-	int clientIndex;
-	Vector2 position;
-	Vector2 motion;
 };
 
 union Packet {
@@ -133,11 +126,10 @@ union Packet {
 	JoinResponse joinResponse;
 	Disconnect disconnect;
 
-	Synchronize sync;
+	Synchronize synchronize;
 
-	PlayerNew playerNew;
+	PlayerData playerData;
 	PlayerDelete playerDelete;
-	PlayerUpdate playerUpdate;
 
 #ifdef DEBUG
 	char buffer[1024];

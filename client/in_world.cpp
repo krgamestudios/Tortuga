@@ -39,11 +39,16 @@ InWorld::InWorld() {
 	//debugging
 	Packet::Packet p;
 	p.meta.type = Packet::Type::PLAYER_NEW;
-	snprintf(p.playerNew.handle, PACKET_STRING_SIZE, "%s", configUtil->CString("handle"));
-	snprintf(p.playerNew.avatar, PACKET_STRING_SIZE, "%s", configUtil->CString("avatar"));
-	p.playerNew.position = {0, 50};
-	p.playerNew.motion = {140, 0};
+	snprintf(p.playerData.handle, PACKET_STRING_SIZE, "%s", configUtil->CString("handle"));
+	snprintf(p.playerData.avatar, PACKET_STRING_SIZE, "%s", configUtil->CString("avatar"));
+	p.playerData.position = {0, 50};
+	p.playerData.motion = {140, 0};
 
+	netUtil->Send(GAME_CHANNEL, &p, sizeof(Packet::Packet));
+
+	//request a sync
+	p.meta.type = Packet::Type::SYNCHRONIZE;
+	p.synchronize.clientIndex = infoMgr->GetClientIndex();
 	netUtil->Send(GAME_CHANNEL, &p, sizeof(Packet::Packet));
 }
 
@@ -182,13 +187,13 @@ int InWorld::HandlePacket(Packet::Packet p) {
 //			//
 //		break;
 		case Packet::Type::PLAYER_NEW:
-			AddPlayer(p.playerNew);
+			AddPlayer(p.playerData);
 		break;
 		case Packet::Type::PLAYER_DELETE:
 			RemovePlayer(p.playerDelete);
 		break;
 		case Packet::Type::PLAYER_UPDATE:
-			UpdatePlayer(p.playerUpdate);
+			UpdatePlayer(p.playerData);
 		break;
 		default:
 			throw(runtime_error("Failed to recognize the packet type: " + itos(int(p.meta.type))));
@@ -222,7 +227,7 @@ void InWorld::HandleDisconnection(Packet::Disconnect& disconnect) {
 	cout << "You have been disconnected" << endl;
 }
 
-void InWorld::AddPlayer(Packet::PlayerNew& p) {
+void InWorld::AddPlayer(Packet::PlayerData& p) {
 	//sprite
 	playerCharacters[p.playerIndex].GetSprite()->SetSurface(surfaceMgr->Get(p.avatar), 32, 48);
 
@@ -238,6 +243,12 @@ void InWorld::RemovePlayer(Packet::PlayerDelete& p) {
 	//
 }
 
-void InWorld::UpdatePlayer(Packet::PlayerUpdate& p) {
-	//
+void InWorld::UpdatePlayer(Packet::PlayerData& p) {
+	if (playerCharacters.find(p.playerIndex) == playerCharacters.end()) {
+		AddPlayer(p);
+		return;
+	}
+
+	playerCharacters[p.playerIndex].SetPosition(p.position);
+	playerCharacters[p.playerIndex].SetMotion(p.motion);
 }

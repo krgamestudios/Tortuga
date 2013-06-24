@@ -58,13 +58,15 @@ private:
 	int HandlePacket(Packet::Packet);
 	void RelayPacket(Packet::Packet&);
 
+	void SynchronizeEverything(Packet::Synchronize&);
+
 	void HandleBroadcast(Packet::BroadcastRequest&);
 	void HandleConnection(Packet::JoinRequest&);
 	void HandleDisconnection(Packet::Disconnect&);
 
-	void AddPlayer(Packet::PlayerNew&);
+	void AddPlayer(Packet::PlayerData&);
 	void RemovePlayer(Packet::PlayerDelete&);
-	void UpdatePlayer(Packet::PlayerUpdate&);
+	void UpdatePlayer(Packet::PlayerData&);
 
 	//services
 	ConfigUtility* configUtil = Singleton<ConfigUtility>::Get();

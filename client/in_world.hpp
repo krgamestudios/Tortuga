@@ -69,9 +69,9 @@ protected:
 
 	void HandleDisconnection(Packet::Disconnect&);
 
-	void AddPlayer(Packet::PlayerNew&);
+	void AddPlayer(Packet::PlayerData&);
 	void RemovePlayer(Packet::PlayerDelete&);
-	void UpdatePlayer(Packet::PlayerUpdate&);
+	void UpdatePlayer(Packet::PlayerData&);
 
 	//services
 	ConfigUtility* configUtil = Singleton<ConfigUtility>::Get();
