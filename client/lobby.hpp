@@ -23,9 +23,12 @@
 #define LOBBY_HPP_
 
 #include "base_scene.hpp"
+
 #include "utilities.hpp"
 #include "defines.hpp"
 #include "singleton.hpp"
+
+#include "server_entry.hpp"
 #include "packet_type.hpp"
 #include "network_queue.hpp"
 #include "information_manager.hpp"
@@ -38,11 +41,6 @@
 
 #include <vector>
 #include <string>
-
-struct ServerEntry {
-	std::string name;
-	IPaddress address;
-};
 
 class Lobby : public BaseScene {
 public:

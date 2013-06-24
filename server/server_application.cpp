@@ -115,9 +115,7 @@ void ServerApplication::Quit() {
 //-------------------------
 
 void ServerApplication::UpdateWorld(double delta) {
-	for (auto it : players) {
-		it.second.Update(delta);
-	}
+	//
 }
 
 //-------------------------
@@ -186,7 +184,7 @@ void ServerApplication::HandleConnection(JoinRequest& request) {
 		return;
 	}
 	//create the containers
-	ClientData client = { uniqueIndex++ };
+	ClientEntry client = { uniqueIndex++ };
 
 	//bind the address
 	client.channel = netUtil->Bind(&request.meta.address);

@@ -27,6 +27,9 @@
 #include "singleton.hpp"
 #include "network_queue.hpp"
 
+#include "client_entry.hpp"
+#include "player_entry.hpp"
+
 #include "config_Utility.hpp"
 #include "udp_network_utility.hpp"
 #include "vector2.hpp"
@@ -39,25 +42,6 @@
 
 //lazy
 typedef std::chrono::high_resolution_clock Clock;
-
-struct ClientData {
-	int index;
-	int channel;
-	int playerIndex;
-};
-
-struct PlayerData {
-	int index;
-	int clientIndex;
-	std::string handle;
-	std::string avatar;
-	Vector2 position;
-	Vector2 motion;
-
-	void Update(double delta) {
-		position += motion * delta;
-	}
-};
 
 class ServerApplication {
 public:
@@ -85,8 +69,8 @@ private:
 	//members
 	Clock::time_point lastTick = Clock::now();
 
-	std::map<int, ClientData> clients;
-	std::map<int, PlayerData> players;
+	std::map<int, ClientEntry> clients;
+	std::map<int, PlayerEntry> players;
 
 	bool running = false;
 
