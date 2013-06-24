@@ -35,6 +35,7 @@ public:
 
 	void MoveDirection(CardinalDirection);
 	void FaceDirection(CardinalDirection);
+	void FaceDirection();
 
 	void DrawTo(SDL_Surface* const dest) { sprite.DrawTo(dest, position.x, position.y); }
 
@@ -49,7 +50,7 @@ public:
 
 	SpriteSheet* GetSprite() { return &sprite; }
 private:
-	void FaceDirection();
+	void CheckSpeed();
 
 	Vector2 position;
 	Vector2 motion;

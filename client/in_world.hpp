@@ -73,6 +73,8 @@ protected:
 	void RemovePlayer(Packet&);
 	void UpdatePlayer(Packet&);
 
+	void SendState();
+
 	//services
 	ConfigUtility* configUtil = Singleton<ConfigUtility>::Get();
 	SurfaceManager* surfaceMgr = Singleton<SurfaceManager>::Get();

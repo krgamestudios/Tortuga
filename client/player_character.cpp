@@ -45,30 +45,16 @@ void PlayerCharacter::MoveDirection(CardinalDirection cd) {
 				motion.y += WALKING_SPEED;
 			}
 		break;
-		case CardinalDirection::EAST:
+		case CardinalDirection::WEST:
 			if (motion.x >= 0) {
 				motion.x -= WALKING_SPEED;
 			}
 		break;
-		case CardinalDirection::WEST:
+		case CardinalDirection::EAST:
 			if (motion.x <= 0) {
 				motion.x += WALKING_SPEED;
 			}
 		break;
-	}
-	//short cut
-	if (motion.x != 0 && motion.y != 0) {
-		sprite.SetInterval(0.1);
-		limitSpeed = true;
-	}
-	else if (motion.x != 0 || motion.y != 0) {
-		sprite.SetInterval(0.1);
-		limitSpeed = false;
-	}
-	else {
-		sprite.SetInterval(0);
-		sprite.SetCurrentFrame(0);
-		limitSpeed = false;
 	}
 	//face the correct direction
 	FaceDirection();
@@ -82,10 +68,10 @@ void PlayerCharacter::FaceDirection(CardinalDirection cd) {
 		case CardinalDirection::SOUTH:
 			sprite.SetCurrentStrip(0);
 		break;
-		case CardinalDirection::EAST:
+		case CardinalDirection::WEST:
 			sprite.SetCurrentStrip(2);
 		break;
-		case CardinalDirection::WEST:
+		case CardinalDirection::EAST:
 			sprite.SetCurrentStrip(3);
 		break;
 	}
@@ -93,16 +79,36 @@ void PlayerCharacter::FaceDirection(CardinalDirection cd) {
 
 void PlayerCharacter::FaceDirection() {
 	//base the direction on the character's movement
+	if (motion.y < 0) {
+		FaceDirection(CardinalDirection::NORTH);
+	}
 	if (motion.y > 0) {
 		FaceDirection(CardinalDirection::SOUTH);
 	}
-	else if (motion.y < 0) {
-		FaceDirection(CardinalDirection::NORTH);
+	if (motion.x < 0) {
+		FaceDirection(CardinalDirection::WEST);
 	}
-	else if (motion.x < 0) {
+	if (motion.x > 0) {
 		FaceDirection(CardinalDirection::EAST);
 	}
-	else if (motion.x > 0) {
-		FaceDirection(CardinalDirection::WEST);
+	CheckSpeed();
+}
+
+void PlayerCharacter::CheckSpeed() {
+	//diagonal
+	if (motion.x != 0 && motion.y != 0) {
+		sprite.SetInterval(0.1);
+		limitSpeed = true;
+	}
+	//cardinal
+	else if (motion != 0) {
+		sprite.SetInterval(0.1);
+		limitSpeed = false;
+	}
+	//not moving
+	else {
+		sprite.SetInterval(0);
+		sprite.SetCurrentFrame(0);
+		limitSpeed = false;
 	}
 }

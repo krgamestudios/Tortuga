@@ -43,8 +43,8 @@ InWorld::InWorld() {
 
 	snprintf(p.playerInfo.handle, PACKET_STRING_SIZE, "%s", configUtil->CString("handle"));
 	snprintf(p.playerInfo.avatar, PACKET_STRING_SIZE, "%s", configUtil->CString("avatar"));
-	p.playerInfo.position = {0, 50};
-	p.playerInfo.motion = {60, 0};
+	p.playerInfo.position = {50, 50};
+	p.playerInfo.motion = {0, 0};
 
 	netUtil->Send(GAME_CHANNEL, &p, sizeof(Packet));
 
@@ -115,39 +115,56 @@ void InWorld::MouseButtonUp(SDL_MouseButtonEvent const& button) {
 }
 
 void InWorld::KeyDown(SDL_KeyboardEvent const& key) {
+	//general
 	switch(key.keysym.sym) {
 		case SDLK_ESCAPE:
 			ExitGame();
-			break;
+		break;
+	}
+
+	//player movement
+	if (infoMgr->GetPlayerIndex() == -1) {
+		return;
+	}
+
+	switch(key.keysym.sym) {
 		case SDLK_w:
-			//up
+			playerCharacters[infoMgr->GetPlayerIndex()].MoveDirection(CardinalDirection::NORTH);
+			SendState();
 		break;
 		case SDLK_s:
-			//down
+			playerCharacters[infoMgr->GetPlayerIndex()].MoveDirection(CardinalDirection::SOUTH);
+			SendState();
 		break;
 		case SDLK_a:
-			//left
+			playerCharacters[infoMgr->GetPlayerIndex()].MoveDirection(CardinalDirection::WEST);
+			SendState();
 		break;
 		case SDLK_d:
-			//right
+			playerCharacters[infoMgr->GetPlayerIndex()].MoveDirection(CardinalDirection::EAST);
+			SendState();
 		break;
 	}
 }
 
 void InWorld::KeyUp(SDL_KeyboardEvent const& key) {
-	//reversed
+	//player movement reversed
 	switch(key.keysym.sym) {
 		case SDLK_w:
-			//
+			playerCharacters[infoMgr->GetPlayerIndex()].MoveDirection(CardinalDirection::SOUTH);
+			SendState();
 		break;
 		case SDLK_s:
-			//
+			playerCharacters[infoMgr->GetPlayerIndex()].MoveDirection(CardinalDirection::NORTH);
+			SendState();
 		break;
 		case SDLK_a:
-			//
+			playerCharacters[infoMgr->GetPlayerIndex()].MoveDirection(CardinalDirection::EAST);
+			SendState();
 		break;
 		case SDLK_d:
-			//
+			playerCharacters[infoMgr->GetPlayerIndex()].MoveDirection(CardinalDirection::WEST);
+			SendState();
 		break;
 	}
 }
@@ -244,12 +261,13 @@ void InWorld::AddPlayer(Packet& p) {
 		throw(runtime_error("Duplicate players detected"));
 	}
 
-	//sprite
-	playerCharacters[p.playerInfo.index].GetSprite()->SetSurface(surfaceMgr->Get(p.playerInfo.avatar), 32, 48);
-
-	//pos
+	//position
 	playerCharacters[p.playerInfo.index].SetPosition(p.playerInfo.position);
 	playerCharacters[p.playerInfo.index].SetMotion(p.playerInfo.motion);
+
+	//sprite
+	playerCharacters[p.playerInfo.index].GetSprite()->SetSurface(surfaceMgr->Get(p.playerInfo.avatar), 32, 48);
+	playerCharacters[p.playerInfo.index].FaceDirection();
 
 	//is it this player?
 	if (p.meta.clientIndex == infoMgr->GetClientIndex()) {
@@ -276,4 +294,21 @@ void InWorld::UpdatePlayer(Packet& p) {
 
 	playerCharacters[p.playerInfo.index].SetPosition(p.playerInfo.position);
 	playerCharacters[p.playerInfo.index].SetMotion(p.playerInfo.motion);
+	playerCharacters[p.playerInfo.index].FaceDirection();
+}
+
+void InWorld::SendState() {
+	//send the state of this player's character
+	if (infoMgr->GetPlayerIndex() == -1) {
+		return;
+	}
+
+	Packet p;
+	p.meta.type = Packet::Type::PLAYER_UPDATE;
+	p.meta.clientIndex = infoMgr->GetClientIndex();
+	p.playerInfo.index = infoMgr->GetPlayerIndex();
+	p.playerInfo.position = playerCharacters[infoMgr->GetPlayerIndex()].GetPosition();
+	p.playerInfo.motion = playerCharacters[infoMgr->GetPlayerIndex()].GetMotion();
+
+	netUtil->Send(GAME_CHANNEL, &p, sizeof(Packet));
 }
