@@ -169,31 +169,31 @@ int Lobby::HandlePacket(Packet::Packet p) {
 		case Packet::Type::PONG:
 			//
 		break;
-//		case PacketType::BROADCAST_REQUEST:
+//		case Packet::Type::BROADCAST_REQUEST:
 //			//
 //		break;
 		case Packet::Type::BROADCAST_RESPONSE:
 			PushServer(p.broadcastResponse);
 		break;
-//		case PacketType::JOIN_REQUEST:
+//		case Packet::Type::JOIN_REQUEST:
 //			//
 //		break;
 		case Packet::Type::JOIN_RESPONSE:
 			BeginGame(p.joinResponse);
 		break;
-//		case PacketType::DISCONNECT:
+//		case Packet::Type::DISCONNECT:
 //			//
 //		break;
-//		case PacketType::SYNCHRONIZE:
+//		case Packet::Type::SYNCHRONIZE:
 //			//
 //		break;
-//		case PacketType::PLAYER_NEW:
+//		case Packet::Type::PLAYER_NEW:
 //			//
 //		break;
-//		case PacketType::PLAYER_DELETE:
+//		case Packet::Type::PLAYER_DELETE:
 //			//
 //		break;
-//		case PacketType::PLAYER_MOVE:
+//		case Packet::Type::PLAYER_UPDATE:
 //			//
 //		break;
 		default:

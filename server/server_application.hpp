@@ -63,7 +63,7 @@ private:
 	void HandleDisconnection(Packet::Disconnect&);
 
 	void AddPlayer(Packet::PlayerNew&);
-	void DeletePlayer(Packet::PlayerDelete&);
+	void RemovePlayer(Packet::PlayerDelete&);
 	void UpdatePlayer(Packet::PlayerUpdate&);
 
 	//services

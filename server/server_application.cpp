@@ -129,7 +129,16 @@ void ServerApplication::Quit() {
 //-------------------------
 
 void ServerApplication::UpdateWorld(double delta) {
-	//
+	//the recalc here each loop is a stopgap, see issue #9 for details
+	for (map<int, PlayerEntry>::iterator it = players.begin(); it != players.end(); it++) {
+		if (it->second.motion.x != 0 && it->second.motion.y != 0) {
+			constexpr double d = 1.0/sqrt(2);
+			it->second.position += it->second.motion * delta * d;
+		}
+		else {
+			it->second.position += it->second.motion * delta;
+		}
+	}
 }
 
 //-------------------------
@@ -173,7 +182,7 @@ int ServerApplication::HandlePacket(Packet::Packet p) {
 			RelayPacket(p);
 		break;
 		case Packet::Type::PLAYER_DELETE:
-			DeletePlayer(p.playerDelete);
+			RemovePlayer(p.playerDelete);
 			RelayPacket(p);
 		break;
 		case Packet::Type::PLAYER_UPDATE:
@@ -239,31 +248,31 @@ void ServerApplication::HandleDisconnection(Packet::Disconnect& disconnect) {
 	cout << "number of clients: " << clients.size() << endl;
 }
 
-void ServerApplication::AddPlayer(Packet::PlayerNew& playerNew) {
+void ServerApplication::AddPlayer(Packet::PlayerNew& p) {
 	//add the player
 	PlayerEntry newPlayer = {
 		uniqueIndex++,
-		playerNew.clientIndex,
-		playerNew.handle,
-		playerNew.avatar,
-		{0,0},
-		{0,0}
+		p.clientIndex,
+		p.handle,
+		p.avatar,
+		p.position,
+		p.motion
 	};
 
 	players[newPlayer.index] = newPlayer;
 
 	//prep for relay
-	playerNew.playerIndex = newPlayer.index;
+	p.playerIndex = newPlayer.index;
 
 	//debugging
 	cout << "New player " << newPlayer.handle << "Has joined the game" << endl;
 	cout << "Number of players: " << players.size() << endl;
 }
 
-void ServerApplication::DeletePlayer(Packet::PlayerDelete& playerDelete) {
+void ServerApplication::RemovePlayer(Packet::PlayerDelete& p) {
 	//TODO remove a player
 }
 
-void ServerApplication::UpdatePlayer(Packet::PlayerUpdate& playerUpdate) {
+void ServerApplication::UpdatePlayer(Packet::PlayerUpdate& p) {
 	//TODO update a player
 }

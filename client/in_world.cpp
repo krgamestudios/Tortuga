@@ -35,7 +35,16 @@ InWorld::InWorld() {
 #endif
 	cout << "Client Index: " << infoMgr->GetClientIndex() << endl;
 	font.SetSurface(surfaceMgr->Get("font"));
-	pc.GetSprite()->SetSurface(surfaceMgr->Get("elliot"), 32, 48);
+
+	//debugging
+	Packet::Packet p;
+	p.meta.type = Packet::Type::PLAYER_NEW;
+	snprintf(p.playerNew.handle, PACKET_STRING_SIZE, "%s", configUtil->CString("handle"));
+	snprintf(p.playerNew.avatar, PACKET_STRING_SIZE, "%s", configUtil->CString("avatar"));
+	p.playerNew.position = {0, 50};
+	p.playerNew.motion = {140, 0};
+
+	netUtil->Send(GAME_CHANNEL, &p, sizeof(Packet::Packet));
 }
 
 InWorld::~InWorld() {
@@ -54,7 +63,10 @@ void InWorld::FrameStart() {
 
 void InWorld::Update(double delta) {
 	while(HandlePacket(popNetworkPacket()));
-	pc.Update(delta);
+
+	for (map<int,PlayerCharacter>::iterator it = playerCharacters.begin(); it != playerCharacters.end(); it++) {
+		it->second.Update(delta);
+	}
 }
 
 void InWorld::FrameEnd() {
@@ -64,7 +76,9 @@ void InWorld::FrameEnd() {
 void InWorld::Render(SDL_Surface* const screen) {
 	ClockFrameRate();
 
-	pc.DrawTo(screen);
+	for (map<int,PlayerCharacter>::iterator it = playerCharacters.begin(); it != playerCharacters.end(); it++) {
+		it->second.DrawTo(screen);
+	}
 
 	//since we're using this twice, make a tmp var
 	string fps = itos(GetFrameRate());
@@ -99,16 +113,16 @@ void InWorld::KeyDown(SDL_KeyboardEvent const& key) {
 			ExitGame();
 			break;
 		case SDLK_w:
-			pc.MoveDirection(CardinalDirection::NORTH);
+			//up
 		break;
 		case SDLK_s:
-			pc.MoveDirection(CardinalDirection::SOUTH);
+			//down
 		break;
 		case SDLK_a:
-			pc.MoveDirection(CardinalDirection::EAST);
+			//left
 		break;
 		case SDLK_d:
-			pc.MoveDirection(CardinalDirection::WEST);
+			//right
 		break;
 	}
 }
@@ -117,16 +131,16 @@ void InWorld::KeyUp(SDL_KeyboardEvent const& key) {
 	//reversed
 	switch(key.keysym.sym) {
 		case SDLK_w:
-			pc.MoveDirection(CardinalDirection::SOUTH);
+			//
 		break;
 		case SDLK_s:
-			pc.MoveDirection(CardinalDirection::NORTH);
+			//
 		break;
 		case SDLK_a:
-			pc.MoveDirection(CardinalDirection::WEST);
+			//
 		break;
 		case SDLK_d:
-			pc.MoveDirection(CardinalDirection::EAST);
+			//
 		break;
 	}
 }
@@ -149,33 +163,33 @@ int InWorld::HandlePacket(Packet::Packet p) {
 		case Packet::Type::PONG:
 			//
 		break;
-//		case PacketType::BROADCAST_REQUEST:
+//		case Packet::Type::BROADCAST_REQUEST:
 //			//
 //		break;
-//		case PacketType::BROADCAST_RESPONSE:
+//		case Packet::Type::BROADCAST_RESPONSE:
 //			//
 //		break;
-//		case PacketType::JOIN_REQUEST:
+//		case Packet::Type::JOIN_REQUEST:
 //			//
 //		break;
-//		case PacketType::JOIN_RESPONSE:
+//		case Packet::Type::JOIN_RESPONSE:
 //			//
 //		break;
 		case Packet::Type::DISCONNECT:
 			HandleDisconnection(p.disconnect);
 		break;
-//		case PacketType::SYNCHRONIZE:
+//		case Packet::Type::SYNCHRONIZE:
 //			//
 //		break;
-//		case PacketType::PLAYER_NEW:
-//			//
-//		break;
-//		case PacketType::PLAYER_DELETE:
-//			//
-//		break;
-//		case PacketType::PLAYER_MOVE:
-//			//
-//		break;
+		case Packet::Type::PLAYER_NEW:
+			AddPlayer(p.playerNew);
+		break;
+		case Packet::Type::PLAYER_DELETE:
+			RemovePlayer(p.playerDelete);
+		break;
+		case Packet::Type::PLAYER_UPDATE:
+			UpdatePlayer(p.playerUpdate);
+		break;
 		default:
 			throw(runtime_error("Failed to recognize the packet type: " + itos(int(p.meta.type))));
 	}
@@ -189,7 +203,6 @@ void InWorld::Disconnect() {
 	p.disconnect.clientIndex = infoMgr->GetClientIndex();
 	netUtil->Send(GAME_CHANNEL, reinterpret_cast<void*>(&p), sizeof(Packet::Packet));
 	netUtil->Unbind(GAME_CHANNEL);
-	endQueueThread();
 
 	//reset the client
 	infoMgr->ResetClientIndex();
@@ -198,11 +211,33 @@ void InWorld::Disconnect() {
 void InWorld::ExitGame() {
 	Disconnect();
 	SetNextScene(SceneList::MAINMENU);
+	endQueueThread();
 	cout << "The game session has ended" << endl;
 }
 
 void InWorld::HandleDisconnection(Packet::Disconnect& disconnect) {
 	Disconnect();
 	SetNextScene(SceneList::MAINMENU);
+	endQueueThread();
 	cout << "You have been disconnected" << endl;
+}
+
+void InWorld::AddPlayer(Packet::PlayerNew& p) {
+	//sprite
+	playerCharacters[p.playerIndex].GetSprite()->SetSurface(surfaceMgr->Get(p.avatar), 32, 48);
+
+	//pos
+	playerCharacters[p.playerIndex].SetPosition(p.position);
+	playerCharacters[p.playerIndex].SetMotion(p.motion);
+
+	//debugging
+	cout << "New player, index " << p.playerIndex << endl;
+}
+
+void InWorld::RemovePlayer(Packet::PlayerDelete& p) {
+	//
+}
+
+void InWorld::UpdatePlayer(Packet::PlayerUpdate& p) {
+	//
 }

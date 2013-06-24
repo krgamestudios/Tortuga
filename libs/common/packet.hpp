@@ -98,6 +98,8 @@ struct PlayerNew {
 	int clientIndex;
 	char handle[PACKET_STRING_SIZE];
 	char avatar[PACKET_STRING_SIZE];
+	Vector2 position;
+	Vector2 motion;
 	//TODO Playerdata
 };
 

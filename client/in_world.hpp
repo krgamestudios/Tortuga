@@ -23,12 +23,14 @@
 #define INWORLD_HPP_
 
 #include "base_scene.hpp"
+
 #include "utilities.hpp"
 #include "defines.hpp"
 #include "singleton.hpp"
 #include "packet.hpp"
 #include "network_queue.hpp"
 #include "information_manager.hpp"
+#include "player_character.hpp"
 
 #include "config_utility.hpp"
 #include "surface_manager.hpp"
@@ -37,8 +39,7 @@
 #include "raster_font.hpp"
 #include "frame_rate.hpp"
 
-//debugging
-#include "player_character.hpp"
+#include <map>
 
 class InWorld : public BaseScene {
 public:
@@ -62,10 +63,15 @@ protected:
 	void KeyUp(SDL_KeyboardEvent const&);
 
 	//Utilities
-	int HandlePacket(Packet::Packet p);
+	int HandlePacket(Packet::Packet);
 	void Disconnect();
 	void ExitGame();
+
 	void HandleDisconnection(Packet::Disconnect&);
+
+	void AddPlayer(Packet::PlayerNew&);
+	void RemovePlayer(Packet::PlayerDelete&);
+	void UpdatePlayer(Packet::PlayerUpdate&);
 
 	//services
 	ConfigUtility* configUtil = Singleton<ConfigUtility>::Get();
@@ -75,7 +81,7 @@ protected:
 
 	//members
 	RasterFont font;
-	PlayerCharacter pc;
+	std::map<int, PlayerCharacter> playerCharacters;
 };
 
 #endif
