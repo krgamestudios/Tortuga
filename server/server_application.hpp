@@ -37,11 +37,7 @@
 #include "SDL/SDL_thread.h"
 
 #include <map>
-#include <chrono>
 #include <string>
-
-//lazy
-typedef std::chrono::high_resolution_clock Clock;
 
 class ServerApplication {
 public:
@@ -68,8 +64,6 @@ private:
 	UDPNetworkUtility* netUtil = Singleton<UDPNetworkUtility>::Get();
 
 	//members
-	Clock::time_point lastTick = Clock::now();
-
 	std::map<int, ClientEntry> clients;
 	std::map<int, PlayerEntry> players;
 

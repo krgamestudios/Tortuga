@@ -23,6 +23,7 @@
 
 #include <stdexcept>
 #include <iostream>
+#include <chrono>
 
 using namespace std;
 
@@ -84,17 +85,30 @@ void ServerApplication::Init() {
 }
 
 void ServerApplication::Proc() {
-	Clock::duration delta = Clock::now() - lastTick;
-	lastTick = Clock::now();
+	typedef chrono::high_resolution_clock Clock;
+
+	Clock::time_point lastTick = Clock::now();
+	Clock::duration delta;
+
 	while(running) {
 		try {
 			//process all packets on the network queue
 			while(HandlePacket(popNetworkPacket()));
 		}
 		catch(exception& e) {
+			//handle any errors
 			cerr << "Network Error: " << e.what() << endl;
+			continue;
 		}
+
+		//get the time since last update
+		delta = Clock::now() - lastTick;
+		lastTick = Clock::now();
+
+		//update the world
 		UpdateWorld(double(delta.count()) / Clock::duration::period::den);
+
+		//give the machine a break
 		SDL_Delay(10);
 	}
 }
