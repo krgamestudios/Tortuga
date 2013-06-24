@@ -26,7 +26,7 @@
 #include "utilities.hpp"
 #include "defines.hpp"
 #include "singleton.hpp"
-#include "packet_type.hpp"
+#include "packet.hpp"
 #include "network_queue.hpp"
 #include "information_manager.hpp"
 
@@ -36,6 +36,9 @@
 #include "button.hpp"
 #include "raster_font.hpp"
 #include "frame_rate.hpp"
+
+//debugging
+#include "player_character.hpp"
 
 class InWorld : public BaseScene {
 public:
@@ -59,10 +62,10 @@ protected:
 	void KeyUp(SDL_KeyboardEvent const&);
 
 	//Utilities
-	int HandlePacket(Packet p);
+	int HandlePacket(Packet::Packet p);
 	void Disconnect();
 	void ExitGame();
-	void HandleDisconnection(::Disconnect&);
+	void HandleDisconnection(Packet::Disconnect&);
 
 	//services
 	ConfigUtility* configUtil = Singleton<ConfigUtility>::Get();
@@ -72,6 +75,7 @@ protected:
 
 	//members
 	RasterFont font;
+	PlayerCharacter pc;
 };
 
 #endif

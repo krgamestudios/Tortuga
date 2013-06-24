@@ -35,6 +35,7 @@ InWorld::InWorld() {
 #endif
 	cout << "Client Index: " << infoMgr->GetClientIndex() << endl;
 	font.SetSurface(surfaceMgr->Get("font"));
+	pc.GetSprite()->SetSurface(surfaceMgr->Get("elliot"), 32, 48);
 }
 
 InWorld::~InWorld() {
@@ -53,6 +54,7 @@ void InWorld::FrameStart() {
 
 void InWorld::Update(double delta) {
 	while(HandlePacket(popNetworkPacket()));
+	pc.Update(delta);
 }
 
 void InWorld::FrameEnd() {
@@ -61,6 +63,8 @@ void InWorld::FrameEnd() {
 
 void InWorld::Render(SDL_Surface* const screen) {
 	ClockFrameRate();
+
+	pc.DrawTo(screen);
 
 	//since we're using this twice, make a tmp var
 	string fps = itos(GetFrameRate());
@@ -94,29 +98,55 @@ void InWorld::KeyDown(SDL_KeyboardEvent const& key) {
 		case SDLK_ESCAPE:
 			ExitGame();
 			break;
+		case SDLK_w:
+			pc.MoveDirection(CardinalDirection::NORTH);
+		break;
+		case SDLK_s:
+			pc.MoveDirection(CardinalDirection::SOUTH);
+		break;
+		case SDLK_a:
+			pc.MoveDirection(CardinalDirection::EAST);
+		break;
+		case SDLK_d:
+			pc.MoveDirection(CardinalDirection::WEST);
+		break;
 	}
 }
 
 void InWorld::KeyUp(SDL_KeyboardEvent const& key) {
-	//
+	//reversed
+	switch(key.keysym.sym) {
+		case SDLK_w:
+			pc.MoveDirection(CardinalDirection::SOUTH);
+		break;
+		case SDLK_s:
+			pc.MoveDirection(CardinalDirection::NORTH);
+		break;
+		case SDLK_a:
+			pc.MoveDirection(CardinalDirection::WEST);
+		break;
+		case SDLK_d:
+			pc.MoveDirection(CardinalDirection::EAST);
+		break;
+	}
 }
 
 //-------------------------
 //Utilities
 //-------------------------
 
-int InWorld::HandlePacket(Packet p) {
+int InWorld::HandlePacket(Packet::Packet p) {
 	switch(p.meta.type) {
-		case PacketType::NONE:
+		case Packet::Type::NONE:
 			//DO NOTHING
 			return 0;
 		break;
-		case PacketType::PING:
+		case Packet::Type::PING:
 			//quick pong
-			p.meta.type = PacketType::PONG;
-			netUtil->Send(&p.meta.address, &p, sizeof(Packet));
+			p.meta.type = Packet::Type::PONG;
+			netUtil->Send(&p.meta.address, &p, sizeof(Packet::Packet));
 		break;
-		case PacketType::PONG:
+		case Packet::Type::PONG:
 			//
 		break;
 //		case PacketType::BROADCAST_REQUEST:
@@ -131,7 +161,7 @@ int InWorld::HandlePacket(Packet p) {
 //		case PacketType::JOIN_RESPONSE:
 //			//
 //		break;
-		case PacketType::DISCONNECT:
+		case Packet::Type::DISCONNECT:
 			HandleDisconnection(p.disconnect);
 		break;
 //		case PacketType::SYNCHRONIZE:
@@ -154,10 +184,10 @@ int InWorld::HandlePacket(Packet p) {
 
 void InWorld::Disconnect() {
 	//disconnect
-	Packet p;
-	p.meta.type = PacketType::DISCONNECT;
+	Packet::Packet p;
+	p.meta.type = Packet::Type::DISCONNECT;
 	p.disconnect.clientIndex = infoMgr->GetClientIndex();
-	netUtil->Send(GAME_CHANNEL, reinterpret_cast<void*>(&p), sizeof(Packet));
+	netUtil->Send(GAME_CHANNEL, reinterpret_cast<void*>(&p), sizeof(Packet::Packet));
 	netUtil->Unbind(GAME_CHANNEL);
 	endQueueThread();
 
@@ -171,7 +201,7 @@ void InWorld::ExitGame() {
 	cout << "The game session has ended" << endl;
 }
 
-void InWorld::HandleDisconnection(::Disconnect& disconnect) {
+void InWorld::HandleDisconnection(Packet::Disconnect& disconnect) {
 	Disconnect();
 	SetNextScene(SceneList::MAINMENU);
 	cout << "You have been disconnected" << endl;

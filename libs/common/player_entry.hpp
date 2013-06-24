@@ -19,6 +19,20 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
- #include "character.hpp"
+#ifndef PLAYERENTRY_HPP_
+#define PLAYERENTRY_HPP_
 
- 
+#include "vector2.hpp"
+
+#include <string>
+
+struct PlayerEntry {
+	int index;
+	int clientIndex;
+	std::string handle;
+	std::string avatar;
+	Vector2 position;
+	Vector2 motion;
+};
+
+#endif

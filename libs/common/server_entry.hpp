@@ -19,14 +19,16 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
- #ifndef CHARACTER_HPP_
- #define CHARACTER_HPP_
+#ifndef SERVERENTRY_HPP_
+#define SERVERENTRY_HPP_
 
-class Character {
-public:
-	Character();
-	~Character();
-private:
+#include "SDL_net/SDL_net.h"
+
+#include <string>
+
+struct ServerEntry {
+	std::string name;
+	IPaddress address;
 };
 
- #endif
+#endif

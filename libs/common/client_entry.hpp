@@ -19,16 +19,13 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef NETWORKQUEUE_HPP_
-#define NETWORKQUEUE_HPP_
+#ifndef CLIENTENTRY_HPP_
+#define CLIENTENTRY_HPP_
 
-#include "packet.hpp"
-
-void beginQueueThread();
-void endQueueThread();
-void killQueueThread();
-Packet::Packet peekNetworkPacket();
-Packet::Packet popNetworkPacket();
-void flushNetworkQueue();
+struct ClientEntry {
+	int index;
+	int channel;
+	int playerIndex;
+};
 
 #endif
