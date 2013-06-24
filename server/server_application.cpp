@@ -130,13 +130,13 @@ void ServerApplication::Quit() {
 
 void ServerApplication::UpdateWorld(double delta) {
 	//the recalc here each loop is a stopgap, see issue #9 for details
-	for (map<int, PlayerEntry>::iterator it = players.begin(); it != players.end(); it++) {
-		if (it->second.motion.x != 0 && it->second.motion.y != 0) {
+	for (auto& it : players) {
+		if (it.second.motion.x != 0 && it.second.motion.y != 0) {
 			constexpr double d = 1.0/sqrt(2);
-			it->second.position += it->second.motion * delta * d;
+			it.second.position += it.second.motion * delta * d;
 		}
 		else {
-			it->second.position += it->second.motion * delta;
+			it.second.position += it.second.motion * delta;
 		}
 	}
 }
@@ -197,7 +197,7 @@ int ServerApplication::HandlePacket(Packet::Packet p) {
 
 void ServerApplication::RelayPacket(Packet::Packet& p) {
 	//pump this packet to all clients
-	for (auto it : clients) {
+	for (auto& it : clients) {
 		netUtil->Send(&it.second.address, &p, sizeof(Packet::Packet));
 	}
 }

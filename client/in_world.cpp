@@ -64,8 +64,8 @@ void InWorld::FrameStart() {
 void InWorld::Update(double delta) {
 	while(HandlePacket(popNetworkPacket()));
 
-	for (map<int,PlayerCharacter>::iterator it = playerCharacters.begin(); it != playerCharacters.end(); it++) {
-		it->second.Update(delta);
+	for (auto& it : playerCharacters) {
+		it.second.Update(delta);
 	}
 }
 
@@ -76,8 +76,8 @@ void InWorld::FrameEnd() {
 void InWorld::Render(SDL_Surface* const screen) {
 	ClockFrameRate();
 
-	for (map<int,PlayerCharacter>::iterator it = playerCharacters.begin(); it != playerCharacters.end(); it++) {
-		it->second.DrawTo(screen);
+	for (auto& it : playerCharacters) {
+		it.second.DrawTo(screen);
 	}
 
 	//since we're using this twice, make a tmp var
