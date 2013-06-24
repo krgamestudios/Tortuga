@@ -29,7 +29,7 @@
 #include "singleton.hpp"
 
 #include "server_entry.hpp"
-#include "packet_type.hpp"
+#include "packet.hpp"
 #include "network_queue.hpp"
 #include "information_manager.hpp"
 
@@ -63,11 +63,11 @@ protected:
 	void KeyUp(SDL_KeyboardEvent const&);
 
 	//utilities
-	int HandlePacket(Packet p);
+	int HandlePacket(Packet::Packet p);
 	void BroadcastNetwork();
-	void PushServer(BroadcastResponse&);
+	void PushServer(Packet::BroadcastResponse&);
 	void ConnectToServer(ServerEntry*);
-	void BeginGame(JoinResponse&);
+	void BeginGame(Packet::JoinResponse&);
 
 	//services
 	ConfigUtility* configUtil = Singleton<ConfigUtility>::Get();

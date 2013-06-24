@@ -155,30 +155,30 @@ void Lobby::KeyUp(SDL_KeyboardEvent const& key) {
 //Utilities
 //-------------------------
 
-int Lobby::HandlePacket(Packet p) {
+int Lobby::HandlePacket(Packet::Packet p) {
 	switch(p.meta.type) {
-		case PacketType::NONE:
+		case Packet::Type::NONE:
 			//DO NOTHING
 			return 0;
 		break;
-		case PacketType::PING:
+		case Packet::Type::PING:
 			//quick pong
-			p.meta.type = PacketType::PONG;
-			netUtil->Send(&p.meta.address, &p, sizeof(Packet));
+			p.meta.type = Packet::Type::PONG;
+			netUtil->Send(&p.meta.address, &p, sizeof(Packet::Packet));
 		break;
-		case PacketType::PONG:
+		case Packet::Type::PONG:
 			//
 		break;
 //		case PacketType::BROADCAST_REQUEST:
 //			//
 //		break;
-		case PacketType::BROADCAST_RESPONSE:
+		case Packet::Type::BROADCAST_RESPONSE:
 			PushServer(p.broadcastResponse);
 		break;
 //		case PacketType::JOIN_REQUEST:
 //			//
 //		break;
-		case PacketType::JOIN_RESPONSE:
+		case Packet::Type::JOIN_RESPONSE:
 			BeginGame(p.joinResponse);
 		break;
 //		case PacketType::DISCONNECT:
@@ -203,13 +203,13 @@ int Lobby::HandlePacket(Packet p) {
 }
 
 void Lobby::BroadcastNetwork() {
-	Packet p;
-	p.meta.type = PacketType::BROADCAST_REQUEST;
-	netUtil->Send("255.255.255.255", configUtil->Int("server.port"), &p, sizeof(Packet));
+	Packet::Packet p;
+	p.meta.type = Packet::Type::BROADCAST_REQUEST;
+	netUtil->Send("255.255.255.255", configUtil->Int("server.port"), &p, sizeof(Packet::Packet));
 	serverList.clear();
 }
 
-void Lobby::PushServer(BroadcastResponse& bcast) {
+void Lobby::PushServer(Packet::BroadcastResponse& bcast) {
 	ServerEntry entry;
 	entry.name = bcast.name;
 	entry.address = bcast.meta.address;
@@ -221,12 +221,12 @@ void Lobby::ConnectToServer(ServerEntry* server) {
 	if (!server) {
 		throw(runtime_error("No server received"));
 	}
-	Packet p;
-	p.meta.type = PacketType::JOIN_REQUEST;
-	netUtil->Send(&server->address, reinterpret_cast<void*>(&p), sizeof(Packet));
+	Packet::Packet p;
+	p.meta.type = Packet::Type::JOIN_REQUEST;
+	netUtil->Send(&server->address, reinterpret_cast<void*>(&p), sizeof(Packet::Packet));
 }
 
-void Lobby::BeginGame(JoinResponse& response) {
+void Lobby::BeginGame(Packet::JoinResponse& response) {
 	//should be downloading the resources here as well
 	infoMgr->SetClientIndex(response.clientIndex);
 	netUtil->Bind(&response.meta.address, GAME_CHANNEL);

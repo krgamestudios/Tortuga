@@ -25,7 +25,7 @@
 #include "scene_list.hpp"
 #include "base_scene.hpp"
 #include "singleton.hpp"
-#include "packet_type.hpp"
+#include "packet.hpp"
 #include "information_manager.hpp"
 
 #include "config_utility.hpp"

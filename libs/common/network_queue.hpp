@@ -22,13 +22,13 @@
 #ifndef NETWORKQUEUE_HPP_
 #define NETWORKQUEUE_HPP_
 
-#include "packet_type.hpp"
+#include "packet.hpp"
 
 void beginQueueThread();
 void endQueueThread();
 void killQueueThread();
-Packet peekNetworkPacket();
-Packet popNetworkPacket();
+Packet::Packet peekNetworkPacket();
+Packet::Packet popNetworkPacket();
 void flushNetworkQueue();
 
 #endif

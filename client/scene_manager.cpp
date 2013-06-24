@@ -89,7 +89,7 @@ void SceneManager::Init() {
 		flags);
 
 	//initiate the remaining singletons
-	netUtil->Open(0, sizeof(Packet));
+	netUtil->Open(0, sizeof(Packet::Packet));
 }
 
 void SceneManager::Proc() {

@@ -30,7 +30,9 @@
 
 #pragma pack(push, 0)
 
-enum class PacketType {
+namespace Packet {
+
+enum class Type {
 	NONE = 0,
 
 	PING = 1,
@@ -43,13 +45,11 @@ enum class PacketType {
 
 	SYNCHRONIZE = 8,
 
-	PLAYER_NEW = 9,
-	PLAYER_DELETE = 10,
-	PLAYER_MOVE = 11,
+	PLAYER = 9,
 };
 
 struct Metadata {
-	PacketType type;
+	Type type;
 	IPaddress address;
 };
 
@@ -90,27 +90,15 @@ struct Synchronize {
 	Metadata meta;
 };
 
-struct PlayerNew {
+struct Player {
 	Metadata meta;
-	int playerIndex;
-	//TODO Playerdata
+	//player data
 };
 
-struct PlayerDelete {
-	Metadata meta;
-	int playerIndex;
-};
-
-struct PlayerMove {
-	Metadata meta;
-	int playerIndex;
-	Vector2 position;
-	Vector2 motion;
-};
 
 union Packet {
 	Packet() {
-		meta.type = PacketType::NONE;
+		meta.type = Type::NONE;
 		meta.address.host = 0;
 		meta.address.port = 0;
 	};
@@ -124,14 +112,16 @@ union Packet {
 	JoinResponse joinResponse;
 	Disconnect disconnect;
 
-	PlayerNew playerNew;
-	PlayerDelete playerDelete;
-	PlayerMove playerMove;
+	Synchronize sync;
+
+	Player player;
 
 #ifdef DEBUG
 	char buffer[1024];
 #endif
 };
+
+} //namespace Packet
 
 #pragma pack(pop)
 

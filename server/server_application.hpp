@@ -23,7 +23,7 @@
 #define SERVERAPPLICATION_HPP_
 
 #include "utilities.hpp"
-#include "packet_type.hpp"
+#include "packet.hpp"
 #include "singleton.hpp"
 #include "network_queue.hpp"
 
@@ -57,10 +57,10 @@ private:
 	void UpdateWorld(double delta);
 
 	//network loop
-	int HandlePacket(Packet p);
-	void HandleBroadcast(BroadcastRequest&);
-	void HandleConnection(JoinRequest&);
-	void HandleDisconnection(Disconnect&);
+	int HandlePacket(Packet::Packet p);
+	void HandleBroadcast(Packet::BroadcastRequest&);
+	void HandleConnection(Packet::JoinRequest&);
+	void HandleDisconnection(Packet::Disconnect&);
 
 	//services
 	ConfigUtility* configUtil = Singleton<ConfigUtility>::Get();

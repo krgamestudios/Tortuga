@@ -70,7 +70,7 @@ void ServerApplication::Init() {
 	}
 
 	//initiate the remaining singletons
-	netUtil->Open(configUtil->Int("server.port"), sizeof(Packet));
+	netUtil->Open(configUtil->Int("server.port"), sizeof(Packet::Packet));
 
 	//create the threads
 	beginQueueThread();
@@ -122,33 +122,33 @@ void ServerApplication::UpdateWorld(double delta) {
 //Network loop
 //-------------------------
 
-int ServerApplication::HandlePacket(Packet p) {
+int ServerApplication::HandlePacket(Packet::Packet p) {
 	switch(p.meta.type) {
-		case PacketType::NONE:
+		case Packet::Type::NONE:
 			//DO NOTHING
 			return 0;
 		break;
-		case PacketType::PING:
+		case Packet::Type::PING:
 			//quick pong
-			p.meta.type = PacketType::PONG;
-			netUtil->Send(&p.meta.address, &p, sizeof(Packet));
+			p.meta.type = Packet::Type::PONG;
+			netUtil->Send(&p.meta.address, &p, sizeof(Packet::Packet));
 		break;
-		case PacketType::PONG:
+		case Packet::Type::PONG:
 			//
 		break;
-		case PacketType::BROADCAST_REQUEST:
+		case Packet::Type::BROADCAST_REQUEST:
 			HandleBroadcast(p.broadcastRequest);
 		break;
 //		case PacketType::BROADCAST_RESPONSE:
 //			//
 //		break;
-		case PacketType::JOIN_REQUEST:
+		case Packet::Type::JOIN_REQUEST:
 			HandleConnection(p.joinRequest);
 		break;
 //		case PacketType::JOIN_RESPONSE:
 //			//
 //		break;
-		case PacketType::DISCONNECT:
+		case Packet::Type::DISCONNECT:
 			HandleDisconnection(p.disconnect);
 		break;
 //		case PacketType::SYNCHRONIZE:
@@ -169,16 +169,16 @@ int ServerApplication::HandlePacket(Packet p) {
 	return 1;
 }
 
-void ServerApplication::HandleBroadcast(BroadcastRequest& bcast) {
+void ServerApplication::HandleBroadcast(Packet::BroadcastRequest& bcast) {
 	//respond to a broadcast request with the server's data
-	Packet p;
-	p.meta.type = PacketType::BROADCAST_RESPONSE;
+	Packet::Packet p;
+	p.meta.type = Packet::Type::BROADCAST_RESPONSE;
 	snprintf(p.broadcastResponse.name, PACKET_STRING_SIZE, "%s", configUtil->CString("server.name"));
 	//TODO version information
-	netUtil->Send(&bcast.meta.address, &p, sizeof(Packet));
+	netUtil->Send(&bcast.meta.address, &p, sizeof(Packet::Packet));
 }
 
-void ServerApplication::HandleConnection(JoinRequest& request) {
+void ServerApplication::HandleConnection(Packet::JoinRequest& request) {
 	if (clients.size() >= SDLNET_MAX_UDPCHANNELS) {
 		//ignore the new connection if there's too many clients connected
 		return;
@@ -193,20 +193,20 @@ void ServerApplication::HandleConnection(JoinRequest& request) {
 	clients[client.index] = client;
 
 	//send the player their information
-	Packet p;
-	p.meta.type = PacketType::JOIN_RESPONSE;
+	Packet::Packet p;
+	p.meta.type = Packet::Type::JOIN_RESPONSE;
 	p.joinResponse.clientIndex = client.index;
 	//TODO: resource list
-	netUtil->Send(client.channel, &p, sizeof(Packet));
+	netUtil->Send(client.channel, &p, sizeof(Packet::Packet));
 
 	//pretty
 	cout << "New connection: index " << client.index << endl;
 	cout << "number of clients: " << clients.size() << endl;
 }
 
-void ServerApplication::HandleDisconnection(Disconnect& disconnect) {
+void ServerApplication::HandleDisconnection(Packet::Disconnect& disconnect) {
 	//disconnect a client (redundant message)
-	netUtil->Send(clients[disconnect.clientIndex].channel, &disconnect, sizeof(Packet));
+	netUtil->Send(clients[disconnect.clientIndex].channel, &disconnect, sizeof(Packet::Packet));
 	netUtil->Unbind(clients[disconnect.clientIndex].channel);
 	clients.erase(disconnect.clientIndex);
 

@@ -135,18 +135,18 @@ void InWorld::KeyUp(SDL_KeyboardEvent const& key) {
 //Utilities
 //-------------------------
 
-int InWorld::HandlePacket(Packet p) {
+int InWorld::HandlePacket(Packet::Packet p) {
 	switch(p.meta.type) {
-		case PacketType::NONE:
+		case Packet::Type::NONE:
 			//DO NOTHING
 			return 0;
 		break;
-		case PacketType::PING:
+		case Packet::Type::PING:
 			//quick pong
-			p.meta.type = PacketType::PONG;
-			netUtil->Send(&p.meta.address, &p, sizeof(Packet));
+			p.meta.type = Packet::Type::PONG;
+			netUtil->Send(&p.meta.address, &p, sizeof(Packet::Packet));
 		break;
-		case PacketType::PONG:
+		case Packet::Type::PONG:
 			//
 		break;
 //		case PacketType::BROADCAST_REQUEST:
@@ -161,7 +161,7 @@ int InWorld::HandlePacket(Packet p) {
 //		case PacketType::JOIN_RESPONSE:
 //			//
 //		break;
-		case PacketType::DISCONNECT:
+		case Packet::Type::DISCONNECT:
 			HandleDisconnection(p.disconnect);
 		break;
 //		case PacketType::SYNCHRONIZE:
@@ -184,10 +184,10 @@ int InWorld::HandlePacket(Packet p) {
 
 void InWorld::Disconnect() {
 	//disconnect
-	Packet p;
-	p.meta.type = PacketType::DISCONNECT;
+	Packet::Packet p;
+	p.meta.type = Packet::Type::DISCONNECT;
 	p.disconnect.clientIndex = infoMgr->GetClientIndex();
-	netUtil->Send(GAME_CHANNEL, reinterpret_cast<void*>(&p), sizeof(Packet));
+	netUtil->Send(GAME_CHANNEL, reinterpret_cast<void*>(&p), sizeof(Packet::Packet));
 	netUtil->Unbind(GAME_CHANNEL);
 	endQueueThread();
 
@@ -201,7 +201,7 @@ void InWorld::ExitGame() {
 	cout << "The game session has ended" << endl;
 }
 
-void InWorld::HandleDisconnection(::Disconnect& disconnect) {
+void InWorld::HandleDisconnection(Packet::Disconnect& disconnect) {
 	Disconnect();
 	SetNextScene(SceneList::MAINMENU);
 	cout << "You have been disconnected" << endl;
