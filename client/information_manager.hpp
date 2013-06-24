@@ -27,8 +27,14 @@ public:
 	int SetClientIndex(int i) { return clientIndex = i; }
 	int GetClientIndex() { return clientIndex; }
 	void ResetClientIndex() { clientIndex = -1; }
+
+	//one player at a time
+	int SetPlayerIndex(int i) { return playerIndex = i; }
+	int GetPlayerIndex() { return playerIndex; }
+	void ResetPlayerIndex() { playerIndex = -1; }
 private:
 	int clientIndex = -1;
+	int playerIndex = -1;
 };
 
 #endif

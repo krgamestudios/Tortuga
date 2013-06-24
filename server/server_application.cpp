@@ -292,9 +292,17 @@ void ServerApplication::AddPlayer(Packet& p) {
 }
 
 void ServerApplication::RemovePlayer(Packet& p) {
-	//TODO remove a player
+	if (players.find(p.playerInfo.index) == players.end()) {
+		throw(runtime_error("Player to delete not found"));
+	}
+
+	players.erase(p.playerInfo.index);
 }
 
 void ServerApplication::UpdatePlayer(Packet& p) {
-	//TODO update a player
+	if (players.find(p.playerInfo.index) == players.end()) {
+		throw(runtime_error("Player to update not found"));
+	}
+	players[p.playerInfo.index].position = p.playerInfo.position;
+	players[p.playerInfo.index].motion = p.playerInfo.motion;
 }

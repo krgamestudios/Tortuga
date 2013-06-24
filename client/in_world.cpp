@@ -39,6 +39,8 @@ InWorld::InWorld() {
 	//debugging
 	Packet p;
 	p.meta.type = Packet::Type::PLAYER_NEW;
+	p.meta.clientIndex = infoMgr->GetClientIndex();
+
 	snprintf(p.playerInfo.handle, PACKET_STRING_SIZE, "%s", configUtil->CString("handle"));
 	snprintf(p.playerInfo.avatar, PACKET_STRING_SIZE, "%s", configUtil->CString("avatar"));
 	p.playerInfo.position = {0, 50};
@@ -163,6 +165,7 @@ int InWorld::HandlePacket(Packet p) {
 		case Packet::Type::PING:
 			//quick pong
 			p.meta.type = Packet::Type::PONG;
+			p.meta.clientIndex = infoMgr->GetClientIndex();
 			netUtil->Send(&p.meta.address, &p, sizeof(Packet));
 		break;
 		case Packet::Type::PONG:
@@ -202,15 +205,24 @@ int InWorld::HandlePacket(Packet p) {
 }
 
 void InWorld::Disconnect() {
-	//disconnect
 	Packet p;
+
+	//delete the player
+	p.meta.type = Packet::Type::PLAYER_DELETE;
+	p.meta.clientIndex = infoMgr->GetClientIndex();
+	p.playerInfo.index = infoMgr->GetPlayerIndex();
+	netUtil->Send(GAME_CHANNEL, &p, sizeof(Packet));
+
+	//disconnect
 	p.meta.type = Packet::Type::DISCONNECT;
 	p.meta.clientIndex = infoMgr->GetClientIndex();
-	netUtil->Send(GAME_CHANNEL, reinterpret_cast<void*>(&p), sizeof(Packet));
+	netUtil->Send(GAME_CHANNEL, &p, sizeof(Packet));
+
 	netUtil->Unbind(GAME_CHANNEL);
 
 	//reset the client
 	infoMgr->ResetClientIndex();
+	infoMgr->ResetPlayerIndex();
 }
 
 void InWorld::ExitGame() {
@@ -228,6 +240,10 @@ void InWorld::HandleDisconnection(Packet& disconnect) {
 }
 
 void InWorld::AddPlayer(Packet& p) {
+	if (playerCharacters.find(p.playerInfo.index) != playerCharacters.end()) {
+		throw(runtime_error("Duplicate players detected"));
+	}
+
 	//sprite
 	playerCharacters[p.playerInfo.index].GetSprite()->SetSurface(surfaceMgr->Get(p.playerInfo.avatar), 32, 48);
 
@@ -235,12 +251,21 @@ void InWorld::AddPlayer(Packet& p) {
 	playerCharacters[p.playerInfo.index].SetPosition(p.playerInfo.position);
 	playerCharacters[p.playerInfo.index].SetMotion(p.playerInfo.motion);
 
+	//is it this player?
+	if (p.meta.clientIndex == infoMgr->GetClientIndex()) {
+		infoMgr->SetPlayerIndex(p.playerInfo.index);
+	}
+
 	//debugging
 	cout << "New player, index " << p.playerInfo.index << endl;
 }
 
 void InWorld::RemovePlayer(Packet& p) {
-	//
+	if (playerCharacters.find(p.playerInfo.index) == playerCharacters.end()) {
+		throw(runtime_error("Player to delete not found"));
+	}
+
+	playerCharacters.erase(p.playerInfo.index);
 }
 
 void InWorld::UpdatePlayer(Packet& p) {
