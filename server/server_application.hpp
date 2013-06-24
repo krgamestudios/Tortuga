@@ -38,6 +38,7 @@
 
 #include <map>
 #include <string>
+#include <algorithm>
 
 class ServerApplication {
 public:
@@ -54,10 +55,16 @@ private:
 	void UpdateWorld(double delta);
 
 	//network loop
-	int HandlePacket(Packet::Packet p);
+	int HandlePacket(Packet::Packet);
+	void RelayPacket(Packet::Packet&);
+
 	void HandleBroadcast(Packet::BroadcastRequest&);
 	void HandleConnection(Packet::JoinRequest&);
 	void HandleDisconnection(Packet::Disconnect&);
+
+	void AddPlayer(Packet::PlayerNew&);
+	void DeletePlayer(Packet::PlayerDelete&);
+	void UpdatePlayer(Packet::PlayerUpdate&);
 
 	//services
 	ConfigUtility* configUtil = Singleton<ConfigUtility>::Get();

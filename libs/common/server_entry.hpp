@@ -29,6 +29,7 @@
 struct ServerEntry {
 	std::string name;
 	IPaddress address;
+	//TODO: player count
 };
 
 #endif

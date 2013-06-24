@@ -27,7 +27,6 @@
 struct ClientEntry {
 	int index;
 	IPaddress address;
-	int playerIndex;
 };
 
 #endif

@@ -45,7 +45,9 @@ enum class Type {
 
 	SYNCHRONIZE = 8,
 
-	PLAYER = 9,
+	PLAYER_NEW = 9,
+	PLAYER_DELETE = 10,
+	PLAYER_UPDATE = 11,
 };
 
 struct Metadata {
@@ -90,11 +92,28 @@ struct Synchronize {
 	Metadata meta;
 };
 
-struct Player {
+struct PlayerNew {
 	Metadata meta;
-	//player data
+	int playerIndex;
+	int clientIndex;
+	char handle[PACKET_STRING_SIZE];
+	char avatar[PACKET_STRING_SIZE];
+	//TODO Playerdata
 };
 
+struct PlayerDelete {
+	Metadata meta;
+	int playerIndex;
+	int clientIndex;
+};
+
+struct PlayerUpdate {
+	Metadata meta;
+	int playerIndex;
+	int clientIndex;
+	Vector2 position;
+	Vector2 motion;
+};
 
 union Packet {
 	Packet() {
@@ -114,7 +133,9 @@ union Packet {
 
 	Synchronize sync;
 
-	Player player;
+	PlayerNew playerNew;
+	PlayerDelete playerDelete;
+	PlayerUpdate playerUpdate;
 
 #ifdef DEBUG
 	char buffer[1024];

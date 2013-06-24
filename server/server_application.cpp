@@ -165,22 +165,32 @@ int ServerApplication::HandlePacket(Packet::Packet p) {
 		case Packet::Type::DISCONNECT:
 			HandleDisconnection(p.disconnect);
 		break;
-//		case PacketType::SYNCHRONIZE:
+//		case Packet::Type::SYNCHRONIZE:
 //			//
 //		break;
-//		case PacketType::PLAYER_NEW:
-//			//
-//		break;
-//		case PacketType::PLAYER_DELETE:
-//			//
-//		break;
-//		case PacketType::PLAYER_MOVE:
-//			//
-//		break;
+		case Packet::Type::PLAYER_NEW:
+			AddPlayer(p.playerNew);
+			RelayPacket(p);
+		break;
+		case Packet::Type::PLAYER_DELETE:
+			DeletePlayer(p.playerDelete);
+			RelayPacket(p);
+		break;
+		case Packet::Type::PLAYER_UPDATE:
+			UpdatePlayer(p.playerUpdate);
+			RelayPacket(p);
+		break;
 		default:
 			throw(runtime_error("Failed to recognize the packet type: " + itos(int(p.meta.type))));
 	}
 	return 1;
+}
+
+void ServerApplication::RelayPacket(Packet::Packet& p) {
+	//pump this packet to all clients
+	for (auto it : clients) {
+		netUtil->Send(&it.second.address, &p, sizeof(Packet::Packet));
+	}
 }
 
 void ServerApplication::HandleBroadcast(Packet::BroadcastRequest& bcast) {
@@ -193,21 +203,26 @@ void ServerApplication::HandleBroadcast(Packet::BroadcastRequest& bcast) {
 }
 
 void ServerApplication::HandleConnection(Packet::JoinRequest& request) {
-	//create the containers
-	ClientEntry client = {uniqueIndex++, request.meta.address};
+	//create the entries
+	ClientEntry newClient = {
+		uniqueIndex++,
+		request.meta.address
+	};
 
 	//push this information
-	clients[client.index] = client;
+	clients[newClient.index] = newClient;
 
 	//send the player their information
 	Packet::Packet p;
 	p.meta.type = Packet::Type::JOIN_RESPONSE;
-	p.joinResponse.clientIndex = client.index;
-	//TODO: resource list
-	netUtil->Send(&client.address, &p, sizeof(Packet::Packet));
+	p.joinResponse.clientIndex = newClient.index;
 
-	//pretty
-	cout << "New connection: index " << client.index << endl;
+	//TODO: resource list
+
+	netUtil->Send(&newClient.address, &p, sizeof(Packet::Packet));
+
+	//debugging
+	cout << "New connection: index " << newClient.index << endl;
 	cout << "number of clients: " << clients.size() << endl;
 }
 
@@ -216,9 +231,39 @@ void ServerApplication::HandleDisconnection(Packet::Disconnect& disconnect) {
 	netUtil->Send(&clients[disconnect.clientIndex].address, &disconnect, sizeof(Packet::Packet));
 	clients.erase(disconnect.clientIndex);
 
-	//remove the player...
+	//TODO remove the player...
+	//remove if(...)
 
-	//pretty
+	//debugging
 	cout << "Lost connection: index " << disconnect.clientIndex << endl;
 	cout << "number of clients: " << clients.size() << endl;
+}
+
+void ServerApplication::AddPlayer(Packet::PlayerNew& playerNew) {
+	//add the player
+	PlayerEntry newPlayer = {
+		uniqueIndex++,
+		playerNew.clientIndex,
+		playerNew.handle,
+		playerNew.avatar,
+		{0,0},
+		{0,0}
+	};
+
+	players[newPlayer.index] = newPlayer;
+
+	//prep for relay
+	playerNew.playerIndex = newPlayer.index;
+
+	//debugging
+	cout << "New player " << newPlayer.handle << "Has joined the game" << endl;
+	cout << "Number of players: " << players.size() << endl;
+}
+
+void ServerApplication::DeletePlayer(Packet::PlayerDelete& playerDelete) {
+	//TODO remove a player
+}
+
+void ServerApplication::UpdatePlayer(Packet::PlayerUpdate& playerUpdate) {
+	//TODO update a player
 }
