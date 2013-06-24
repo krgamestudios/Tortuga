@@ -63,11 +63,11 @@ protected:
 	void KeyUp(SDL_KeyboardEvent const&);
 
 	//utilities
-	int HandlePacket(Packet::Packet p);
+	int HandlePacket(Packet);
 	void BroadcastNetwork();
-	void PushServer(Packet::BroadcastResponse&);
+	void PushServer(Packet&);
 	void ConnectToServer(ServerEntry*);
-	void BeginGame(Packet::JoinResponse&);
+	void BeginGame(Packet&);
 
 	//services
 	ConfigUtility* configUtil = Singleton<ConfigUtility>::Get();

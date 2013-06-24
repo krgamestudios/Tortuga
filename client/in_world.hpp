@@ -63,15 +63,15 @@ protected:
 	void KeyUp(SDL_KeyboardEvent const&);
 
 	//Utilities
-	int HandlePacket(Packet::Packet);
+	int HandlePacket(Packet);
 	void Disconnect();
 	void ExitGame();
 
-	void HandleDisconnection(Packet::Disconnect&);
+	void HandleDisconnection(Packet&);
 
-	void AddPlayer(Packet::PlayerData&);
-	void RemovePlayer(Packet::PlayerDelete&);
-	void UpdatePlayer(Packet::PlayerData&);
+	void AddPlayer(Packet&);
+	void RemovePlayer(Packet&);
+	void UpdatePlayer(Packet&);
 
 	//services
 	ConfigUtility* configUtil = Singleton<ConfigUtility>::Get();

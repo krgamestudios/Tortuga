@@ -30,113 +30,60 @@
 
 #pragma pack(push, 0)
 
-namespace Packet {
-
-enum class Type {
-	NONE = 0,
-
-	PING = 1,
-	PONG = 2,
-	BROADCAST_REQUEST = 3,
-	BROADCAST_RESPONSE = 4,
-	JOIN_REQUEST = 5,
-	JOIN_RESPONSE = 6,
-	DISCONNECT = 7,
-
-	SYNCHRONIZE = 8,
-
-	PLAYER_NEW = 9,
-	PLAYER_DELETE = 10,
-	PLAYER_UPDATE = 11,
-};
-
-struct Metadata {
-	Type type;
-	IPaddress address;
-};
-
-struct Ping {
-	Metadata meta;
-};
-
-struct Pong {
-	Metadata meta;
-};
-
-struct BroadcastRequest {
-	Metadata meta;
-};
-
-struct BroadcastResponse {
-	Metadata meta;
-	char name[PACKET_STRING_SIZE];
-	//TODO: version
-};
-
-struct JoinRequest {
-	Metadata meta;
-};
-
-struct JoinResponse {
-	Metadata meta;
-	int clientIndex;
-	//resource list
-};
-
-struct Disconnect {
-	Metadata meta;
-	int clientIndex;
-};
-
-struct Synchronize {
-	Metadata meta;
-	int clientIndex;
-};
-
-struct PlayerData {
-	Metadata meta;
-	int playerIndex;
-	int clientIndex;
-	char handle[PACKET_STRING_SIZE];
-	char avatar[PACKET_STRING_SIZE];
-	Vector2 position;
-	Vector2 motion;
-	//TODO Playerdata
-};
-
-struct PlayerDelete {
-	Metadata meta;
-	int playerIndex;
-	int clientIndex;
-};
-
 union Packet {
+	//the type of packet being sent
+	enum class Type {
+		NONE = 0,
+
+		PING = 1,
+		PONG = 2,
+		BROADCAST_REQUEST = 3,
+		BROADCAST_RESPONSE = 4,
+		JOIN_REQUEST = 5,
+		JOIN_RESPONSE = 6,
+		DISCONNECT = 7,
+
+		SYNCHRONIZE = 8,
+
+		PLAYER_NEW = 9,
+		PLAYER_DELETE = 10,
+		PLAYER_UPDATE = 11,
+	};
+
+	//metadata on the packet itself
+	struct Metadata {
+		Type type;
+		IPaddress address;
+		int clientIndex;
+	}meta;
+
+	//information about the server
+	struct ServerInformation {
+		Metadata meta;
+		//TODO: version info
+		char name[PACKET_STRING_SIZE];
+		//TODO: player count
+	}serverInfo;
+
+	//information about a specific player
+	struct PlayerInformation {
+		Metadata meta;
+		int index;
+		char handle[PACKET_STRING_SIZE];
+		char avatar[PACKET_STRING_SIZE];
+		Vector2 position;
+		Vector2 motion;
+		//TODO Playerdata
+	}playerInfo;
+
+	//zero the packet
 	Packet() {
 		meta.type = Type::NONE;
 		meta.address.host = 0;
 		meta.address.port = 0;
+		meta.clientIndex = -1;
 	};
-	Metadata meta;
-
-	Ping ping;
-	Pong pong;
-	BroadcastRequest broadcastRequest;
-	BroadcastResponse broadcastResponse;
-	JoinRequest joinRequest;
-	JoinResponse joinResponse;
-	Disconnect disconnect;
-
-	Synchronize synchronize;
-
-	PlayerData playerData;
-	PlayerDelete playerDelete;
-
-#ifdef DEBUG
-	char buffer[1024];
-#endif
 };
-
-} //namespace Packet
 
 #pragma pack(pop)
 

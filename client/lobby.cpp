@@ -155,7 +155,7 @@ void Lobby::KeyUp(SDL_KeyboardEvent const& key) {
 //Utilities
 //-------------------------
 
-int Lobby::HandlePacket(Packet::Packet p) {
+int Lobby::HandlePacket(Packet p) {
 	switch(p.meta.type) {
 		case Packet::Type::NONE:
 			//DO NOTHING
@@ -164,7 +164,7 @@ int Lobby::HandlePacket(Packet::Packet p) {
 		case Packet::Type::PING:
 			//quick pong
 			p.meta.type = Packet::Type::PONG;
-			netUtil->Send(&p.meta.address, &p, sizeof(Packet::Packet));
+			netUtil->Send(&p.meta.address, &p, sizeof(Packet));
 		break;
 		case Packet::Type::PONG:
 			//
@@ -173,13 +173,13 @@ int Lobby::HandlePacket(Packet::Packet p) {
 //			//
 //		break;
 		case Packet::Type::BROADCAST_RESPONSE:
-			PushServer(p.broadcastResponse);
+			PushServer(p);
 		break;
 //		case Packet::Type::JOIN_REQUEST:
 //			//
 //		break;
 		case Packet::Type::JOIN_RESPONSE:
-			BeginGame(p.joinResponse);
+			BeginGame(p);
 		break;
 //		case Packet::Type::DISCONNECT:
 //			//
@@ -203,15 +203,15 @@ int Lobby::HandlePacket(Packet::Packet p) {
 }
 
 void Lobby::BroadcastNetwork() {
-	Packet::Packet p;
+	Packet p;
 	p.meta.type = Packet::Type::BROADCAST_REQUEST;
-	netUtil->Send("255.255.255.255", configUtil->Int("server.port"), &p, sizeof(Packet::Packet));
+	netUtil->Send("255.255.255.255", configUtil->Int("server.port"), &p, sizeof(Packet));
 	serverList.clear();
 }
 
-void Lobby::PushServer(Packet::BroadcastResponse& bcast) {
+void Lobby::PushServer(Packet& bcast) {
 	ServerEntry entry;
-	entry.name = bcast.name;
+	entry.name = bcast.serverInfo.name;
 	entry.address = bcast.meta.address;
 	serverList.push_back(entry);
 }
@@ -221,14 +221,14 @@ void Lobby::ConnectToServer(ServerEntry* server) {
 	if (!server) {
 		throw(runtime_error("No server received"));
 	}
-	Packet::Packet p;
+	Packet p;
 	p.meta.type = Packet::Type::JOIN_REQUEST;
-	netUtil->Send(&server->address, reinterpret_cast<void*>(&p), sizeof(Packet::Packet));
+	netUtil->Send(&server->address, reinterpret_cast<void*>(&p), sizeof(Packet));
 }
 
-void Lobby::BeginGame(Packet::JoinResponse& response) {
+void Lobby::BeginGame(Packet& response) {
 	//should be downloading the resources here as well
-	infoMgr->SetClientIndex(response.clientIndex);
+	infoMgr->SetClientIndex(response.meta.clientIndex);
 	netUtil->Bind(&response.meta.address, GAME_CHANNEL);
 	SetNextScene(SceneList::INWORLD);
 }

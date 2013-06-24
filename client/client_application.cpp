@@ -89,7 +89,7 @@ void ClientApplication::Init() {
 		flags);
 
 	//initiate the remaining singletons
-	netUtil->Open(0, sizeof(Packet::Packet));
+	netUtil->Open(0, sizeof(Packet));
 }
 
 void ClientApplication::Proc() {

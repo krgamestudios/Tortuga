@@ -37,19 +37,19 @@ InWorld::InWorld() {
 	font.SetSurface(surfaceMgr->Get("font"));
 
 	//debugging
-	Packet::Packet p;
+	Packet p;
 	p.meta.type = Packet::Type::PLAYER_NEW;
-	snprintf(p.playerData.handle, PACKET_STRING_SIZE, "%s", configUtil->CString("handle"));
-	snprintf(p.playerData.avatar, PACKET_STRING_SIZE, "%s", configUtil->CString("avatar"));
-	p.playerData.position = {0, 50};
-	p.playerData.motion = {140, 0};
+	snprintf(p.playerInfo.handle, PACKET_STRING_SIZE, "%s", configUtil->CString("handle"));
+	snprintf(p.playerInfo.avatar, PACKET_STRING_SIZE, "%s", configUtil->CString("avatar"));
+	p.playerInfo.position = {0, 50};
+	p.playerInfo.motion = {60, 0};
 
-	netUtil->Send(GAME_CHANNEL, &p, sizeof(Packet::Packet));
+	netUtil->Send(GAME_CHANNEL, &p, sizeof(Packet));
 
 	//request a sync
 	p.meta.type = Packet::Type::SYNCHRONIZE;
-	p.synchronize.clientIndex = infoMgr->GetClientIndex();
-	netUtil->Send(GAME_CHANNEL, &p, sizeof(Packet::Packet));
+	p.meta.clientIndex = infoMgr->GetClientIndex();
+	netUtil->Send(GAME_CHANNEL, &p, sizeof(Packet));
 }
 
 InWorld::~InWorld() {
@@ -154,7 +154,7 @@ void InWorld::KeyUp(SDL_KeyboardEvent const& key) {
 //Utilities
 //-------------------------
 
-int InWorld::HandlePacket(Packet::Packet p) {
+int InWorld::HandlePacket(Packet p) {
 	switch(p.meta.type) {
 		case Packet::Type::NONE:
 			//DO NOTHING
@@ -163,7 +163,7 @@ int InWorld::HandlePacket(Packet::Packet p) {
 		case Packet::Type::PING:
 			//quick pong
 			p.meta.type = Packet::Type::PONG;
-			netUtil->Send(&p.meta.address, &p, sizeof(Packet::Packet));
+			netUtil->Send(&p.meta.address, &p, sizeof(Packet));
 		break;
 		case Packet::Type::PONG:
 			//
@@ -181,19 +181,19 @@ int InWorld::HandlePacket(Packet::Packet p) {
 //			//
 //		break;
 		case Packet::Type::DISCONNECT:
-			HandleDisconnection(p.disconnect);
+			HandleDisconnection(p);
 		break;
 //		case Packet::Type::SYNCHRONIZE:
 //			//
 //		break;
 		case Packet::Type::PLAYER_NEW:
-			AddPlayer(p.playerData);
+			AddPlayer(p);
 		break;
 		case Packet::Type::PLAYER_DELETE:
-			RemovePlayer(p.playerDelete);
+			RemovePlayer(p);
 		break;
 		case Packet::Type::PLAYER_UPDATE:
-			UpdatePlayer(p.playerData);
+			UpdatePlayer(p);
 		break;
 		default:
 			throw(runtime_error("Failed to recognize the packet type: " + itos(int(p.meta.type))));
@@ -203,10 +203,10 @@ int InWorld::HandlePacket(Packet::Packet p) {
 
 void InWorld::Disconnect() {
 	//disconnect
-	Packet::Packet p;
+	Packet p;
 	p.meta.type = Packet::Type::DISCONNECT;
-	p.disconnect.clientIndex = infoMgr->GetClientIndex();
-	netUtil->Send(GAME_CHANNEL, reinterpret_cast<void*>(&p), sizeof(Packet::Packet));
+	p.meta.clientIndex = infoMgr->GetClientIndex();
+	netUtil->Send(GAME_CHANNEL, reinterpret_cast<void*>(&p), sizeof(Packet));
 	netUtil->Unbind(GAME_CHANNEL);
 
 	//reset the client
@@ -220,35 +220,35 @@ void InWorld::ExitGame() {
 	cout << "The game session has ended" << endl;
 }
 
-void InWorld::HandleDisconnection(Packet::Disconnect& disconnect) {
+void InWorld::HandleDisconnection(Packet& disconnect) {
 	Disconnect();
 	SetNextScene(SceneList::MAINMENU);
 	endQueueThread();
 	cout << "You have been disconnected" << endl;
 }
 
-void InWorld::AddPlayer(Packet::PlayerData& p) {
+void InWorld::AddPlayer(Packet& p) {
 	//sprite
-	playerCharacters[p.playerIndex].GetSprite()->SetSurface(surfaceMgr->Get(p.avatar), 32, 48);
+	playerCharacters[p.playerInfo.index].GetSprite()->SetSurface(surfaceMgr->Get(p.playerInfo.avatar), 32, 48);
 
 	//pos
-	playerCharacters[p.playerIndex].SetPosition(p.position);
-	playerCharacters[p.playerIndex].SetMotion(p.motion);
+	playerCharacters[p.playerInfo.index].SetPosition(p.playerInfo.position);
+	playerCharacters[p.playerInfo.index].SetMotion(p.playerInfo.motion);
 
 	//debugging
-	cout << "New player, index " << p.playerIndex << endl;
+	cout << "New player, index " << p.playerInfo.index << endl;
 }
 
-void InWorld::RemovePlayer(Packet::PlayerDelete& p) {
+void InWorld::RemovePlayer(Packet& p) {
 	//
 }
 
-void InWorld::UpdatePlayer(Packet::PlayerData& p) {
-	if (playerCharacters.find(p.playerIndex) == playerCharacters.end()) {
+void InWorld::UpdatePlayer(Packet& p) {
+	if (playerCharacters.find(p.playerInfo.index) == playerCharacters.end()) {
 		AddPlayer(p);
 		return;
 	}
 
-	playerCharacters[p.playerIndex].SetPosition(p.position);
-	playerCharacters[p.playerIndex].SetMotion(p.motion);
+	playerCharacters[p.playerInfo.index].SetPosition(p.playerInfo.position);
+	playerCharacters[p.playerInfo.index].SetMotion(p.playerInfo.motion);
 }

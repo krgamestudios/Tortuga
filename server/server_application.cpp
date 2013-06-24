@@ -71,7 +71,7 @@ void ServerApplication::Init() {
 	}
 
 	//initiate the remaining singletons
-	netUtil->Open(configUtil->Int("server.port"), sizeof(Packet::Packet));
+	netUtil->Open(configUtil->Int("server.port"), sizeof(Packet));
 
 	//create the threads
 	beginQueueThread();
@@ -145,7 +145,7 @@ void ServerApplication::UpdateWorld(double delta) {
 //Network loop
 //-------------------------
 
-int ServerApplication::HandlePacket(Packet::Packet p) {
+int ServerApplication::HandlePacket(Packet p) {
 	switch(p.meta.type) {
 		case Packet::Type::NONE:
 			//DO NOTHING
@@ -154,39 +154,39 @@ int ServerApplication::HandlePacket(Packet::Packet p) {
 		case Packet::Type::PING:
 			//quick pong
 			p.meta.type = Packet::Type::PONG;
-			netUtil->Send(&p.meta.address, &p, sizeof(Packet::Packet));
+			netUtil->Send(&p.meta.address, &p, sizeof(Packet));
 		break;
 		case Packet::Type::PONG:
 			//
 		break;
 		case Packet::Type::BROADCAST_REQUEST:
-			HandleBroadcast(p.broadcastRequest);
+			HandleBroadcast(p);
 		break;
 //		case PacketType::BROADCAST_RESPONSE:
 //			//
 //		break;
 		case Packet::Type::JOIN_REQUEST:
-			HandleConnection(p.joinRequest);
+			HandleConnection(p);
 		break;
 //		case PacketType::JOIN_RESPONSE:
 //			//
 //		break;
 		case Packet::Type::DISCONNECT:
-			HandleDisconnection(p.disconnect);
+			HandleDisconnection(p);
 		break;
 		case Packet::Type::SYNCHRONIZE:
-			SynchronizeEverything(p.synchronize);
+			SynchronizeEverything(p);
 		break;
 		case Packet::Type::PLAYER_NEW:
-			AddPlayer(p.playerData);
+			AddPlayer(p);
 			RelayPacket(p);
 		break;
 		case Packet::Type::PLAYER_DELETE:
-			RemovePlayer(p.playerDelete);
+			RemovePlayer(p);
 			RelayPacket(p);
 		break;
 		case Packet::Type::PLAYER_UPDATE:
-			UpdatePlayer(p.playerData);
+			UpdatePlayer(p);
 			RelayPacket(p);
 		break;
 		default:
@@ -195,42 +195,43 @@ int ServerApplication::HandlePacket(Packet::Packet p) {
 	return 1;
 }
 
-void ServerApplication::RelayPacket(Packet::Packet& p) {
+void ServerApplication::RelayPacket(Packet& p) {
 	//pump this packet to all clients
 	for (auto& it : clients) {
-		netUtil->Send(&it.second.address, &p, sizeof(Packet::Packet));
+		netUtil->Send(&it.second.address, &p, sizeof(Packet));
 	}
 }
 
-void ServerApplication::SynchronizeEverything(Packet::Synchronize& sync) {
+void ServerApplication::SynchronizeEverything(Packet& sync) {
 	//send all known data to this client
 	//TODO multithreading?
 
 	//all players
-	Packet::Packet p;
+	Packet p;
 	p.meta.type = Packet::Type::PLAYER_UPDATE;
 	for (auto& it : players) {
-		p.playerData.playerIndex = it.second.index;
-		p.playerData.clientIndex = it.second.clientIndex;
-		snprintf(p.playerData.handle, PACKET_STRING_SIZE, "%s", it.second.handle.c_str());
-		snprintf(p.playerData.avatar, PACKET_STRING_SIZE, "%s", it.second.avatar.c_str());
-		p.playerData.position = it.second.position;
-		p.playerData.motion = it.second.motion;
+		p.meta.clientIndex = it.second.clientIndex;
 
-		netUtil->Send(&clients[sync.clientIndex].address, &p, sizeof(Packet::Packet));
+		p.playerInfo.index = it.second.index;
+		snprintf(p.playerInfo.handle, PACKET_STRING_SIZE, "%s", it.second.handle.c_str());
+		snprintf(p.playerInfo.avatar, PACKET_STRING_SIZE, "%s", it.second.avatar.c_str());
+		p.playerInfo.position = it.second.position;
+		p.playerInfo.motion = it.second.motion;
+
+		netUtil->Send(&clients[sync.meta.clientIndex].address, &p, sizeof(Packet));
 	}
 }
 
-void ServerApplication::HandleBroadcast(Packet::BroadcastRequest& bcast) {
+void ServerApplication::HandleBroadcast(Packet& bcast) {
 	//respond to a broadcast request with the server's data
-	Packet::Packet p;
+	Packet p;
 	p.meta.type = Packet::Type::BROADCAST_RESPONSE;
-	snprintf(p.broadcastResponse.name, PACKET_STRING_SIZE, "%s", configUtil->CString("server.name"));
+	snprintf(p.serverInfo.name, PACKET_STRING_SIZE, "%s", configUtil->CString("server.name"));
 	//TODO version information
-	netUtil->Send(&bcast.meta.address, &p, sizeof(Packet::Packet));
+	netUtil->Send(&bcast.meta.address, &p, sizeof(Packet));
 }
 
-void ServerApplication::HandleConnection(Packet::JoinRequest& request) {
+void ServerApplication::HandleConnection(Packet& request) {
 	//create the entries
 	ClientEntry newClient = {
 		uniqueIndex++,
@@ -241,57 +242,59 @@ void ServerApplication::HandleConnection(Packet::JoinRequest& request) {
 	clients[newClient.index] = newClient;
 
 	//send the player their information
-	Packet::Packet p;
+	Packet p;
 	p.meta.type = Packet::Type::JOIN_RESPONSE;
-	p.joinResponse.clientIndex = newClient.index;
+	p.meta.clientIndex = newClient.index;
 
 	//TODO: resource list
 
-	netUtil->Send(&newClient.address, &p, sizeof(Packet::Packet));
+	netUtil->Send(&newClient.address, &p, sizeof(Packet));
 
 	//debugging
 	cout << "New connection: index " << newClient.index << endl;
 	cout << "number of clients: " << clients.size() << endl;
 }
 
-void ServerApplication::HandleDisconnection(Packet::Disconnect& disconnect) {
+void ServerApplication::HandleDisconnection(Packet& disconnect) {
 	//disconnect a client (redundant message)
-	netUtil->Send(&clients[disconnect.clientIndex].address, &disconnect, sizeof(Packet::Packet));
-	clients.erase(disconnect.clientIndex);
+	netUtil->Send(&clients[disconnect.meta.clientIndex].address, &disconnect, sizeof(Packet));
+	clients.erase(disconnect.meta.clientIndex);
 
 	//TODO remove the player...
 	//remove if(...)
 
+	//remove the player from other clients
+
 	//debugging
-	cout << "Lost connection: index " << disconnect.clientIndex << endl;
+	cout << "Lost connection: index " << disconnect.meta.clientIndex << endl;
 	cout << "number of clients: " << clients.size() << endl;
 }
 
-void ServerApplication::AddPlayer(Packet::PlayerData& p) {
+void ServerApplication::AddPlayer(Packet& p) {
 	//add the player
 	PlayerEntry newPlayer = {
 		uniqueIndex++,
-		p.clientIndex,
-		p.handle,
-		p.avatar,
-		p.position,
-		p.motion
+		p.meta.clientIndex,
+		p.playerInfo.handle,
+		p.playerInfo.avatar,
+		p.playerInfo.position,
+		p.playerInfo.motion
 	};
 
 	players[newPlayer.index] = newPlayer;
 
 	//prep for relay
-	p.playerIndex = newPlayer.index;
+	p.playerInfo.index = newPlayer.index;
 
 	//debugging
-	cout << "New player " << newPlayer.handle << "Has joined the game" << endl;
+	cout << "New player " << newPlayer.handle << " has joined the game" << endl;
 	cout << "Number of players: " << players.size() << endl;
 }
 
-void ServerApplication::RemovePlayer(Packet::PlayerDelete& p) {
+void ServerApplication::RemovePlayer(Packet& p) {
 	//TODO remove a player
 }
 
-void ServerApplication::UpdatePlayer(Packet::PlayerData& p) {
+void ServerApplication::UpdatePlayer(Packet& p) {
 	//TODO update a player
 }

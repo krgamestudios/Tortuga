@@ -32,7 +32,7 @@
 static SDL_sem* lock = SDL_CreateSemaphore(1);
 static SDL_Thread* queueThread = nullptr;
 
-static std::deque<Packet::Packet> queue;
+static std::deque<Packet> queue;
 
 static bool running = false;
 
@@ -41,8 +41,8 @@ static int networkQueue(void*) {
 	while(running) {
 		SDL_SemWait(lock);
 		while(netUtil->Receive()) {
-			Packet::Packet p;
-			memcpy(&p, netUtil->GetInData(), sizeof(Packet::Packet));
+			Packet p;
+			memcpy(&p, netUtil->GetInData(), sizeof(Packet));
 			p.meta.address = netUtil->GetInPacket()->address;
 			queue.push_back(p);
 		}
@@ -80,19 +80,19 @@ void killQueueThread() {
 	queueThread = nullptr;
 }
 
-Packet::Packet peekNetworkPacket() {
+Packet peekNetworkPacket() {
 	SDL_SemWait(lock);
-	Packet::Packet p;
+	Packet p;
 	if (queue.size() > 0) {
-		Packet::Packet p = queue[0];
+		Packet p = queue[0];
 	}
 	SDL_SemPost(lock);
 	return p;
 }
 
-Packet::Packet popNetworkPacket() {
+Packet popNetworkPacket() {
 	SDL_SemWait(lock);
-	Packet::Packet p;
+	Packet p;
 	if (queue.size() > 0) {
 		p = queue[0];
 		queue.pop_front();

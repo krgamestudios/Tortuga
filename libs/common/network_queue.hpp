@@ -27,8 +27,8 @@
 void beginQueueThread();
 void endQueueThread();
 void killQueueThread();
-Packet::Packet peekNetworkPacket();
-Packet::Packet popNetworkPacket();
+Packet peekNetworkPacket();
+Packet popNetworkPacket();
 void flushNetworkQueue();
 
 #endif

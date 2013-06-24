@@ -55,18 +55,18 @@ private:
 	void UpdateWorld(double delta);
 
 	//network loop
-	int HandlePacket(Packet::Packet);
-	void RelayPacket(Packet::Packet&);
+	int HandlePacket(Packet);
+	void RelayPacket(Packet&);
 
-	void SynchronizeEverything(Packet::Synchronize&);
+	void SynchronizeEverything(Packet&);
 
-	void HandleBroadcast(Packet::BroadcastRequest&);
-	void HandleConnection(Packet::JoinRequest&);
-	void HandleDisconnection(Packet::Disconnect&);
+	void HandleBroadcast(Packet&);
+	void HandleConnection(Packet&);
+	void HandleDisconnection(Packet&);
 
-	void AddPlayer(Packet::PlayerData&);
-	void RemovePlayer(Packet::PlayerDelete&);
-	void UpdatePlayer(Packet::PlayerData&);
+	void AddPlayer(Packet&);
+	void RemovePlayer(Packet&);
+	void UpdatePlayer(Packet&);
 
 	//services
 	ConfigUtility* configUtil = Singleton<ConfigUtility>::Get();
