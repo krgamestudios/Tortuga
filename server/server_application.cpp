@@ -193,15 +193,8 @@ void ServerApplication::HandleBroadcast(Packet::BroadcastRequest& bcast) {
 }
 
 void ServerApplication::HandleConnection(Packet::JoinRequest& request) {
-	if (clients.size() >= SDLNET_MAX_UDPCHANNELS) {
-		//ignore the new connection if there's too many clients connected
-		return;
-	}
 	//create the containers
-	ClientEntry client = { uniqueIndex++ };
-
-	//bind the address
-	client.channel = netUtil->Bind(&request.meta.address);
+	ClientEntry client = {uniqueIndex++, request.meta.address};
 
 	//push this information
 	clients[client.index] = client;
@@ -211,7 +204,7 @@ void ServerApplication::HandleConnection(Packet::JoinRequest& request) {
 	p.meta.type = Packet::Type::JOIN_RESPONSE;
 	p.joinResponse.clientIndex = client.index;
 	//TODO: resource list
-	netUtil->Send(client.channel, &p, sizeof(Packet::Packet));
+	netUtil->Send(&client.address, &p, sizeof(Packet::Packet));
 
 	//pretty
 	cout << "New connection: index " << client.index << endl;
@@ -220,8 +213,7 @@ void ServerApplication::HandleConnection(Packet::JoinRequest& request) {
 
 void ServerApplication::HandleDisconnection(Packet::Disconnect& disconnect) {
 	//disconnect a client (redundant message)
-	netUtil->Send(clients[disconnect.clientIndex].channel, &disconnect, sizeof(Packet::Packet));
-	netUtil->Unbind(clients[disconnect.clientIndex].channel);
+	netUtil->Send(&clients[disconnect.clientIndex].address, &disconnect, sizeof(Packet::Packet));
 	clients.erase(disconnect.clientIndex);
 
 	//remove the player...

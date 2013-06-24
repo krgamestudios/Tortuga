@@ -157,9 +157,9 @@ extern DECLSPEC void SDLCALL SDLNet_TCP_Close(TCPsocket sock);
 /***********************************************************************/
 
 /* The maximum channels on a a UDP socket */
-#define SDLNET_MAX_UDPCHANNELS	150
+#define SDLNET_MAX_UDPCHANNELS	32
 /* The maximum addresses bound to a single UDP socket channel */
-#define SDLNET_MAX_UDPADDRESSES	1
+#define SDLNET_MAX_UDPADDRESSES	4
 
 typedef struct _UDPsocket *UDPsocket;
 typedef struct {

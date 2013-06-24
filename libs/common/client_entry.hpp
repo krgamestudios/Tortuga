@@ -22,9 +22,11 @@
 #ifndef CLIENTENTRY_HPP_
 #define CLIENTENTRY_HPP_
 
+#include "SDL_net/SDL_net.h"
+
 struct ClientEntry {
 	int index;
-	int channel;
+	IPaddress address;
 	int playerIndex;
 };
 

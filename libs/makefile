@@ -1,7 +1,6 @@
 OUTDIR=out
 
 all: $(OUTDIR)
-	$(MAKE) -C SDL_net
 	$(MAKE) -C codebase
 	$(MAKE) -C common
 
