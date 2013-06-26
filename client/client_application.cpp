@@ -23,6 +23,9 @@
 
 #include <stdexcept>
 #include <chrono>
+#include <iostream>
+ using std::cout;
+ using std::endl;
 
 //-------------------------
 //Scene headers
@@ -98,7 +101,7 @@ void ClientApplication::Proc() {
 	//prepare the time system
 	typedef std::chrono::high_resolution_clock Clock;
 
-	Clock::duration delta(16 * Clock::duration::period::den / std::milli::den);
+	Clock::duration delta(5 * Clock::duration::period::den / std::milli::den);
 	Clock::time_point simTime = Clock::now();
 	Clock::time_point realTime;
 
@@ -110,8 +113,10 @@ void ClientApplication::Proc() {
 			continue;
 		}
 
-		//update the current time
-		realTime = Clock::now();
+		//update the current time & give the computer as much of a break as possible
+		while ((realTime = Clock::now()) < simTime) {
+			SDL_Delay(1);
+		}
 
 		//simulate game time
 		while (simTime < realTime) {
@@ -122,9 +127,6 @@ void ClientApplication::Proc() {
 
 		//draw the game to the screen
 		activeScene->RenderFrame();
-
-		//give the computer a break
-		SDL_Delay(10);
 	}
 
 	UnloadScene();
