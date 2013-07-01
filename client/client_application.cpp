@@ -23,9 +23,6 @@
 
 #include <stdexcept>
 #include <chrono>
-#include <iostream>
- using std::cout;
- using std::endl;
 
 //-------------------------
 //Scene headers
