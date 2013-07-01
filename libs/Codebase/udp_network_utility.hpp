@@ -22,7 +22,7 @@
 #ifndef UDPNETWORKUTILITY_HPP_
 #define UDPNETWORKUTILITY_HPP_
 
-#include "SDL_net/SDL_net.h"
+#include "SDL_net.h"
 
 class UDPNetworkUtility {
 public:
