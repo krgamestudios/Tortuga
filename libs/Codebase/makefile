@@ -2,7 +2,7 @@
 LIBDIR=..
 LOCALLIBS=
 LIB=
-INCLUDES=
+INCLUDES=$(LIBDIR)/SDL_net
 CXXFLAGS+=-std=c++11 -DDEBUG $(addprefix -I,$(INCLUDES))
 
 #source
