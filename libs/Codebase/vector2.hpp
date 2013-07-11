@@ -29,9 +29,7 @@ class Vector2 {
 public:
 	double x = 0, y = 0;
 	Vector2() = default;
-	Vector2(double i, double j) {
-		x = i; y = j;
-	}
+
 	double Length() const {
 		return sqrt(x*x+y*y);
 	}
@@ -46,20 +44,46 @@ public:
 	}
 
 	//Arithmetic operators
-	Vector2 operator+(Vector2 v) const { return Vector2(x + v.x, y + v.y); }
-	Vector2 operator-(Vector2 v) const { return Vector2(x - v.x, y - v.y); }
-	Vector2 operator*(Vector2 v) const { return Vector2(x * v.x, y * v.y); }
-	Vector2 operator*(double d) const { return Vector2(x * d, y * d); }
+	Vector2 operator+(Vector2 v) const {
+		Vector2 ret;
+		ret.x = x + v.x;
+		ret.y = y + v.y;
+		return ret;
+	}
+	Vector2 operator-(Vector2 v) const {
+		Vector2 ret;
+		ret.x = x - v.x;
+		ret.y = y - v.y;
+		return ret;
+	}
+	Vector2 operator*(Vector2 v) const {
+		Vector2 ret;
+		ret.x = x * v.x;
+		ret.y = y * v.y;
+		return ret;
+	}
+	Vector2 operator*(double d) const {
+		Vector2 ret;
+		ret.x = x * d;
+		ret.y = y * d;
+		return ret;
+	}
 
 	Vector2 operator/(Vector2 v) {
 		if (!v.x || !v.y)
 			throw(std::domain_error("Divide by zero"));
-		return Vector2(x / v.x, y / v.y);
+		Vector2 ret;
+		ret.x = x / v.x;
+		ret.y = y / v.y;
+		return ret;
 	}
 	Vector2 operator/(double d) {
 		if (!d)
 			throw(std::domain_error("Divide by zero"));
-		return Vector2(x / d, y / d);
+		Vector2 ret;
+		ret.x = x / d;
+		ret.y = y / d;
+		return ret;
 	}
 
 	bool operator==(Vector2 v) { return (x == v.x && y == v.y); }

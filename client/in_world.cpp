@@ -43,8 +43,10 @@ InWorld::InWorld() {
 
 	snprintf(p.playerInfo.handle, PACKET_STRING_SIZE, "%s", configUtil->CString("handle"));
 	snprintf(p.playerInfo.avatar, PACKET_STRING_SIZE, "%s", configUtil->CString("avatar"));
-	p.playerInfo.position = {50, 50};
-	p.playerInfo.motion = {0, 0};
+	p.playerInfo.position.x = 50;
+	p.playerInfo.position.y = 50;
+	p.playerInfo.motion.x = 0;
+	p.playerInfo.motion.y = 0;
 
 	netUtil->Send(GAME_CHANNEL, &p, sizeof(Packet));
 
