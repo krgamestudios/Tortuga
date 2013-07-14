@@ -22,7 +22,7 @@
 #ifndef SERVERENTRY_HPP_
 #define SERVERENTRY_HPP_
 
-#include "SDL_net.h"
+#include "SDL/SDL_net.h"
 
 #include <string>
 

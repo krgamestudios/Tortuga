@@ -24,7 +24,7 @@
 
 #include "vector2.hpp"
 
-#include "SDL_net.h"
+#include "SDL/SDL_net.h"
 
 #define PACKET_STRING_SIZE 100
 

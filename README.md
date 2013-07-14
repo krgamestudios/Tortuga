@@ -2,11 +2,10 @@ _This project is currently in it's early prototype stage. You can see other vers
 
 Tortuga is a 2D multiplayer role playing game set in a large archipelago occupied by warring pirate clans. The emphasis of this game is on multiplayer cooperation, competition, and server customization. The game runs on highly customizable server software that can support up to 150 simultaneous players or more. The player characters are tied to the server where they are created and are susceptible to permadeath: deletion of a character upon death.
 
-## Libraries
+## Dependencies
 
 * [SDL](http://www.libsdl.org/) - Simple DirectMedia Layer API
-* [SDL_net](http://www.libsdl.org/projects/SDL_net/) - SDL's networking extension. This must be installed first.
-* [Codebase](https://github.com/Ratstail91/Codebase) - generic reusable code modules
+* [SDL_net](http://www.libsdl.org/projects/SDL_net/) - SDL's networking extension
 
 ## Instructions
 
