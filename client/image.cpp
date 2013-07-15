@@ -21,33 +21,41 @@
 */
 #include "image.hpp"
 
-Image::Image(SDL_Surface* p) {
-	SetSurface(p);
-}
+#include <stdexcept>
 
-Image::Image(SDL_Surface* p, SDL_Rect r) {
-	SetSurface(p, r);
-}
-
-SDL_Surface* Image::SetSurface(SDL_Surface* p) {
-	if (!(surface = p)) {
-		clip = {0, 0, 0, 0};
+SDL_Surface* Image::LoadSurface(std::string fname) {
+	SDL_Surface* p = SDL_LoadBMP(fname.c_str());
+	if (!p) {
+		throw(std::runtime_error(std::string() + "Failed to load file: " + fname));
 	}
-	else {
-		clip = {0, 0, (Uint16)surface->w, (Uint16)surface->h};
-	}
+	surface = p;
+	clip = {0, 0, (Uint16)surface->w, (Uint16)surface->h};
+	local = true;
 	return surface;
 }
 
-SDL_Surface* Image::SetSurface(SDL_Surface* const p, SDL_Rect r) {
+void Image::FreeSurface() {
+	if (local) {
+		SDL_FreeSurface(surface);
+		local = false;
+	}
+	surface = nullptr;
+	clip = {0, 0, 0, 0};
+}
+
+SDL_Surface* Image::SetSurface(SDL_Surface* p) {
+	if (!p) {
+		throw(std::invalid_argument("No surface pointer provided"));
+	}
 	surface = p;
-	clip = r;
+	clip = {0, 0, (Uint16)surface->w, (Uint16)surface->h};
+	local = false;
 	return surface;
 }
 
 void Image::DrawTo(SDL_Surface* dest, Sint16 x, Sint16 y) {
 	if (!surface) {
-		return;
+		throw(std::logic_error("No image surface to draw"));
 	}
 	SDL_Rect sclip = clip, dclip = {x,y};
 	SDL_BlitSurface(surface, &sclip, dest, &dclip);

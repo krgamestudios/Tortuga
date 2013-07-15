@@ -33,7 +33,8 @@ void SpriteSheet::Update(double delta) {
 }
 
 SDL_Surface* SpriteSheet::SetSurface(SDL_Surface* const s, Uint16 w, Uint16 h) {
-	image.SetSurface(s, {0, 0, w, h});
+	image.SetSurface(s);
+	image.SetClip({0, 0, w, h});
 	currentFrame = 0; maxFrames = image.GetSurface()->w / image.GetClipW();
 	currentStrip = 0; maxStrips = image.GetSurface()->h / image.GetClipH();
 	delay = ticks = 0;

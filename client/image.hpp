@@ -23,16 +23,18 @@
 #define IMAGE_HPP_
 
 #include "SDL/SDL.h"
+#include <string>
 
 class Image {
 public:
 	Image() = default;
-	Image(SDL_Surface*);
-	Image(SDL_Surface*, SDL_Rect);
-	~Image() = default;
+	Image(SDL_Surface* p) { SetSurface(p); }
+	~Image() { FreeSurface(); }
+
+	SDL_Surface* LoadSurface(std::string fname);
+	void FreeSurface();
 
 	SDL_Surface* SetSurface(SDL_Surface*);
-	SDL_Surface* SetSurface(SDL_Surface*, SDL_Rect);
 	SDL_Surface* GetSurface() const { return surface; }
 
 	void DrawTo(SDL_Surface* const, Sint16 x, Sint16 y);
@@ -50,9 +52,12 @@ public:
 	Sint16 GetClipY() const { return clip.y; }
 	Uint16 GetClipW() const { return clip.w; }
 	Uint16 GetClipH() const { return clip.h; }
+
+	bool GetLocal() { return local; }
 protected:
 	SDL_Surface* surface = nullptr;
 	SDL_Rect clip = {0, 0, 0, 0};
+	bool local = false;
 };
 
 #endif
