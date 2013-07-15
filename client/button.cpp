@@ -23,27 +23,15 @@
 
 #include <stdexcept>
 
-Button::Button(Sint16 i, Sint16 j, SDL_Surface* imageSurface, SDL_Surface* fontSurface, std::string s) {
-	Setup(i, j, imageSurface, fontSurface, s);
-}
-
-void Button::Setup(Sint16 i, Sint16 j, SDL_Surface* imageSurface, SDL_Surface* fontSurface, std::string s) {
+void Button::Setup(Sint16 i, Sint16 j, SDL_Surface* bg, SDL_Surface* fg, std::string t) {
 	x = i;
 	y = j;
-
-	SetSurfaces(imageSurface, fontSurface);
-
-	SetText(s);
+	SetSurfaces(bg, fg);
+	SetText(t);
 }
 
 Button::State Button::MouseMotion(SDL_MouseMotionEvent const& motion) {
-	if (motion.state & SDL_BUTTON_LMASK) {
-		return CalcState(motion.x, motion.y, true);
-	}
-	else {
-		return CalcState(motion.x, motion.y, false);
-	}
-	return state;
+	return CalcState(motion.x, motion.y, motion.state & SDL_BUTTON_LMASK);
 }
 
 Button::State Button::MouseButtonDown(SDL_MouseButtonEvent const& button) {
@@ -65,19 +53,19 @@ void Button::DrawTo(SDL_Surface* const dest) {
 	font.DrawStringTo(text, dest, textX + x, textY + y);
 }
 
-void Button::SetSurfaces(SDL_Surface* imageSurface, SDL_Surface* fontSurface) {
+void Button::SetSurfaces(SDL_Surface* bg, SDL_Surface* fg) {
 	//graphical stuff
-	image.SetSurface(imageSurface);
-	image.SetClipH(image.GetClipH() / 3); //3 phases
-	font.SetSurface(fontSurface);
+	image.SetSurface(bg);
+	image.SetClipH(image.GetClipH() / 3); //3 phases, horizontal storage
+	font.SetSurface(fg);
 
 	//reset textX & textY
 	SetText(text);
 }
 
-std::string Button::SetText(std::string s) {
-	//one line
-	text = s;
+std::string Button::SetText(std::string t) {
+	//one line, cache the position
+	text = t;
 	textX = (image.GetClipW() / 2) - (font.GetCharW() * text.size() / 2);
 	textY = (image.GetClipH() / 2) - (font.GetCharH() / 2);
 	return text;

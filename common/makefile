@@ -1,8 +1,7 @@
 #config
-LIBDIR=..
 LOCALLIBS=
-LIB=-lSDL_net
-INCLUDES=$(LIBDIR)/Codebase
+LIB=
+INCLUDES=
 CXXFLAGS+=-std=c++11 -DDEBUG $(addprefix -I,$(INCLUDES))
 
 #source
@@ -13,7 +12,7 @@ OBJDIR=obj
 OBJ=$(addprefix $(OBJDIR)/,$(SRC:.cpp=.o))
 
 #output
-OUTDIR=../out
+OUTDIR=../lib
 OUT=$(addprefix $(OUTDIR)/,libCommon.a)
 
 #targets

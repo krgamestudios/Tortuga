@@ -29,7 +29,7 @@ static int frameCount = 0;
 static int lastFrameRate = 0;
 static Clock::time_point tick = Clock::now();
 
-int ClockFrameRate() {
+int clockFrameRate() {
 	frameCount++;
 	if (Clock::now() - tick >= std::chrono::duration<int>(1)) {
 		lastFrameRate = frameCount;
@@ -39,6 +39,6 @@ int ClockFrameRate() {
 	return lastFrameRate;
 }
 
-int GetFrameRate() {
+int getFrameRate() {
 	return lastFrameRate;
 }

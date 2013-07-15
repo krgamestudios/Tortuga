@@ -19,31 +19,28 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#include "raster_font.hpp"
+#ifndef RASTERFONT_HPP_
+#define RASTERFONT_HPP_
 
-#include <stdexcept>
+#include "image.hpp"
 
-RasterFont::RasterFont(SDL_Surface* p) {
-	SetSurface(p);
-}
+#include <string>
 
-void RasterFont::DrawStringTo(std::string s, SDL_Surface* const dest, Sint16 x, Sint16 y) {
-	if (!image.GetSurface()) {
-		throw(std::runtime_error("RasterFont not loaded"));
-	}
-	const Uint16 w = image.GetClipW();
-	const Uint16 h = image.GetClipH();
-	for (int i = 0; i < s.size(); i++) {
-		image.SetClipX(s[i] % w * w);
-		image.SetClipY(s[i] / h * h);
-		image.DrawTo(dest, x + i * w, y);
-	}
-}
+class RasterFont {
+public:
+	RasterFont() = default;
+	RasterFont(SDL_Surface* p) { SetSurface(p); }
+	~RasterFont() = default;
 
-SDL_Surface* RasterFont::SetSurface(SDL_Surface* p) {
-	if (image.SetSurface(p)) {
-		image.SetClipW(image.GetSurface()->w/16);
-		image.SetClipH(image.GetSurface()->h/16);
-	}
-	return image.GetSurface();
-}
+	void DrawStringTo(std::string, SDL_Surface* const, Sint16 x, Sint16 y);
+
+	//Accessors and Mutators
+	SDL_Surface* SetSurface(SDL_Surface*);
+	SDL_Surface* GetSurface() const { return image.GetSurface(); }
+	Uint16 GetCharW() { return image.GetClipW(); }
+	Uint16 GetCharH() { return image.GetClipH(); }
+private:
+	Image image;
+};
+
+#endif

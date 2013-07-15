@@ -19,26 +19,10 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#include "sprite_sheet.hpp"
+#ifndef FRAMERATE_HPP_
+#define FRAMERATE_HPP_
 
-SpriteSheet::SpriteSheet(SDL_Surface* s, Uint16 w, Uint16 h) {
-	SetSurface(s, w, h);
-}
+int clockFrameRate();
+int getFrameRate();
 
-void SpriteSheet::Update(double delta) {
-	if (interval && (ticks += delta) >= interval) {
-		if (++currentFrame >= maxFrames) {
-			currentFrame = 0;
-		}
-		ticks = 0;
-	}
-	image.SetClipX(currentFrame * image.GetClipW());
-	image.SetClipY(currentStrip * image.GetClipH());
-}
-
-SDL_Surface* SpriteSheet::SetSurface(SDL_Surface* const s, Uint16 w, Uint16 h) {
-	image.SetSurface(s, {0, 0, w, h});
-	currentFrame = 0; maxFrames = image.GetSurface()->w / image.GetClipW();
-	currentStrip = 0; maxStrips = image.GetSurface()->h / image.GetClipH();
-	interval = ticks = 0;
-}
+#endif

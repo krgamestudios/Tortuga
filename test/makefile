@@ -1,8 +1,7 @@
 #config
-LIBDIR=../libs
-LOCALLIBS=
+LOCALLIBS=../lib/libCommon.a
 LIB=
-INCLUDES=
+INCLUDES=../common
 CXXFLAGS+=-std=c++11 -DDEBUG $(addprefix -I,$(INCLUDES))
 
 #source

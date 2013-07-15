@@ -83,14 +83,14 @@ void InWorld::FrameEnd() {
 }
 
 void InWorld::Render(SDL_Surface* const screen) {
-	ClockFrameRate();
+	clockFrameRate();
 
 	for (auto& it : playerCharacters) {
 		it.second.DrawTo(screen);
 	}
 
 	//since we're using this twice, make a tmp var
-	string fps = itos(GetFrameRate());
+	string fps = itos(getFrameRate());
 	font.DrawStringTo(fps, screen, screen->w - fps.size() * font.GetCharW(), 0);
 }
 

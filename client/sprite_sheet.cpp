@@ -19,28 +19,22 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef RASTERFONT_HPP_
-#define RASTERFONT_HPP_
+#include "sprite_sheet.hpp"
 
-#include "image.hpp"
+void SpriteSheet::Update(double delta) {
+	if (delay && (ticks += delta) >= delay) {
+		if (++currentFrame >= maxFrames) {
+			currentFrame = 0;
+		}
+		ticks = 0;
+	}
+	image.SetClipX(currentFrame * image.GetClipW());
+	image.SetClipY(currentStrip * image.GetClipH());
+}
 
-#include <string>
-
-class RasterFont {
-public:
-	RasterFont() = default;
-	RasterFont(SDL_Surface* p);
-	~RasterFont() = default;
-
-	void DrawStringTo(std::string, SDL_Surface* const, Sint16 x, Sint16 y);
-
-	//Accessors and Mutators
-	SDL_Surface* SetSurface(SDL_Surface*);
-	SDL_Surface* GetSurface() const { return image.GetSurface(); }
-	Uint16 GetCharW() { return image.GetClipW(); }
-	Uint16 GetCharH() { return image.GetClipH(); }
-private:
-	Image image;
-};
-
-#endif
+SDL_Surface* SpriteSheet::SetSurface(SDL_Surface* const s, Uint16 w, Uint16 h) {
+	image.SetSurface(s, {0, 0, w, h});
+	currentFrame = 0; maxFrames = image.GetSurface()->w / image.GetClipW();
+	currentStrip = 0; maxStrips = image.GetSurface()->h / image.GetClipH();
+	delay = ticks = 0;
+}

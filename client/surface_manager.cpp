@@ -23,10 +23,6 @@
 
 #include <stdexcept>
 
-SurfaceManager::~SurfaceManager() noexcept {
-	FreeAll();
-}
-
 SDL_Surface* SurfaceManager::Load(std::string key, std::string fname) {
 	MapType::iterator it = surfaceMap.find(key);
 	if (it != surfaceMap.end()) {

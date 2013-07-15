@@ -19,31 +19,27 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef SURFACEMANAGER_HPP_
-#define SURFACEMANAGER_HPP_
+#include "raster_font.hpp"
 
-#include "SDL/SDL.h"
+#include <stdexcept>
 
-#include <map>
-#include <string>
+void RasterFont::DrawStringTo(std::string s, SDL_Surface* const dest, Sint16 x, Sint16 y) {
+	if (!image.GetSurface()) {
+		throw(std::runtime_error("RasterFont not loaded"));
+	}
+	const Uint16 w = image.GetClipW();
+	const Uint16 h = image.GetClipH();
+	for (int i = 0; i < s.size(); i++) {
+		image.SetClipX(s[i] % w * w);
+		image.SetClipY(s[i] / h * h);
+		image.DrawTo(dest, x + i * w, y);
+	}
+}
 
-class SurfaceManager {
-public:
-	SurfaceManager() = default;
-	~SurfaceManager() noexcept;
-
-	SDL_Surface* Load(std::string key, std::string fname);
-	SDL_Surface* Reload(std::string key, std::string fname);
-	SDL_Surface* Get(std::string key);
-	SDL_Surface* Set(std::string key, SDL_Surface* ptr);
-	void Free(std::string key);
-	void FreeAll();
-
-	SDL_Surface* operator[](std::string key) { return Get(key); };
-private:
-	SDL_Surface* LoadSurface(std::string key, std::string fname);
-	typedef std::map<std::string, SDL_Surface*> MapType;
-	MapType surfaceMap;
-};
-
-#endif
+SDL_Surface* RasterFont::SetSurface(SDL_Surface* p) {
+	if (image.SetSurface(p)) {
+		image.SetClipW(image.GetSurface()->w/16);
+		image.SetClipH(image.GetSurface()->h/16);
+	}
+	return image.GetSurface();
+}

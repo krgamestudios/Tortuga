@@ -29,23 +29,19 @@
 class SpriteSheet {
 public:
 	SpriteSheet() = default;
-	SpriteSheet(SDL_Surface*, Uint16 w, Uint16 h);
+	SpriteSheet(SDL_Surface* s, Uint16 w, Uint16 h) { SetSurface(s, w, h); }
 	~SpriteSheet() = default;
 
 	void Update(double delta);
 
 	SDL_Surface* SetSurface(SDL_Surface* const, Uint16 w, Uint16 h);
-	SDL_Surface* GetSurface() const {
-		return image.GetSurface();
-	}
+	SDL_Surface* GetSurface() const { return image.GetSurface(); }
 
-	void DrawTo(SDL_Surface* const dest, Sint16 x, Sint16 y) {
-		image.DrawTo(dest, x, y);
-	}
+	void DrawTo(SDL_Surface* const dest, Sint16 x, Sint16 y) { image.DrawTo(dest, x, y); }
 
 	//Accessors and Mutators
-	double SetInterval(double i) { return interval = i; }
-	double GetInterval() const { return interval; }
+	double SetDelay(double i) { return delay = i; }
+	double GetDelay() const { return delay; }
 
 	int SetCurrentFrame(int i) { return currentFrame = i; }
 	int SetCurrentStrip(int i) { return currentStrip = i; }
@@ -60,7 +56,7 @@ private:
 	Image image;
 	int currentFrame = 0, maxFrames = 0;
 	int currentStrip = 0, maxStrips = 0;
-	 double interval = 0, ticks = 0;
+	 double delay = 0, ticks = 0;
 };
 
 #endif

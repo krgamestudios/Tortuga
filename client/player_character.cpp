@@ -97,17 +97,17 @@ void PlayerCharacter::FaceDirection() {
 void PlayerCharacter::CheckSpeed() {
 	//diagonal
 	if (motion.x != 0 && motion.y != 0) {
-		sprite.SetInterval(0.1);
+		sprite.SetDelay(0.1);
 		limitSpeed = true;
 	}
 	//cardinal
 	else if (motion != 0) {
-		sprite.SetInterval(0.1);
+		sprite.SetDelay(0.1);
 		limitSpeed = false;
 	}
 	//not moving
 	else {
-		sprite.SetInterval(0);
+		sprite.SetDelay(0);
 		sprite.SetCurrentFrame(0);
 		limitSpeed = false;
 	}

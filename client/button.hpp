@@ -35,17 +35,15 @@ public:
 	};
 
 	Button() = default;
-	Button(Sint16 x, Sint16 y, SDL_Surface* imageSurface, SDL_Surface* fontSurface, std::string text = "");
+	Button(Sint16 x, Sint16 y, SDL_Surface* bg, SDL_Surface* fg, std::string t = "") { Setup(x, y, bg, fg, t); }
 
-	void Setup(Sint16 x, Sint16 y, SDL_Surface* imageSurface, SDL_Surface* fontSurface, std::string text = "");
+	void Setup(Sint16 x, Sint16 y, SDL_Surface* bg, SDL_Surface* fg, std::string text = "");
 
 	//return the current state
 	State MouseMotion(SDL_MouseMotionEvent const&);
 	State MouseButtonDown(SDL_MouseButtonEvent const&);
 	State MouseButtonUp(SDL_MouseButtonEvent const&);
-	State GetState() const {
-		return state;
-	}
+	State GetState() const { return state; }
 
 	//yet another draw function
 	void DrawTo(SDL_Surface* const);
@@ -56,9 +54,9 @@ public:
 	Sint16 GetX() const { return x; }
 	Sint16 GetY() const { return y; }
 
-	void SetSurfaces(SDL_Surface* image, SDL_Surface* font);
+	void SetSurfaces(SDL_Surface* bg, SDL_Surface* fg);
 
-	std::string SetText(std::string s);
+	std::string SetText(std::string t);
 	std::string GetText() const { return text; }
 
 	//raw access, be careful

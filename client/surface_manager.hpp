@@ -19,10 +19,31 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef FRAMERATE_HPP_
-#define FRAMERATE_HPP_
+#ifndef SURFACEMANAGER_HPP_
+#define SURFACEMANAGER_HPP_
 
-int ClockFrameRate();
-int GetFrameRate();
+#include "SDL/SDL.h"
+
+#include <map>
+#include <string>
+
+class SurfaceManager {
+public:
+	SurfaceManager() = default;
+	~SurfaceManager() noexcept { FreeAll(); }
+
+	SDL_Surface* Load(std::string key, std::string fname);
+	SDL_Surface* Reload(std::string key, std::string fname);
+	SDL_Surface* Get(std::string key);
+	SDL_Surface* Set(std::string key, SDL_Surface* ptr);
+	void Free(std::string key);
+	void FreeAll();
+
+	SDL_Surface* operator[](std::string key) { return Get(key); };
+private:
+	SDL_Surface* LoadSurface(std::string key, std::string fname);
+	typedef std::map<std::string, SDL_Surface*> MapType;
+	MapType surfaceMap;
+};
 
 #endif
