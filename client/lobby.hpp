@@ -24,11 +24,9 @@
 
 #include "base_scene.hpp"
 
-#include "utilities.hpp"
 #include "defines.hpp"
 #include "singleton.hpp"
 
-#include "server_entry.hpp"
 #include "packet.hpp"
 #include "network_queue.hpp"
 #include "information_manager.hpp"
@@ -41,6 +39,12 @@
 
 #include <vector>
 #include <string>
+
+struct ServerEntry {
+	std::string name;
+	IPaddress address;
+	//TODO: player count
+};
 
 class Lobby : public BaseScene {
 public:

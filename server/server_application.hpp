@@ -22,13 +22,9 @@
 #ifndef SERVERAPPLICATION_HPP_
 #define SERVERAPPLICATION_HPP_
 
-#include "utilities.hpp"
 #include "packet.hpp"
 #include "singleton.hpp"
 #include "network_queue.hpp"
-
-#include "client_entry.hpp"
-#include "player_entry.hpp"
 
 #include "config_Utility.hpp"
 #include "udp_network_utility.hpp"
@@ -39,6 +35,20 @@
 #include <map>
 #include <string>
 #include <algorithm>
+
+struct ClientEntry {
+	int index;
+	IPaddress address;
+};
+
+struct PlayerEntry {
+	int index;
+	int clientIndex;
+	std::string handle;
+	std::string avatar;
+	Vector2 position;
+	Vector2 motion;
+};
 
 class ServerApplication {
 public:

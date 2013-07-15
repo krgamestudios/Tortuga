@@ -26,6 +26,16 @@
 using namespace std;
 
 //-------------------------
+//Quick and dirty
+//-------------------------
+
+static std::string itos(int i) {
+	char buffer[20];
+	snprintf(buffer, 20, "%d", i);
+	return std::string(buffer);
+}
+
+//-------------------------
 //Public access members
 //-------------------------
 

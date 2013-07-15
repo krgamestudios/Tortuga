@@ -24,7 +24,6 @@
 
 #include "base_scene.hpp"
 
-#include "utilities.hpp"
 #include "defines.hpp"
 #include "singleton.hpp"
 #include "packet.hpp"
