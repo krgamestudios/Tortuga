@@ -34,8 +34,8 @@ MainMenu::MainMenu() {
 	cout << "entering MainMenu" << endl;
 #endif
 	startButton.Setup(50, 50, surfaceMgr->Get("button"), surfaceMgr->Get("font"), "Start");
-	optionsButton.Setup(50, 100, surfaceMgr->Get("button"), surfaceMgr->Get("font"), "Options");
-	quitButton.Setup(50, 150, surfaceMgr->Get("button"), surfaceMgr->Get("font"), "Quit");
+	optionsButton.Setup(50, 50 + surfaceMgr->Get("button")->h/3, surfaceMgr->Get("button"), surfaceMgr->Get("font"), "Options");
+	quitButton.Setup(50, 50 + surfaceMgr->Get("button")->h/3 * 2, surfaceMgr->Get("button"), surfaceMgr->Get("font"), "Quit");
 }
 
 MainMenu::~MainMenu() {

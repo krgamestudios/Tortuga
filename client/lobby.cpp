@@ -44,8 +44,8 @@ Lobby::Lobby() {
 	cout << "entering Lobby" << endl;
 #endif
 	refreshButton.Setup(50, 50, surfaceMgr->Get("button"), surfaceMgr->Get("font"), "Refresh");
-	joinButton.Setup(50, 100, surfaceMgr->Get("button"), surfaceMgr->Get("font"), "Join");
-	backButton.Setup(50, 150, surfaceMgr->Get("button"), surfaceMgr->Get("font"), "Back");
+	joinButton.Setup(50, 50 + surfaceMgr->Get("button")->h/3, surfaceMgr->Get("button"), surfaceMgr->Get("font"), "Join");
+	backButton.Setup(50, 50 + surfaceMgr->Get("button")->h/3 * 2, surfaceMgr->Get("button"), surfaceMgr->Get("font"), "Back");
 
 	font.SetSurface(surfaceMgr->Get("font"));
 	listBox.x = 280;

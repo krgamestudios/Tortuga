@@ -74,8 +74,8 @@ void SplashScreen::RenderFrame() {
 
 void SplashScreen::LoadResources() {
 	//standard
-	surfaceMgr->Load("font", configUtil->String("fonts") + "/pokemon_dark_font.bmp");
-	surfaceMgr->Load("button", configUtil->String("interface") + "/button.bmp");
+	surfaceMgr->Load("font", configUtil->String("fonts") + "/pk_white_8.bmp");
+	surfaceMgr->Load("button", configUtil->String("interface") + "/button_menu.bmp");
 
 	//debugging
 	surfaceMgr->Load("elliot", configUtil->String("sprites") + "/elliot2.bmp");
