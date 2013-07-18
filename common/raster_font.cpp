@@ -23,6 +23,11 @@
 
 #include <stdexcept>
 
+/* Note: This class can only take a raster font with 16*16 characters, and the
+ * indevidual characters must have the same dimensions. Overall this class is too
+ * restrictive; I suggest using a 3rd party library.
+*/
+
 void RasterFont::DrawStringTo(std::string s, SDL_Surface* const dest, Sint16 x, Sint16 y) {
 	if (!image.GetSurface()) {
 		throw(std::runtime_error("RasterFont not loaded"));
@@ -30,8 +35,8 @@ void RasterFont::DrawStringTo(std::string s, SDL_Surface* const dest, Sint16 x, 
 	const Uint16 w = image.GetClipW();
 	const Uint16 h = image.GetClipH();
 	for (int i = 0; i < s.size(); i++) {
-		image.SetClipX(s[i] % w * w);
-		image.SetClipY(s[i] / h * h);
+		image.SetClipX(s[i] % 16 * w);
+		image.SetClipY(s[i] / 16 * h);
 		image.DrawTo(dest, x + i * w, y);
 	}
 }

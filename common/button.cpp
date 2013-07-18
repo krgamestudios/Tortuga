@@ -56,7 +56,7 @@ void Button::DrawTo(SDL_Surface* const dest) {
 void Button::SetSurfaces(SDL_Surface* bg, SDL_Surface* fg) {
 	//graphical stuff
 	image.SetSurface(bg);
-	image.SetClipH(image.GetClipH() / 3); //3 phases, horizontal storage
+	image.SetClipH(image.GetClipH() / 3); //3 phases, vertical storage
 	font.SetSurface(fg);
 
 	//reset textX & textY
