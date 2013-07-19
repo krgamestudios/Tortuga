@@ -54,6 +54,9 @@ public:
 	Uint16 GetClipH() const { return clip.h; }
 
 	bool GetLocal() { return local; }
+
+	void SetTransparentColor(Uint8 r, Uint8 g, Uint8 b);
+	void ClearTransparentColor();
 protected:
 	SDL_Surface* surface = nullptr;
 	SDL_Rect clip = {0, 0, 0, 0};

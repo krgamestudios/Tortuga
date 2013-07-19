@@ -29,6 +29,7 @@ SDL_Surface* Image::LoadSurface(std::string fname) {
 		throw(std::runtime_error(std::string() + "Failed to load file: " + fname));
 	}
 	surface = p;
+	SetTransparentColor(255, 0, 255); //default
 	clip = {0, 0, (Uint16)surface->w, (Uint16)surface->h};
 	local = true;
 	return surface;
@@ -59,4 +60,18 @@ void Image::DrawTo(SDL_Surface* dest, Sint16 x, Sint16 y) {
 	}
 	SDL_Rect sclip = clip, dclip = {x,y};
 	SDL_BlitSurface(surface, &sclip, dest, &dclip);
+}
+
+void Image::SetTransparentColor(Uint8 r, Uint8 g, Uint8 b) {
+	if (!surface) {
+		throw(std::logic_error("Failed to set the transparent color"));
+	}
+	SDL_SetColorKey(surface, SDL_SRCCOLORKEY, SDL_MapRGB(surface->format, r, g, b));
+}
+
+void Image::ClearTransparentColor() {
+	if (!surface) {
+		throw(std::logic_error("Failed to clear the transparent color"));
+	}
+	SDL_SetColorKey(surface, 0, 0);
 }
