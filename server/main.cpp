@@ -1,4 +1,4 @@
-#include "application.hpp"
+#include "server_application.hpp"
 
 #include "SDL/SDL.h"
 
@@ -12,7 +12,7 @@ int main(int, char**) {
 	cout << "Beginning server" << endl;
 #endif
 	try {
-		Application app;
+		ServerApplication app;
 		app.Init();
 		app.Loop();
 		app.Quit();
