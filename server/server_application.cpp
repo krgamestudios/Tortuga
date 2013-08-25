@@ -24,6 +24,6 @@ void ServerApplication::OpenRoom(std::map<std::string, std::string> args) {
 	//TODO
 }
 
-void ServerApplication::CloseRoom(roomHandle) {
+void ServerApplication::CloseRoom(RoomHandle roomHandle) {
 	//TODO
 }

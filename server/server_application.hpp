@@ -9,7 +9,7 @@
 #include <map>
 #include <string>
 
-struct roomHandle {
+struct RoomHandle {
 	SDL_Thread* thread = nullptr;
 	BaseRoom* room = nullptr;
 };
@@ -28,9 +28,9 @@ public:
 
 private:
 	void OpenRoom(std::map<std::string, std::string>);
-	void CloseRoom(roomHandle);
+	void CloseRoom(RoomHandle);
 
-	std::list<roomHandle> rooms;
+	std::list<RoomHandle> rooms;
 	bool running = true;
 };
 
