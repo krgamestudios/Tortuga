@@ -1,11 +1,9 @@
-LIBDIR=lib
 OUTDIR=out
 
-all: $(LIBDIR) $(OUTDIR)
+all: $(OUTDIR)
 	$(MAKE) -C server
-
-$(LIBDIR):
-	mkdir $(LIBDIR)
+	$(MAKE) -C client
+	$(MAKE) -C editor
 
 $(OUTDIR):
 	mkdir $(OUTDIR)

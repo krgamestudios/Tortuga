@@ -19,24 +19,64 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#include "world_room.hpp"
+#include "editor_scene.hpp"
 
-WorldRoom::WorldRoom() {
+//-------------------------
+//Public access members
+//-------------------------
+
+EditorScene::EditorScene() {
 	//
 }
 
-WorldRoom::~WorldRoom() {
+EditorScene::~EditorScene() {
 	//
 }
 
-void WorldRoom::Init() {
+//-------------------------
+//Frame loop
+//-------------------------
+
+void EditorScene::FrameStart() {
 	//
 }
 
-void WorldRoom::Loop() {
+void EditorScene::Update(double delta) {
 	//
 }
 
-void WorldRoom::Quit() {
+void EditorScene::FrameEnd() {
+	//
+}
+
+void EditorScene::Render(SDL_Surface* const screen) {
+	//
+}
+
+//-------------------------
+//Event handlers
+//-------------------------
+
+void EditorScene::MouseMotion(SDL_MouseMotionEvent const& motion) {
+	//
+}
+
+void EditorScene::MouseButtonDown(SDL_MouseButtonEvent const& button) {
+	//
+}
+
+void EditorScene::MouseButtonUp(SDL_MouseButtonEvent const& button) {
+	//
+}
+
+void EditorScene::KeyDown(SDL_KeyboardEvent const& key) {
+	switch(key.keysym.sym) {
+		case SDLK_ESCAPE:
+			QuitEvent();
+			break;
+	}
+}
+
+void EditorScene::KeyUp(SDL_KeyboardEvent const& key) {
 	//
 }

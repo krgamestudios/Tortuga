@@ -19,24 +19,30 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef COMBATROOM_HPP_
-#define COMBATROOM_HPP_
+#ifndef EDITORSCENE_HPP_
+#define EDITORSCENE_HPP_
 
-#include "base_room.hpp"
+#include "base_scene.hpp"
 
-class CombatRoom : public BaseRoom {
+class EditorScene : public BaseScene {
 public:
-	CombatRoom();
-	~CombatRoom();
+	//Public access members
+	EditorScene();
+	~EditorScene();
 
-	void Init();
-	void Loop();
-	void Quit();
+protected:
+	//Frame loop
+	void FrameStart();
+	void Update(double delta);
+	void FrameEnd();
+	void Render(SDL_Surface* const);
 
-private:
-	//parent room index
-	//combatants
-	//monsters
+	//Event handlers
+	void MouseMotion(SDL_MouseMotionEvent const&);
+	void MouseButtonDown(SDL_MouseButtonEvent const&);
+	void MouseButtonUp(SDL_MouseButtonEvent const&);
+	void KeyDown(SDL_KeyboardEvent const&);
+	void KeyUp(SDL_KeyboardEvent const&);
 };
 
 #endif

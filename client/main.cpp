@@ -19,24 +19,24 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef COMBATROOM_HPP_
-#define COMBATROOM_HPP_
+#include "client_application.hpp"
 
-#include "base_room.hpp"
+#include <stdexcept>
+#include <iostream>
 
-class CombatRoom : public BaseRoom {
-public:
-	CombatRoom();
-	~CombatRoom();
+using namespace std;
 
-	void Init();
-	void Loop();
-	void Quit();
-
-private:
-	//parent room index
-	//combatants
-	//monsters
-};
-
-#endif
+int main(int, char**) {
+	cout << "Beginning client" << endl;
+	try {
+		ClientApplication::GetInstance()->Init();
+		ClientApplication::GetInstance()->Proc();
+		ClientApplication::GetInstance()->Quit();
+	}
+	catch(exception& e) {
+		cerr << "Fatal exception thrown: " << e.what() << endl;
+		return 1;
+	}
+	cout << "Clean exit" << endl;
+	return 0;
+}

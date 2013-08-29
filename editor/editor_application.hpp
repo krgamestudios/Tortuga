@@ -19,24 +19,31 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef COMBATROOM_HPP_
-#define COMBATROOM_HPP_
+#ifndef EDITORAPPLICATION_HPP_
+#define EDITORAPPLICATION_HPP_
 
-#include "base_room.hpp"
+#include "scene_list.hpp"
+#include "base_scene.hpp"
 
-class CombatRoom : public BaseRoom {
+class EditorApplication {
+private:
+	EditorApplication();
+	~EditorApplication();
+	static EditorApplication instance;
+
 public:
-	CombatRoom();
-	~CombatRoom();
+	static EditorApplication* GetInstance() { return &instance; }
 
 	void Init();
-	void Loop();
+	void Proc();
 	void Quit();
 
 private:
-	//parent room index
-	//combatants
-	//monsters
+	//Private access members
+	void LoadScene(SceneList sceneIndex);
+	void UnloadScene();
+
+	BaseScene* activeScene = nullptr;
 };
 
 #endif

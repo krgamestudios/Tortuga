@@ -19,24 +19,17 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef COMBATROOM_HPP_
-#define COMBATROOM_HPP_
+#ifndef SCENELIST_HPP_
+#define SCENELIST_HPP_
 
-#include "base_room.hpp"
+enum class SceneList {
+	//these are reserved
+	QUIT,
+	CONTINUE,
+	FIRST,
 
-class CombatRoom : public BaseRoom {
-public:
-	CombatRoom();
-	~CombatRoom();
-
-	void Init();
-	void Loop();
-	void Quit();
-
-private:
-	//parent room index
-	//combatants
-	//monsters
+	//custom indexes
+	EDITORSCENE,
 };
 
 #endif

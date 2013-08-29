@@ -11,7 +11,7 @@ OBJ=$(addprefix $(OBJDIR)/,$(SRC:.cpp=.o))
 
 #output
 OUTDIR=../out
-OUT=$(addprefix $(OUTDIR)/,server)
+OUT=$(addprefix $(OUTDIR)/,client)
 
 #targets
 all: $(OBJ) $(OUT)
