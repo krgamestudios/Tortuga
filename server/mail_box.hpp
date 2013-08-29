@@ -6,7 +6,7 @@
 #include <deque>
 #include <string>
 
-//Thread safe mailbox
+//Thread safe messaging system
 class MailBox {
 public:
 	MailBox();

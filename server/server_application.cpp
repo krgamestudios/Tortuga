@@ -1,5 +1,7 @@
 #include "server_application.hpp"
 
+ServerApplication ServerApplication::instance;
+
 ServerApplication::ServerApplication() {
 	//TODO
 }
@@ -10,6 +12,10 @@ ServerApplication::~ServerApplication() {
 
 void ServerApplication::Init() {
 	//TODO
+
+	//Init SDL
+	//Init lua
+	//Init SQL
 }
 
 void ServerApplication::Loop() {
@@ -17,13 +23,5 @@ void ServerApplication::Loop() {
 }
 
 void ServerApplication::Quit() {
-	//TODO
-}
-
-void ServerApplication::OpenRoom(std::map<std::string, std::string> args) {
-	//TODO
-}
-
-void ServerApplication::CloseRoom(RoomHandle roomHandle) {
 	//TODO
 }

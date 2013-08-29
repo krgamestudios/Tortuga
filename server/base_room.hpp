@@ -6,9 +6,10 @@
 #include <map>
 #include <string>
 
+//The abstract base class for all rooms
 class BaseRoom {
 public:
-	BaseRoom(std::map<std::string, std::string> args);
+	BaseRoom() = default;
 	~BaseRoom() = default;
 
 	virtual void Init() = 0;
@@ -21,13 +22,10 @@ public:
 	MailBox* GetMailBox() { return& mailBox; }
 
 protected:
-	std::map<std::string, std::string> const arguments;
 	MailBox mailBox;
 
 private:
 	bool running = true;
 };
-
-int roomThread(void*);
 
 #endif

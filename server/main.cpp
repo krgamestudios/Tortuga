@@ -12,10 +12,9 @@ int main(int, char**) {
 	cout << "Beginning server" << endl;
 #endif
 	try {
-		ServerApplication app;
-		app.Init();
-		app.Loop();
-		app.Quit();
+		ServerApplication::GetInstance()->Init();
+		ServerApplication::GetInstance()->Loop();
+		ServerApplication::GetInstance()->Quit();
 	}
 	catch(exception& e) {
 		cerr << "Fatal error: " << e.what() << endl;
