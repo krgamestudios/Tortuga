@@ -19,22 +19,30 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef SCENELIST_HPP_
-#define SCENELIST_HPP_
+#ifndef INWORLD_HPP_
+#define INWORLD_HPP_
 
-enum class SceneList {
-	//these are reserved
-	QUIT,
-	CONTINUE,
-	FIRST,
+#include "base_scene.hpp"
 
-	//custom indexes
-	SPLASHSCREEN,
-	MAINMENU,
-	OPTIONSMENU,
-	LOBBYMENU,
-	INWORLD,
-	INCOMBAT,
+class InWorld : public BaseScene {
+public:
+	//Public access members
+	InWorld();
+	~InWorld();
+
+protected:
+	//Frame loop
+	void FrameStart();
+	void Update(double delta);
+	void FrameEnd();
+	void Render(SDL_Surface* const);
+
+	//Event handlers
+	void MouseMotion(SDL_MouseMotionEvent const&);
+	void MouseButtonDown(SDL_MouseButtonEvent const&);
+	void MouseButtonUp(SDL_MouseButtonEvent const&);
+	void KeyDown(SDL_KeyboardEvent const&);
+	void KeyUp(SDL_KeyboardEvent const&);
 };
 
 #endif

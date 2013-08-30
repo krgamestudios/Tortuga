@@ -19,16 +19,16 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef EDITORSCENE_HPP_
-#define EDITORSCENE_HPP_
+#ifndef MAINMENU_HPP_
+#define MAINMENU_HPP_
 
 #include "base_scene.hpp"
 
-class EditorScene : public BaseScene {
+class MainMenu : public BaseScene {
 public:
 	//Public access members
-	EditorScene();
-	~EditorScene();
+	MainMenu();
+	~MainMenu();
 
 protected:
 	//Frame loop

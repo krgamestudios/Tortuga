@@ -35,7 +35,12 @@ ClientApplication ClientApplication::instance;
 //-------------------------
 
 //Add the custom scene headers here
-#include "editor_scene.hpp"
+#include "splash_screen.hpp"
+#include "main_menu.hpp"
+#include "options_menu.hpp"
+#include "lobby_menu.hpp"
+#include "in_world.hpp"
+#include "in_combat.hpp"
 
 //-------------------------
 //Public access members
@@ -108,8 +113,23 @@ void ClientApplication::LoadScene(SceneList sceneIndex) {
 	switch(sceneIndex) {
 		//add scene creation calls here
 		case SceneList::FIRST:
-		case SceneList::EDITORSCENE:
-			activeScene = new EditorScene();
+		case SceneList::SPLASHSCREEN:
+			activeScene = new SplashScreen();
+		break;
+		case SceneList::MAINMENU:
+			activeScene = new MainMenu();
+		break;
+		case SceneList::OPTIONSMENU:
+			activeScene = new OptionsMenu();
+		break;
+		case SceneList::LOBBYMENU:
+			activeScene = new LobbyMenu();
+		break;
+		case SceneList::INWORLD:
+			activeScene = new InWorld();
+		break;
+		case SceneList::INCOMBAT:
+			activeScene = new InCombat();
 		break;
 
 		default:

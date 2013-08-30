@@ -19,17 +19,17 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#include "editor_scene.hpp"
+#include "in_combat.hpp"
 
 //-------------------------
 //Public access members
 //-------------------------
 
-EditorScene::EditorScene() {
+InCombat::InCombat() {
 	//
 }
 
-EditorScene::~EditorScene() {
+InCombat::~InCombat() {
 	//
 }
 
@@ -37,19 +37,19 @@ EditorScene::~EditorScene() {
 //Frame loop
 //-------------------------
 
-void EditorScene::FrameStart() {
+void InCombat::FrameStart() {
 	//
 }
 
-void EditorScene::Update(double delta) {
+void InCombat::Update(double delta) {
 	//
 }
 
-void EditorScene::FrameEnd() {
+void InCombat::FrameEnd() {
 	//
 }
 
-void EditorScene::Render(SDL_Surface* const screen) {
+void InCombat::Render(SDL_Surface* const screen) {
 	//
 }
 
@@ -57,19 +57,19 @@ void EditorScene::Render(SDL_Surface* const screen) {
 //Event handlers
 //-------------------------
 
-void EditorScene::MouseMotion(SDL_MouseMotionEvent const& motion) {
+void InCombat::MouseMotion(SDL_MouseMotionEvent const& motion) {
 	//
 }
 
-void EditorScene::MouseButtonDown(SDL_MouseButtonEvent const& button) {
+void InCombat::MouseButtonDown(SDL_MouseButtonEvent const& button) {
 	//
 }
 
-void EditorScene::MouseButtonUp(SDL_MouseButtonEvent const& button) {
+void InCombat::MouseButtonUp(SDL_MouseButtonEvent const& button) {
 	//
 }
 
-void EditorScene::KeyDown(SDL_KeyboardEvent const& key) {
+void InCombat::KeyDown(SDL_KeyboardEvent const& key) {
 	switch(key.keysym.sym) {
 		case SDLK_ESCAPE:
 			QuitEvent();
@@ -77,6 +77,6 @@ void EditorScene::KeyDown(SDL_KeyboardEvent const& key) {
 	}
 }
 
-void EditorScene::KeyUp(SDL_KeyboardEvent const& key) {
+void InCombat::KeyUp(SDL_KeyboardEvent const& key) {
 	//
 }

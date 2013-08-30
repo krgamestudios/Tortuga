@@ -19,22 +19,64 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef SCENELIST_HPP_
-#define SCENELIST_HPP_
+#include "main_menu.hpp"
 
-enum class SceneList {
-	//these are reserved
-	QUIT,
-	CONTINUE,
-	FIRST,
+//-------------------------
+//Public access members
+//-------------------------
 
-	//custom indexes
-	SPLASHSCREEN,
-	MAINMENU,
-	OPTIONSMENU,
-	LOBBYMENU,
-	INWORLD,
-	INCOMBAT,
-};
+MainMenu::MainMenu() {
+	//
+}
 
-#endif
+MainMenu::~MainMenu() {
+	//
+}
+
+//-------------------------
+//Frame loop
+//-------------------------
+
+void MainMenu::FrameStart() {
+	//
+}
+
+void MainMenu::Update(double delta) {
+	//
+}
+
+void MainMenu::FrameEnd() {
+	//
+}
+
+void MainMenu::Render(SDL_Surface* const screen) {
+	//
+}
+
+//-------------------------
+//Event handlers
+//-------------------------
+
+void MainMenu::MouseMotion(SDL_MouseMotionEvent const& motion) {
+	//
+}
+
+void MainMenu::MouseButtonDown(SDL_MouseButtonEvent const& button) {
+	//
+}
+
+void MainMenu::MouseButtonUp(SDL_MouseButtonEvent const& button) {
+	//
+}
+
+void MainMenu::KeyDown(SDL_KeyboardEvent const& key) {
+	switch(key.keysym.sym) {
+		case SDLK_ESCAPE:
+			QuitEvent();
+			break;
+	}
+}
+
+void MainMenu::KeyUp(SDL_KeyboardEvent const& key) {
+	//
+}
