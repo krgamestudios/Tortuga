@@ -1,9 +1,7 @@
 #config
-COMMONDIR+=../common
-COMMON+=../libcommon.a
-LIB+=$(COMMON) -lmingw32 -lSDLmain -lSDL -llua -lsqlite3
-CXXFLAGS+=-std=c++11 -DDEBUG $(addprefix -I,$(COMMONDIR))
-CFLAGS+=-DDEBUG -I$(COMMONDIR)
+LIB+=
+CXXFLAGS+=-std=c++11 -DDEBUG
+CFLAGS+=-DDEBUG
 
 #source
 CXXSRC=$(wildcard *.cpp)
@@ -15,12 +13,12 @@ OBJ+=$(addprefix $(OBJDIR)/,$(CXXSRC:.cpp=.o))
 OBJ+=$(addprefix $(OBJDIR)/,$(CSRC:.c=.o))
 
 #output
-OUTDIR=../out
-OUT=$(addprefix $(OUTDIR)/,client)
+OUTDIR=..
+OUT=$(addprefix $(OUTDIR)/,libcommon.a)
 
 #targets
 all: $(OBJ) $(OUT)
-	$(CXX) $(CXXFLAGS) -o $(OUT) $(OBJ) $(LIB)
+	ar -crs $(OUT) $(OBJ)
 
 $(OBJ): | $(OBJDIR)
 

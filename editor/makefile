@@ -1,13 +1,18 @@
 #config
-LIB=-lmingw32 -lSDLmain -lSDL -llua
-CXXFLAGS+=-std=c++11 -DDEBUG
+COMMONDIR+=../common
+COMMON+=../libcommon.a
+LIB+=$(COMMON) -lmingw32 -lSDLmain -lSDL -llua -lsqlite3
+CXXFLAGS+=-std=c++11 -DDEBUG $(addprefix -I,$(COMMONDIR))
+CFLAGS+=-DDEBUG -I$(COMMONDIR)
 
 #source
-SRC=$(wildcard *.cpp)
+CXXSRC=$(wildcard *.cpp)
+CSRC=$(wildcard *.c)
 
 #objects
 OBJDIR=obj
-OBJ=$(addprefix $(OBJDIR)/,$(SRC:.cpp=.o))
+OBJ+=$(addprefix $(OBJDIR)/,$(CXXSRC:.cpp=.o))
+OBJ+=$(addprefix $(OBJDIR)/,$(CSRC:.c=.o))
 
 #output
 OUTDIR=../out
@@ -29,6 +34,9 @@ $(OUTDIR):
 
 $(OBJDIR)/%.o: %.cpp
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
+
+$(OBJDIR)/%.o: %.c
+	$(CC) $(CFLAGS) -c -o $@ $<
 
 clean:
 	$(RM) *.o *.a *.exe
