@@ -1,6 +1,6 @@
 ## Server
 
-#### UserAccount
+#### UserAccounts
 * userAccountID primary key
 * username unique
 * password --stored in the database (hashed)?
@@ -19,7 +19,7 @@
 * itemName unique
 * itemImage
 * type {mundane, consumable, equipment, etc.}
-* stackable {1-max; -1 for false}
+* maxStackSize {1-max; -1 for false}
 * maxUniqueCopies {1-max; -1 for unlimited}
 
 #### MundaneItems
@@ -44,13 +44,11 @@
 #### Notes
 * These change as the character progresses and grows
 
-#### PlayerCharacter
+#### PlayerCharacters
 * characterID primary key
 * name unique
-* TODO: customizable sprite
 
-#### PlayerStatistics
-* characterID foreign key -> PlayerCharacter.characterID
+#### Player Statistics
 * currentLevel
 * currentExperience
 * maxHealth
@@ -59,15 +57,21 @@
 * currentMana
 * attack
 * defence
-* TODO: etc.
+* etc.
 
-#### PlayerEquipment
-* characterID foreign key -> PlayerCharacter.characterID
-* head foreign key -> Equipment.equipmentID
+#### Player Equipment
 * weapon foreign key -> Equipment.equipmentID
+* helmet foreign key -> Equipment.equipmentID
 * armour foreign key -> Equipment.equipmentID
 * TODO: etc.
 
-#### PlayerInventoryItem
+#### PlayerInventoryItems
 * characterID foreign key -> PlayerCharacter.characterID
 * globalItemListID foreign key -> GlobalItemList.globalItemListID
+
+
+-------------------------
+
+#### TODO
+
+* customizable sprite
