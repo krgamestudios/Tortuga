@@ -7,30 +7,37 @@
 * blacklisted {false, true}
 * whitelisted {true, false}
 
+-------------------------
+
 ## Items
 
 #### Notes
 * These are static; they're immutable during runtime
 
-#### ItemList
-* itemListID primary key
+#### GlobalItemList
+* globalItemListID primary key
 * itemName unique
 * itemImage
 * type {mundane, consumable, equipment, etc.}
 * stackable {1-max; -1 for false}
 * maxUniqueCopies {1-max; -1 for unlimited}
 
-#### MundaneItemList
-* itemListID foreign key -> ItemList.itemListID
+#### MundaneItems
+* mundaneItemID primary key
+* globalItemListID foreign key -> GlobalItemList.globalItemListID
 * TODO: attributes
 
-#### ConsumableItemList
-* itemListID foreign key -> ItemList.itemListID
+#### Consumables
+* consumableID primary key
+* globalItemListID foreign key -> GlobalItemList.globalItemListID
 * TODO: attributes
 
-#### EquipmentItemList
-* itemListID foreign key -> ItemList.itemListID
+#### Equipment
+* equipmentID primary key
+* globalItemListID foreign key -> GlobalItemList.globalItemListID
 * TODO: attributes
+
+-------------------------
 
 ## Player
 
@@ -38,12 +45,12 @@
 * These change as the character progresses and grows
 
 #### PlayerCharacter
-* playerCharacterID primary key
-* characterName unique
+* characterID primary key
+* name unique
 * TODO: customizable sprite
 
 #### PlayerStatistics
-* playerCharacterID foreign key -> PlayerCharacter.playerCharacterID
+* characterID foreign key -> PlayerCharacter.characterID
 * currentLevel
 * currentExperience
 * maxHealth
@@ -55,12 +62,12 @@
 * TODO: etc.
 
 #### PlayerEquipment
-* playerCharacterID foreign key -> PlayerCharacter.playerCharacterID
-* head foreign key -> ItemList.itemListID
-* weapon foreign key -> ItemList.itemListID
-* armour foreign key -> ItemList.itemListID
+* characterID foreign key -> PlayerCharacter.characterID
+* head foreign key -> Equipment.equipmentID
+* weapon foreign key -> Equipment.equipmentID
+* armour foreign key -> Equipment.equipmentID
 * TODO: etc.
 
 #### PlayerInventoryItem
-* playerCharacterID foreign key -> PlayerCharacter.playerCharacterID
-* itemListID foreign key -> ItemList.itemListID
+* characterID foreign key -> PlayerCharacter.characterID
+* globalItemListID foreign key -> GlobalItemList.globalItemListID
