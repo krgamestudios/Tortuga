@@ -21,6 +21,11 @@
 */
 #include "server_application.hpp"
 
+#include <stdexcept>
+#include <string>
+
+#include <iostream>
+
 ServerApplication ServerApplication::instance;
 
 ServerApplication::ServerApplication() {
@@ -31,12 +36,41 @@ ServerApplication::~ServerApplication() {
 	//TODO
 }
 
-void ServerApplication::Init() {
-	//TODO
+void ServerApplication::Init(int argc, char** argv) {
+	//Check thread safety
+	if (!sqlite3_threadsafe()) {
+		throw(std::runtime_error("Cannot run without thread safety"));
+	}
+	else {
+		std::cout << "Thread safety confirmed" << std::endl;
+	}
 
 	//Init SDL
+	if (SDL_Init(0)) {
+		throw(std::runtime_error("Failed to initialize SDL"));
+	}
+	else {
+		std::cout << "SDL initialized" << std::endl;
+	}
+
 	//Init lua
+	if (!(luaState = luaL_newstate())) {
+		throw(std::runtime_error("Failed to create the lua state"));
+	}
+	else {
+		std::cout << "lua initialized" << std::endl;
+	}
+	luaL_openlibs(luaState);
+
 	//Init SQL
+	std::string dbname = (argc > 1) ? argv[1] : argv[0];
+	int ret = sqlite3_open_v2((dbname + ".db").c_str(), &database, SQLITE_OPEN_READWRITE|SQLITE_OPEN_CREATE|SQLITE_OPEN_FULLMUTEX, nullptr);
+	if (ret != SQLITE_OK || !database) {
+		throw(std::runtime_error("Failed to open the server database"));
+	}
+	else {
+		std::cout << "Database filename: \"" << dbname << ".db\"" << std::endl;
+	}
 }
 
 void ServerApplication::Loop() {
@@ -44,5 +78,7 @@ void ServerApplication::Loop() {
 }
 
 void ServerApplication::Quit() {
-	//TODO
+	sqlite3_close(database);
+	lua_close(luaState);
+	SDL_Quit();
 }

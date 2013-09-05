@@ -28,10 +28,10 @@
 
 using namespace std;
 
-int main(int, char**) {
+int main(int argc, char** argv) {
 	cout << "Beginning server" << endl;
 	try {
-		ServerApplication::GetInstance()->Init();
+		ServerApplication::GetInstance()->Init(argc, argv);
 		ServerApplication::GetInstance()->Loop();
 		ServerApplication::GetInstance()->Quit();
 	}

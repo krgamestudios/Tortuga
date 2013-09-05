@@ -22,6 +22,10 @@
 #ifndef SERVERAPPLICATION_HPP_
 #define SERVERAPPLICATION_HPP_
 
+#include "lua/lua.hpp"
+#include "sqlite3/sqlite3.h"
+#include "SDL/SDL.h"
+
 //The main application class
 class ServerApplication {
 private:
@@ -32,12 +36,15 @@ private:
 public:
 	static ServerApplication* GetInstance() { return &instance; }
 
-	void Init();
+	void Init(int argc, char** argv);
 	void Loop();
 	void Quit();
 
 private:
 	bool running = true;
+
+	lua_State* luaState = nullptr;
+	sqlite3* database = nullptr;
 };
 
 #endif

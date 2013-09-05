@@ -4,11 +4,12 @@ Tortuga is an open source 2D multiplayer role playing game featuring permadeath 
 
 This game is inspired by classic 2D RPGs, as well as more modern sandbox MMOs. This project is currently independently created and funded, with the goal of creating a game that will engage user's imagination and inspire a large modding community.
 
-## Dependencies
+## External Dependencies
 
 * [SDL 1.6](http://www.libsdl.org/) - Simple DirectMedia Layer API
 * [SDL_net 1.2](http://www.libsdl.org/projects/SDL_net/) - SDL's networking extension
 * [lua 5.2](http://www.lua.org/) - The lua programming language
+* [SQLite3](http://www.sqlite.org/) - A lightweight SQL database engine
 
 ## Documentation
 
