@@ -71,12 +71,3 @@ CREATE TABLE IF NOT EXISTS PlayerInventoryItems (
 	characterID INTEGER REFERENCES PlayerCharacters(characterID),
 	globalItemListID INTEGER REFERENCES GlobalItemList(globalItemListID)
 );
-
---cleanup
-DROP TABLE UserAccounts;
-DROP TABLE GlobalItemList;
-DROP TABLE MundaneItems;
-DROP TABLE Consumables;
-DROP TABLE Equipment;
-DROP TABLE PlayerCharacters;
-DROP TABLE PlayerInventoryItems;

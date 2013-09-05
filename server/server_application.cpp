@@ -22,9 +22,9 @@
 #include "server_application.hpp"
 
 #include <stdexcept>
-#include <string>
-
 #include <iostream>
+#include <string>
+#include <fstream>
 
 ServerApplication ServerApplication::instance;
 
@@ -71,6 +71,22 @@ void ServerApplication::Init(int argc, char** argv) {
 	else {
 		std::cout << "Database filename: \"" << dbname << ".db\"" << std::endl;
 	}
+
+	//Run setup scripts
+	luaL_dofile(luaState, "rsc/setup_server.lua");
+
+	std::ifstream is("rsc/setup_server.sql");
+	if (!is.is_open()) {
+		throw(std::runtime_error("Failed to run database setup script"));
+	}
+	else {
+		std::cout << "Running the database script" << std::endl;
+	}
+	std::string script;
+	getline(is, script, '\0');
+	is.close();
+
+	sqlite3_exec(database, script.c_str(), nullptr, nullptr, nullptr);
 }
 
 void ServerApplication::Loop() {
@@ -78,7 +94,7 @@ void ServerApplication::Loop() {
 }
 
 void ServerApplication::Quit() {
-	sqlite3_close(database);
+	sqlite3_close_v2(database);
 	lua_close(luaState);
 	SDL_Quit();
 }
