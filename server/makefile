@@ -1,7 +1,7 @@
 #config
 COMMONDIR+=../common
 COMMON+=../libcommon.a
-LIB+=$(COMMON) -lmingw32 -lSDLmain -lSDL -llua -lsqlite3
+LIB+=$(COMMON) -lSDL_net -lwsock32 -liphlpapi -lmingw32 -lSDLmain -lSDL -llua -lsqlite3
 CXXFLAGS+=-std=c++11 -DDEBUG $(addprefix -I,$(COMMONDIR))
 CFLAGS+=-DDEBUG $(addprefix -I,$(COMMONDIR))
 

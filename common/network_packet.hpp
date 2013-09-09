@@ -19,7 +19,42 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#include "client_manager.hpp"
+#ifndef NETWORKPACKET_HPP_
+#define NETWORKPACKET_HPP_
 
-ClientManager ClientManager::instance;
+//#define PACKET_STRING_SIZE 100
 
+#pragma pack(push, 0)
+
+union NetworkPacket {
+	enum class Type {
+		//default: there is something wrong
+		NONE = 0,
+
+		//not used
+		PING = 1,
+		PONG = 2,
+
+		//bounce information between the client & server
+		BROADCAST_REQUEST = 3,
+		BROADCAST_RESPONSE = 4,
+
+		//try to join the server
+		JOIN_REQUEST = 5,
+		JOIN_RESPONSE = 6,
+
+		//disconnect from the server
+		DISCONNECT = 7,
+
+		//mass update
+		SYNCHRONIZE = 8,
+	};
+
+	struct Metadata {
+		Type type;
+	}meta;
+};
+
+#pragma pack(pop)
+
+#endif

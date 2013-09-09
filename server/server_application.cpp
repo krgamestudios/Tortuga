@@ -21,11 +21,14 @@
 */
 #include "server_application.hpp"
 
+#include "network_packet.hpp"
+
 #include <stdexcept>
 #include <iostream>
 #include <string>
 #include <fstream>
 
+int ClientEntry::indexCounter = 0;
 ServerApplication ServerApplication::instance;
 
 ServerApplication::ServerApplication() {
@@ -37,6 +40,8 @@ ServerApplication::~ServerApplication() {
 }
 
 void ServerApplication::Init(int argc, char** argv) {
+	//TODO: proper command line option parsing
+
 	//Check thread safety
 	if (!sqlite3_threadsafe()) {
 		throw(std::runtime_error("Cannot run without thread safety"));
@@ -53,14 +58,14 @@ void ServerApplication::Init(int argc, char** argv) {
 		std::cout << "SDL initialized" << std::endl;
 	}
 
-	//Init lua
-	if (!(luaState = luaL_newstate())) {
-		throw(std::runtime_error("Failed to create the lua state"));
+	//Init SDL_net
+	if (SDLNet_Init()) {
+		throw(std::runtime_error("Failed to init SDL_net"));
 	}
 	else {
-		std::cout << "lua initialized" << std::endl;
+		std::cout << "SDL_net initialized" << std::endl;
 	}
-	luaL_openlibs(luaState);
+	networkUtil.Open(8895, 1024);
 
 	//Init SQL
 	std::string dbname = (argc > 1) ? argv[1] : argv[0];
@@ -73,8 +78,6 @@ void ServerApplication::Init(int argc, char** argv) {
 	}
 
 	//Run setup scripts
-	luaL_dofile(luaState, "rsc/setup_server.lua");
-
 	std::ifstream is("rsc/setup_server.sql");
 	if (!is.is_open()) {
 		throw(std::runtime_error("Failed to run database setup script"));
@@ -90,11 +93,12 @@ void ServerApplication::Init(int argc, char** argv) {
 }
 
 void ServerApplication::Loop() {
-	//TODO
+	//
 }
 
 void ServerApplication::Quit() {
 	sqlite3_close_v2(database);
-	lua_close(luaState);
+	networkUtil.Close();
+	SDLNet_Quit();
 	SDL_Quit();
 }

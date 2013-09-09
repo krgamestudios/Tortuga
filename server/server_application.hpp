@@ -22,9 +22,19 @@
 #ifndef SERVERAPPLICATION_HPP_
 #define SERVERAPPLICATION_HPP_
 
-#include "lua/lua.hpp"
+#include "udp_network_utility.hpp"
+
 #include "sqlite3/sqlite3.h"
 #include "SDL/SDL.h"
+
+#include <list>
+
+//hold the info about the clients
+struct ClientEntry {
+	static int indexCounter;
+	int index = indexCounter++;
+	IPaddress add = {0, 0};
+};
 
 //The main application class
 class ServerApplication {
@@ -43,8 +53,10 @@ public:
 private:
 	bool running = true;
 
-	lua_State* luaState = nullptr;
 	sqlite3* database = nullptr;
+
+	UDPNetworkUtility networkUtil;
+	std::list<ClientEntry> clientEntries;
 };
 
 #endif
