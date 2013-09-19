@@ -59,9 +59,6 @@ bool Region::NewTileR(Tile const& tile) {
 }
 
 Tile Region::GetTileR(int tx, int ty, int tw, int th, int minDepth) {
-	//find the first tile at this location, with the specified minimum depth
-	//since neither the Region or Tile classes store the tile sizes,
-	//this function takes the sizes as arguments
 	std::set<Tile>::iterator ptr = tiles.begin();
 	while(ptr != tiles.end()) {
 		//skip the tiles that are too deep
@@ -80,12 +77,16 @@ Tile Region::GetTileR(int tx, int ty, int tw, int th, int minDepth) {
 	if (ptr != tiles.end()) {
 		return *ptr;
 	}
-	return {0,0,0,-1}; //value = -1 is a crappy error code
+	return {0,0,0,-1}; //TODO: value = -1 is a crappy error code
 }
 
 bool Region::DeleteTileR(Tile const& tile) {
 	if (!InBoundsR(tile.x, tile.y)) {
 		throw(std::runtime_error("Deleted tile location out of bounds"));
+	}
+	//sentinel
+	if (tile.value == -1) {
+		return 0;
 	}
 	return tiles.erase(tile);
 }

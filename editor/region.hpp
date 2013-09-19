@@ -89,7 +89,7 @@ public:
 	friend bool operator>(Region const& lhs, Region const& rhs);
 	friend bool operator==(Region const& lhs, Region const& rhs);
 
-private:
+public: //TMP
 	int const x;
 	int const y;
 	int const width;
