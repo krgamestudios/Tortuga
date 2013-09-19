@@ -28,9 +28,7 @@ struct Tile {
 	int value;
 
 	Tile() = default;
-	Tile(int i, int j, int k, int l) : x(i), y(j), depth(k), value(l) {
-		//
-	}
+	Tile(int i, int j, int k, int l) : x(i), y(j), depth(k), value(l) {}
 
 	friend bool operator<(Tile const& lhs, Tile const& rhs);
 	friend bool operator>(Tile const& lhs, Tile const& rhs);

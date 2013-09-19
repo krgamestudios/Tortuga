@@ -25,6 +25,7 @@
 #include <sstream>
 
 static int snap(int base, int x) {
+	//snap to a grid
 	if (x < 0) {
 		x++;
 		return x - x % base - base;
@@ -46,8 +47,9 @@ Region::Region(int i, int j, int k, int l):
 	}
 }
 
-bool Region::NewTile(Tile const& tile) {
-	if (!InBounds(tile.x, tile.y)) {
+bool Region::NewTileR(Tile const& tile) {
+	//return 1 for overwrite, 0 for insert
+	if (!InBoundsR(tile.x, tile.y)) {
 		throw(std::runtime_error("New tile location out of bounds"));
 	}
 
@@ -56,11 +58,10 @@ bool Region::NewTile(Tile const& tile) {
 	return ret;
 }
 
-Tile Region::GetTile(int x, int y, int tw, int th, int minDepth) {
-	/* This method is used to find a tile that covers (x, y).
-	 * This method returns the first tile above minDepth.
-	 * Since Region & Tile do not save the tile's size, tw & th are the size of the tiles.
-	*/
+Tile Region::GetTileR(int tx, int ty, int tw, int th, int minDepth) {
+	//find the first tile at this location, with the specified minimum depth
+	//since neither the Region or Tile classes store the tile sizes,
+	//this function takes the sizes as arguments
 	std::set<Tile>::iterator ptr = tiles.begin();
 	while(ptr != tiles.end()) {
 		//skip the tiles that are too deep
@@ -71,7 +72,7 @@ Tile Region::GetTile(int x, int y, int tw, int th, int minDepth) {
 	}
 	while(ptr != tiles.end()) {
 		//find the first tile here
-		if ((ptr->x <= x) && (ptr->y <= y) && (ptr->x + tw > x) && (ptr->y + th > y)) {
+		if ((ptr->x <= tx) && (ptr->y <= ty) && (ptr->x + tw > tx) && (ptr->y + th > ty)) {
 			break;
 		}
 		ptr++;
@@ -79,18 +80,14 @@ Tile Region::GetTile(int x, int y, int tw, int th, int minDepth) {
 	if (ptr != tiles.end()) {
 		return *ptr;
 	}
-	return {0,0,0,-1};
+	return {0,0,0,-1}; //value = -1 is a crappy error code
 }
 
-bool Region::DeleteTile(Tile const& tile) {
-	if (!InBounds(tile.x, tile.y)) {
+bool Region::DeleteTileR(Tile const& tile) {
+	if (!InBoundsR(tile.x, tile.y)) {
 		throw(std::runtime_error("Deleted tile location out of bounds"));
 	}
 	return tiles.erase(tile);
-}
-
-bool Region::InBounds(int x, int y) {
-	return (x > this->x) && (y > this->y) && (x < this->x + this->width) && (y < this->y + this->height);
 }
 
 bool operator<(Region const& lhs, Region const& rhs) {
