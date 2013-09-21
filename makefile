@@ -3,6 +3,11 @@
 #MKDIR=mkdir
 #RM=del /y
 
+CXXFLAGS+=-static-libgcc -static-libstdc++
+CFLAGS+=-static-libgcc
+
+export
+
 OUTDIR=out
 
 all: $(OUTDIR)
