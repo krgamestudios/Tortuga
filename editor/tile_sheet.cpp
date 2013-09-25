@@ -52,6 +52,8 @@ SDL_Surface* TileSheet::GetSurface() {
 void TileSheet::FreeSurface() {
 	image.FreeSurface();
 	totalCount = xCount = yCount = 0;
+	begin = end = -1;
+	name.clear();
 }
 
 void TileSheet::DrawTo(SDL_Surface* const dest, int x, int y, int tileIndex) {
