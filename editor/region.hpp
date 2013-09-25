@@ -30,8 +30,6 @@
  * This class stores the tiles relative to it's own position, but
  * there are functions for referencing the tiles' absolute position.
  * These functions simply wrap the normal functions.
- *
- * TODO: This class needs to be thoroughly tested.
 */
 class Region {
 public:
@@ -89,7 +87,7 @@ public:
 	friend bool operator>(Region const& lhs, Region const& rhs);
 	friend bool operator==(Region const& lhs, Region const& rhs);
 
-public: //TMP
+private:
 	int const x;
 	int const y;
 	int const width;
