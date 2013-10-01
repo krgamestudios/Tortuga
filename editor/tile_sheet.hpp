@@ -27,9 +27,7 @@
 #include <string>
 
 /* The TileSheet class is used for drawing tiles of the map to the screen.
- * This class also has some code to allow the management of several TileSheets,
- * namely the index, begin & end members, tracking of the tile indexes, and
- * custom wrapper functions.
+ * This class also tracks the range of the tile images.
 */
 class TileSheet {
 public:
@@ -57,11 +55,9 @@ public:
 	int GetXCount() const { return xCount; }
 	int GetYCount() const { return yCount; }
 
-	int SetIndex(int i) { return index = i; }
 	int SetBegin(int i) { return begin = i; }
 	int SetEnd(int i) { return end = i; }
 
-	int GetIndex() const { return index; }
 	int GetBegin() const { return begin; }
 	int GetEnd() const { return end; }
 private:
@@ -70,7 +66,7 @@ private:
 
 	//these are generated and used by internal processes
 	int totalCount = 0, xCount = 0, yCount = 0;
-	int index = -1, begin = -1, end = -1;
+	int begin = -1, end = -1;
 };
 
 #endif
