@@ -19,33 +19,29 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef TILE_HPP_
-#define TILE_HPP_
+#include "utility.hpp"
 
-//explicitly a POD
-struct Tile {
-	//position relative to the Region
-	int x, y, depth;
+#include <algorithm>
 
-	//graphics
-	int width, height;
-	int sheetIndex, tileIndex;
-
-	Tile() = default;
-	Tile(int _x, int _y, int _depth, int _width, int _height, int _sheetIndex, int _tileIndex) {
-		//The order of the arguments should be explicit
-		x = _x;
-		y = _y;
-		depth = _depth;
-		width = _width;
-		height = _height;
-		sheetIndex = _sheetIndex;
-		tileIndex = _tileIndex;
+int snapToBase(int base, int x) {
+	//snap to a grid
+	if (x < 0) {
+		x++;
+		return x - x % base - base;
 	}
-};
+	return x - x % base;
+}
 
-bool operator<(Tile const& lhs, Tile const& rhs);
-bool operator>(Tile const& lhs, Tile const& rhs);
-bool operator==(Tile const& lhs, Tile const& rhs);
-
-#endif
+std::string truncatePath(std::string pathname) {
+	return std::string(
+		std::find_if(
+			pathname.rbegin(),
+			pathname.rend(),
+			[](char ch) -> bool {
+				//windows only
+				return ch == '/' || ch == '\\';
+//				//unix only
+//				return ch == '/';
+			}).base(),
+		pathname.end());
+}

@@ -21,26 +21,19 @@
 */
 #include "region.hpp"
 
+#include "utility.hpp"
+
 #include <stdexcept>
 #include <sstream>
 
-static int snap(int base, int x) {
-	//snap to a grid
-	if (x < 0) {
-		x++;
-		return x - x % base - base;
-	}
-	return x - x % base;
-}
-
-Region::Region(int i, int j, int k, int l):
-	x(i),
-	y(j),
-	width(k),
-	height(l)
+Region::Region(int _x, int _y, int _w, int _h):
+	x(_x),
+	y(_y),
+	width(_w),
+	height(_h)
 {
 	//make sure that the region's position lines up
-	if (x != snap(width, x) || y != snap(height, y)) {
+	if (x != snapToBase(width, x) || y != snapToBase(height, y)) {
 		std::ostringstream os;
 		os << "Region is unaligned; x: " << x << ", y: " << y << ", width: " << width << ", height: " << height;
 		throw(std::runtime_error(os.str()));
@@ -58,34 +51,41 @@ bool Region::NewTileR(Tile const& tile) {
 	return ret;
 }
 
-Tile Region::GetTileR(int tx, int ty, int tw, int th, int minDepth) {
+Tile Region::GetTileR(int tx, int ty, int minDepth) {
 	std::set<Tile>::iterator ptr = tiles.begin();
+
+	//skip the tiles that are too deep
 	while(ptr != tiles.end()) {
-		//skip the tiles that are too deep
 		if (ptr->depth >= minDepth) {
 			break;
 		}
 		ptr++;
 	}
+
+	//find the first tile here
 	while(ptr != tiles.end()) {
-		//find the first tile here
-		if ((ptr->x <= tx) && (ptr->y <= ty) && (ptr->x + tw > tx) && (ptr->y + th > ty)) {
+		//bounds
+		if ((ptr->x <= tx) && (ptr->y <= ty) && (ptr->x + ptr->width > tx) && (ptr->y + ptr->height > ty)) {
 			break;
 		}
 		ptr++;
 	}
+
+	//found it
 	if (ptr != tiles.end()) {
 		return *ptr;
 	}
-	return {0,0,0,-1}; //TODO: value = -1 is a crappy error code
+
+	//a tileIndex of -1 is an error code, the rest is for show
+	return {0,0,0,-1,-1,-1,-1};
 }
 
 bool Region::DeleteTileR(Tile const& tile) {
 	if (!InBoundsR(tile.x, tile.y)) {
 		throw(std::runtime_error("Deleted tile location out of bounds"));
 	}
-	//sentinel
-	if (tile.value == -1) {
+	//sentinel/error code
+	if (tile.tileIndex == -1) {
 		return 0;
 	}
 	return tiles.erase(tile);

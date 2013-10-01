@@ -40,30 +40,46 @@ public:
 	//create and insert a new tile, overwriting an existing tile at that location
 	bool NewTileR(Tile const& tile);
 	bool NewTileA(Tile const& tile) {
-		return NewTileR({tile.x - x, tile.y - y, tile.depth, tile.value});
+		//these can change, if the Tile class is changed
+		return NewTileR({
+			tile.x - x,
+			tile.y - y,
+			tile.depth,
+			tile.width,
+			tile.height,
+			tile.sheetIndex,
+			tile.tileIndex
+		});
 	}
 
 	//find the first tile at this location, with the specified minimum depth
-	//since neither the Region or Tile classes store the tile sizes,
-	//this function takes the sizes as arguments
-	Tile GetTileR(int tx, int ty, int tw, int th, int minDepth);
-	Tile GetTileA(int tx, int ty, int tw, int th, int minDepth) {
-		return GetTileR(tx - x, ty - y, tw, th, minDepth);
+	Tile GetTileR(int tx, int ty, int minDepth);
+	Tile GetTileA(int tx, int ty, int minDepth) {
+		return GetTileR(tx - x, ty - y, minDepth);
 	}
 
 	//wrap the other delete functions
-	bool DeleteTileR(int tx, int ty, int tw, int th, int minDepth) {
-		return DeleteTileR(GetTileR(tx, ty, tw, th, minDepth));
+	bool DeleteTileR(int tx, int ty, int minDepth) {
+		return DeleteTileR(GetTileR(tx, ty, minDepth));
 	}
-	bool DeleteTileA(int tx, int ty, int tw, int th, int minDepth) {
+	bool DeleteTileA(int tx, int ty, int minDepth) {
 		//explicitly skip one function call by adjusting from A to R
-		return DeleteTileR(GetTileR(tx - x, ty - y, tw, th, minDepth));
+		return DeleteTileR(GetTileR(tx - x, ty - y, minDepth));
 	}
 
 	//delete the specified tile
 	bool DeleteTileR(Tile const& tile);
 	bool DeleteTileA(Tile const& tile) {
-		return DeleteTileR({tile.x - x, tile.y - y, tile.depth, tile.value});
+		//these can change, if the Tile class is changed
+		return DeleteTileR({
+			tile.x - x,
+			tile.y - y,
+			tile.depth,
+			tile.width,
+			tile.height,
+			tile.sheetIndex,
+			tile.tileIndex
+		});
 	}
 
 	//find if the specified location exists within the region's bounds
