@@ -45,6 +45,9 @@ public:
 
 	bool InRange(int i) { return i >= begin && i < end; }
 
+	static int SetRangeEnd(int i) { return rangeEnd = i; }
+	static int GetRangeEnd() { return rangeEnd; }
+
 	//accessors and mutators
 	Image* GetImage() { return &image; }
 
@@ -61,6 +64,8 @@ public:
 	int GetBegin() const { return begin; }
 	int GetEnd() const { return end; }
 private:
+	static int rangeEnd;
+
 	Image image;
 	std::string name;
 

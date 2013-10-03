@@ -29,17 +29,16 @@ struct Tile {
 
 	//graphics
 	int width, height;
-	int sheetIndex, tileIndex;
+	int tileIndex;
 
 	Tile() = default;
-	Tile(int _x, int _y, int _depth, int _width, int _height, int _sheetIndex, int _tileIndex) {
+	Tile(int _x, int _y, int _depth, int _width, int _height, int _tileIndex) {
 		//The order of the arguments should be explicit
 		x = _x;
 		y = _y;
 		depth = _depth;
 		width = _width;
 		height = _height;
-		sheetIndex = _sheetIndex;
 		tileIndex = _tileIndex;
 	}
 };

@@ -40,13 +40,13 @@ Region::Region(int _x, int _y, int _w, int _h):
 	}
 }
 
-bool Region::NewTileR(Tile const& tile) {
+int Region::NewTileR(Tile const& tile) {
 	//return 1 for overwrite, 0 for insert
 	if (!InBoundsR(tile.x, tile.y)) {
 		throw(std::runtime_error("New tile location out of bounds"));
 	}
 
-	bool ret = tiles.erase(tile);
+	int ret = tiles.erase(tile);
 	tiles.insert(tile);
 	return ret;
 }
@@ -77,10 +77,10 @@ Tile Region::GetTileR(int tx, int ty, int minDepth) {
 	}
 
 	//a tileIndex of -1 is an error code, the rest is for show
-	return {0,0,0,-1,-1,-1,-1};
+	return {0,0,0,-1,-1,-1};
 }
 
-bool Region::DeleteTileR(Tile const& tile) {
+int Region::DeleteTileR(Tile const& tile) {
 	if (!InBoundsR(tile.x, tile.y)) {
 		throw(std::runtime_error("Deleted tile location out of bounds"));
 	}

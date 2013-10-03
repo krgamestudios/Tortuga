@@ -38,8 +38,8 @@ public:
 	~Region() = default;
 
 	//create and insert a new tile, overwriting an existing tile at that location
-	bool NewTileR(Tile const& tile);
-	bool NewTileA(Tile const& tile) {
+	int NewTileR(Tile const& tile);
+	int NewTileA(Tile const& tile) {
 		//these can change, if the Tile class is changed
 		return NewTileR({
 			tile.x - x,
@@ -47,7 +47,6 @@ public:
 			tile.depth,
 			tile.width,
 			tile.height,
-			tile.sheetIndex,
 			tile.tileIndex
 		});
 	}
@@ -59,17 +58,17 @@ public:
 	}
 
 	//wrap the other delete functions
-	bool DeleteTileR(int tx, int ty, int minDepth) {
+	int DeleteTileR(int tx, int ty, int minDepth) {
 		return DeleteTileR(GetTileR(tx, ty, minDepth));
 	}
-	bool DeleteTileA(int tx, int ty, int minDepth) {
+	int DeleteTileA(int tx, int ty, int minDepth) {
 		//explicitly skip one function call by adjusting from A to R
 		return DeleteTileR(GetTileR(tx - x, ty - y, minDepth));
 	}
 
 	//delete the specified tile
-	bool DeleteTileR(Tile const& tile);
-	bool DeleteTileA(Tile const& tile) {
+	int DeleteTileR(Tile const& tile);
+	int DeleteTileA(Tile const& tile) {
 		//these can change, if the Tile class is changed
 		return DeleteTileR({
 			tile.x - x,
@@ -77,7 +76,6 @@ public:
 			tile.depth,
 			tile.width,
 			tile.height,
-			tile.sheetIndex,
 			tile.tileIndex
 		});
 	}

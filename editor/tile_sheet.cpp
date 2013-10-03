@@ -25,6 +25,8 @@
 
 #include <stdexcept>
 
+int TileSheet::rangeEnd = 0;
+
 SDL_Surface* TileSheet::LoadSurface(std::string fname, Uint16 w, Uint16 h) {
 	//setup the image
 	image.LoadSurface(fname);
