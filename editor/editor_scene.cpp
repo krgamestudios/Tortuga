@@ -85,15 +85,7 @@ void EditorScene::FrameEnd() {
 }
 
 void EditorScene::Render(SDL_Surface* const screen) {
-	for (auto& regionIter : *pager.GetRegions()) {
-		for (auto& tileIter : *regionIter.GetTiles()) {
-			for (auto& sheetIter : sheetList) {
-				if (sheetIter.InRange(tileIter.tileIndex)) {
-					sheetIter.DrawTo(screen, tileIter.x + regionIter.GetX(), tileIter.y + regionIter.GetY(), tileIter.tileIndex);
-				}
-			}
-		}
-	}
+	pager.DrawTo(screen, &sheetList, 0, 0);
 }
 
 //-------------------------
@@ -124,7 +116,7 @@ void EditorScene::MouseButtonDown(SDL_MouseButtonEvent const& button) {
 				<< endl;
 				;
 
-				if (++incrementer >= 180) {
+				if (++incrementer >= TileSheet::GetRangeEnd()) {
 					incrementer = 0;
 				}
 			}

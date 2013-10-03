@@ -23,11 +23,15 @@
 #define REGIONPAGER_HPP_
 
 #include "region.hpp"
+#include "tile_sheet.hpp"
 
 #include <list>
 
 class RegionPager {
 public:
+	//for simplicity and consistency
+	typedef void (*regionCallback_t)(Region* const);
+
 	RegionPager();
 	~RegionPager();
 
@@ -36,8 +40,12 @@ public:
 	Region* GetRegion(int x, int y);
 	void DeleteRegion(int x, int y);
 
-	void SetOnDelete(void(*f)(Region* const)) { onDelete = f; }
-	void SetOnNew(void(*f)(Region* const)) { onNew = f; }
+	//call this to draw to the screen
+	void DrawTo(SDL_Surface* const, std::list<TileSheet>* const, int camX, int camY);
+
+	//callback hooks
+	void SetOnNew(regionCallback_t f) { onNew = f; }
+	void SetOnDelete(regionCallback_t f) { onDelete = f; }
 
 	//accessors and mutators
 	int SetWidth(int i) { return regionWidth = i; }
@@ -50,8 +58,9 @@ public:
 private:
 	std::list<Region> regionList;
 	int regionWidth = 0, regionHeight = 0;
-	void (*onDelete)(Region* const) = nullptr;
-	void (*onNew)(Region* const) = nullptr;
+
+	regionCallback_t onNew = nullptr;
+	regionCallback_t onDelete = nullptr;
 };
 
 #endif

@@ -74,3 +74,36 @@ void RegionPager::DeleteRegion(int x, int y) {
 		}
 	}
 }
+
+void RegionPager::DrawTo(SDL_Surface* const dest, std::list<TileSheet>* const sheetList, int camX, int camY) {
+	/* for each region:
+	 *     for each tile within that reagon
+	 *         if you have the correct tile sheet
+	 *             draw to the screen
+	 *         else
+	 *             error
+	*/
+
+	for (auto& regionIter : regionList) {
+		for (auto& tileIter : *regionIter.GetTiles()) {
+			for (auto& sheetIter : *sheetList) {
+				if (sheetIter.InRange(tileIter.tileIndex)) {
+					sheetIter.DrawTo(
+						dest,
+						tileIter.x + regionIter.GetX() + camX,
+						tileIter.y + regionIter.GetY() + camY,
+						tileIter.tileIndex
+					);
+					//skip to the next tile
+					goto continueTile;
+				}
+			}
+
+			//reaching this point without rendering means that the tile is invalid
+			throw(std::runtime_error("Undrawable tile encountered"));
+
+		continueTile: ;
+			//continue with the next tile
+		}
+	}
+}
