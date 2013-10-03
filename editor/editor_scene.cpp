@@ -21,12 +21,47 @@
 */
 #include "editor_scene.hpp"
 
+#include "utility.hpp"
+
+#include <iostream>
+#include <cstdio>
+
+using namespace std;
+
 //-------------------------
 //Public access members
 //-------------------------
 
 EditorScene::EditorScene() {
-	//
+	//32 * 32 sized tiles
+	pager.SetWidth(32*4);
+	pager.SetHeight(32*4);
+
+	pager.SetOnNew([](Region* const ptr){
+		printf("New Region: %d, %d\n", ptr->GetX(), ptr->GetY());
+	});
+
+	pager.SetOnDelete([](Region* const ptr){
+		printf("Delete Region: %d, %d\n", ptr->GetX(), ptr->GetY());
+	});
+
+	sheetList.push_front(TileSheet());
+	TileSheet* sheetOne = &sheetList.front();
+	sheetList.push_front(TileSheet());
+	TileSheet* sheetTwo = &sheetList.front();
+
+	sheetOne->LoadSurface("rsc\\terrain.bmp", 32, 32);
+	sheetTwo->LoadSurface("rsc\\terrain.bmp", 32, 32);
+
+	cout << "--Sheet debug data--" << endl;
+	cout << "TileSheet::rangeEnd: " << TileSheet::GetRangeEnd() << endl;
+	cout << "sheetOne.totalCount: " << sheetOne->GetTotalCount() << endl;
+	cout << "sheetOne.begin: " << sheetOne->GetBegin() << endl;
+	cout << "sheetOne.end: " << sheetOne->GetEnd() << endl;
+	cout << "sheetTwo.totalCount: " << sheetTwo->GetTotalCount() << endl;
+	cout << "sheetTwo.begin: " << sheetTwo->GetBegin() << endl;
+	cout << "sheetTwo.end: " << sheetTwo->GetEnd() << endl;
+	cout << "--end debug data--" << endl;
 }
 
 EditorScene::~EditorScene() {
@@ -50,7 +85,15 @@ void EditorScene::FrameEnd() {
 }
 
 void EditorScene::Render(SDL_Surface* const screen) {
-	//
+	for (auto& regionIter : *pager.GetRegions()) {
+		for (auto& tileIter : *regionIter.GetTiles()) {
+			for (auto& sheetIter : sheetList) {
+				if (sheetIter.InRange(tileIter.tileIndex)) {
+					sheetIter.DrawTo(screen, tileIter.x + regionIter.GetX(), tileIter.y + regionIter.GetY(), tileIter.tileIndex);
+				}
+			}
+		}
+	}
 }
 
 //-------------------------
@@ -62,7 +105,31 @@ void EditorScene::MouseMotion(SDL_MouseMotionEvent const& motion) {
 }
 
 void EditorScene::MouseButtonDown(SDL_MouseButtonEvent const& button) {
-	//
+	switch(button.button) {
+		case SDL_BUTTON_LEFT: {
+				Region* ptr = pager.GetRegion(
+					snapToBase(pager.GetWidth(), button.x),
+					snapToBase(pager.GetHeight(), button.y)
+				);
+
+				cout << "New Tile: " <<
+				ptr->NewTileA({
+					snapToBase(32, button.x),
+					snapToBase(32, button.y),
+					0,
+					32,
+					32,
+					incrementer
+				})
+				<< endl;
+				;
+
+				if (++incrementer >= 180) {
+					incrementer = 0;
+				}
+			}
+
+	}
 }
 
 void EditorScene::MouseButtonUp(SDL_MouseButtonEvent const& button) {

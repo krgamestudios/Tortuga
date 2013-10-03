@@ -24,6 +24,11 @@
 
 #include "base_scene.hpp"
 
+#include "region_pager.hpp"
+#include "tile_sheet.hpp"
+
+#include <list>
+
 class EditorScene : public BaseScene {
 public:
 	//Public access members
@@ -43,6 +48,13 @@ protected:
 	void MouseButtonUp(SDL_MouseButtonEvent const&);
 	void KeyDown(SDL_KeyboardEvent const&);
 	void KeyUp(SDL_KeyboardEvent const&);
+
+	//members
+	RegionPager pager;
+	std::list<TileSheet> sheetList;
+
+	//debugging
+	int incrementer = 0;
 };
 
 #endif
