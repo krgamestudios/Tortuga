@@ -38,31 +38,16 @@ EditorScene::EditorScene() {
 	pager.SetWidth(32*4);
 	pager.SetHeight(32*4);
 
-	pager.SetOnNew([](Region* const ptr){
-		printf("New Region: %d, %d\n", ptr->GetX(), ptr->GetY());
-	});
+//	pager.SetOnNew([](Region* const ptr){
+//		printf("New Region: %d, %d\n", ptr->GetX(), ptr->GetY());
+//	});
 
-	pager.SetOnDelete([](Region* const ptr){
-		printf("Delete Region: %d, %d\n", ptr->GetX(), ptr->GetY());
-	});
+//	pager.SetOnDelete([](Region* const ptr){
+//		printf("Delete Region: %d, %d\n", ptr->GetX(), ptr->GetY());
+//	});
 
 	sheetList.push_front(TileSheet());
-	TileSheet* sheetOne = &sheetList.front();
-	sheetList.push_front(TileSheet());
-	TileSheet* sheetTwo = &sheetList.front();
-
-	sheetOne->LoadSurface("rsc\\terrain.bmp", 32, 32);
-	sheetTwo->LoadSurface("rsc\\terrain.bmp", 32, 32);
-
-	cout << "--Sheet debug data--" << endl;
-	cout << "TileSheet::rangeEnd: " << TileSheet::GetRangeEnd() << endl;
-	cout << "sheetOne.totalCount: " << sheetOne->GetTotalCount() << endl;
-	cout << "sheetOne.begin: " << sheetOne->GetBegin() << endl;
-	cout << "sheetOne.end: " << sheetOne->GetEnd() << endl;
-	cout << "sheetTwo.totalCount: " << sheetTwo->GetTotalCount() << endl;
-	cout << "sheetTwo.begin: " << sheetTwo->GetBegin() << endl;
-	cout << "sheetTwo.end: " << sheetTwo->GetEnd() << endl;
-	cout << "--end debug data--" << endl;
+	sheetList.front().LoadSurface("rsc\\graphics\\tilesets\\terrain.bmp", 32, 32);
 }
 
 EditorScene::~EditorScene() {
@@ -117,12 +102,8 @@ void EditorScene::MouseButtonDown(SDL_MouseButtonEvent const& button) {
 				0,
 				32,
 				32,
-				incrementer
+				0
 			});
-
-			if (++incrementer >= TileSheet::GetRangeEnd()) {
-				incrementer = 0;
-			}
 		}
 	}
 }

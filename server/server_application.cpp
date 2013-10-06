@@ -78,7 +78,7 @@ void ServerApplication::Init(int argc, char** argv) {
 	}
 
 	//Run setup scripts
-	std::ifstream is("rsc/setup_server.sql");
+	std::ifstream is("rsc\\scripts\\setup_server.sql");
 	if (!is.is_open()) {
 		throw(std::runtime_error("Failed to run database setup script"));
 	}
