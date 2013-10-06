@@ -53,6 +53,10 @@ protected:
 	RegionPager pager;
 	std::list<TileSheet> sheetList;
 
+	struct {
+		int x = 0, y = 0;
+	} camera;
+
 	//debugging
 	int incrementer = 0;
 };

@@ -85,6 +85,16 @@ void RegionPager::DrawTo(SDL_Surface* const dest, std::list<TileSheet>* const sh
 	*/
 
 	for (auto& regionIter : regionList) {
+		//draw the region's location
+		SDL_Rect box = {
+			Sint16(regionIter.GetX() + camX),
+			Sint16(regionIter.GetY() + camY),
+			Uint16(regionIter.GetWidth()),
+			Uint16(regionIter.GetHeight())
+		};
+		SDL_FillRect(dest, &box, SDL_MapRGB(dest->format, 10, 10, 20));
+
+		//draw each tile
 		for (auto& tileIter : *regionIter.GetTiles()) {
 			for (auto& sheetIter : *sheetList) {
 				if (sheetIter.InRange(tileIter.tileIndex)) {

@@ -23,6 +23,7 @@
 
 #include "utility.hpp"
 
+#include <stdexcept>
 #include <iostream>
 #include <cstdio>
 
@@ -85,7 +86,7 @@ void EditorScene::FrameEnd() {
 }
 
 void EditorScene::Render(SDL_Surface* const screen) {
-	pager.DrawTo(screen, &sheetList, 0, 0);
+	pager.DrawTo(screen, &sheetList, camera.x, camera.y);
 }
 
 //-------------------------
@@ -93,34 +94,36 @@ void EditorScene::Render(SDL_Surface* const screen) {
 //-------------------------
 
 void EditorScene::MouseMotion(SDL_MouseMotionEvent const& motion) {
-	//
+	if (motion.state & SDL_BUTTON_LMASK) {
+		//
+	}
+	else if (motion.state & SDL_BUTTON_RMASK) {
+		camera.x += motion.xrel;
+		camera.y += motion.yrel;
+	}
 }
 
 void EditorScene::MouseButtonDown(SDL_MouseButtonEvent const& button) {
 	switch(button.button) {
 		case SDL_BUTTON_LEFT: {
-				Region* ptr = pager.GetRegion(
-					snapToBase(pager.GetWidth(), button.x),
-					snapToBase(pager.GetHeight(), button.y)
-				);
+			Region* ptr = pager.GetRegion(
+				snapToBase(pager.GetWidth(), button.x - camera.x),
+				snapToBase(pager.GetHeight(), button.y - camera.y)
+			);
 
-				cout << "New Tile: " <<
-				ptr->NewTileA({
-					snapToBase(32, button.x),
-					snapToBase(32, button.y),
-					0,
-					32,
-					32,
-					incrementer
-				})
-				<< endl;
-				;
+			ptr->NewTileA({
+				snapToBase(32, button.x - camera.x),
+				snapToBase(32, button.y - camera.y),
+				0,
+				32,
+				32,
+				incrementer
+			});
 
-				if (++incrementer >= TileSheet::GetRangeEnd()) {
-					incrementer = 0;
-				}
+			if (++incrementer >= TileSheet::GetRangeEnd()) {
+				incrementer = 0;
 			}
-
+		}
 	}
 }
 

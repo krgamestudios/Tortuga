@@ -43,7 +43,12 @@ Region::Region(int _x, int _y, int _w, int _h):
 int Region::NewTileR(Tile const& tile) {
 	//return 1 for overwrite, 0 for insert
 	if (!InBoundsR(tile.x, tile.y)) {
-		throw(std::runtime_error("New tile location out of bounds"));
+		std::ostringstream os;
+		os << "New tile location out of bounds: " <<
+			"(" << x << "," << y << ")->" <<
+			"(" << tile.x << "," << tile.y << ")"
+		;
+		throw(std::runtime_error(os.str()));
 	}
 
 	int ret = tiles.erase(tile);
@@ -83,6 +88,13 @@ Tile Region::GetTileR(int tx, int ty, int minDepth) {
 int Region::DeleteTileR(Tile const& tile) {
 	if (!InBoundsR(tile.x, tile.y)) {
 		throw(std::runtime_error("Deleted tile location out of bounds"));
+
+		std::ostringstream os;
+		os << "Deleted tile location out of bounds: " <<
+			"(" << x << "," << y << ")->" <<
+			"(" << tile.x << "," << tile.y << ")"
+		;
+		throw(std::runtime_error(os.str()));
 	}
 	//sentinel/error code
 	if (tile.tileIndex == -1) {
