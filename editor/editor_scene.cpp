@@ -38,6 +38,18 @@ EditorScene::EditorScene() {
 	pager.SetWidth(32*4);
 	pager.SetHeight(32*4);
 
+	font.LoadSurface("rsc\\graphics\\fonts\\pk_white_8.bmp");
+	buttonImage.LoadSurface("rsc\\graphics\\interface\\button_menu.bmp");
+	buttonImage.SetClipH(buttonImage.GetClipH()/3);
+
+	menuBar.SetFont(&font);
+	menuBar.SetImage(&buttonImage);
+
+	menuBar.SetEntries({
+		{"File", "New", "Open", "Save", "Save As...", "Close", "Exit"},
+		{"Edit", "Null"}
+	});
+
 //	pager.SetOnNew([](Region* const ptr){
 //		printf("New Region: %d, %d\n", ptr->GetX(), ptr->GetY());
 //	});
@@ -71,7 +83,16 @@ void EditorScene::FrameEnd() {
 }
 
 void EditorScene::Render(SDL_Surface* const screen) {
+	//draw the map
 	pager.DrawTo(screen, &sheetList, camera.x, camera.y);
+
+	//draw a big bar across the top
+	for (int i = 0; i < screen->w; i += buttonImage.GetClipW()) {
+		buttonImage.DrawTo(screen, i, 0);
+	}
+
+	//draw the menu bar
+	menuBar.DrawTo(screen);
 }
 
 //-------------------------
@@ -79,44 +100,51 @@ void EditorScene::Render(SDL_Surface* const screen) {
 //-------------------------
 
 void EditorScene::MouseMotion(SDL_MouseMotionEvent const& motion) {
-	if (motion.state & SDL_BUTTON_LMASK) {
-		//
-	}
-	else if (motion.state & SDL_BUTTON_RMASK) {
+	menuBar.MouseMotion(motion);
+
+	if (motion.state & SDL_BUTTON_RMASK) {
 		camera.x += motion.xrel;
 		camera.y += motion.yrel;
 	}
 }
 
 void EditorScene::MouseButtonDown(SDL_MouseButtonEvent const& button) {
-	switch(button.button) {
-		case SDL_BUTTON_LEFT: {
-			Region* ptr = pager.GetRegion(
-				snapToBase(pager.GetWidth(), button.x - camera.x),
-				snapToBase(pager.GetHeight(), button.y - camera.y)
-			);
+	menuBar.MouseButtonDown(button);
 
-			ptr->NewTileA({
-				snapToBase(32, button.x - camera.x),
-				snapToBase(32, button.y - camera.y),
-				0,
-				32,
-				32,
-				0
-			});
-		}
+	if (button.button == SDL_BUTTON_LEFT && button.y >= buttonImage.GetClipH()) {
+		Region* ptr = pager.GetRegion(
+			snapToBase(pager.GetWidth(), button.x - camera.x),
+			snapToBase(pager.GetHeight(), button.y - camera.y)
+		);
+
+		ptr->NewTileA({
+			snapToBase(32, button.x - camera.x),
+			snapToBase(32, button.y - camera.y),
+			0,
+			32,
+			32,
+			0
+		});
 	}
 }
 
 void EditorScene::MouseButtonUp(SDL_MouseButtonEvent const& button) {
-	//
+	int entry, drop;
+	menuBar.MouseButtonUp(button, &entry, &drop);
+
+	cout << "Menu: (" << entry << "," << drop << ")" << endl;
 }
 
 void EditorScene::KeyDown(SDL_KeyboardEvent const& key) {
 	switch(key.keysym.sym) {
 		case SDLK_ESCAPE:
 			QuitEvent();
-			break;
+		break;
+
+		case SDLK_SPACE:
+			camera.x = 0;
+			camera.y = 0;
+		break;
 	}
 }
 

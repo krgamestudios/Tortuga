@@ -27,6 +27,10 @@
 #include "region_pager.hpp"
 #include "tile_sheet.hpp"
 
+#include "image.hpp"
+#include "raster_font.hpp"
+#include "menu_bar.hpp"
+
 #include <list>
 
 class EditorScene : public BaseScene {
@@ -52,6 +56,11 @@ protected:
 	//members
 	RegionPager pager;
 	std::list<TileSheet> sheetList;
+
+	RasterFont font;
+	Image buttonImage;
+
+	MenuBar menuBar;
 
 	struct {
 		int x = 0, y = 0;
