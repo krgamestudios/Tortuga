@@ -27,4 +27,7 @@
 int snapToBase(int base, int x);
 std::string truncatePath(std::string pathname);
 
+//fixing a known bug in g++
+std::string to_string_custom(int i);
+
 #endif

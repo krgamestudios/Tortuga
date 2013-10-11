@@ -54,6 +54,12 @@ protected:
 	void KeyUp(SDL_KeyboardEvent const&);
 
 	//members
+
+	//debugging tools
+	void DrawToDebugInfo(std::string, int line);
+	Image debugInfo;
+	bool debugOpen = true;
+
 	RegionPager pager;
 	std::list<TileSheet> sheetList;
 

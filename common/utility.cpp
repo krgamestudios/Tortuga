@@ -45,3 +45,9 @@ std::string truncatePath(std::string pathname) {
 			}).base(),
 		pathname.end());
 }
+
+std::string to_string_custom(int i) {
+	char buffer[20];
+	snprintf(buffer, 20, "%d", i);
+	return std::string(buffer);
+}
