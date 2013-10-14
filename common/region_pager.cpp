@@ -21,7 +21,10 @@
 */
 #include "region_pager.hpp"
 
+#include "utility.hpp"
+
 #include <stdexcept>
+#include <string>
 
 RegionPager::RegionPager() {
 	//
@@ -110,7 +113,7 @@ void RegionPager::DrawTo(SDL_Surface* const dest, std::list<TileSheet>* const sh
 			}
 
 			//reaching this point without rendering means that the tile is invalid
-			throw(std::runtime_error("Undrawable tile encountered"));
+			throw(std::runtime_error(std::string("Undrawable tile encountered: ") + to_string_custom(tileIter.tileIndex)));
 
 		continueTile: ;
 			//continue with the next tile

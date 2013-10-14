@@ -47,6 +47,9 @@ public:
 	void SetOnNew(regionCallback_t f) { onNew = f; }
 	void SetOnDelete(regionCallback_t f) { onDelete = f; }
 
+	//TODO
+	//void Prune(int camX, int camY, int screenW, int screenH);
+
 	//accessors and mutators
 	int SetWidth(int i) { return regionWidth = i; }
 	int SetHeight(int i) { return regionHeight = i; }

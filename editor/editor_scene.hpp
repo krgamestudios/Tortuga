@@ -31,6 +31,8 @@
 #include "raster_font.hpp"
 #include "menu_bar.hpp"
 
+#include "map_loader.hpp"
+
 #include <list>
 
 class EditorScene : public BaseScene {

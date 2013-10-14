@@ -59,11 +59,20 @@ EditorScene::EditorScene() {
 //	});
 
 	//32 * 32 sized tiles
-	pager.SetWidth(32*4);
-	pager.SetHeight(32*4);
+//	pager.SetWidth(32*4);
+//	pager.SetHeight(32*4);
 
-	sheetList.push_front(TileSheet());
-	sheetList.front().LoadSurface("rsc\\graphics\\tilesets\\terrain.bmp", 32, 32);
+//	sheetList.push_front(TileSheet());
+//	sheetList.front().LoadSurface("rsc\\graphics\\tilesets\\terrain.bmp", 32, 32);
+
+	loadGameMap("rsc\\maps\\mappy", &pager, &sheetList);
+
+	cout << "Region Width: " << pager.GetWidth() << endl;
+	cout << "Region Height: " << pager.GetHeight() << endl;
+
+	for (auto& it : sheetList) {
+		cout << it.GetName() << ": " << it.GetBegin() << ", " << it.GetEnd() << endl;
+	}
 }
 
 EditorScene::~EditorScene() {
@@ -140,13 +149,14 @@ void EditorScene::MouseButtonDown(SDL_MouseButtonEvent const& button) {
 			snapToBase(pager.GetHeight(), button.y - camera.y)
 		);
 
+		//TODO: find the tileset matching this value, and then use it's width & height for param 4 & 5
 		ptr->NewTileA({
-			snapToBase(32, button.x - camera.x),
-			snapToBase(32, button.y - camera.y),
-			0,
-			32,
-			32,
-			0
+			snapToBase(32, button.x - camera.x), //x
+			snapToBase(32, button.y - camera.y), //y
+			0, //depth
+			32, //width (from tileset)
+			32, //height (from tileset)
+			0 //value
 		});
 	}
 }
@@ -156,7 +166,7 @@ void EditorScene::MouseButtonUp(SDL_MouseButtonEvent const& button) {
 	menuBar.MouseButtonUp(button, &entry, &drop);
 
 #ifdef DEBUG
-	cout << "Menu: (" << entry << "," << drop << ")" << endl;
+	cout << "Menu Bar: (" << entry << "," << drop << ")" << endl;
 #endif
 
 	//manage input from the menu bar

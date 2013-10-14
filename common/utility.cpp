@@ -51,3 +51,9 @@ std::string to_string_custom(int i) {
 	snprintf(buffer, 20, "%d", i);
 	return std::string(buffer);
 }
+
+int to_integer_custom(std::string s) {
+	int ret = 0;
+	sscanf(s.c_str(), "%d", &ret);
+	return ret;
+}
