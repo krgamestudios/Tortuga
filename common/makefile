@@ -19,6 +19,7 @@ OUT=$(addprefix $(OUTDIR)/,libcommon.a)
 #targets
 all: $(OBJ) $(OUT)
 	ar -crs $(OUT) $(OBJ)
+	$(MAKE) -C mapsystem
 
 $(OBJ): | $(OBJDIR)
 
