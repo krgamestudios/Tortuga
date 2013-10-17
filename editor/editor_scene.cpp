@@ -88,7 +88,7 @@ void EditorScene::FrameStart() {
 }
 
 void EditorScene::Update(double delta) {
-	//
+	pager.Prune(camera.x, camera.y, camera.x + GetScreen()->w, camera.y + GetScreen()->h);
 }
 
 void EditorScene::FrameEnd() {
@@ -135,8 +135,8 @@ void EditorScene::MouseMotion(SDL_MouseMotionEvent const& motion) {
 	menuBar.MouseMotion(motion);
 
 	if (motion.state & SDL_BUTTON_RMASK) {
-		camera.x += motion.xrel;
-		camera.y += motion.yrel;
+		camera.x -= motion.xrel;
+		camera.y -= motion.yrel;
 	}
 }
 
@@ -145,14 +145,14 @@ void EditorScene::MouseButtonDown(SDL_MouseButtonEvent const& button) {
 
 	if (button.button == SDL_BUTTON_LEFT && button.y >= buttonImage.GetClipH()) {
 		Region* ptr = pager.GetRegion(
-			snapToBase(pager.GetWidth(), button.x - camera.x),
-			snapToBase(pager.GetHeight(), button.y - camera.y)
+			snapToBase(pager.GetWidth(), button.x + camera.x),
+			snapToBase(pager.GetHeight(), button.y + camera.y)
 		);
 
 		//TODO: find the tileset matching this value, and then use it's width & height for param 4 & 5
 		ptr->NewTileA({
-			snapToBase(32, button.x - camera.x), //x
-			snapToBase(32, button.y - camera.y), //y
+			snapToBase(32, button.x + camera.x), //x
+			snapToBase(32, button.y + camera.y), //y
 			0, //depth
 			32, //width (from tileset)
 			32, //height (from tileset)
@@ -164,10 +164,6 @@ void EditorScene::MouseButtonDown(SDL_MouseButtonEvent const& button) {
 void EditorScene::MouseButtonUp(SDL_MouseButtonEvent const& button) {
 	int entry, drop;
 	menuBar.MouseButtonUp(button, &entry, &drop);
-
-#ifdef DEBUG
-	cout << "Menu Bar: (" << entry << "," << drop << ")" << endl;
-#endif
 
 	//manage input from the menu bar
 	switch(entry) {

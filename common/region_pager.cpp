@@ -90,8 +90,8 @@ void RegionPager::DrawTo(SDL_Surface* const dest, std::list<TileSheet>* const sh
 	for (auto& regionIter : regionList) {
 		//draw the region's location
 		SDL_Rect box = {
-			Sint16(regionIter.GetX() + camX),
-			Sint16(regionIter.GetY() + camY),
+			Sint16(regionIter.GetX() - camX),
+			Sint16(regionIter.GetY() - camY),
 			Uint16(regionIter.GetWidth()),
 			Uint16(regionIter.GetHeight())
 		};
@@ -103,8 +103,8 @@ void RegionPager::DrawTo(SDL_Surface* const dest, std::list<TileSheet>* const sh
 				if (sheetIter.InRange(tileIter.tileIndex)) {
 					sheetIter.DrawTo(
 						dest,
-						tileIter.x + regionIter.GetX() + camX,
-						tileIter.y + regionIter.GetY() + camY,
+						tileIter.x + regionIter.GetX() - camX,
+						tileIter.y + regionIter.GetY() - camY,
 						tileIter.tileIndex
 					);
 					//skip to the next tile
@@ -118,5 +118,21 @@ void RegionPager::DrawTo(SDL_Surface* const dest, std::list<TileSheet>* const sh
 		continueTile: ;
 			//continue with the next tile
 		}
+	}
+}
+
+void RegionPager::Prune(int left, int top, int right, int bottom) {
+	std::list<Region>::iterator it = regionList.begin();
+
+	while(it != regionList.end()) {
+		if (it->GetX() >= right || it->GetY() >= bottom || it->GetX() + it->GetWidth() < left || it->GetY() + it->GetHeight() < top) {
+			if (onDelete) {
+				onDelete(&(*it));
+			}
+			regionList.erase(it);
+			it = regionList.begin();
+			continue;
+		}
+		it++;
 	}
 }
