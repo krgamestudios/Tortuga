@@ -66,6 +66,7 @@ EditorScene::EditorScene() {
 //	sheetList.front().LoadSurface("rsc\\graphics\\tilesets\\terrain.bmp", 32, 32);
 
 	loadGameMap("rsc\\maps\\mappy", &pager, &sheetList);
+	saveGameMap("rsc\\maps\\foo", &pager, &sheetList);
 
 	cout << "Region Width: " << pager.GetWidth() << endl;
 	cout << "Region Height: " << pager.GetHeight() << endl;

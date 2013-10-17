@@ -75,5 +75,27 @@ void loadGameMap(std::string mapPathName, RegionPager* pager, std::list<TileShee
 }
 
 void saveGameMap(std::string mapPathName, RegionPager* pager, std::list<TileSheet>* sheetList) {
-	//TODO
+	//open the index file
+	std::ofstream indexFile(mapPathName + "\\index");
+	if (!indexFile.is_open()) {
+		throw(std::runtime_error(std::string("Failed to open game map: ") + mapPathName));
+	}
+
+	//write each part of the metadata header
+	indexFile << truncatePath(mapPathName) << std::endl;
+	indexFile << sheetList->size() << ", ";
+	indexFile << TileSheet::GetRangeEnd() << ", ";
+	indexFile << pager->GetWidth() << ", ";
+	indexFile << pager->GetHeight() << std::endl;
+
+	//write each tile sheet's data
+	for (auto& it : *sheetList) {
+		indexFile << it.GetName() << ", ";
+		indexFile << it.GetImage()->GetClipW() << ", ";
+		indexFile << it.GetImage()->GetClipH() << ", ";
+		indexFile << it.GetBegin() << ", ";
+		indexFile << it.GetEnd() << std::endl;
+	}
+
+	indexFile.close();
 }
