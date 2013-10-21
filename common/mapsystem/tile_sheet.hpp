@@ -44,14 +44,8 @@ public:
 
 	bool InRange(int i) { return i >= begin && i < end; }
 
-	static int SetRangeEnd(int i) { return rangeEnd = i; }
-	static int GetRangeEnd() { return rangeEnd; }
-
 	//accessors and mutators
 	Image* GetImage() { return &image; }
-
-	std::string SetName(std::string s) { return name = s; }
-	std::string GetName() const { return name; }
 
 	int GetTotalCount() const { return totalCount; }
 	int GetXCount() const { return xCount; }
@@ -63,10 +57,7 @@ public:
 	int GetBegin() const { return begin; }
 	int GetEnd() const { return end; }
 private:
-	static int rangeEnd;
-
 	Image image;
-	std::string name;
 
 	//these are generated and used by internal processes
 	int totalCount = 0, xCount = 0, yCount = 0;

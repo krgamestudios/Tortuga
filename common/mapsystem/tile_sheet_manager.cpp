@@ -19,41 +19,30 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#include "tile_sheet.hpp"
+#include "tile_sheet_manager.hpp"
+
+#include "utility.hpp"
 
 #include <stdexcept>
 
-SDL_Surface* TileSheet::LoadSurface(std::string fname, Uint16 w, Uint16 h) {
-	//setup the image
-	image.LoadSurface(fname);
-	image.SetClipW(w);
-	image.SetClipH(h);
+TileSheet* TileSheetManager::LoadSheet(std::string fname, Uint16 w, Uint16 h) {
+	//get the key
+	std::string key = truncatePath(fname);
 
-	//get the tile counts
-	xCount = image.GetSurface()->w / w;
-	yCount = image.GetSurface()->h / h;
-	totalCount = xCount * yCount;
+	//override what's already here
+	sheetMap.erase(key);
+
+	sheetMap[key].LoadSurface(fname, w, h);
+	rangeEnd += sheetMap[key].GetTotalCount();
 }
 
-SDL_Surface* TileSheet::GetSurface() {
-	return image.GetSurface();
-}
-
-void TileSheet::FreeSurface() {
-	image.FreeSurface();
-	totalCount = xCount = yCount = 0;
-	begin = end = -1;
-}
-
-void TileSheet::DrawTo(SDL_Surface* const dest, int x, int y, int tileIndex) {
-	if (!InRange(tileIndex)) {
-		throw(std::invalid_argument("Tile index out of range"));
+void TileSheetManager::DrawTo(SDL_Surface* const dest, int x, int y, int tileIndex) {
+	for (auto& it : sheetMap) {
+		if (it.second.InRange(tileIndex)) {
+			it.second.DrawTo(dest, x, y, tileIndex);
+			return;
+		}
 	}
-	Sint16 clipX = (tileIndex-begin) % xCount * image.GetClipW();
-	Sint16 clipY = (tileIndex-begin) / xCount * image.GetClipH();
-
-	image.SetClipX(clipX);
-	image.SetClipY(clipY);
-
-	image.DrawTo(dest, x, y);
+	//No matching tile index
+	throw(std::invalid_argument("Tile index is out of range of all tile sheets"));
 }

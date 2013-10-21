@@ -19,41 +19,34 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
+#ifndef TILESHEETMANAGER_HPP_
+#define TILESHEETMANAGER_HPP_
+
 #include "tile_sheet.hpp"
 
-#include <stdexcept>
+#include <map>
+#include <string>
 
-SDL_Surface* TileSheet::LoadSurface(std::string fname, Uint16 w, Uint16 h) {
-	//setup the image
-	image.LoadSurface(fname);
-	image.SetClipW(w);
-	image.SetClipH(h);
+class TileSheetManager {
+public:
+	TileSheetManager() = default;
+	~TileSheetManager() = default;
 
-	//get the tile counts
-	xCount = image.GetSurface()->w / w;
-	yCount = image.GetSurface()->h / h;
-	totalCount = xCount * yCount;
-}
-
-SDL_Surface* TileSheet::GetSurface() {
-	return image.GetSurface();
-}
-
-void TileSheet::FreeSurface() {
-	image.FreeSurface();
-	totalCount = xCount = yCount = 0;
-	begin = end = -1;
-}
-
-void TileSheet::DrawTo(SDL_Surface* const dest, int x, int y, int tileIndex) {
-	if (!InRange(tileIndex)) {
-		throw(std::invalid_argument("Tile index out of range"));
+	TileSheet* LoadSheet(std::string fname, Uint16 w, Uint16 h);
+	TileSheet* GetSheet(std::string name) {
+		return &sheetMap.at(name);
 	}
-	Sint16 clipX = (tileIndex-begin) % xCount * image.GetClipW();
-	Sint16 clipY = (tileIndex-begin) / xCount * image.GetClipH();
+	void UnloadSheet(std::string name) {
+		sheetMap.erase(name);
+	}
 
-	image.SetClipX(clipX);
-	image.SetClipY(clipY);
+	void DrawTo(SDL_Surface* const, int x, int y, int tileIndex);
 
-	image.DrawTo(dest, x, y);
-}
+	int SetRangeEnd(int i) { return rangeEnd += i; }
+	int GetRangeEnd() const { return rangeEnd; }
+private:
+	std::map<std::string, TileSheet> sheetMap;
+	int rangeEnd = 0;
+};
+
+#endif
