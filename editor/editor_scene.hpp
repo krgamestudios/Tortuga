@@ -25,15 +25,13 @@
 #include "base_scene.hpp"
 
 #include "region_pager.hpp"
-#include "tile_sheet.hpp"
+#include "tile_sheet_manager.hpp"
 
 #include "image.hpp"
 #include "raster_font.hpp"
 #include "menu_bar.hpp"
 
-#include "map_loader.hpp"
-
-#include <list>
+//#include "map_loader.hpp"
 
 class EditorScene : public BaseScene {
 public:
@@ -63,7 +61,7 @@ protected:
 	bool debugOpen = true;
 
 	RegionPager pager;
-	std::list<TileSheet> sheetList;
+	TileSheetManager sheetMgr;
 
 	RasterFont font;
 	Image buttonImage;

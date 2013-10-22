@@ -50,29 +50,26 @@ EditorScene::EditorScene() {
 		{"Debugging", "Debug On", "Debug Off", "Toggle Debug"}
 	});
 
-//	pager.SetOnNew([](Region* const ptr){
-//		printf("New Region: %d, %d\n", ptr->GetX(), ptr->GetY());
-//	});
+	pager.SetOnNew([](Region* const ptr){
+		printf("New Region: %d, %d\n", ptr->GetX(), ptr->GetY());
+	});
 
-//	pager.SetOnDelete([](Region* const ptr){
-//		printf("Delete Region: %d, %d\n", ptr->GetX(), ptr->GetY());
-//	});
+	pager.SetOnDelete([](Region* const ptr){
+		printf("Delete Region: %d, %d\n", ptr->GetX(), ptr->GetY());
+	});
 
-	//32 * 32 sized tiles
-//	pager.SetWidth(32*4);
-//	pager.SetHeight(32*4);
+	//Set a resonable size for the regions
+	pager.SetWidth(32*4);
+	pager.SetHeight(32*4);
 
-	sheetList.push_front(TileSheet());
-	sheetList.front().LoadSurface("rsc\\graphics\\tilesets\\terrain.bmp", 32, 32);
+	sheetMgr.LoadSheet("rsc\\graphics\\tilesets\\grass.bmp", 32, 32);
+	sheetMgr.LoadSheet("rsc\\graphics\\tilesets\\longgrass.bmp", 32, 32);
 
 //	loadGameMap("rsc\\maps\\mappy", &pager, &sheetList);
 //	saveGameMap("rsc\\maps\\foo", &pager, &sheetList);
 
 //	cout << "Region Width: " << pager.GetWidth() << endl;
 //	cout << "Region Height: " << pager.GetHeight() << endl;
-
-	pager.SetWidth(128);
-	pager.SetHeight(128);
 
 //	for (auto& it : sheetList) {
 //		cout << it.GetName() << ": " << it.GetBegin() << ", " << it.GetEnd() << endl;
@@ -101,7 +98,7 @@ void EditorScene::FrameEnd() {
 
 void EditorScene::Render(SDL_Surface* const screen) {
 	//draw the map
-	pager.DrawTo(screen, &sheetList, camera.x, camera.y);
+	pager.DrawTo(screen, &sheetMgr, camera.x, camera.y);
 
 	//draw a big bar across the top
 	buttonImage.SetClipY(0);
