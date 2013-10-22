@@ -62,18 +62,21 @@ EditorScene::EditorScene() {
 //	pager.SetWidth(32*4);
 //	pager.SetHeight(32*4);
 
-//	sheetList.push_front(TileSheet());
-//	sheetList.front().LoadSurface("rsc\\graphics\\tilesets\\terrain.bmp", 32, 32);
+	sheetList.push_front(TileSheet());
+	sheetList.front().LoadSurface("rsc\\graphics\\tilesets\\terrain.bmp", 32, 32);
 
-	loadGameMap("rsc\\maps\\mappy", &pager, &sheetList);
-	saveGameMap("rsc\\maps\\foo", &pager, &sheetList);
+//	loadGameMap("rsc\\maps\\mappy", &pager, &sheetList);
+//	saveGameMap("rsc\\maps\\foo", &pager, &sheetList);
 
-	cout << "Region Width: " << pager.GetWidth() << endl;
-	cout << "Region Height: " << pager.GetHeight() << endl;
+//	cout << "Region Width: " << pager.GetWidth() << endl;
+//	cout << "Region Height: " << pager.GetHeight() << endl;
 
-	for (auto& it : sheetList) {
-		cout << it.GetName() << ": " << it.GetBegin() << ", " << it.GetEnd() << endl;
-	}
+	pager.SetWidth(128);
+	pager.SetHeight(128);
+
+//	for (auto& it : sheetList) {
+//		cout << it.GetName() << ": " << it.GetBegin() << ", " << it.GetEnd() << endl;
+//	}
 }
 
 EditorScene::~EditorScene() {
