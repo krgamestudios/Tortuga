@@ -33,6 +33,10 @@ SDL_Surface* TileSheet::LoadSurface(std::string fname, Uint16 w, Uint16 h) {
 	xCount = image.GetSurface()->w / w;
 	yCount = image.GetSurface()->h / h;
 	totalCount = xCount * yCount;
+
+	//set begin & end (usually temporary)
+	begin = 0;
+	end = totalCount;
 }
 
 SDL_Surface* TileSheet::GetSurface() {

@@ -29,11 +29,16 @@ TileSheet* TileSheetManager::LoadSheet(std::string fname, Uint16 w, Uint16 h) {
 	//get the key
 	std::string key = truncatePath(fname);
 
-	//override what's already here
-	sheetMap.erase(key);
+	//don't override what's already here
+	if (sheetMap.find(key) != sheetMap.end()) {
+		throw(std::runtime_error("Cannot load duplicate tile sheets"));
+	}
 
+	//load & setup the sheet object
 	sheetMap[key].LoadSurface(fname, w, h);
+	sheetMap[key].SetBegin(rangeEnd);
 	rangeEnd += sheetMap[key].GetTotalCount();
+	sheetMap[key].SetEnd(rangeEnd);
 }
 
 void TileSheetManager::DrawTo(SDL_Surface* const dest, int x, int y, int tileIndex) {

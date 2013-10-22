@@ -44,6 +44,8 @@ public:
 
 	int SetRangeEnd(int i) { return rangeEnd += i; }
 	int GetRangeEnd() const { return rangeEnd; }
+
+	std::map<std::string, TileSheet>* GetSheetMap() { return &sheetMap; }
 private:
 	std::map<std::string, TileSheet> sheetMap;
 	int rangeEnd = 0;

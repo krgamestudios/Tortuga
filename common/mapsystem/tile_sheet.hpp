@@ -36,6 +36,7 @@ public:
 
 	//these load/set functions need to be followed by bookkeeping code
 	//w & h are the width & height of individual tiles
+	//TODO: rename these
 	SDL_Surface* LoadSurface(std::string fname, Uint16 w, Uint16 h);
 	SDL_Surface* GetSurface();
 	void FreeSurface();
