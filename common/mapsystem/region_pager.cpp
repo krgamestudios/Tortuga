@@ -78,16 +78,10 @@ void RegionPager::DeleteRegion(int x, int y) {
 	}
 }
 
-void RegionPager::DrawTo(SDL_Surface* const dest, std::list<TileSheet>* const sheetList, int camX, int camY) {
-	/* for each region:
-	 *     for each tile within that reagon
-	 *         if you have the correct tile sheet
-	 *             draw to the screen
-	 *         else
-	 *             error
-	*/
-
+void RegionPager::DrawTo(SDL_Surface* const dest, TileSheetManager* const sheetMgr, int camX, int camY) {
 	for (auto& regionIter : regionList) {
+
+#ifdef DEBUG
 		//draw the region's location
 		SDL_Rect box = {
 			Sint16(regionIter.GetX() - camX),
@@ -96,27 +90,16 @@ void RegionPager::DrawTo(SDL_Surface* const dest, std::list<TileSheet>* const sh
 			Uint16(regionIter.GetHeight())
 		};
 		SDL_FillRect(dest, &box, SDL_MapRGB(dest->format, 10, 10, 20));
+#endif
 
 		//draw each tile
 		for (auto& tileIter : *regionIter.GetTiles()) {
-			for (auto& sheetIter : *sheetList) {
-				if (sheetIter.InRange(tileIter.tileIndex)) {
-					sheetIter.DrawTo(
-						dest,
-						tileIter.x + regionIter.GetX() - camX,
-						tileIter.y + regionIter.GetY() - camY,
-						tileIter.tileIndex
-					);
-					//skip to the next tile
-					goto continueTile;
-				}
-			}
-
-			//reaching this point without rendering means that the tile is invalid
-			throw(std::runtime_error(std::string("Undrawable tile encountered: ") + to_string_custom(tileIter.tileIndex)));
-
-		continueTile: ;
-			//continue with the next tile
+			sheetMgr->DrawTo(
+				dest,
+				tileIter.x + regionIter.GetX() - camX,
+				tileIter.y + regionIter.GetY() - camY,
+				tileIter.tileIndex
+			);
 		}
 	}
 }

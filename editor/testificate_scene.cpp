@@ -38,6 +38,11 @@ TestificateScene::TestificateScene() {
 	sheetMgr.LoadSheet("rsc\\graphics\\tilesets\\water.bmp", 32, 32);
 
 	cout << "Range End: " << sheetMgr.GetRangeEnd() << endl;
+
+	pager.SetWidth(128);
+	pager.SetHeight(128);
+
+	pager.GetRegion(0, 0)->NewTileR({0, 0, 0, 32, 32, 0});
 }
 
 TestificateScene::~TestificateScene() {
@@ -61,9 +66,12 @@ void TestificateScene::FrameEnd() {
 }
 
 void TestificateScene::Render(SDL_Surface* const screen) {
-	for (int i = 0; i < sheetMgr.GetRangeEnd(); i++) {
-		sheetMgr.DrawTo(screen, i * 32 % screen->w, i * 32 / screen->w * 32, i);
-	}
+	//dump all tile graphics to the screen
+//	for (int i = 0; i < sheetMgr.GetRangeEnd(); i++) {
+//		sheetMgr.DrawTo(screen, i * 32 % screen->w, i * 32 / screen->w * 32, i);
+//	}
+
+	pager.DrawTo(screen, &sheetMgr, 0, 0);
 }
 
 //-------------------------

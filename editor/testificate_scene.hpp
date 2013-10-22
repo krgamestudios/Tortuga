@@ -24,8 +24,8 @@
 
 #include "base_scene.hpp"
 
-#include "tile_sheet.hpp"
 #include "tile_Sheet_manager.hpp"
+#include "region_pager.hpp"
 
 class TestificateScene : public BaseScene {
 public:
@@ -49,6 +49,7 @@ protected:
 
 	//members
 	TileSheetManager sheetMgr;
+	RegionPager pager;
 };
 
 #endif

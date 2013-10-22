@@ -23,7 +23,7 @@
 #define REGIONPAGER_HPP_
 
 #include "region.hpp"
-#include "tile_sheet.hpp"
+#include "tile_sheet_manager.hpp"
 
 #include <list>
 
@@ -41,7 +41,7 @@ public:
 	void DeleteRegion(int x, int y);
 
 	//call this to draw to the screen
-	void DrawTo(SDL_Surface* const, std::list<TileSheet>* const, int camX, int camY);
+	void DrawTo(SDL_Surface* const, TileSheetManager* const, int camX, int camY);
 
 	//callback hooks
 	void SetOnNew(regionCallback_t f) { onNew = f; }
