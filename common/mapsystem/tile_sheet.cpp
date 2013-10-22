@@ -23,7 +23,7 @@
 
 #include <stdexcept>
 
-SDL_Surface* TileSheet::LoadSurface(std::string fname, Uint16 w, Uint16 h) {
+void TileSheet::Load(std::string fname, Uint16 w, Uint16 h) {
 	//setup the image
 	image.LoadSurface(fname);
 	image.SetClipW(w);
@@ -39,11 +39,7 @@ SDL_Surface* TileSheet::LoadSurface(std::string fname, Uint16 w, Uint16 h) {
 	end = totalCount;
 }
 
-SDL_Surface* TileSheet::GetSurface() {
-	return image.GetSurface();
-}
-
-void TileSheet::FreeSurface() {
+void TileSheet::Unload() {
 	image.FreeSurface();
 	totalCount = xCount = yCount = 0;
 	begin = end = -1;

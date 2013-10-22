@@ -63,7 +63,7 @@ EditorScene::EditorScene() {
 	pager.SetHeight(32*4);
 
 	sheetMgr.LoadSheet("rsc\\graphics\\tilesets\\grass.bmp", 32, 32);
-	sheetMgr.LoadSheet("rsc\\graphics\\tilesets\\longgrass.bmp", 32, 32);
+	sheetMgr.LoadSheet("rsc\\graphics\\tilesets\\longgrass.bmp", 16, 16);
 
 //	loadGameMap("rsc\\maps\\mappy", &pager, &sheetList);
 //	saveGameMap("rsc\\maps\\foo", &pager, &sheetList);
@@ -145,19 +145,20 @@ void EditorScene::MouseButtonDown(SDL_MouseButtonEvent const& button) {
 	menuBar.MouseButtonDown(button);
 
 	if (button.button == SDL_BUTTON_LEFT && button.y >= buttonImage.GetClipH()) {
-		Region* ptr = pager.GetRegion(
+		Region* regionPtr = pager.GetRegion(
 			snapToBase(pager.GetWidth(), button.x + camera.x),
 			snapToBase(pager.GetHeight(), button.y + camera.y)
 		);
 
-		//TODO: find the tileset matching this value, and then use it's width & height for param 4 & 5
-		ptr->NewTileA({
-			snapToBase(32, button.x + camera.x), //x
-			snapToBase(32, button.y + camera.y), //y
+		TileSheet* sheetPtr = sheetMgr.GetSheetByIndex(tileCounter);
+
+		regionPtr->NewTileA({
+			snapToBase(sheetPtr->GetTileW(), button.x + camera.x), //x
+			snapToBase(sheetPtr->GetTileH(), button.y + camera.y), //y
 			0, //depth
-			32, //width (from tileset)
-			32, //height (from tileset)
-			0 //value
+			sheetPtr->GetTileW(), //width
+			sheetPtr->GetTileH(), //height
+			tileCounter++ //value
 		});
 	}
 }

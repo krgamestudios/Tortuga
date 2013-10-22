@@ -37,9 +37,8 @@ public:
 	//these load/set functions need to be followed by bookkeeping code
 	//w & h are the width & height of individual tiles
 	//TODO: rename these
-	SDL_Surface* LoadSurface(std::string fname, Uint16 w, Uint16 h);
-	SDL_Surface* GetSurface();
-	void FreeSurface();
+	void Load(std::string fname, Uint16 w, Uint16 h);
+	void Unload();
 
 	void DrawTo(SDL_Surface* const dest, int x, int y, int tileIndex);
 
@@ -47,6 +46,9 @@ public:
 
 	//accessors and mutators
 	Image* GetImage() { return &image; }
+
+	int GetTileW() const { return image.GetClipW(); }
+	int GetTileH() const { return image.GetClipH(); }
 
 	int GetTotalCount() const { return totalCount; }
 	int GetXCount() const { return xCount; }

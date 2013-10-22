@@ -35,10 +35,30 @@ TileSheet* TileSheetManager::LoadSheet(std::string fname, Uint16 w, Uint16 h) {
 	}
 
 	//load & setup the sheet object
-	sheetMap[key].LoadSurface(fname, w, h);
+	sheetMap[key].Load(fname, w, h);
 	sheetMap[key].SetBegin(rangeEnd);
 	rangeEnd += sheetMap[key].GetTotalCount();
 	sheetMap[key].SetEnd(rangeEnd);
+
+	//you can modify the object, say, during the save & load routines...
+	return &sheetMap[key];
+}
+
+TileSheet* TileSheetManager::GetSheet(std::string name) {
+	return &sheetMap.at(name);
+}
+
+TileSheet* TileSheetManager::GetSheetByIndex(int tileIndex) {
+	for (auto& it : sheetMap) {
+		if (it.second.InRange(tileIndex)) {
+			return &it.second;
+		}
+	}
+	return nullptr;
+}
+
+void TileSheetManager::UnloadSheet(std::string name) {
+	sheetMap.erase(name);
 }
 
 void TileSheetManager::DrawTo(SDL_Surface* const dest, int x, int y, int tileIndex) {

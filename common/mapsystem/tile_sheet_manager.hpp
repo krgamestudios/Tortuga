@@ -33,12 +33,9 @@ public:
 	~TileSheetManager() = default;
 
 	TileSheet* LoadSheet(std::string fname, Uint16 w, Uint16 h);
-	TileSheet* GetSheet(std::string name) {
-		return &sheetMap.at(name);
-	}
-	void UnloadSheet(std::string name) {
-		sheetMap.erase(name);
-	}
+	TileSheet* GetSheet(std::string name);
+	TileSheet* GetSheetByIndex(int tileIndex);
+	void UnloadSheet(std::string name);
 
 	void DrawTo(SDL_Surface* const, int x, int y, int tileIndex);
 

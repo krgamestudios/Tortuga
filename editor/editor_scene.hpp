@@ -71,6 +71,8 @@ protected:
 	struct {
 		int x = 0, y = 0;
 	} camera;
+
+	int tileCounter = 0;
 };
 
 #endif
