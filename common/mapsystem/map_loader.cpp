@@ -5,8 +5,8 @@
 #include <fstream>
 #include <stdexcept>
 
-void loadGameMap(std::string mapPathName, RegionPager* pager, std::list<TileSheet>* sheetList) {
-	//open the index file
+void loadGameMap(std::string mapPathName, RegionPager* const, TileSheetManager* const) {
+/*	//open the index file
 	std::ifstream indexFile(mapPathName + "\\index");
 	if (!indexFile.is_open()) {
 		throw(std::runtime_error(std::string("Failed to open game map: ") + mapPathName));
@@ -72,10 +72,11 @@ void loadGameMap(std::string mapPathName, RegionPager* pager, std::list<TileShee
 
 	//clean up
 	indexFile.close();
+*/
 }
 
-void saveGameMap(std::string mapPathName, RegionPager* pager, std::list<TileSheet>* sheetList) {
-	//open the index file
+void saveGameMap(std::string mapPathName, RegionPager* const, TileSheetManager* const) {
+/*	//open the index file
 	std::ofstream indexFile(mapPathName + "\\index");
 	if (!indexFile.is_open()) {
 		throw(std::runtime_error(std::string("Failed to open game map: ") + mapPathName));
@@ -98,4 +99,5 @@ void saveGameMap(std::string mapPathName, RegionPager* pager, std::list<TileShee
 	}
 
 	indexFile.close();
+*/
 }

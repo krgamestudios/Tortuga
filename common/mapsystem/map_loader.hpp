@@ -2,14 +2,13 @@
 #define MAPLOADER_HPP_
 
 #include "region_pager.hpp"
-#include "tile_sheet.hpp"
+#include "tile_sheet_manager.hpp"
 
-#include <list>
 #include <string>
 
 /* Given the map name and pointers to containers, this is a generic loading system
 */
-void loadGameMap(std::string mapPathName, RegionPager* pager, std::list<TileSheet>* sheetList);
-void saveGameMap(std::string mapPathName, RegionPager* pager, std::list<TileSheet>* sheetList);
+void loadGameMap(std::string mapPathName, RegionPager* const, TileSheetManager* const);
+void saveGameMap(std::string mapPathName, RegionPager* const, TileSheetManager* const);
 
 #endif
