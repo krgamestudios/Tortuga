@@ -67,11 +67,11 @@ void TestificateScene::FrameEnd() {
 
 void TestificateScene::Render(SDL_Surface* const screen) {
 	//dump all tile graphics to the screen
-//	for (int i = 0; i < sheetMgr.GetRangeEnd(); i++) {
-//		sheetMgr.DrawTo(screen, i * 32 % screen->w, i * 32 / screen->w * 32, i);
-//	}
+	for (int i = 0; i < sheetMgr.GetRangeEnd(); i++) {
+		sheetMgr.DrawTo(screen, i * 32 % screen->w, i * 32 / screen->w * 32, i);
+	}
 
-	pager.DrawTo(screen, &sheetMgr, 0, 0);
+//	pager.DrawTo(screen, &sheetMgr, 0, 0);
 }
 
 //-------------------------
@@ -94,7 +94,8 @@ void TestificateScene::MouseButtonUp(SDL_MouseButtonEvent const& button) {
 void TestificateScene::KeyDown(SDL_KeyboardEvent const& key) {
 	switch(key.keysym.sym) {
 		case SDLK_ESCAPE:
-			QuitEvent();
+//			QuitEvent();
+		SetNextScene(SceneList::EDITORSCENE);
 		break;
 	}
 }

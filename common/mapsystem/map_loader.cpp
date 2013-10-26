@@ -1,3 +1,24 @@
+/* Copyright: (c) Kayne Ruse 2013
+ * 
+ * This software is provided 'as-is', without any express or implied
+ * warranty. In no event will the authors be held liable for any damages
+ * arising from the use of this software.
+ * 
+ * Permission is granted to anyone to use this software for any purpose,
+ * including commercial applications, and to alter it and redistribute it
+ * freely, subject to the following restrictions:
+ * 
+ * 1. The origin of this software must not be misrepresented; you must not
+ * claim that you wrote the original software. If you use this software
+ * in a product, an acknowledgment in the product documentation would be
+ * appreciated but is not required.
+ * 
+ * 2. Altered source versions must be plainly marked as such, and must not be
+ * misrepresented as being the original software.
+ * 
+ * 3. This notice may not be removed or altered from any source
+ * distribution.
+*/
 #include "map_loader.hpp"
 
 #include "utility.hpp"
@@ -6,98 +27,9 @@
 #include <stdexcept>
 
 void loadGameMap(std::string mapPathName, RegionPager* const, TileSheetManager* const) {
-/*	//open the index file
-	std::ifstream indexFile(mapPathName + "\\index");
-	if (!indexFile.is_open()) {
-		throw(std::runtime_error(std::string("Failed to open game map: ") + mapPathName));
-	}
-
-	//read each part of the metadata header
-	std::string buffer, knownName;
-	int sheetCount = -1, rangeEnd = -1, regionWidth = -1, regionHeight = -1;
-
-	getline(indexFile, knownName);
-
-	if (knownName != truncatePath(mapPathName)) {
-		//probably not needed, I'll losen this down the road
-		throw(std::runtime_error("Internal and external map names do not match"));
-	}
-
-	getline(indexFile, buffer, ',');
-	sheetCount = to_integer_custom(buffer);
-
-	getline(indexFile, buffer, ',');
-	rangeEnd = to_integer_custom(buffer);
-
-	getline(indexFile, buffer, ',');
-	regionWidth = to_integer_custom(buffer);
-
-	getline(indexFile, buffer);
-	regionHeight = to_integer_custom(buffer);
-
-	//setup the pager
-	pager->GetRegions()->clear();
-	pager->SetWidth(regionWidth);
-	pager->SetHeight(regionHeight);
-	pager->SetOnNew([](Region* const ptr) {
-		//TODO
-	});
-	pager->SetOnDelete([](Region* const ptr) {
-		//TODO
-	});
-
-	//load all of the tile sheets
-	sheetList->clear();
-	for (int i = 0; i < sheetCount; i++) {
-		sheetList->push_back(TileSheet());
-
-		//get the name, width & height
-		std::string sheetName;
-		getline(indexFile, sheetName, ',');
-		getline(indexFile, buffer, ',');
-		int w = to_integer_custom(buffer);
-		getline(indexFile, buffer, ',');
-		int h = to_integer_custom(buffer);
-
-		//load
-		sheetList->back().LoadSurface(std::string("rsc\\graphics\\tilesets\\") + sheetName, w, h);
-
-		//set the range
-		getline(indexFile, buffer, ',');
-		sheetList->back().SetBegin(to_integer_custom(buffer));
-		getline(indexFile, buffer);
-		sheetList->back().SetEnd(to_integer_custom(buffer));
-	}
-	TileSheet::SetRangeEnd(rangeEnd);
-
-	//clean up
-	indexFile.close();
-*/
+	//
 }
 
 void saveGameMap(std::string mapPathName, RegionPager* const, TileSheetManager* const) {
-/*	//open the index file
-	std::ofstream indexFile(mapPathName + "\\index");
-	if (!indexFile.is_open()) {
-		throw(std::runtime_error(std::string("Failed to open game map: ") + mapPathName));
-	}
-
-	//write each part of the metadata header
-	indexFile << truncatePath(mapPathName) << std::endl;
-	indexFile << sheetList->size() << ", ";
-	indexFile << TileSheet::GetRangeEnd() << ", ";
-	indexFile << pager->GetWidth() << ", ";
-	indexFile << pager->GetHeight() << std::endl;
-
-	//write each tile sheet's data
-	for (auto& it : *sheetList) {
-		indexFile << it.GetName() << ", ";
-		indexFile << it.GetImage()->GetClipW() << ", ";
-		indexFile << it.GetImage()->GetClipH() << ", ";
-		indexFile << it.GetBegin() << ", ";
-		indexFile << it.GetEnd() << std::endl;
-	}
-
-	indexFile.close();
-*/
+	//
 }

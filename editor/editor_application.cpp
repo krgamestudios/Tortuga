@@ -109,13 +109,14 @@ void EditorApplication::LoadScene(SceneList sceneIndex) {
 	switch(sceneIndex) {
 		//add scene creation calls here
 		case SceneList::FIRST:
-//		case SceneList::TESTIFICATESCENE:
-//			activeScene = new TestificateScene();
-//		break;
-
 		case SceneList::EDITORSCENE:
 			activeScene = new EditorScene();
 		break;
+
+		case SceneList::TESTIFICATESCENE:
+			activeScene = new TestificateScene();
+		break;
+
 
 		default:
 			throw(std::logic_error("Failed to recognize the scene index"));

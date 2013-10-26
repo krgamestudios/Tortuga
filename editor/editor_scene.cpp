@@ -34,22 +34,26 @@ using namespace std;
 //-------------------------
 
 EditorScene::EditorScene() {
+	//create the debugging "window"
 	debugInfo.CreateSurface(256, 256);
 
+	//setup the utility objects
 	font.LoadSurface("rsc\\graphics\\fonts\\pk_white_8.bmp");
 
 	buttonImage.LoadSurface("rsc\\graphics\\interface\\button_menu.bmp");
 	buttonImage.SetClipH(buttonImage.GetClipH()/3);
 
+	//setup the menu bar
 	menuBar.SetFont(&font);
 	menuBar.SetImage(&buttonImage);
 
 	menuBar.SetEntries({
-		{"File", "New", "Open", "Save", "Save As...", "Close", "Exit"},
-		{"Edit", "Set Tile", "Load Sheet", "Delete Sheet", "Metadata", "Run Script"},
-		{"Debugging", "Debug On", "Debug Off", "Toggle Debug"}
+		{"File", "-New", "-Open", "-Save", "-Save As...", "-Close", "Exit"},
+		{"Edit", "-Set Tile", "-Load Sheet", "-Delete Sheet", "-Metadata", "-Run Script"},
+		{"Debugging", "Debug On", "Debug Off", "Toggle Debug", "Testificate"}
 	});
 
+	//setup the pager
 	pager.SetOnNew([](Region* const ptr){
 		printf("New Region: %d, %d\n", ptr->GetX(), ptr->GetY());
 	});
@@ -62,18 +66,7 @@ EditorScene::EditorScene() {
 	pager.SetWidth(32*4);
 	pager.SetHeight(32*4);
 
-	sheetMgr.LoadSheet("rsc\\graphics\\tilesets\\grass.bmp", 32, 32);
-	sheetMgr.LoadSheet("rsc\\graphics\\tilesets\\longgrass.bmp", 16, 16);
-
-//	loadGameMap("rsc\\maps\\mappy", &pager, &sheetList);
-//	saveGameMap("rsc\\maps\\foo", &pager, &sheetList);
-
-//	cout << "Region Width: " << pager.GetWidth() << endl;
-//	cout << "Region Height: " << pager.GetHeight() << endl;
-
-//	for (auto& it : sheetList) {
-//		cout << it.GetName() << ": " << it.GetBegin() << ", " << it.GetEnd() << endl;
-//	}
+	sheetMgr.LoadSheet("rsc\\graphics\\tilesets\\terrain.bmp", 32, 32);
 }
 
 EditorScene::~EditorScene() {
@@ -134,6 +127,24 @@ void EditorScene::DrawToDebugInfo(std::string str, int line) {
 
 void EditorScene::MouseMotion(SDL_MouseMotionEvent const& motion) {
 	menuBar.MouseMotion(motion);
+
+	if (motion.state & SDL_BUTTON_LMASK && motion.y >= buttonImage.GetClipH()) {
+		Region* regionPtr = pager.GetRegion(
+			snapToBase(pager.GetWidth(), motion.x + camera.x),
+			snapToBase(pager.GetHeight(), motion.y + camera.y)
+		);
+
+		TileSheet* sheetPtr = sheetMgr.GetSheetByIndex(tileCounter);
+
+		regionPtr->NewTileA({
+			snapToBase(sheetPtr->GetTileW(), motion.x + camera.x), //x
+			snapToBase(sheetPtr->GetTileH(), motion.y + camera.y), //y
+			0, //depth
+			sheetPtr->GetTileW(), //width
+			sheetPtr->GetTileH(), //height
+			tileCounter++ //value
+		});
+	}
 
 	if (motion.state & SDL_BUTTON_RMASK) {
 		camera.x -= motion.xrel;
@@ -237,6 +248,10 @@ void EditorScene::MouseButtonUp(SDL_MouseButtonEvent const& button) {
 
 				case 2:
 					debugOpen = !debugOpen;
+				break;
+
+				case 3:
+					SetNextScene(SceneList::TESTIFICATESCENE);
 				break;
 			}
 		break;
