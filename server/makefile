@@ -1,5 +1,5 @@
 #config
-COMMONDIR+=../common ../common/mapsystem
+COMMONDIR+=../common ../common/map ../common/network ../common/ui
 COMMON+=../libcommon.a
 LIB+=$(COMMON) -lSDL_net -lwsock32 -liphlpapi -lmingw32 -lSDLmain -lSDL -llua -lsqlite3
 CXXFLAGS+=-std=c++11 -DDEBUG $(addprefix -I,$(COMMONDIR))
