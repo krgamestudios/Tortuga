@@ -26,7 +26,21 @@
 //-------------------------
 
 LobbyMenu::LobbyMenu() {
-	//
+	//setup the utility objects
+	image.LoadSurface("rsc\\graphics\\interface\\button_menu.bmp");
+	image.SetClipH(image.GetClipH()/3);
+	font.LoadSurface("rsc\\graphics\\fonts\\pk_white_8.bmp");
+
+	//pass the utility objects
+	backButton.SetImage(&image);
+	backButton.SetFont(&font);
+
+	//set the button positions
+	backButton.SetX(50);
+	backButton.SetY(50 + image.GetClipH() * 0);
+
+	//set the button texts
+	backButton.SetText("Back");
 }
 
 LobbyMenu::~LobbyMenu() {
@@ -50,7 +64,7 @@ void LobbyMenu::FrameEnd() {
 }
 
 void LobbyMenu::Render(SDL_Surface* const screen) {
-	//
+	backButton.DrawTo(screen);
 }
 
 //-------------------------
@@ -58,15 +72,17 @@ void LobbyMenu::Render(SDL_Surface* const screen) {
 //-------------------------
 
 void LobbyMenu::MouseMotion(SDL_MouseMotionEvent const& motion) {
-	//
+	backButton.MouseMotion(motion);
 }
 
 void LobbyMenu::MouseButtonDown(SDL_MouseButtonEvent const& button) {
-	//
+	backButton.MouseButtonDown(button);
 }
 
 void LobbyMenu::MouseButtonUp(SDL_MouseButtonEvent const& button) {
-	//
+	if (backButton.MouseButtonUp(button) == Button::State::HOVER) {
+		SetNextScene(SceneList::MAINMENU);
+	}
 }
 
 void LobbyMenu::KeyDown(SDL_KeyboardEvent const& key) {

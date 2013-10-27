@@ -26,7 +26,31 @@
 //-------------------------
 
 MainMenu::MainMenu() {
-	//
+	//setup the utility objects
+	image.LoadSurface("rsc\\graphics\\interface\\button_menu.bmp");
+	image.SetClipH(image.GetClipH()/3);
+	font.LoadSurface("rsc\\graphics\\fonts\\pk_white_8.bmp");
+
+	//pass the utility objects
+	startButton.SetImage(&image);
+	startButton.SetFont(&font);
+	optionsButton.SetImage(&image);
+	optionsButton.SetFont(&font);
+	quitButton.SetImage(&image);
+	quitButton.SetFont(&font);
+
+	//set the button positions
+	startButton.SetX(50);
+	startButton.SetY(50 + image.GetClipH() * 0);
+	optionsButton.SetX(50);
+	optionsButton.SetY(50 + image.GetClipH() * 1);
+	quitButton.SetX(50);
+	quitButton.SetY(50 + image.GetClipH() * 2);
+
+	//set the button texts
+	startButton.SetText("Start");
+	optionsButton.SetText("Options");
+	quitButton.SetText("Quit");
 }
 
 MainMenu::~MainMenu() {
@@ -50,7 +74,9 @@ void MainMenu::FrameEnd() {
 }
 
 void MainMenu::Render(SDL_Surface* const screen) {
-	//
+	startButton.DrawTo(screen);
+	optionsButton.DrawTo(screen);
+	quitButton.DrawTo(screen);
 }
 
 //-------------------------
@@ -58,15 +84,27 @@ void MainMenu::Render(SDL_Surface* const screen) {
 //-------------------------
 
 void MainMenu::MouseMotion(SDL_MouseMotionEvent const& motion) {
-	//
+	startButton.MouseMotion(motion);
+	optionsButton.MouseMotion(motion);
+	quitButton.MouseMotion(motion);
 }
 
 void MainMenu::MouseButtonDown(SDL_MouseButtonEvent const& button) {
-	//
+	startButton.MouseButtonDown(button);
+	optionsButton.MouseButtonDown(button);
+	quitButton.MouseButtonDown(button);
 }
 
 void MainMenu::MouseButtonUp(SDL_MouseButtonEvent const& button) {
-	//
+	if (startButton.MouseButtonUp(button) == Button::State::HOVER) {
+		SetNextScene(SceneList::LOBBYMENU);
+	}
+	if (optionsButton.MouseButtonUp(button) == Button::State::HOVER) {
+		SetNextScene(SceneList::OPTIONSMENU);
+	}
+	if (quitButton.MouseButtonUp(button) == Button::State::HOVER) {
+		QuitEvent();
+	}
 }
 
 void MainMenu::KeyDown(SDL_KeyboardEvent const& key) {

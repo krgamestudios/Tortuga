@@ -24,6 +24,10 @@
 
 #include "base_scene.hpp"
 
+#include "image.hpp"
+#include "raster_font.hpp"
+#include "button.hpp"
+
 class MainMenu : public BaseScene {
 public:
 	//Public access members
@@ -43,6 +47,13 @@ protected:
 	void MouseButtonUp(SDL_MouseButtonEvent const&);
 	void KeyDown(SDL_KeyboardEvent const&);
 	void KeyUp(SDL_KeyboardEvent const&);
+
+	//members
+	Image image;
+	RasterFont font;
+	Button startButton;
+	Button optionsButton;
+	Button quitButton;
 };
 
 #endif

@@ -26,7 +26,8 @@
 //-------------------------
 
 SplashScreen::SplashScreen() {
-	//
+	logo.LoadSurface("rsc\\graphics\\logos\\krstudios.bmp");
+	startTick = std::chrono::steady_clock::now();
 }
 
 SplashScreen::~SplashScreen() {
@@ -37,46 +38,12 @@ SplashScreen::~SplashScreen() {
 //Frame loop
 //-------------------------
 
-void SplashScreen::FrameStart() {
-	//
-}
-
 void SplashScreen::Update(double delta) {
-	//
-}
-
-void SplashScreen::FrameEnd() {
-	//
-}
-
-void SplashScreen::Render(SDL_Surface* const screen) {
-	//
-}
-
-//-------------------------
-//Event handlers
-//-------------------------
-
-void SplashScreen::MouseMotion(SDL_MouseMotionEvent const& motion) {
-	//
-}
-
-void SplashScreen::MouseButtonDown(SDL_MouseButtonEvent const& button) {
-	//
-}
-
-void SplashScreen::MouseButtonUp(SDL_MouseButtonEvent const& button) {
-	//
-}
-
-void SplashScreen::KeyDown(SDL_KeyboardEvent const& key) {
-	switch(key.keysym.sym) {
-		case SDLK_ESCAPE:
-			QuitEvent();
-			break;
+	if (std::chrono::steady_clock::now() - startTick > std::chrono::duration<int>(1)) {
+		SetNextScene(SceneList::MAINMENU);
 	}
 }
 
-void SplashScreen::KeyUp(SDL_KeyboardEvent const& key) {
-	//
+void SplashScreen::Render(SDL_Surface* const screen) {
+	logo.DrawTo(screen, (screen->w - logo.GetClipW()) / 2, (screen->h - logo.GetClipH()) / 2);
 }
