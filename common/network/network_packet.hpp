@@ -22,11 +22,14 @@
 #ifndef NETWORKPACKET_HPP_
 #define NETWORKPACKET_HPP_
 
-//#define PACKET_STRING_SIZE 100
+#include "SDL/SDL_net.h"
+
+#define PACKET_STRING_SIZE 100
 
 #pragma pack(push, 0)
 
 union NetworkPacket {
+	//types of packets
 	enum class Type {
 		//default: there is something wrong
 		NONE = 0,
@@ -35,7 +38,7 @@ union NetworkPacket {
 		PING = 1,
 		PONG = 2,
 
-		//bounce information between the client & server
+		//Searching for a server to join
 		BROADCAST_REQUEST = 3,
 		BROADCAST_RESPONSE = 4,
 
@@ -48,11 +51,23 @@ union NetworkPacket {
 
 		//mass update
 		SYNCHRONIZE = 8,
+
+		//Player movement, etc.
 	};
 
+	//metadata on the packet itself
 	struct Metadata {
 		Type type;
+		IPaddress srcAddress;
 	}meta;
+
+	//information about the server
+	struct ServerInformation {
+		Metadata meta;
+		//TODO: version info
+		char name[PACKET_STRING_SIZE];
+		//TODO: player count
+	}serverInfo;
 };
 
 #pragma pack(pop)

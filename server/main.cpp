@@ -31,9 +31,10 @@ using namespace std;
 int main(int argc, char** argv) {
 	cout << "Beginning server" << endl;
 	try {
-		ServerApplication::GetInstance()->Init(argc, argv);
-		ServerApplication::GetInstance()->Loop();
-		ServerApplication::GetInstance()->Quit();
+		ServerApplication app;
+		app.Init(argc, argv);
+		app.Loop();
+		app.Quit();
 	}
 	catch(exception& e) {
 		cerr << "Fatal error: " << e.what() << endl;

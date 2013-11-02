@@ -38,13 +38,9 @@ struct ClientEntry {
 
 //The main application class
 class ServerApplication {
-private:
+public:
 	ServerApplication();
 	~ServerApplication();
-	static ServerApplication instance;
-
-public:
-	static ServerApplication* GetInstance() { return &instance; }
 
 	void Init(int argc, char** argv);
 	void Loop();

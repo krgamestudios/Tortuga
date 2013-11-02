@@ -29,14 +29,13 @@
 #include <fstream>
 
 int ClientEntry::indexCounter = 0;
-ServerApplication ServerApplication::instance;
 
 ServerApplication::ServerApplication() {
-	//TODO
+	//
 }
 
 ServerApplication::~ServerApplication() {
-	//TODO
+	//
 }
 
 void ServerApplication::Init(int argc, char** argv) {
@@ -65,7 +64,7 @@ void ServerApplication::Init(int argc, char** argv) {
 	else {
 		std::cout << "SDL_net initialized" << std::endl;
 	}
-	networkUtil.Open(8895, 1024);
+	networkUtil.Open(21795, 1024);
 
 	//Init SQL
 	std::string dbname = (argc > 1) ? argv[1] : argv[0];
