@@ -68,6 +68,12 @@ union NetworkPacket {
 		char name[PACKET_STRING_SIZE];
 		//TODO: player count
 	}serverInfo;
+
+	//defaults
+	NetworkPacket() {
+		meta.type = Type::NONE;
+		meta.srcAddress = {0,0};
+	}
 };
 
 #pragma pack(pop)

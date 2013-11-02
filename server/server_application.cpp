@@ -65,6 +65,7 @@ void ServerApplication::Init(int argc, char** argv) {
 		std::cout << "SDL_net initialized" << std::endl;
 	}
 	networkUtil.Open(21795, 1024);
+	networkQueue.Init(&networkUtil);
 
 	//Init SQL
 	std::string dbname = (argc > 1) ? argv[1] : argv[0];
@@ -89,14 +90,35 @@ void ServerApplication::Init(int argc, char** argv) {
 	is.close();
 
 	sqlite3_exec(database, script.c_str(), nullptr, nullptr, nullptr);
+
+	//debugging
+	//create the debug packets
+	NetworkPacket packet;
+
+	packet.meta.type = NetworkPacket::Type::PING;
+	strcpy(packet.serverInfo.name,"Foo");
+	networkUtil.Send("127.0.0.1", 21795, reinterpret_cast<void*>(&packet), sizeof(NetworkPacket));
+	strcpy(packet.serverInfo.name,"Bar");
+	networkUtil.Send("127.0.0.1", 21795, reinterpret_cast<void*>(&packet), sizeof(NetworkPacket));
+	strcpy(packet.serverInfo.name,"World");
+	networkUtil.Send("127.0.0.1", 21795, reinterpret_cast<void*>(&packet), sizeof(NetworkPacket));
+	
 }
 
 void ServerApplication::Loop() {
-	//
+	//debugging
+	SDL_Delay(1000);
+
+	NetworkPacket packet;
+	while(networkQueue.Peek().meta.type != NetworkPacket::Type::NONE) {
+		packet = networkQueue.Pop();
+		std::cout << packet.serverInfo.name << std::endl;
+	};
 }
 
 void ServerApplication::Quit() {
 	sqlite3_close_v2(database);
+	networkQueue.Quit();
 	networkUtil.Close();
 	SDLNet_Quit();
 	SDL_Quit();

@@ -23,6 +23,7 @@
 #define SERVERAPPLICATION_HPP_
 
 #include "udp_network_utility.hpp"
+#include "network_queue.hpp"
 
 #include "sqlite3/sqlite3.h"
 #include "SDL/SDL.h"
@@ -52,6 +53,7 @@ private:
 	sqlite3* database = nullptr;
 
 	UDPNetworkUtility networkUtil;
+	NetworkQueue networkQueue;
 	std::list<ClientEntry> clientEntries;
 };
 
