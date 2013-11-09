@@ -83,6 +83,9 @@ void ServerApplication::Init(int argc, char** argv) {
 	}
 	running = true;
 
+	//load config
+	config.Load("rsc\\config.cfg");
+
 	//Init SDL
 	if (SDL_Init(0)) {
 		throw(runtime_error("Failed to initialize SDL"));
@@ -93,17 +96,17 @@ void ServerApplication::Init(int argc, char** argv) {
 	if (SDLNet_Init()) {
 		throw(runtime_error("Failed to init SDL_net"));
 	}
-	networkUtil.Open(21795, sizeof(NetworkPacket));
+	networkUtil.Open(config.Int("server.port"), sizeof(NetworkPacket));
 	cout << "initialized SDL_net" << endl;
 
 	//Init SQL
-	string dbname = (argc > 1) ? argv[1] : argv[0]; //fancy and unnecessary
-	int ret = sqlite3_open_v2((dbname + ".db").c_str(), &database, SQLITE_OPEN_READWRITE|SQLITE_OPEN_CREATE|SQLITE_OPEN_FULLMUTEX, nullptr);
+	string dbname = (config["dbname"].size()) ? config["dbname"] : std::string(argv[0]) + ".db"; //fancy and unnecessary
+	int ret = sqlite3_open_v2(dbname.c_str(), &database, SQLITE_OPEN_READWRITE|SQLITE_OPEN_CREATE|SQLITE_OPEN_FULLMUTEX, nullptr);
 	if (ret != SQLITE_OK || !database) {
 		throw(runtime_error("Failed to open the server database"));
 	}
 	cout << "initialized SQL" << endl;
-	cout << "Database filename: \"" << dbname << ".db\"" << endl;
+	cout << "Database filename: " << dbname << endl;
 
 	//TODO: move this into a function?
 	//Run setup scripts
@@ -127,7 +130,7 @@ void ServerApplication::Init(int argc, char** argv) {
 	NetworkPacket packet;
 	packet.meta.type = NetworkPacket::Type::PING;
 	strcpy(packet.serverInfo.name, "foo");
-	networkUtil.Send("127.0.0.1", 21795, &packet, sizeof(NetworkPacket));
+	networkUtil.Send(config["server.host"].c_str(), config.Int("server.port"), &packet, sizeof(NetworkPacket));
 }
 
 void ServerApplication::Loop() {

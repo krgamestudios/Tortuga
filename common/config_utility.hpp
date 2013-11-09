@@ -19,53 +19,42 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef SERVERAPPLICATION_HPP_
-#define SERVERAPPLICATION_HPP_
+#ifndef CONFIGUTILITY_HPP_
+#define CONFIGUTILITY_HPP_
 
-#include "udp_network_utility.hpp"
-#include "network_queue.hpp"
-#include "config_utility.hpp"
+#include <map>
+#include <string>
 
-#include "sqlite3/sqlite3.h"
-#include "SDL/SDL.h"
-#include "SDL/SDL_thread.h"
-
-#include <list>
-
-//The main application class
-class ServerApplication {
+class ConfigUtility {
 public:
-	//standard functions
-	ServerApplication();
-	~ServerApplication();
+	ConfigUtility() = default;
+	ConfigUtility(std::string s) { Load(s); }
 
-	void Init(int argc, char** argv);
-	void Loop();
-	void Quit();
+	void Load(std::string fname);
 
-	friend int networkQueueThread(void*);
+	//convert to a type
+	std::string& String(std::string);
+	int Integer(std::string);
+	double Double(std::string);
+	bool Boolean(std::string);
+
+	//shorthand
+	std::string& operator[](std::string s) {
+		return String(s);
+	}
+	int Int(std::string s) {
+		return Integer(s);
+	}
+	bool Bool(std::string s) {
+		return Boolean(s);
+	}
+
+	//OO breaker
+	std::map<std::string, std::string>* GetMap() {
+		return &table;
+	}
 private:
-	void HandlePacket(NetworkPacket);
-
-	//members
-	bool running = false;
-	ConfigUtility config;
-
-	//networking
-	UDPNetworkUtility networkUtil;
-	NetworkQueue networkQueue;
-	SDL_Thread* networkQueueThread = nullptr;
-
-	//database
-	sqlite3* database = nullptr;
-
-	//clients
-	struct ClientEntry {
-		static int indexCounter;
-		int index = indexCounter++;
-		IPaddress add = {0, 0};
-	};
-	std::list<ClientEntry> clientEntries;
+	std::map<std::string, std::string> table;
 };
 
 #endif
