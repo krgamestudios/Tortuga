@@ -20,6 +20,8 @@ public:
 	NetworkPacket Peek();
 	NetworkPacket Pop();
 	void Flush();
+
+	int Size();
 private:
 	friend int networkQueueThread(void*);
 	void ResetMembers();

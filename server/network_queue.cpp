@@ -108,3 +108,12 @@ void NetworkQueue::ResetMembers() {
 	thread = nullptr;
 	queue.clear();
 }
+
+int NetworkQueue::Size() {
+	//can't be sure if std::deque::size() is thread safe
+	int ret;
+	SDL_SemWait(lock);
+	ret = queue.size();
+	SDL_SemPost(lock);
+	return ret;
+}

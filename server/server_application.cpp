@@ -109,10 +109,13 @@ void ServerApplication::Loop() {
 	//debugging
 	SDL_Delay(1000);
 
-	NetworkPacket packet;
-	while(networkQueue.Peek().meta.type != NetworkPacket::Type::NONE) {
-		packet = networkQueue.Pop();
-		std::cout << packet.serverInfo.name << std::endl;
+	while(networkQueue.Size() > 0) {
+		try {
+			HandlePacket(networkQueue.Pop());
+		}
+		catch(std::exception& e) {
+			std::cerr << "Network Error: " << e.what() << std::endl;
+		}
 	};
 }
 
@@ -122,4 +125,41 @@ void ServerApplication::Quit() {
 	networkUtil.Close();
 	SDLNet_Quit();
 	SDL_Quit();
+}
+
+void ServerApplication::HandlePacket(NetworkPacket packet) {
+	switch(packet.meta.type) {
+		case NetworkPacket::Type::PING:
+			//NOT USED
+		break;
+		case NetworkPacket::Type::PONG:
+			//NOT USED
+		break;
+		case NetworkPacket::Type::BROADCAST_REQUEST:
+			//
+		break;
+//		case NetworkPacket::Type::BROADCAST_RESPONSE:
+//			//
+//		break;
+		case NetworkPacket::Type::JOIN_REQUEST:
+			//
+		break;
+//		case NetworkPacket::Type::JOIN_RESPONSE:
+//			//
+//		break;
+		case NetworkPacket::Type::DISCONNECT:
+			//
+		break;
+		case NetworkPacket::Type::SYNCHRONIZE:
+			//
+		break;
+
+		//handle errors
+		case NetworkPacket::Type::NONE:
+			throw(std::runtime_error("NetworkPacket::Type::NONE encountered"));
+		break;
+		default:
+			throw(std::runtime_error("Unknown NetworkPacket::Type encountered"));
+		break;
+	}
 }

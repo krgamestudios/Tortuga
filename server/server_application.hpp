@@ -48,6 +48,7 @@ public:
 	void Quit();
 
 private:
+	void HandlePacket(NetworkPacket);
 	bool running = true;
 
 	sqlite3* database = nullptr;
