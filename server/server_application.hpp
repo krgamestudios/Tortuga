@@ -27,19 +27,14 @@
 
 #include "sqlite3/sqlite3.h"
 #include "SDL/SDL.h"
+#include "SDL/SDL_thread.h"
 
 #include <list>
-
-//hold the info about the clients
-struct ClientEntry {
-	static int indexCounter;
-	int index = indexCounter++;
-	IPaddress add = {0, 0};
-};
 
 //The main application class
 class ServerApplication {
 public:
+	//standard functions
 	ServerApplication();
 	~ServerApplication();
 
@@ -47,14 +42,27 @@ public:
 	void Loop();
 	void Quit();
 
+	friend int networkQueueThread(void*);
 private:
 	void HandlePacket(NetworkPacket);
-	bool running = true;
 
-	sqlite3* database = nullptr;
+	//members
+	bool running = false;
 
+	//networking
 	UDPNetworkUtility networkUtil;
 	NetworkQueue networkQueue;
+	SDL_Thread* networkQueueThread = nullptr;
+
+	//database
+	sqlite3* database = nullptr;
+
+	//clients
+	struct ClientEntry {
+		static int indexCounter;
+		int index = indexCounter++;
+		IPaddress add = {0, 0};
+	};
 	std::list<ClientEntry> clientEntries;
 };
 
