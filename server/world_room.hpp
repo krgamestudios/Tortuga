@@ -19,54 +19,31 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef SERVERAPPLICATION_HPP_
-#define SERVERAPPLICATION_HPP_
+#ifndef WORLDROOM_HPP_
+#define WORLDROOM_HPP_
 
 #include "config_utility.hpp"
 #include "network_queue.hpp"
 #include "udp_network_utility.hpp"
-#include "world_room.hpp"
 
 #include "sqlite3/sqlite3.h"
 #include "SDL/SDL.h"
 #include "SDL/SDL_thread.h"
 
-#include <list>
-
-//The main application class
-class ServerApplication {
+class WorldRoom {
 public:
-	//standard functions
-	ServerApplication();
-	~ServerApplication();
+	WorldRoom();
+	~WorldRoom();
 
-	void Init(int argc, char** argv);
+	void Init();
 	void Loop();
 	void Quit();
 
-	friend int networkQueueThread(void*);
+	NetworkQueue* GetQueue() { return &networkQueue; }
 private:
 	void HandlePacket(NetworkPacket);
 
-	//members
-	bool running = false;
-	ConfigUtility config;
-
-	//networking
-	UDPNetworkUtility networkUtil;
 	NetworkQueue networkQueue;
-	SDL_Thread* networkQueueThread = nullptr;
-
-	//database
-	sqlite3* database = nullptr;
-
-	//clients
-	struct ClientEntry {
-		static int indexCounter;
-		int index = indexCounter++;
-		IPaddress add = {0, 0};
-	};
-	std::list<ClientEntry> clientEntries;
 };
 
 #endif
