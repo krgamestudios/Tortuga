@@ -55,10 +55,20 @@ ClientApplication::~ClientApplication() {
 }
 
 void ClientApplication::Init() {
-	if (SDL_Init(SDL_INIT_VIDEO))
-		throw(std::runtime_error("Failed to initialize SDL"));
+	//load the prerequisites
+	config.Load("rsc\\config.cfg");
 
+	//initialize SDL
+	if (SDL_Init(SDL_INIT_VIDEO)) {
+		throw(std::runtime_error("Failed to initialize SDL"));
+	}
 	BaseScene::SetScreen(800, 600);
+
+	//initialize SDL_net
+	if (SDLNet_Init()) {
+		throw(std::runtime_error("Failed to initialize SDL_net"));
+	}
+	network.Open(0, sizeof(NetworkPacket));
 }
 
 void ClientApplication::Proc() {
@@ -100,6 +110,8 @@ void ClientApplication::Proc() {
 }
 
 void ClientApplication::Quit() {
+	network.Close();
+	SDLNet_Quit();
 	SDL_Quit();
 }
 
@@ -123,7 +135,7 @@ void ClientApplication::LoadScene(SceneList sceneIndex) {
 			activeScene = new OptionsMenu();
 		break;
 		case SceneList::LOBBYMENU:
-			activeScene = new LobbyMenu();
+			activeScene = new LobbyMenu(&config, &network);
 		break;
 		case SceneList::INWORLD:
 			activeScene = new InWorld();

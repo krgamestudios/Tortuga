@@ -49,7 +49,7 @@ private:
 	void HandlePacket(NetworkPacket);
 
 	//members
-	bool running = false;
+	bool running = true;
 	ConfigUtility config;
 
 	//networking

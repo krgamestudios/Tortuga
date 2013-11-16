@@ -78,11 +78,6 @@ void ServerApplication::Init(int argc, char** argv) {
 	}
 	cout << "Thread safety confirmed" << endl;
 
-	if (running) {
-		throw(std::runtime_error("Multiple calls to ServerApplication::Init() is not allowed"));
-	}
-	running = true;
-
 	//load config
 	config.Load("rsc\\config.cfg");
 
@@ -125,26 +120,20 @@ void ServerApplication::Init(int argc, char** argv) {
 		throw(runtime_error("Failed to create the networkQueueThread"));
 	}
 	cout << "initialized networkQueueThread" << endl;
-
-	//debugging
-	NetworkPacket packet;
-	packet.meta.type = NetworkPacket::Type::PING;
-	strcpy(packet.serverInfo.name, "foo");
-	networkUtil.Send(config["server.host"].c_str(), config.Int("server.port"), &packet, sizeof(NetworkPacket));
 }
 
 void ServerApplication::Loop() {
 	//debugging
-	SDL_Delay(1000);
-
-	while(networkQueue.Size() > 0) {
-		try {
-			HandlePacket(networkQueue.Pop());
-		}
-		catch(exception& e) {
-			cerr << "Network Error: " << e.what() << endl;
-		}
-	};
+	while(running) {
+		while(networkQueue.Size() > 0) {
+			try {
+				HandlePacket(networkQueue.Pop());
+			}
+			catch(exception& e) {
+				cerr << "Network Error: " << e.what() << endl;
+			}
+		};
+	}
 }
 
 void ServerApplication::Quit() {
@@ -165,14 +154,12 @@ void ServerApplication::HandlePacket(NetworkPacket packet) {
 	switch(packet.meta.type) {
 		case NetworkPacket::Type::PING:
 			//NOT USED
-			//debugging
-			cout << packet.serverInfo.name << endl;
 		break;
 		case NetworkPacket::Type::PONG:
 			//NOT USED
 		break;
 		case NetworkPacket::Type::BROADCAST_REQUEST:
-			//
+			cout << "Recieved a request" << endl;
 		break;
 		case NetworkPacket::Type::BROADCAST_RESPONSE:
 			//

@@ -25,6 +25,10 @@
 #include "scene_list.hpp"
 #include "base_scene.hpp"
 
+#include "config_utility.hpp"
+#include "network_packet.hpp"
+#include "udp_network_utility.hpp"
+
 class ClientApplication {
 private:
 	ClientApplication();
@@ -44,6 +48,9 @@ private:
 	void UnloadScene();
 
 	BaseScene* activeScene = nullptr;
+
+	ConfigUtility config;
+	UDPNetworkUtility network;
 };
 
 #endif

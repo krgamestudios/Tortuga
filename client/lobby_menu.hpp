@@ -28,10 +28,17 @@
 #include "raster_font.hpp"
 #include "button.hpp"
 
+#include "config_utility.hpp"
+#include "udp_network_utility.hpp"
+#include "network_packet.hpp"
+
+#include <vector>
+
 class LobbyMenu : public BaseScene {
 public:
 	//Public access members
-	LobbyMenu();
+	LobbyMenu() = delete;
+	LobbyMenu(ConfigUtility* const, UDPNetworkUtility* const);
 	~LobbyMenu();
 
 protected:
@@ -48,10 +55,23 @@ protected:
 	void KeyDown(SDL_KeyboardEvent const&);
 	void KeyUp(SDL_KeyboardEvent const&);
 
+	//handles
+	ConfigUtility& config;
+	UDPNetworkUtility& network;
+
 	//members
 	Image image;
 	RasterFont font;
-	Button backButton;
+	Button search;
+	Button join;
+	Button back;
+
+	struct ServerInfo {
+		std::string name;
+		IPaddress address;
+	};
+
+	std::vector<ServerInfo> serverInfo; 
 };
 
 #endif

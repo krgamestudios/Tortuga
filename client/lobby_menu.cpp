@@ -25,22 +25,35 @@
 //Public access members
 //-------------------------
 
-LobbyMenu::LobbyMenu() {
+LobbyMenu::LobbyMenu(ConfigUtility* const arg1, UDPNetworkUtility* const arg2):
+	config(*arg1),
+	network(*arg2)
+{
 	//setup the utility objects
 	image.LoadSurface("rsc\\graphics\\interface\\button_menu.bmp");
 	image.SetClipH(image.GetClipH()/3);
 	font.LoadSurface("rsc\\graphics\\fonts\\pk_white_8.bmp");
 
 	//pass the utility objects
-	backButton.SetImage(&image);
-	backButton.SetFont(&font);
+	search.SetImage(&image);
+	search.SetFont(&font);
+	join.SetImage(&image);
+	join.SetFont(&font);
+	back.SetImage(&image);
+	back.SetFont(&font);
 
 	//set the button positions
-	backButton.SetX(50);
-	backButton.SetY(50 + image.GetClipH() * 0);
+	search.SetX(50);
+	search.SetY(50 + image.GetClipH() * 0);
+	join.SetX(50);
+	join.SetY(50 + image.GetClipH() * 1);
+	back.SetX(50);
+	back.SetY(50 + image.GetClipH() * 2);
 
 	//set the button texts
-	backButton.SetText("Back");
+	search.SetText("Search");
+	join.SetText("Join");
+	back.SetText("Back");
 }
 
 LobbyMenu::~LobbyMenu() {
@@ -64,7 +77,9 @@ void LobbyMenu::FrameEnd() {
 }
 
 void LobbyMenu::Render(SDL_Surface* const screen) {
-	backButton.DrawTo(screen);
+	search.DrawTo(screen);
+	join.DrawTo(screen);
+	back.DrawTo(screen);
 }
 
 //-------------------------
@@ -72,15 +87,28 @@ void LobbyMenu::Render(SDL_Surface* const screen) {
 //-------------------------
 
 void LobbyMenu::MouseMotion(SDL_MouseMotionEvent const& motion) {
-	backButton.MouseMotion(motion);
+	search.MouseMotion(motion);
+	join.MouseMotion(motion);
+	back.MouseMotion(motion);
 }
 
 void LobbyMenu::MouseButtonDown(SDL_MouseButtonEvent const& button) {
-	backButton.MouseButtonDown(button);
+	search.MouseButtonDown(button);
+	join.MouseButtonDown(button);
+	back.MouseButtonDown(button);
 }
 
 void LobbyMenu::MouseButtonUp(SDL_MouseButtonEvent const& button) {
-	if (backButton.MouseButtonUp(button) == Button::State::HOVER) {
+	if (search.MouseButtonUp(button) == Button::State::HOVER) {
+		//ping the LAN
+		NetworkPacket packet;
+		packet.meta.type = NetworkPacket::Type::BROADCAST_REQUEST;
+		network.Send(config["server.host"].c_str(), config.Int("server.port"), reinterpret_cast<void*>(&packet), sizeof(NetworkPacket));
+	}
+	if (join.MouseButtonUp(button) == Button::State::HOVER) {
+		//join the selected server
+	}
+	if (back.MouseButtonUp(button) == Button::State::HOVER) {
 		SetNextScene(SceneList::MAINMENU);
 	}
 }
