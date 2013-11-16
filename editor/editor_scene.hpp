@@ -27,6 +27,7 @@
 #include "region_pager.hpp"
 #include "tile_sheet_manager.hpp"
 
+#include "config_utility.hpp"
 #include "image.hpp"
 #include "raster_font.hpp"
 #include "menu_bar.hpp"
@@ -36,7 +37,7 @@
 class EditorScene : public BaseScene {
 public:
 	//Public access members
-	EditorScene();
+	EditorScene(ConfigUtility* const);
 	~EditorScene();
 
 protected:
@@ -53,7 +54,8 @@ protected:
 	void KeyDown(SDL_KeyboardEvent const&);
 	void KeyUp(SDL_KeyboardEvent const&);
 
-	//members
+	//globals
+	ConfigUtility& config;
 
 	//debugging tools
 	void DrawToDebugInfo(std::string, int line);

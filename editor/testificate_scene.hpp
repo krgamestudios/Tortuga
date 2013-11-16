@@ -24,13 +24,14 @@
 
 #include "base_scene.hpp"
 
+#include "config_utility.hpp"
 #include "tile_Sheet_manager.hpp"
 #include "region_pager.hpp"
 
 class TestificateScene : public BaseScene {
 public:
 	//Public access members
-	TestificateScene();
+	TestificateScene(ConfigUtility* const);
 	~TestificateScene();
 
 protected:
@@ -46,6 +47,9 @@ protected:
 	void MouseButtonUp(SDL_MouseButtonEvent const&);
 	void KeyDown(SDL_KeyboardEvent const&);
 	void KeyUp(SDL_KeyboardEvent const&);
+
+	//globals
+	ConfigUtility& config;
 
 	//members
 	TileSheetManager sheetMgr;

@@ -30,9 +30,9 @@ LobbyMenu::LobbyMenu(ConfigUtility* const arg1, UDPNetworkUtility* const arg2):
 	network(*arg2)
 {
 	//setup the utility objects
-	image.LoadSurface("rsc\\graphics\\interface\\button_menu.bmp");
+	image.LoadSurface(config["dir.interface"] + "button_menu.bmp");
 	image.SetClipH(image.GetClipH()/3);
-	font.LoadSurface("rsc\\graphics\\fonts\\pk_white_8.bmp");
+	font.LoadSurface(config["dir.fonts"] + "pk_white_8.bmp");
 
 	//pass the utility objects
 	search.SetImage(&image);

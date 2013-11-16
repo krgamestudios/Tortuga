@@ -25,8 +25,10 @@
 //Public access members
 //-------------------------
 
-SplashScreen::SplashScreen() {
-	logo.LoadSurface("rsc\\graphics\\logos\\krstudios.bmp");
+SplashScreen::SplashScreen(ConfigUtility* const arg1):
+	config(*arg1)
+{
+	logo.LoadSurface(config["dir.logos"] + "krstudios.bmp");
 	startTick = std::chrono::steady_clock::now();
 }
 

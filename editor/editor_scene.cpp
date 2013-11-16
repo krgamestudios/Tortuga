@@ -33,14 +33,16 @@ using namespace std;
 //Public access members
 //-------------------------
 
-EditorScene::EditorScene() {
+EditorScene::EditorScene(ConfigUtility* const arg1):
+	config(*arg1)
+{
 	//create the debugging "window"
 	debugInfo.CreateSurface(256, 256);
 
 	//setup the utility objects
-	font.LoadSurface("rsc\\graphics\\fonts\\pk_white_8.bmp");
+	font.LoadSurface(config["dir.fonts"] + "pk_white_8.bmp");
 
-	buttonImage.LoadSurface("rsc\\graphics\\interface\\button_menu.bmp");
+	buttonImage.LoadSurface(config["dir.interface"] + "button_menu.bmp");
 	buttonImage.SetClipH(buttonImage.GetClipH()/3);
 
 	//setup the menu bar
@@ -66,7 +68,7 @@ EditorScene::EditorScene() {
 	pager.SetWidth(32*4);
 	pager.SetHeight(32*4);
 
-	sheetMgr.LoadSheet("rsc\\graphics\\tilesets\\terrain.bmp", 32, 32);
+	sheetMgr.LoadSheet(config["dir.tilesets"] + "terrain.bmp", 32, 32);
 }
 
 EditorScene::~EditorScene() {

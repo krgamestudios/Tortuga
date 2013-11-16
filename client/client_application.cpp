@@ -62,7 +62,7 @@ void ClientApplication::Init() {
 	if (SDL_Init(SDL_INIT_VIDEO)) {
 		throw(std::runtime_error("Failed to initialize SDL"));
 	}
-	BaseScene::SetScreen(800, 600);
+	BaseScene::SetScreen(config.Int("screen.w"), config.Int("screen.h"), 0, (config.Bool("screen.f")) ? SDL_HWSURFACE|SDL_DOUBLEBUF : SDL_HWSURFACE);
 
 	//initialize SDL_net
 	if (SDLNet_Init()) {
@@ -126,13 +126,13 @@ void ClientApplication::LoadScene(SceneList sceneIndex) {
 		//add scene creation calls here
 		case SceneList::FIRST:
 		case SceneList::SPLASHSCREEN:
-			activeScene = new SplashScreen();
+			activeScene = new SplashScreen(&config);
 		break;
 		case SceneList::MAINMENU:
-			activeScene = new MainMenu();
+			activeScene = new MainMenu(&config);
 		break;
 		case SceneList::OPTIONSMENU:
-			activeScene = new OptionsMenu();
+			activeScene = new OptionsMenu(&config);
 		break;
 		case SceneList::LOBBYMENU:
 			activeScene = new LobbyMenu(&config, &network);

@@ -24,6 +24,7 @@
 
 #include "scene_list.hpp"
 #include "base_scene.hpp"
+#include "config_utility.hpp"
 
 class EditorApplication {
 private:
@@ -42,6 +43,9 @@ private:
 	//Private access members
 	void LoadScene(SceneList sceneIndex);
 	void UnloadScene();
+
+	//globals
+	ConfigUtility config;
 
 	BaseScene* activeScene = nullptr;
 };

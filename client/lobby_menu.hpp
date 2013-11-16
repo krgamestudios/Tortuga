@@ -37,7 +37,6 @@
 class LobbyMenu : public BaseScene {
 public:
 	//Public access members
-	LobbyMenu() = delete;
 	LobbyMenu(ConfigUtility* const, UDPNetworkUtility* const);
 	~LobbyMenu();
 
@@ -55,7 +54,7 @@ protected:
 	void KeyDown(SDL_KeyboardEvent const&);
 	void KeyUp(SDL_KeyboardEvent const&);
 
-	//handles
+	//global
 	ConfigUtility& config;
 	UDPNetworkUtility& network;
 

@@ -24,6 +24,7 @@
 
 #include "base_scene.hpp"
 
+#include "config_utility.hpp"
 #include "image.hpp"
 
 #include <chrono>
@@ -31,13 +32,16 @@
 class SplashScreen : public BaseScene {
 public:
 	//Public access members
-	SplashScreen();
+	SplashScreen(ConfigUtility* const);
 	~SplashScreen();
 
 protected:
 	//Frame loop
 	void Update(double delta);
 	void Render(SDL_Surface* const);
+
+	//globals
+	ConfigUtility& config;
 
 	//members
 	std::chrono::steady_clock::time_point startTick;

@@ -95,7 +95,7 @@ void ServerApplication::Init(int argc, char** argv) {
 	cout << "initialized SDL_net" << endl;
 
 	//Init SQL
-	string dbname = (config["dbname"].size()) ? config["dbname"] : std::string(argv[0]) + ".db"; //fancy and unnecessary
+	string dbname = (config["server.dbname"].size()) ? config["server.dbname"] : std::string(argv[0]) + ".db"; //fancy and unnecessary
 	int ret = sqlite3_open_v2(dbname.c_str(), &database, SQLITE_OPEN_READWRITE|SQLITE_OPEN_CREATE|SQLITE_OPEN_FULLMUTEX, nullptr);
 	if (ret != SQLITE_OK || !database) {
 		throw(runtime_error("Failed to open the server database"));

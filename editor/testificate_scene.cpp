@@ -30,12 +30,14 @@ using std::endl;
 //Public access members
 //-------------------------
 
-TestificateScene::TestificateScene() {
-	sheetMgr.LoadSheet("rsc\\graphics\\tilesets\\grass.bmp", 32, 32);
-	sheetMgr.LoadSheet("rsc\\graphics\\tilesets\\longgrass.bmp", 32, 32);
-	sheetMgr.LoadSheet("rsc\\graphics\\tilesets\\sand.bmp", 32, 32);
-	sheetMgr.LoadSheet("rsc\\graphics\\tilesets\\dirt.bmp", 32, 32);
-	sheetMgr.LoadSheet("rsc\\graphics\\tilesets\\water.bmp", 32, 32);
+TestificateScene::TestificateScene(ConfigUtility* const arg1):
+	config(*arg1)
+{
+	sheetMgr.LoadSheet(config["dir.tilesets"] + "grass.bmp", 32, 32);
+	sheetMgr.LoadSheet(config["dir.tilesets"] + "longgrass.bmp", 32, 32);
+	sheetMgr.LoadSheet(config["dir.tilesets"] + "sand.bmp", 32, 32);
+	sheetMgr.LoadSheet(config["dir.tilesets"] + "dirt.bmp", 32, 32);
+	sheetMgr.LoadSheet(config["dir.tilesets"] + "water.bmp", 32, 32);
 
 	cout << "Range End: " << sheetMgr.GetRangeEnd() << endl;
 

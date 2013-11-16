@@ -51,10 +51,11 @@ EditorApplication::~EditorApplication() {
 }
 
 void EditorApplication::Init() {
+	config.Load("rsc\\config.cfg");
 	if (SDL_Init(SDL_INIT_VIDEO))
 		throw(std::runtime_error("Failed to initialize SDL"));
 
-	BaseScene::SetScreen(800, 600);
+	BaseScene::SetScreen(config.Int("screen.w"), config.Int("screen.h"));
 }
 
 void EditorApplication::Proc() {
@@ -110,11 +111,11 @@ void EditorApplication::LoadScene(SceneList sceneIndex) {
 		//add scene creation calls here
 		case SceneList::FIRST:
 		case SceneList::EDITORSCENE:
-			activeScene = new EditorScene();
+			activeScene = new EditorScene(&config);
 		break;
 
 		case SceneList::TESTIFICATESCENE:
-			activeScene = new TestificateScene();
+			activeScene = new TestificateScene(&config);
 		break;
 
 
