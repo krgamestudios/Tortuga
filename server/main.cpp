@@ -43,3 +43,44 @@ int main(int argc, char** argv) {
 	cout << "Clean exit" << endl;
 	return 0;
 }
+/*/
+#include "thread_safe_queue.hpp"
+
+#include "SDL/SDL.h"
+
+#include <iostream>
+
+using namespace std;
+
+struct Object {
+	int value = 0;
+};
+
+int func(void* arg) {
+	ThreadSafeQueue<Object>& queue = *reinterpret_cast<ThreadSafeQueue<Object>*>(arg);
+	while(1) {
+		Object o = queue.PopFront();
+		if (o.value != 0) {
+			cout << o.value;
+			SDL_Delay(500);
+			cout << endl;
+		}
+	}
+}
+
+int main(int, char**) {
+	ThreadSafeQueue<Object> queue;
+
+	SDL_Thread* thread1 = SDL_CreateThread(func, reinterpret_cast<void*>(&queue));
+	SDL_Thread* thread2 = SDL_CreateThread(func, reinterpret_cast<void*>(&queue));
+	SDL_Thread* thread3 = SDL_CreateThread(func, reinterpret_cast<void*>(&queue));
+
+	while(1) {
+		SDL_Delay(1000);
+		Object o;
+		o.value = 3;
+		queue.PushBack(o);
+	}
+	return 0;
+}
+//*/

@@ -22,13 +22,8 @@
 #ifndef WORLDROOM_HPP_
 #define WORLDROOM_HPP_
 
-#include "config_utility.hpp"
-#include "network_queue.hpp"
-#include "udp_network_utility.hpp"
-
-#include "sqlite3/sqlite3.h"
-#include "SDL/SDL.h"
-#include "SDL/SDL_thread.h"
+#include "network_packet.hpp"
+#include "thread_safe_queue.hpp"
 
 class WorldRoom {
 public:
@@ -39,11 +34,11 @@ public:
 	void Loop();
 	void Quit();
 
-	NetworkQueue* GetQueue() { return &networkQueue; }
+	ThreadSafeQueue<NetworkPacket>* GetNetworkQueue() { return &networkQueue; }
 private:
 	void HandlePacket(NetworkPacket);
 
-	NetworkQueue networkQueue;
+	ThreadSafeQueue<NetworkPacket> networkQueue;
 };
 
 #endif

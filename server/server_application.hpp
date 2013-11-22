@@ -23,15 +23,14 @@
 #define SERVERAPPLICATION_HPP_
 
 #include "config_utility.hpp"
-#include "network_queue.hpp"
+#include "network_packet.hpp"
+#include "thread_safe_queue.hpp"
 #include "udp_network_utility.hpp"
 #include "world_room.hpp"
 
 #include "sqlite3/sqlite3.h"
 #include "SDL/SDL.h"
 #include "SDL/SDL_thread.h"
-
-#include <list>
 
 //The main application class
 class ServerApplication {
@@ -54,19 +53,11 @@ private:
 
 	//networking
 	UDPNetworkUtility networkUtil;
-	NetworkQueue networkQueue;
+	ThreadSafeQueue<NetworkPacket> networkQueue;
 	SDL_Thread* networkQueueThread = nullptr;
 
 	//database
 	sqlite3* database = nullptr;
-
-	//clients
-	struct ClientEntry {
-		static int indexCounter;
-		int index = indexCounter++;
-		IPaddress add = {0, 0};
-	};
-	std::list<ClientEntry> clientEntries;
 };
 
 #endif

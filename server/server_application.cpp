@@ -34,7 +34,7 @@ using namespace std;
 //Declarations
 //-------------------------
 
-int ServerApplication::ClientEntry::indexCounter = 0;
+//int ServerApplication::ClientEntry::indexCounter = 0;
 
 //-------------------------
 //Define the network thread
@@ -50,7 +50,7 @@ int networkQueueThread(void* ptr) {
 			memcpy(&packet, app->networkUtil.GetInData(), sizeof(NetworkPacket));
 			//this is important: keep track of the source address
 			packet.meta.srcAddress = app->networkUtil.GetInPacket()->address;
-			app->networkQueue.Push(packet);
+			app->networkQueue.PushBack(packet);
 		}
 		SDL_Delay(10);
 	}
@@ -127,7 +127,7 @@ void ServerApplication::Loop() {
 	while(running) {
 		while(networkQueue.Size() > 0) {
 			try {
-				HandlePacket(networkQueue.Pop());
+				HandlePacket(networkQueue.PopFront());
 			}
 			catch(exception& e) {
 				cerr << "Network Error: " << e.what() << endl;
@@ -152,24 +152,24 @@ void ServerApplication::Quit() {
 
 void ServerApplication::HandlePacket(NetworkPacket packet) {
 	switch(packet.meta.type) {
-		case NetworkPacket::Type::PING:
-			//NOT USED
-		break;
-		case NetworkPacket::Type::PONG:
-			//NOT USED
-		break;
+//		case NetworkPacket::Type::PING:
+//			//NOT USED
+//		break;
+//		case NetworkPacket::Type::PONG:
+//			//NOT USED
+//		break;
 		case NetworkPacket::Type::BROADCAST_REQUEST:
 			cout << "Recieved a request" << endl;
 		break;
-		case NetworkPacket::Type::BROADCAST_RESPONSE:
-			//
-		break;
+//		case NetworkPacket::Type::BROADCAST_RESPONSE:
+//			//
+//		break;
 		case NetworkPacket::Type::JOIN_REQUEST:
 			//
 		break;
-		case NetworkPacket::Type::JOIN_RESPONSE:
-			//
-		break;
+//		case NetworkPacket::Type::JOIN_RESPONSE:
+//			//
+//		break;
 		case NetworkPacket::Type::DISCONNECT:
 			//
 		break;
