@@ -22,15 +22,19 @@
 #ifndef SERVERAPPLICATION_HPP_
 #define SERVERAPPLICATION_HPP_
 
-#include "config_utility.hpp"
+//networking
 #include "network_packet.hpp"
 #include "thread_safe_queue.hpp"
 #include "udp_network_utility.hpp"
-#include "world_room.hpp"
 
+//APIs
 #include "sqlite3/sqlite3.h"
 #include "SDL/SDL.h"
 #include "SDL/SDL_thread.h"
+
+//misc
+#include "config_utility.hpp"
+#include "world_room.hpp"
 
 //The main application class
 class ServerApplication {
@@ -47,10 +51,6 @@ public:
 private:
 	void HandlePacket(NetworkPacket);
 
-	//members
-	bool running = true;
-	ConfigUtility config;
-
 	//networking
 	UDPNetworkUtility networkUtil;
 	ThreadSafeQueue<NetworkPacket> networkQueue;
@@ -58,6 +58,11 @@ private:
 
 	//database
 	sqlite3* database = nullptr;
+
+	//misc
+	bool running = true;
+	ConfigUtility config;
+	WorldRoom worldRoom;
 };
 
 #endif

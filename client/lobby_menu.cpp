@@ -71,7 +71,13 @@ void LobbyMenu::FrameStart() {
 }
 
 void LobbyMenu::Update(double delta) {
-	//
+	//suck in all waiting packets
+	NetworkPacket packet;
+	while(network.Receive()) {
+		memcpy(&packet, network.GetInData(), sizeof(NetworkPacket));
+		packet.meta.srcAddress = network.GetInPacket()->address;
+		HandlePacket(packet);
+	}
 }
 
 void LobbyMenu::FrameEnd() {
@@ -82,6 +88,9 @@ void LobbyMenu::Render(SDL_Surface* const screen) {
 	search.DrawTo(screen);
 	join.DrawTo(screen);
 	back.DrawTo(screen);
+	for (int i = 0; i < serverInfo.size(); i++) {
+		font.DrawStringTo(serverInfo[i].name, screen, 300, 50 + i*font.GetCharH());
+	}
 }
 
 //-------------------------
@@ -106,10 +115,15 @@ void LobbyMenu::MouseButtonUp(SDL_MouseButtonEvent const& button) {
 		NetworkPacket packet;
 		packet.meta.type = NetworkPacket::Type::BROADCAST_REQUEST;
 		network.Send(config["server.host"].c_str(), config.Int("server.port"), reinterpret_cast<void*>(&packet), sizeof(NetworkPacket));
+
+		//reset the server list
+		serverInfo.clear();
 	}
+
 	if (join.MouseButtonUp(button) == Button::State::HOVER) {
 		//TODO: join the selected server
 	}
+
 	if (back.MouseButtonUp(button) == Button::State::HOVER) {
 		SetNextScene(SceneList::MAINMENU);
 	}
@@ -118,8 +132,8 @@ void LobbyMenu::MouseButtonUp(SDL_MouseButtonEvent const& button) {
 void LobbyMenu::KeyDown(SDL_KeyboardEvent const& key) {
 	switch(key.keysym.sym) {
 		case SDLK_ESCAPE:
-			QuitEvent();
-			break;
+			SetNextScene(SceneList::MAINMENU);
+		break;
 	}
 }
 
@@ -129,35 +143,18 @@ void LobbyMenu::KeyUp(SDL_KeyboardEvent const& key) {
 
 void LobbyMenu::HandlePacket(NetworkPacket packet) {
 		switch(packet.meta.type) {
-//		case NetworkPacket::Type::PING:
-//			//NOT USED
-//		break;
-//		case NetworkPacket::Type::PONG:
-//			//NOT USED
-//		break;
-		case NetworkPacket::Type::BROADCAST_REQUEST:
-			//
-		break;
-		case NetworkPacket::Type::BROADCAST_RESPONSE:
-			//
-		break;
-		case NetworkPacket::Type::JOIN_REQUEST:
-			//
+		case NetworkPacket::Type::BROADCAST_RESPONSE: {
+			ServerInfo server;
+			server.name = packet.serverInfo.name;
+			server.address = packet.meta.srcAddress;
+			serverInfo.push_back(server);
+		}
 		break;
 		case NetworkPacket::Type::JOIN_RESPONSE:
 			//
 		break;
-		case NetworkPacket::Type::DISCONNECT:
-			//
-		break;
-		case NetworkPacket::Type::SYNCHRONIZE:
-			//
-		break;
 
 		//handle errors
-		case NetworkPacket::Type::NONE:
-			throw(std::runtime_error("NetworkPacket::Type::NONE encountered"));
-		break;
 		default:
 			throw(std::runtime_error("Unknown NetworkPacket::Type encountered"));
 		break;

@@ -26,6 +26,10 @@
 
 using namespace std;
 
+//-------------------------
+//Define the WorldRoom's thread
+//-------------------------
+
 int worldRoomThread(void* ptr) {
 	WorldRoom* room = reinterpret_cast<WorldRoom*>(ptr);
 	try {
@@ -39,6 +43,10 @@ int worldRoomThread(void* ptr) {
 	}
 	return 0;
 }
+
+//-------------------------
+//Define the WorldRoom's methods
+//-------------------------
 
 WorldRoom::WorldRoom() {
 	//
@@ -62,35 +70,12 @@ void WorldRoom::Quit() {
 
 void WorldRoom::HandlePacket(NetworkPacket packet) {
 	switch(packet.meta.type) {
-		case NetworkPacket::Type::PING:
-			//NOT USED
-		break;
-		case NetworkPacket::Type::PONG:
-			//NOT USED
-		break;
-//		case NetworkPacket::Type::BROADCAST_REQUEST:
-//			//
-//		break;
-//		case NetworkPacket::Type::BROADCAST_RESPONSE:
-//			//
-//		break;
-//		case NetworkPacket::Type::JOIN_REQUEST:
-//			//
-//		break;
-//		case NetworkPacket::Type::JOIN_RESPONSE:
-//			//
-//		break;
-//		case NetworkPacket::Type::DISCONNECT:
-//			//
-//		break;
+
 //		case NetworkPacket::Type::SYNCHRONIZE:
 //			//
 //		break;
 
 		//handle errors
-		case NetworkPacket::Type::NONE:
-			throw(runtime_error("NetworkPacket::Type::NONE encountered"));
-		break;
 		default:
 			throw(runtime_error("Unknown NetworkPacket::Type encountered"));
 		break;

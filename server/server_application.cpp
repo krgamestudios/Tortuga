@@ -40,6 +40,9 @@ using namespace std;
 //Define the network thread
 //-------------------------
 
+/* This thread sucks in the packets sent to the server, and pushes them onto the queue.
+ * This function is declared as a friend of ServerApplication, because I'm lazy
+*/
 int networkQueueThread(void* ptr) {
 	ServerApplication* app = reinterpret_cast<ServerApplication*>(ptr);
 	NetworkPacket packet;
@@ -152,24 +155,15 @@ void ServerApplication::Quit() {
 
 void ServerApplication::HandlePacket(NetworkPacket packet) {
 	switch(packet.meta.type) {
-//		case NetworkPacket::Type::PING:
-//			//NOT USED
-//		break;
-//		case NetworkPacket::Type::PONG:
-//			//NOT USED
-//		break;
 		case NetworkPacket::Type::BROADCAST_REQUEST:
-			cout << "Recieved a request" << endl;
+			//send back the server's name
+			packet.meta.type = NetworkPacket::Type::BROADCAST_RESPONSE;
+			snprintf(packet.serverInfo.name, PACKET_STRING_SIZE, "%s", config["server.name"].c_str());
+			networkUtil.Send(&packet.meta.srcAddress, &packet, sizeof(NetworkPacket));
 		break;
-//		case NetworkPacket::Type::BROADCAST_RESPONSE:
-//			//
-//		break;
 		case NetworkPacket::Type::JOIN_REQUEST:
 			//
 		break;
-//		case NetworkPacket::Type::JOIN_RESPONSE:
-//			//
-//		break;
 		case NetworkPacket::Type::DISCONNECT:
 			//
 		break;
@@ -178,9 +172,6 @@ void ServerApplication::HandlePacket(NetworkPacket packet) {
 		break;
 
 		//handle errors
-		case NetworkPacket::Type::NONE:
-			throw(runtime_error("NetworkPacket::Type::NONE encountered"));
-		break;
 		default:
 			throw(runtime_error("Unknown NetworkPacket::Type encountered"));
 		break;

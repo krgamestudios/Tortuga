@@ -92,8 +92,8 @@ void OptionsMenu::MouseButtonUp(SDL_MouseButtonEvent const& button) {
 void OptionsMenu::KeyDown(SDL_KeyboardEvent const& key) {
 	switch(key.keysym.sym) {
 		case SDLK_ESCAPE:
-			QuitEvent();
-			break;
+			SetNextScene(SceneList::MAINMENU);
+		break;
 	}
 }
 
