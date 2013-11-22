@@ -21,6 +21,8 @@
 */
 #include "lobby_menu.hpp"
 
+#include <stdexcept>
+
 //-------------------------
 //Public access members
 //-------------------------
@@ -100,13 +102,13 @@ void LobbyMenu::MouseButtonDown(SDL_MouseButtonEvent const& button) {
 
 void LobbyMenu::MouseButtonUp(SDL_MouseButtonEvent const& button) {
 	if (search.MouseButtonUp(button) == Button::State::HOVER) {
-		//ping the LAN
+		//broadcast to the network, or a specific server
 		NetworkPacket packet;
 		packet.meta.type = NetworkPacket::Type::BROADCAST_REQUEST;
 		network.Send(config["server.host"].c_str(), config.Int("server.port"), reinterpret_cast<void*>(&packet), sizeof(NetworkPacket));
 	}
 	if (join.MouseButtonUp(button) == Button::State::HOVER) {
-		//join the selected server
+		//TODO: join the selected server
 	}
 	if (back.MouseButtonUp(button) == Button::State::HOVER) {
 		SetNextScene(SceneList::MAINMENU);
@@ -123,4 +125,41 @@ void LobbyMenu::KeyDown(SDL_KeyboardEvent const& key) {
 
 void LobbyMenu::KeyUp(SDL_KeyboardEvent const& key) {
 	//
+}
+
+void LobbyMenu::HandlePacket(NetworkPacket packet) {
+		switch(packet.meta.type) {
+//		case NetworkPacket::Type::PING:
+//			//NOT USED
+//		break;
+//		case NetworkPacket::Type::PONG:
+//			//NOT USED
+//		break;
+		case NetworkPacket::Type::BROADCAST_REQUEST:
+			//
+		break;
+		case NetworkPacket::Type::BROADCAST_RESPONSE:
+			//
+		break;
+		case NetworkPacket::Type::JOIN_REQUEST:
+			//
+		break;
+		case NetworkPacket::Type::JOIN_RESPONSE:
+			//
+		break;
+		case NetworkPacket::Type::DISCONNECT:
+			//
+		break;
+		case NetworkPacket::Type::SYNCHRONIZE:
+			//
+		break;
+
+		//handle errors
+		case NetworkPacket::Type::NONE:
+			throw(std::runtime_error("NetworkPacket::Type::NONE encountered"));
+		break;
+		default:
+			throw(std::runtime_error("Unknown NetworkPacket::Type encountered"));
+		break;
+	}
 }

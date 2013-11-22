@@ -54,6 +54,8 @@ protected:
 	void KeyDown(SDL_KeyboardEvent const&);
 	void KeyUp(SDL_KeyboardEvent const&);
 
+	void HandlePacket(NetworkPacket);
+
 	//global
 	ConfigUtility& config;
 	UDPNetworkUtility& network;
