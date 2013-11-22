@@ -136,6 +136,9 @@ void ServerApplication::Loop() {
 				cerr << "Network Error: " << e.what() << endl;
 			}
 		};
+
+		//give the computer a break
+		SDL_Delay(10);
 	}
 }
 
