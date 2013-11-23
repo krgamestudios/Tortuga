@@ -21,12 +21,39 @@
 */
 #include "in_world.hpp"
 
+#include "channels.hpp"
+
+#include <stdexcept>
+
 //-------------------------
 //Public access members
 //-------------------------
 
-InWorld::InWorld() {
-	//
+InWorld::InWorld(ConfigUtility* const arg1, UDPNetworkUtility* const arg2, int* const arg3):
+	config(*arg1),
+	network(*arg2),
+	clientIndex(*arg3)
+{
+	//setup the utility objects
+	image.LoadSurface(config["dir.interface"] + "button_menu.bmp");
+	image.SetClipH(image.GetClipH()/3);
+	font.LoadSurface(config["dir.fonts"] + "pk_white_8.bmp");
+
+	//pass the utility objects
+	disconnectButton.SetImage(&image);
+	disconnectButton.SetFont(&font);
+	shutDownButton.SetImage(&image);
+	shutDownButton.SetFont(&font);
+
+	//set the button positions
+	disconnectButton.SetX(50);
+	disconnectButton.SetY(50 + image.GetClipH() * 0);
+	shutDownButton.SetX(50);
+	shutDownButton.SetY(50 + image.GetClipH() * 1);
+
+	//set the button texts
+	disconnectButton.SetText("Disconnect");
+	shutDownButton.SetText("Shut Down");
 }
 
 InWorld::~InWorld() {
@@ -42,7 +69,13 @@ void InWorld::FrameStart() {
 }
 
 void InWorld::Update(double delta) {
-	//
+	//suck in all waiting packets
+	NetworkPacket packet;
+	while(network.Receive()) {
+		memcpy(&packet, network.GetInData(), sizeof(NetworkPacket));
+		packet.meta.srcAddress = network.GetInPacket()->address;
+		HandlePacket(packet);
+	}
 }
 
 void InWorld::FrameEnd() {
@@ -50,7 +83,8 @@ void InWorld::FrameEnd() {
 }
 
 void InWorld::Render(SDL_Surface* const screen) {
-	//
+	disconnectButton.DrawTo(screen);
+	shutDownButton.DrawTo(screen);
 }
 
 //-------------------------
@@ -58,20 +92,39 @@ void InWorld::Render(SDL_Surface* const screen) {
 //-------------------------
 
 void InWorld::MouseMotion(SDL_MouseMotionEvent const& motion) {
-	//
+	disconnectButton.MouseMotion(motion);
+	shutDownButton.MouseMotion(motion);
 }
 
 void InWorld::MouseButtonDown(SDL_MouseButtonEvent const& button) {
-	//
+	disconnectButton.MouseButtonDown(button);
+	shutDownButton.MouseButtonDown(button);
 }
 
 void InWorld::MouseButtonUp(SDL_MouseButtonEvent const& button) {
-	//
+	if (disconnectButton.MouseButtonUp(button) == Button::State::HOVER) {
+		//send a disconnect request
+		NetworkPacket packet;
+		packet.meta.type = NetworkPacket::Type::DISCONNECT;
+		packet.clientInfo.index = clientIndex;
+		network.Send(Channels::SERVER, &packet, sizeof(NetworkPacket));
+	}
+	if (shutDownButton.MouseButtonUp(button) == Button::State::HOVER) {
+		//send a shutdown request
+		NetworkPacket packet;
+		packet.meta.type = NetworkPacket::Type::SHUTDOWN;
+		network.Send(Channels::SERVER, &packet, sizeof(NetworkPacket));
+	}
 }
 
 void InWorld::KeyDown(SDL_KeyboardEvent const& key) {
 	switch(key.keysym.sym) {
 		case SDLK_ESCAPE:
+			//send a disconnect request
+			NetworkPacket packet;
+			packet.meta.type = NetworkPacket::Type::DISCONNECT;
+			packet.clientInfo.index = clientIndex;
+			network.Send(Channels::SERVER, &packet, sizeof(NetworkPacket));
 			QuitEvent();
 			break;
 	}
@@ -79,4 +132,22 @@ void InWorld::KeyDown(SDL_KeyboardEvent const& key) {
 
 void InWorld::KeyUp(SDL_KeyboardEvent const& key) {
 	//
+}
+
+void InWorld::HandlePacket(NetworkPacket packet) {
+		switch(packet.meta.type) {
+		case NetworkPacket::Type::DISCONNECT:
+			network.Unbind(Channels::SERVER);
+			clientIndex = -1;
+			SetNextScene(SceneList::MAINMENU);
+		break;
+		case NetworkPacket::Type::SYNCHRONIZE:
+			//TODO
+		break;
+
+		//handle errors
+		default:
+			throw(std::runtime_error("Unknown NetworkPacket::Type encountered"));
+		break;
+	}
 }

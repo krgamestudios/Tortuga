@@ -24,10 +24,17 @@
 
 #include "base_scene.hpp"
 
+#include "config_utility.hpp"
+#include "udp_network_utility.hpp"
+#include "network_packet.hpp"
+#include "image.hpp"
+#include "raster_font.hpp"
+#include "button.hpp"
+
 class InWorld : public BaseScene {
 public:
 	//Public access members
-	InWorld();
+	InWorld(ConfigUtility* const, UDPNetworkUtility* const, int* const);
 	~InWorld();
 
 protected:
@@ -43,6 +50,19 @@ protected:
 	void MouseButtonUp(SDL_MouseButtonEvent const&);
 	void KeyDown(SDL_KeyboardEvent const&);
 	void KeyUp(SDL_KeyboardEvent const&);
+
+	void HandlePacket(NetworkPacket);
+
+	//global
+	ConfigUtility& config;
+	UDPNetworkUtility& network;
+	int& clientIndex;
+
+	//members
+	Image image;
+	RasterFont font;
+	Button disconnectButton;
+	Button shutDownButton;
 };
 
 #endif

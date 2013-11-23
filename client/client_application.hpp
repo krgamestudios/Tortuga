@@ -51,6 +51,7 @@ private:
 
 	ConfigUtility config;
 	UDPNetworkUtility network;
+	int clientIndex = -1; //replace with a struct?
 };
 
 #endif

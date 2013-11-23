@@ -36,6 +36,15 @@
 #include "config_utility.hpp"
 #include "world_room.hpp"
 
+#include <map>
+
+//hold the client info
+struct ClientInformation {
+	static int counter;
+	int index;
+	IPaddress address;
+};
+
 //The main application class
 class ServerApplication {
 public:
@@ -63,6 +72,8 @@ private:
 	bool running = true;
 	ConfigUtility config;
 	WorldRoom worldRoom;
+
+	std::map<int, ClientInformation> clientInfo;
 };
 
 #endif

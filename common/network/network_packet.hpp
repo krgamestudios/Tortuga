@@ -52,6 +52,9 @@ union NetworkPacket {
 		//mass update
 		SYNCHRONIZE = 8,
 
+		//shut down the server
+		SHUTDOWN = 9,
+
 		//Player movement, etc.
 	};
 
@@ -68,6 +71,12 @@ union NetworkPacket {
 		char name[PACKET_STRING_SIZE];
 		//TODO: player count
 	}serverInfo;
+
+	//information about the client
+	struct ClientInformation {
+		Metadata meta;
+		int index;
+	}clientInfo;
 
 	//defaults
 	NetworkPacket() {

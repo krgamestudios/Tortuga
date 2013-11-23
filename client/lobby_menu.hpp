@@ -37,7 +37,7 @@
 class LobbyMenu : public BaseScene {
 public:
 	//Public access members
-	LobbyMenu(ConfigUtility* const, UDPNetworkUtility* const);
+	LobbyMenu(ConfigUtility* const, UDPNetworkUtility* const, int* const);
 	~LobbyMenu();
 
 protected:
@@ -59,6 +59,7 @@ protected:
 	//global
 	ConfigUtility& config;
 	UDPNetworkUtility& network;
+	int& clientIndex;
 
 	//members
 	Image image;
@@ -67,12 +68,18 @@ protected:
 	Button join;
 	Button back;
 
-	struct ServerInfo {
+	//server list
+	struct ServerInformation {
 		std::string name;
 		IPaddress address;
 	};
 
-	std::vector<ServerInfo> serverInfo; 
+	std::vector<ServerInformation> serverInfo;
+
+	//a terrible hack, forgive me
+	//I'd love a proper gui system for this
+	SDL_Rect listBox;
+	ServerInformation* selection = nullptr;
 };
 
 #endif

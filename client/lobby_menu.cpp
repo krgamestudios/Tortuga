@@ -21,15 +21,18 @@
 */
 #include "lobby_menu.hpp"
 
+#include "channels.hpp"
+
 #include <stdexcept>
 
 //-------------------------
 //Public access members
 //-------------------------
 
-LobbyMenu::LobbyMenu(ConfigUtility* const arg1, UDPNetworkUtility* const arg2):
+LobbyMenu::LobbyMenu(ConfigUtility* const arg1, UDPNetworkUtility* const arg2, int* const arg3):
 	config(*arg1),
-	network(*arg2)
+	network(*arg2),
+	clientIndex(*arg3)
 {
 	//setup the utility objects
 	image.LoadSurface(config["dir.interface"] + "button_menu.bmp");
@@ -56,6 +59,9 @@ LobbyMenu::LobbyMenu(ConfigUtility* const arg1, UDPNetworkUtility* const arg2):
 	search.SetText("Search");
 	join.SetText("Join");
 	back.SetText("Back");
+
+	//set the server list's position
+	listBox = {300, 50, 200, font.GetCharH()};
 }
 
 LobbyMenu::~LobbyMenu() {
@@ -89,7 +95,15 @@ void LobbyMenu::Render(SDL_Surface* const screen) {
 	join.DrawTo(screen);
 	back.DrawTo(screen);
 	for (int i = 0; i < serverInfo.size(); i++) {
-		font.DrawStringTo(serverInfo[i].name, screen, 300, 50 + i*font.GetCharH());
+		//draw the selected server's highlight
+		if (selection == &serverInfo[i]) {
+			SDL_Rect r = listBox;
+			r.y += i * listBox.h;
+			SDL_FillRect(screen, &r, SDL_MapRGB(screen->format, 255, 127, 39));
+		}
+
+		//draw the server name
+		font.DrawStringTo(serverInfo[i].name, screen, listBox.x, listBox.y + i*listBox.h);
 	}
 }
 
@@ -118,14 +132,32 @@ void LobbyMenu::MouseButtonUp(SDL_MouseButtonEvent const& button) {
 
 		//reset the server list
 		serverInfo.clear();
+		selection = nullptr;
 	}
 
-	if (join.MouseButtonUp(button) == Button::State::HOVER) {
-		//TODO: join the selected server
+	else if (join.MouseButtonUp(button) == Button::State::HOVER && selection != nullptr) {
+		//join the selected server
+		NetworkPacket packet;
+		packet.meta.type = NetworkPacket::Type::JOIN_REQUEST;
+		network.Send(&selection->address, &packet, sizeof(NetworkPacket));
+		selection = nullptr;
 	}
 
-	if (back.MouseButtonUp(button) == Button::State::HOVER) {
+	else if (back.MouseButtonUp(button) == Button::State::HOVER) {
 		SetNextScene(SceneList::MAINMENU);
+	}
+
+	else if (
+		//has the user selected a server on the list?
+		button.x > listBox.x &&
+		button.x < listBox.x + listBox.w &&
+		button.y > listBox.y &&
+		button.y < listBox.y + listBox.h * serverInfo.size()
+		) {
+		selection = &serverInfo[(button.y - listBox.y)/listBox.h];
+	}
+	else {
+		selection = nullptr;
 	}
 }
 
@@ -144,14 +176,16 @@ void LobbyMenu::KeyUp(SDL_KeyboardEvent const& key) {
 void LobbyMenu::HandlePacket(NetworkPacket packet) {
 		switch(packet.meta.type) {
 		case NetworkPacket::Type::BROADCAST_RESPONSE: {
-			ServerInfo server;
+			ServerInformation server;
 			server.name = packet.serverInfo.name;
 			server.address = packet.meta.srcAddress;
 			serverInfo.push_back(server);
 		}
 		break;
 		case NetworkPacket::Type::JOIN_RESPONSE:
-			//
+			clientIndex = packet.clientInfo.index;
+			network.Bind(&packet.meta.srcAddress, Channels::SERVER);
+			SetNextScene(SceneList::INWORLD);
 		break;
 
 		//handle errors

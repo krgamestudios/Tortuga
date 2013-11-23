@@ -34,7 +34,7 @@ using namespace std;
 //Declarations
 //-------------------------
 
-//int ServerApplication::ClientEntry::indexCounter = 0;
+int ClientInformation::counter = 0;
 
 //-------------------------
 //Define the network thread
@@ -164,14 +164,46 @@ void ServerApplication::HandlePacket(NetworkPacket packet) {
 			snprintf(packet.serverInfo.name, PACKET_STRING_SIZE, "%s", config["server.name"].c_str());
 			networkUtil.Send(&packet.meta.srcAddress, &packet, sizeof(NetworkPacket));
 		break;
-		case NetworkPacket::Type::JOIN_REQUEST:
-			//
+		case NetworkPacket::Type::JOIN_REQUEST: {
+			//TODO: prevent duplicate logins from the same address?
+
+			//create the new client, filling it with the correct info
+			ClientInformation newClient;
+			newClient.index = ClientInformation::counter++;
+			newClient.address = packet.meta.srcAddress;
+
+			//push the new client
+			clientInfo[newClient.index] = newClient;
+
+			//send the client their info
+			packet.meta.type = NetworkPacket::Type::JOIN_RESPONSE;
+			packet.clientInfo.index = newClient.index;
+			networkUtil.Send(&newClient.address, &packet, sizeof(NetworkPacket));
+
+			cout << "connect, total: " << clientInfo.size() << endl;
+		}
 		break;
 		case NetworkPacket::Type::DISCONNECT:
-			//
+			//disconnect the specified client
+			networkUtil.Send(&clientInfo[packet.clientInfo.index].address, &packet, sizeof(NetworkPacket));
+			clientInfo.erase(packet.clientInfo.index);
+
+			cout << "disconnect, total: " << clientInfo.size() << endl;
 		break;
 		case NetworkPacket::Type::SYNCHRONIZE:
-			//
+			//TODO
+		break;
+		case NetworkPacket::Type::SHUTDOWN:
+			//end the server
+			running = false;
+
+			//disconnect all clients
+			packet.meta.type = NetworkPacket::Type::DISCONNECT;
+			for (auto& it : clientInfo) {
+				networkUtil.Send(&it.second.address, &packet, sizeof(NetworkPacket));
+			}
+
+			cout << "shutting down" << endl;
 		break;
 
 		//handle errors
