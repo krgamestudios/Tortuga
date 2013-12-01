@@ -35,12 +35,10 @@
 
 //STL
 #include <map>
-#include <queue>
 
 //hold the client info
-struct ClientInformation {
+struct Client {
 	static int counter;
-	int index;
 	IPaddress address;
 };
 
@@ -60,7 +58,6 @@ private:
 
 	//networking
 	UDPNetworkUtility network;
-	std::queue<NetworkPacket> networkQueue;
 
 	//database
 	sqlite3* database = nullptr;
@@ -69,7 +66,7 @@ private:
 	bool running = true;
 	ConfigUtility config;
 
-	std::map<int, ClientInformation> clientInfo;
+	std::map<int, Client> clientMap;
 };
 
 #endif
