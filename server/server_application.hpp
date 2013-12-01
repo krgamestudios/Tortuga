@@ -24,19 +24,18 @@
 
 //networking
 #include "network_packet.hpp"
-#include "thread_safe_queue.hpp"
 #include "udp_network_utility.hpp"
 
 //APIs
 #include "sqlite3/sqlite3.h"
 #include "SDL/SDL.h"
-#include "SDL/SDL_thread.h"
 
 //misc
 #include "config_utility.hpp"
-#include "world_room.hpp"
 
+//STL
 #include <map>
+#include <queue>
 
 //hold the client info
 struct ClientInformation {
@@ -56,14 +55,12 @@ public:
 	void Loop();
 	void Quit();
 
-	friend int networkQueueThread(void*);
 private:
 	void HandlePacket(NetworkPacket);
 
 	//networking
-	UDPNetworkUtility networkUtil;
-	ThreadSafeQueue<NetworkPacket> networkQueue;
-	SDL_Thread* networkQueueThread = nullptr;
+	UDPNetworkUtility network;
+	std::queue<NetworkPacket> networkQueue;
 
 	//database
 	sqlite3* database = nullptr;
@@ -71,7 +68,6 @@ private:
 	//misc
 	bool running = true;
 	ConfigUtility config;
-	WorldRoom worldRoom;
 
 	std::map<int, ClientInformation> clientInfo;
 };

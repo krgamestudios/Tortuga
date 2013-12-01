@@ -37,30 +37,6 @@ using namespace std;
 int ClientInformation::counter = 0;
 
 //-------------------------
-//Define the network thread
-//-------------------------
-
-/* This thread sucks in the packets sent to the server, and pushes them onto the queue.
- * This function is declared as a friend of ServerApplication, because I'm lazy
-*/
-int networkQueueThread(void* ptr) {
-	ServerApplication* app = reinterpret_cast<ServerApplication*>(ptr);
-	NetworkPacket packet;
-
-	while(app->running) {
-		//suck in the waiting packets
-		while(app->networkUtil.Receive()) {
-			memcpy(&packet, app->networkUtil.GetInData(), sizeof(NetworkPacket));
-			//this is important: keep track of the source address
-			packet.meta.srcAddress = app->networkUtil.GetInPacket()->address;
-			app->networkQueue.PushBack(packet);
-		}
-		SDL_Delay(10);
-	}
-	return 0;
-}
-
-//-------------------------
 //Define the ServerApplication
 //-------------------------
 
@@ -75,12 +51,6 @@ ServerApplication::~ServerApplication() {
 void ServerApplication::Init(int argc, char** argv) {
 	//TODO: proper command line option parsing
 
-	//Check prerequisites
-	if (!sqlite3_threadsafe()) {
-		throw(runtime_error("Cannot run without thread safety"));
-	}
-	cout << "Thread safety confirmed" << endl;
-
 	//load config
 	config.Load("rsc\\config.cfg");
 
@@ -94,7 +64,7 @@ void ServerApplication::Init(int argc, char** argv) {
 	if (SDLNet_Init()) {
 		throw(runtime_error("Failed to init SDL_net"));
 	}
-	networkUtil.Open(config.Int("server.port"), sizeof(NetworkPacket));
+	network.Open(config.Int("server.port"), sizeof(NetworkPacket));
 	cout << "initialized SDL_net" << endl;
 
 	//Init SQL
@@ -116,26 +86,25 @@ void ServerApplication::Init(int argc, char** argv) {
 	getline(is, script, '\0');
 	is.close();
 	sqlite3_exec(database, script.c_str(), nullptr, nullptr, nullptr);
-
-	//setup the threads
-	networkQueueThread = SDL_CreateThread(&::networkQueueThread, this);
-	if (!networkQueueThread) {
-		throw(runtime_error("Failed to create the networkQueueThread"));
-	}
-	cout << "initialized networkQueueThread" << endl;
 }
 
 void ServerApplication::Loop() {
 	//debugging
+
+	NetworkPacket packet;
+
 	while(running) {
-		while(networkQueue.Size() > 0) {
-			try {
-				HandlePacket(networkQueue.PopFront());
+		//suck in the waiting packets & process them
+		try {
+			while(network.Receive()) {
+				memcpy(&packet, network.GetInData(), sizeof(NetworkPacket));
+				packet.meta.srcAddress = network.GetInPacket()->address;
+				HandlePacket(packet);
 			}
-			catch(exception& e) {
-				cerr << "Network Error: " << e.what() << endl;
-			}
-		};
+		}
+		catch(exception& e) {
+			cerr << "Network Error: " << e.what() << endl;
+		}
 
 		//give the computer a break
 		SDL_Delay(10);
@@ -143,12 +112,8 @@ void ServerApplication::Loop() {
 }
 
 void ServerApplication::Quit() {
-	//catch all signal
-	running = false;
-
 	//members
-	SDL_WaitThread(networkQueueThread, nullptr);
-	networkUtil.Close();
+	network.Close();
 
 	//APIs
 	sqlite3_close_v2(database);
@@ -162,7 +127,7 @@ void ServerApplication::HandlePacket(NetworkPacket packet) {
 			//send back the server's name
 			packet.meta.type = NetworkPacket::Type::BROADCAST_RESPONSE;
 			snprintf(packet.serverInfo.name, PACKET_STRING_SIZE, "%s", config["server.name"].c_str());
-			networkUtil.Send(&packet.meta.srcAddress, &packet, sizeof(NetworkPacket));
+			network.Send(&packet.meta.srcAddress, &packet, sizeof(NetworkPacket));
 		break;
 		case NetworkPacket::Type::JOIN_REQUEST: {
 			//TODO: prevent duplicate logins from the same address?
@@ -178,14 +143,14 @@ void ServerApplication::HandlePacket(NetworkPacket packet) {
 			//send the client their info
 			packet.meta.type = NetworkPacket::Type::JOIN_RESPONSE;
 			packet.clientInfo.index = newClient.index;
-			networkUtil.Send(&newClient.address, &packet, sizeof(NetworkPacket));
+			network.Send(&newClient.address, &packet, sizeof(NetworkPacket));
 
 			cout << "connect, total: " << clientInfo.size() << endl;
 		}
 		break;
 		case NetworkPacket::Type::DISCONNECT:
 			//disconnect the specified client
-			networkUtil.Send(&clientInfo[packet.clientInfo.index].address, &packet, sizeof(NetworkPacket));
+			network.Send(&clientInfo[packet.clientInfo.index].address, &packet, sizeof(NetworkPacket));
 			clientInfo.erase(packet.clientInfo.index);
 
 			cout << "disconnect, total: " << clientInfo.size() << endl;
@@ -200,7 +165,7 @@ void ServerApplication::HandlePacket(NetworkPacket packet) {
 			//disconnect all clients
 			packet.meta.type = NetworkPacket::Type::DISCONNECT;
 			for (auto& it : clientInfo) {
-				networkUtil.Send(&it.second.address, &packet, sizeof(NetworkPacket));
+				network.Send(&it.second.address, &packet, sizeof(NetworkPacket));
 			}
 
 			cout << "shutting down" << endl;
