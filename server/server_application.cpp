@@ -124,58 +124,19 @@ void ServerApplication::Quit() {
 void ServerApplication::HandlePacket(NetworkPacket packet) {
 	switch(packet.meta.type) {
 		case NetworkPacket::Type::BROADCAST_REQUEST:
-			//send back the server's name
-			packet.meta.type = NetworkPacket::Type::BROADCAST_RESPONSE;
-			snprintf(packet.serverInfo.name, PACKET_STRING_SIZE, "%s", config["server.name"].c_str());
-			network.Send(&packet.meta.srcAddress, &packet, sizeof(NetworkPacket));
+			HandleBroadcastRequest(packet);
 		break;
 
-		case NetworkPacket::Type::JOIN_REQUEST: {
-			//TODO: prevent duplicate logins from the same address?
-
-			//create the new client, filling it with the correct info
-			Client newClient;
-			newClient.address = packet.meta.srcAddress;
-
-			//push the new client
-			clientMap[Client::counter] = newClient;
-
-			//send the client their info
-			packet.meta.type = NetworkPacket::Type::JOIN_RESPONSE;
-			packet.clientInfo.index = Client::counter;
-			network.Send(&newClient.address, &packet, sizeof(NetworkPacket));
-
-			//finished this routine
-			Client::counter++;
-			cout << "connect, total: " << clientMap.size() << endl;
-		}
+		case NetworkPacket::Type::JOIN_REQUEST:
+			HandleJoinRequest(packet);
 		break;
 
 		case NetworkPacket::Type::DISCONNECT:
-			//disconnect the specified client
-			network.Send(&clientMap[packet.clientInfo.index].address, &packet, sizeof(NetworkPacket));
-			clientMap.erase(packet.clientInfo.index);
-
-			//remove players?
-
-			cout << "disconnect, total: " << clientMap.size() << endl;
-		break;
-
-		case NetworkPacket::Type::SYNCHRONIZE:
-			//TODO
+			HandleDisconnect(packet);
 		break;
 
 		case NetworkPacket::Type::SHUTDOWN:
-			//end the server
-			running = false;
-
-			//disconnect all clients
-			packet.meta.type = NetworkPacket::Type::DISCONNECT;
-			for (auto& it : clientMap) {
-				network.Send(&it.second.address, &packet, sizeof(NetworkPacket));
-			}
-
-			cout << "shutting down" << endl;
+			HandleShutdown(packet);
 		break;
 
 		//handle errors
@@ -183,4 +144,54 @@ void ServerApplication::HandlePacket(NetworkPacket packet) {
 			throw(runtime_error("Unknown NetworkPacket::Type encountered"));
 		break;
 	}
+}
+
+void ServerApplication::HandleBroadcastRequest(NetworkPacket packet) {
+	//send back the server's name
+	packet.meta.type = NetworkPacket::Type::BROADCAST_RESPONSE;
+	snprintf(packet.serverInfo.name, PACKET_STRING_SIZE, "%s", config["server.name"].c_str());
+	network.Send(&packet.meta.srcAddress, &packet, sizeof(NetworkPacket));
+}
+
+void ServerApplication::HandleJoinRequest(NetworkPacket packet) {
+	//TODO: prevent duplicate logins from the same address?
+
+	//create the new client, filling it with the correct info
+	Client newClient;
+	newClient.address = packet.meta.srcAddress;
+
+	//push the new client
+	clientMap[Client::counter] = newClient;
+
+	//send the client their info
+	packet.meta.type = NetworkPacket::Type::JOIN_RESPONSE;
+	packet.clientInfo.index = Client::counter;
+	network.Send(&newClient.address, &packet, sizeof(NetworkPacket));
+
+	//finished this routine
+	Client::counter++;
+	cout << "connect, total: " << clientMap.size() << endl;
+}
+
+void ServerApplication::HandleDisconnect(NetworkPacket packet) {
+	//disconnect the specified client
+	network.Send(&clientMap[packet.clientInfo.index].address, &packet, sizeof(NetworkPacket));
+	clientMap.erase(packet.clientInfo.index);
+
+	//TODO: remove players?
+
+	cout << "disconnect, total: " << clientMap.size() << endl;
+}
+
+void ServerApplication::HandleShutdown(NetworkPacket packet) {
+	//end the server
+	running = false;
+
+	//disconnect all clients
+	packet.meta.type = NetworkPacket::Type::DISCONNECT;
+	for (auto& it : clientMap) {
+		network.Send(&it.second.address, &packet, sizeof(NetworkPacket));
+	}
+
+	cout << "shutting down" << endl;
 }

@@ -56,6 +56,12 @@ public:
 private:
 	void HandlePacket(NetworkPacket);
 
+	//high cohesion utility functions
+	void HandleBroadcastRequest(NetworkPacket);
+	void HandleJoinRequest(NetworkPacket);
+	void HandleDisconnect(NetworkPacket);
+	void HandleShutdown(NetworkPacket);
+
 	//networking
 	UDPNetworkUtility network;
 
