@@ -48,6 +48,7 @@ protected:
 	void Render(SDL_Surface* const);
 
 	//Event handlers
+	void QuitEvent();
 	void MouseMotion(SDL_MouseMotionEvent const&);
 	void MouseButtonDown(SDL_MouseButtonEvent const&);
 	void MouseButtonUp(SDL_MouseButtonEvent const&);
@@ -61,6 +62,8 @@ protected:
 	void HandlePlayerUpdate(NetworkPacket);
 
 	void SendState();
+	void RequestDisconnect();
+	void RequestShutDown();
 
 	//global
 	ConfigUtility& config;

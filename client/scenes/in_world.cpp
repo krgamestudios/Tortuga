@@ -114,6 +114,11 @@ void InWorld::Render(SDL_Surface* const screen) {
 //Event handlers
 //-------------------------
 
+void InWorld::QuitEvent() {
+	//exit the game AND the server
+	RequestDisconnect();
+}
+
 void InWorld::MouseMotion(SDL_MouseMotionEvent const& motion) {
 	disconnectButton.MouseMotion(motion);
 	shutDownButton.MouseMotion(motion);
@@ -126,28 +131,16 @@ void InWorld::MouseButtonDown(SDL_MouseButtonEvent const& button) {
 
 void InWorld::MouseButtonUp(SDL_MouseButtonEvent const& button) {
 	if (disconnectButton.MouseButtonUp(button) == Button::State::HOVER) {
-		//send a disconnect request
-		NetworkPacket packet;
-		packet.meta.type = NetworkPacket::Type::DISCONNECT;
-		packet.clientInfo.index = clientIndex;
-		network.Send(Channels::SERVER, &packet, sizeof(NetworkPacket));
+		RequestDisconnect();
 	}
 	if (shutDownButton.MouseButtonUp(button) == Button::State::HOVER) {
-		//send a shutdown request
-		NetworkPacket packet;
-		packet.meta.type = NetworkPacket::Type::SHUTDOWN;
-		network.Send(Channels::SERVER, &packet, sizeof(NetworkPacket));
+		RequestShutDown();
 	}
 }
 
 void InWorld::KeyDown(SDL_KeyboardEvent const& key) {
 	switch(key.keysym.sym) {
 		case SDLK_ESCAPE: {
-			//send a disconnect request
-			NetworkPacket packet;
-			packet.meta.type = NetworkPacket::Type::DISCONNECT;
-			packet.clientInfo.index = clientIndex;
-			network.Send(Channels::SERVER, &packet, sizeof(NetworkPacket));
 			QuitEvent();
 		}
 		break;
@@ -284,8 +277,11 @@ void InWorld::HandlePlayerUpdate(NetworkPacket packet) {
 		return;
 	}
 
-	playerCharacters[packet.playerInfo.playerIndex].SetPosition(packet.playerInfo.position);
-	playerCharacters[packet.playerInfo.playerIndex].SetMotion(packet.playerInfo.motion);
+	//update only if the message didn't originate from here
+	if (packet.playerInfo.clientIndex != clientIndex) {
+		playerCharacters[packet.playerInfo.playerIndex].SetPosition(packet.playerInfo.position);
+		playerCharacters[packet.playerInfo.playerIndex].SetMotion(packet.playerInfo.motion);
+	}
 	playerCharacters[packet.playerInfo.playerIndex].ResetDirection();
 }
 
@@ -299,5 +295,21 @@ void InWorld::SendState() {
 	packet.playerInfo.position = localCharacter->GetPosition();
 	packet.playerInfo.motion = localCharacter->GetMotion();
 
+	network.Send(Channels::SERVER, &packet, sizeof(NetworkPacket));
+}
+
+void InWorld::RequestDisconnect() {
+	//send a disconnect request
+	NetworkPacket packet;
+	packet.meta.type = NetworkPacket::Type::DISCONNECT;
+	packet.clientInfo.index = clientIndex;
+	network.Send(Channels::SERVER, &packet, sizeof(NetworkPacket));
+}
+
+void InWorld::RequestShutDown() {
+	//send a shutdown request
+	NetworkPacket packet;
+	packet.meta.type = NetworkPacket::Type::SHUTDOWN;
+	packet.clientInfo.index = clientIndex;
 	network.Send(Channels::SERVER, &packet, sizeof(NetworkPacket));
 }
