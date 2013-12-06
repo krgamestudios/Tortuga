@@ -32,14 +32,26 @@
 
 //misc
 #include "config_utility.hpp"
+#include "vector2.hpp"
 
 //STL
 #include <map>
+#include <string>
 
 //hold the client info
 struct Client {
 	static int counter;
 	IPaddress address;
+};
+
+//hold the player info
+struct Player {
+	static int counter;
+	int clientIndex;
+	std::string handle;
+	std::string avatar;
+	Vector2 position;
+	Vector2 motion;
 };
 
 //The main application class
@@ -61,6 +73,9 @@ private:
 	void HandleJoinRequest(NetworkPacket);
 	void HandleDisconnect(NetworkPacket);
 	void HandleShutdown(NetworkPacket);
+	void HandlePlayerNew(NetworkPacket);
+	void HandlePlayerDelete(NetworkPacket);
+	void HandlePlayerUpdate(NetworkPacket);
 
 	//networking
 	UDPNetworkUtility network;
@@ -73,6 +88,7 @@ private:
 	ConfigUtility config;
 
 	std::map<int, Client> clientMap;
+	std::map<int, Player> playerMap;
 };
 
 #endif

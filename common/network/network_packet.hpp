@@ -24,6 +24,8 @@
 
 #include "SDL/SDL_net.h"
 
+#include "vector2.hpp"
+
 #define PACKET_STRING_SIZE 100
 
 #pragma pack(push, 0)
@@ -56,6 +58,9 @@ union NetworkPacket {
 		SHUTDOWN = 9,
 
 		//Player movement, etc.
+		PLAYER_NEW = 10,
+		PLAYER_DELETE = 11,
+		PLAYER_UPDATE = 12,
 	};
 
 	//metadata on the packet itself
@@ -77,6 +82,17 @@ union NetworkPacket {
 		Metadata meta;
 		int index;
 	}clientInfo;
+
+	//information about a player
+	struct PlayerInformation {
+		Metadata meta;
+		int clientIndex;
+		int playerIndex;
+		char handle[PACKET_STRING_SIZE];
+		char avatar[PACKET_STRING_SIZE];
+		Vector2 position;
+		Vector2 motion;
+	}playerInfo;
 
 	//defaults
 	NetworkPacket() {

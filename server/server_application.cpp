@@ -35,6 +35,7 @@ using namespace std;
 //-------------------------
 
 int Client::counter = 0;
+int Player::counter = 0;
 
 //-------------------------
 //Define the ServerApplication
@@ -139,6 +140,18 @@ void ServerApplication::HandlePacket(NetworkPacket packet) {
 			HandleShutdown(packet);
 		break;
 
+		case NetworkPacket::Type::PLAYER_NEW:
+			HandlePlayerNew(packet);
+		break;
+
+		case NetworkPacket::Type::PLAYER_DELETE:
+			HandlePlayerDelete(packet);
+		break;
+
+		case NetworkPacket::Type::PLAYER_UPDATE:
+			HandlePlayerUpdate(packet);
+		break;
+
 		//handle errors
 		default:
 			throw(runtime_error("Unknown NetworkPacket::Type encountered"));
@@ -194,4 +207,44 @@ void ServerApplication::HandleShutdown(NetworkPacket packet) {
 	}
 
 	cout << "shutting down" << endl;
+}
+
+void ServerApplication::HandlePlayerNew(NetworkPacket packet) {
+	//create the new player object
+	Player newPlayer;
+	newPlayer.clientIndex = packet.playerInfo.clientIndex;
+	newPlayer.handle = packet.playerInfo.handle;
+	newPlayer.avatar = packet.playerInfo.avatar;
+	newPlayer.position = {0,0};
+	newPlayer.motion = {0,0};
+
+	//push this player
+	playerMap[Player::counter] = newPlayer;
+
+	//send the client their info
+	packet.playerInfo.playerIndex = Player::counter;
+	packet.playerInfo.position = newPlayer.position;
+	packet.playerInfo.motion = newPlayer.motion;
+	network.Send(&clientMap[newPlayer.clientIndex].address, &packet, sizeof(NetworkPacket));
+
+	//finish this routine
+	Player::counter++;
+	cout << "new player, total: " << playerMap.size() << endl;
+}
+
+void ServerApplication::HandlePlayerDelete(NetworkPacket packet) {
+	if (playerMap.find(packet.playerInfo.playerIndex) == playerMap.end()) {
+		throw(std::runtime_error("Cannot delete a non-existant player"));
+	}
+
+	playerMap.erase(packet.playerInfo.playerIndex);
+}
+
+void ServerApplication::HandlePlayerUpdate(NetworkPacket packet) {
+	if (playerMap.find(packet.playerInfo.playerIndex) == playerMap.end()) {
+		throw(std::runtime_error("Cannot update a non-existant player"));
+	}
+
+	playerMap[packet.playerInfo.playerIndex].position = packet.playerInfo.position;
+	playerMap[packet.playerInfo.playerIndex].motion = packet.playerInfo.motion;
 }
