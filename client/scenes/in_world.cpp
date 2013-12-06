@@ -142,19 +142,78 @@ void InWorld::MouseButtonUp(SDL_MouseButtonEvent const& button) {
 
 void InWorld::KeyDown(SDL_KeyboardEvent const& key) {
 	switch(key.keysym.sym) {
-		case SDLK_ESCAPE:
+		case SDLK_ESCAPE: {
 			//send a disconnect request
 			NetworkPacket packet;
 			packet.meta.type = NetworkPacket::Type::DISCONNECT;
 			packet.clientInfo.index = clientIndex;
 			network.Send(Channels::SERVER, &packet, sizeof(NetworkPacket));
 			QuitEvent();
-			break;
+		}
+		break;
+
+		//player movement
+		case SDLK_LEFT:
+			if (localCharacter) {
+				localCharacter->AdjustDirection(PlayerCharacter::Direction::WEST);
+				SendState();
+			}
+		break;
+
+		case SDLK_RIGHT:
+			if (localCharacter) {
+				localCharacter->AdjustDirection(PlayerCharacter::Direction::EAST);
+				SendState();
+			}
+		break;
+
+		case SDLK_UP:
+			if (localCharacter) {
+				localCharacter->AdjustDirection(PlayerCharacter::Direction::NORTH);
+				SendState();
+			}
+		break;
+
+		case SDLK_DOWN:
+			if (localCharacter) {
+				localCharacter->AdjustDirection(PlayerCharacter::Direction::SOUTH);
+				SendState();
+			}
+		break;
 	}
 }
 
 void InWorld::KeyUp(SDL_KeyboardEvent const& key) {
-	//
+	switch(key.keysym.sym) {
+		//player movement
+		case SDLK_LEFT:
+			if (localCharacter) {
+				localCharacter->AdjustDirection(PlayerCharacter::Direction::EAST);
+				SendState();
+			}
+		break;
+
+		case SDLK_RIGHT:
+			if (localCharacter) {
+				localCharacter->AdjustDirection(PlayerCharacter::Direction::WEST);
+				SendState();
+			}
+		break;
+
+		case SDLK_UP:
+			if (localCharacter) {
+				localCharacter->AdjustDirection(PlayerCharacter::Direction::SOUTH);
+				SendState();
+			}
+		break;
+
+		case SDLK_DOWN:
+			if (localCharacter) {
+				localCharacter->AdjustDirection(PlayerCharacter::Direction::NORTH);
+				SendState();
+			}
+		break;
+	}
 }
 
 void InWorld::HandlePacket(NetworkPacket packet) {
@@ -198,7 +257,11 @@ void InWorld::HandlePlayerNew(NetworkPacket packet) {
 	playerCharacters[packet.playerInfo.playerIndex].SetMotion(packet.playerInfo.motion);
 	playerCharacters[packet.playerInfo.playerIndex].ResetDirection();
 
-	//TODO: catch this client's player object
+	//catch this client's player object
+	if (packet.playerInfo.clientIndex == clientIndex && !localCharacter) {
+		playerIndex = packet.playerInfo.playerIndex;
+		localCharacter = &playerCharacters[playerIndex];
+	}
 }
 
 void InWorld::HandlePlayerDelete(NetworkPacket packet) {
@@ -208,7 +271,11 @@ void InWorld::HandlePlayerDelete(NetworkPacket packet) {
 
 	playerCharacters.erase(packet.playerInfo.playerIndex);
 
-	//TODO: catch this client's player object
+	//catch this client's player object
+	if (packet.playerInfo.clientIndex == clientIndex) {
+		playerIndex = -1;
+		localCharacter = nullptr;
+	}
 }
 
 void InWorld::HandlePlayerUpdate(NetworkPacket packet) {
@@ -220,4 +287,17 @@ void InWorld::HandlePlayerUpdate(NetworkPacket packet) {
 	playerCharacters[packet.playerInfo.playerIndex].SetPosition(packet.playerInfo.position);
 	playerCharacters[packet.playerInfo.playerIndex].SetMotion(packet.playerInfo.motion);
 	playerCharacters[packet.playerInfo.playerIndex].ResetDirection();
+}
+
+void InWorld::SendState() {
+	NetworkPacket packet;
+	packet.meta.type = NetworkPacket::Type::PLAYER_UPDATE;
+	packet.playerInfo.clientIndex = clientIndex;
+	packet.playerInfo.playerIndex = playerIndex;
+//	snprintf(packet.playerInfo.handle, PACKET_STRING_SIZE, "%s", config["player.handle"].c_str());
+//	snprintf(packet.playerInfo.avatar, PACKET_STRING_SIZE, "%s", config["player.avatar"].c_str());
+	packet.playerInfo.position = localCharacter->GetPosition();
+	packet.playerInfo.motion = localCharacter->GetMotion();
+
+	network.Send(Channels::SERVER, &packet, sizeof(NetworkPacket));
 }

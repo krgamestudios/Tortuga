@@ -60,6 +60,8 @@ protected:
 	void HandlePlayerDelete(NetworkPacket);
 	void HandlePlayerUpdate(NetworkPacket);
 
+	void SendState();
+
 	//global
 	ConfigUtility& config;
 	UDPNetworkUtility& network;
@@ -71,6 +73,8 @@ protected:
 	Button disconnectButton;
 	Button shutDownButton;
 	std::map<int, PlayerCharacter> playerCharacters;
+	PlayerCharacter* localCharacter = nullptr;
+	int playerIndex = -1;
 };
 
 #endif
