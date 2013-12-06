@@ -1,9 +1,8 @@
 #config
-COMMONDIR+=../common ../common/map ../common/network
-COMMON+=../libcommon.a
-LIB+=$(COMMON) -lSDL_net -lwsock32 -liphlpapi -lmingw32 -lSDLmain -lSDL -llua -lsqlite3
-CXXFLAGS+=-std=c++11 -DDEBUG $(addprefix -I,$(COMMONDIR))
-CFLAGS+=-DDEBUG $(addprefix -I,$(COMMONDIR))
+INCLUDES+=. ../common ../common/map ../common/network
+LIBS+=../libcommon.a -lSDL_net -lwsock32 -liphlpapi -lmingw32 -lSDLmain -lSDL -llua -lsqlite3
+CXXFLAGS+=-std=c++11 -DDEBUG $(addprefix -I,$(INCLUDES))
+CFLAGS+=-DDEBUG $(addprefix -I,$(INCLUDES))
 
 #source
 CXXSRC=$(wildcard *.cpp)
@@ -20,7 +19,7 @@ OUT=$(addprefix $(OUTDIR)/,server)
 
 #targets
 all: $(OBJ) $(OUT)
-	$(CXX) $(CXXFLAGS) -o $(OUT) $(OBJ) $(LIB)
+	$(CXX) $(CXXFLAGS) -o $(OUT) $(OBJ) $(LIBS)
 
 $(OBJ): | $(OBJDIR)
 

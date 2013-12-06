@@ -1,9 +1,8 @@
 #config
-COMMONDIR+=../common ../common/graphics ../common/map ../common/network ../common/ui
-COMMON+=../libcommon.a
-LIB+=$(COMMON) -lmingw32 -lSDLmain -lSDL -llua -lsqlite3
-CXXFLAGS+=-std=c++11 -DDEBUG $(addprefix -I,$(COMMONDIR))
-CFLAGS+=-DDEBUG $(addprefix -I,$(COMMONDIR))
+INCLUDES+=../common ../common/graphics ../common/map ../common/ui
+LIBS+=../libcommon.a -lmingw32 -lSDLmain -lSDL
+CXXFLAGS+=-std=c++11 -DDEBUG $(addprefix -I,$(INCLUDES))
+CFLAGS+=-DDEBUG $(addprefix -I,$(INCLUDES))
 
 #source
 CXXSRC=$(wildcard *.cpp)
@@ -20,7 +19,7 @@ OUT=$(addprefix $(OUTDIR)/,editor)
 
 #targets
 all: $(OBJ) $(OUT)
-	$(CXX) $(CXXFLAGS) -o $(OUT) $(OBJ) $(LIB)
+	$(CXX) $(CXXFLAGS) -o $(OUT) $(OBJ) $(LIBS)
 
 $(OBJ): | $(OBJDIR)
 

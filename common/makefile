@@ -1,7 +1,8 @@
 #config
-LIB+=
-CXXFLAGS+=-std=c++11 -DDEBUG
-CFLAGS+=-DDEBUG
+INCLUDES+=.
+LIBS+=
+CXXFLAGS+=-std=c++11 -DDEBUG $(addprefix -I,$(INCLUDES))
+CFLAGS+=-DDEBUG $(addprefix -I,$(INCLUDES))
 
 #source
 CXXSRC=$(wildcard *.cpp)
