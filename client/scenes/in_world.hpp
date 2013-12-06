@@ -30,6 +30,9 @@
 #include "image.hpp"
 #include "raster_font.hpp"
 #include "button.hpp"
+#include "player_character.hpp"
+
+#include <map>
 
 class InWorld : public BaseScene {
 public:
@@ -52,6 +55,10 @@ protected:
 	void KeyUp(SDL_KeyboardEvent const&);
 
 	void HandlePacket(NetworkPacket);
+	void HandleDisconnect(NetworkPacket);
+	void HandlePlayerNew(NetworkPacket);
+	void HandlePlayerDelete(NetworkPacket);
+	void HandlePlayerUpdate(NetworkPacket);
 
 	//global
 	ConfigUtility& config;
@@ -63,6 +70,7 @@ protected:
 	RasterFont font;
 	Button disconnectButton;
 	Button shutDownButton;
+	std::map<int, PlayerCharacter> playerCharacters;
 };
 
 #endif

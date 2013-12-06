@@ -191,7 +191,7 @@ void ServerApplication::HandleDisconnect(NetworkPacket packet) {
 	network.Send(&clientMap[packet.clientInfo.index].address, &packet, sizeof(NetworkPacket));
 	clientMap.erase(packet.clientInfo.index);
 
-	//TODO: remove players?
+	//TODO: remove players
 
 	cout << "disconnect, total: " << clientMap.size() << endl;
 }
@@ -202,9 +202,7 @@ void ServerApplication::HandleShutdown(NetworkPacket packet) {
 
 	//disconnect all clients
 	packet.meta.type = NetworkPacket::Type::DISCONNECT;
-	for (auto& it : clientMap) {
-		network.Send(&it.second.address, &packet, sizeof(NetworkPacket));
-	}
+	PumpPacket(packet);
 
 	cout << "shutting down" << endl;
 }
@@ -225,7 +223,9 @@ void ServerApplication::HandlePlayerNew(NetworkPacket packet) {
 	packet.playerInfo.playerIndex = Player::counter;
 	packet.playerInfo.position = newPlayer.position;
 	packet.playerInfo.motion = newPlayer.motion;
-	network.Send(&clientMap[newPlayer.clientIndex].address, &packet, sizeof(NetworkPacket));
+
+	//actually send to everyone
+	PumpPacket(packet);
 
 	//finish this routine
 	Player::counter++;
@@ -238,6 +238,8 @@ void ServerApplication::HandlePlayerDelete(NetworkPacket packet) {
 	}
 
 	playerMap.erase(packet.playerInfo.playerIndex);
+
+	PumpPacket(packet);
 }
 
 void ServerApplication::HandlePlayerUpdate(NetworkPacket packet) {
@@ -245,6 +247,16 @@ void ServerApplication::HandlePlayerUpdate(NetworkPacket packet) {
 		throw(std::runtime_error("Cannot update a non-existant player"));
 	}
 
+	//server is the slave to the clients, but only for now
 	playerMap[packet.playerInfo.playerIndex].position = packet.playerInfo.position;
 	playerMap[packet.playerInfo.playerIndex].motion = packet.playerInfo.motion;
+
+	PumpPacket(packet);
+}
+
+void ServerApplication::PumpPacket(NetworkPacket packet) {
+	//send this packet to all clients
+	for (auto& it : clientMap) {
+		network.Send(&it.second.address, &packet, sizeof(NetworkPacket));
+	}
 }

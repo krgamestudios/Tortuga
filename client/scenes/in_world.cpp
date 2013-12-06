@@ -54,6 +54,18 @@ InWorld::InWorld(ConfigUtility* const arg1, UDPNetworkUtility* const arg2, int* 
 	//set the button texts
 	disconnectButton.SetText("Disconnect");
 	shutDownButton.SetText("Shut Down");
+
+	//create the server-side player object
+	NetworkPacket packet;
+	packet.meta.type = NetworkPacket::Type::PLAYER_NEW;
+	packet.playerInfo.clientIndex = clientIndex;
+	snprintf(packet.playerInfo.handle, PACKET_STRING_SIZE, "%s", config["player.handle"].c_str());
+	snprintf(packet.playerInfo.avatar, PACKET_STRING_SIZE, "%s", config["player.avatar"].c_str());
+	packet.playerInfo.position = {0,0};
+	packet.playerInfo.motion = {0,0};
+
+	//send it
+	network.Send(Channels::SERVER, &packet, sizeof(NetworkPacket));
 }
 
 InWorld::~InWorld() {
@@ -76,6 +88,10 @@ void InWorld::Update(double delta) {
 		packet.meta.srcAddress = network.GetInPacket()->address;
 		HandlePacket(packet);
 	}
+
+	for (auto& it : playerCharacters) {
+		it.second.Update(delta);
+	}
 }
 
 void InWorld::FrameEnd() {
@@ -83,6 +99,9 @@ void InWorld::FrameEnd() {
 }
 
 void InWorld::Render(SDL_Surface* const screen) {
+	for (auto& it : playerCharacters) {
+		it.second.DrawTo(screen);
+	}
 	disconnectButton.DrawTo(screen);
 	shutDownButton.DrawTo(screen);
 }
@@ -135,14 +154,21 @@ void InWorld::KeyUp(SDL_KeyboardEvent const& key) {
 }
 
 void InWorld::HandlePacket(NetworkPacket packet) {
-		switch(packet.meta.type) {
+	switch(packet.meta.type) {
 		case NetworkPacket::Type::DISCONNECT:
-			network.Unbind(Channels::SERVER);
-			clientIndex = -1;
-			SetNextScene(SceneList::MAINMENU);
+			HandleDisconnect(packet);
 		break;
-		case NetworkPacket::Type::SYNCHRONIZE:
-			//TODO
+
+		case NetworkPacket::Type::PLAYER_NEW:
+			HandlePlayerNew(packet);
+		break;
+
+		case NetworkPacket::Type::PLAYER_DELETE:
+			HandlePlayerDelete(packet);
+		break;
+
+		case NetworkPacket::Type::PLAYER_UPDATE:
+			HandlePlayerUpdate(packet);
 		break;
 
 		//handle errors
@@ -150,4 +176,44 @@ void InWorld::HandlePacket(NetworkPacket packet) {
 			throw(std::runtime_error("Unknown NetworkPacket::Type encountered"));
 		break;
 	}
+}
+
+void InWorld::HandleDisconnect(NetworkPacket packet) {
+	network.Unbind(Channels::SERVER);
+	clientIndex = -1;
+	SetNextScene(SceneList::MAINMENU);
+}
+
+void InWorld::HandlePlayerNew(NetworkPacket packet) {
+	if (playerCharacters.find(packet.playerInfo.playerIndex) != playerCharacters.end()) {
+		throw(std::runtime_error("Cannot create duplicate players"));
+	}
+
+	playerCharacters[packet.playerInfo.playerIndex].GetSprite()->LoadSurface(config["dir.sprites"] + packet.playerInfo.avatar, 4, 4);
+	playerCharacters[packet.playerInfo.playerIndex].SetPosition(packet.playerInfo.position);
+	playerCharacters[packet.playerInfo.playerIndex].SetMotion(packet.playerInfo.motion);
+	playerCharacters[packet.playerInfo.playerIndex].ResetDirection();
+
+	//TODO: catch this client's player object
+}
+
+void InWorld::HandlePlayerDelete(NetworkPacket packet) {
+	if (playerCharacters.find(packet.playerInfo.playerIndex) == playerCharacters.end()) {
+		throw(std::runtime_error("Cannot delete non-existant players"));
+	}
+
+	playerCharacters.erase(packet.playerInfo.playerIndex);
+
+	//TODO: catch this client's player object
+}
+
+void InWorld::HandlePlayerUpdate(NetworkPacket packet) {
+	if (playerCharacters.find(packet.playerInfo.playerIndex) == playerCharacters.end()) {
+		//TODO: reroute to HandlePlayerNew()
+		throw(std::runtime_error("Cannot update non-existant players"));
+	}
+
+	playerCharacters[packet.playerInfo.playerIndex].SetPosition(packet.playerInfo.position);
+	playerCharacters[packet.playerInfo.playerIndex].SetMotion(packet.playerInfo.motion);
+	playerCharacters[packet.playerInfo.playerIndex].ResetDirection();
 }

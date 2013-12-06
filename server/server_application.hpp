@@ -77,6 +77,8 @@ private:
 	void HandlePlayerDelete(NetworkPacket);
 	void HandlePlayerUpdate(NetworkPacket);
 
+	void PumpPacket(NetworkPacket);
+
 	//networking
 	UDPNetworkUtility network;
 
