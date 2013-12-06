@@ -23,6 +23,8 @@
 
 #include "network_packet.hpp"
 
+#include "utility.hpp"
+
 #include <stdexcept>
 #include <iostream>
 #include <string>
@@ -136,6 +138,10 @@ void ServerApplication::HandlePacket(NetworkPacket packet) {
 			HandleDisconnect(packet);
 		break;
 
+		case NetworkPacket::Type::SYNCHRONIZE:
+			HandleSynchronize(packet);
+		break;
+
 		case NetworkPacket::Type::SHUTDOWN:
 			HandleShutdown(packet);
 		break;
@@ -191,9 +197,40 @@ void ServerApplication::HandleDisconnect(NetworkPacket packet) {
 	network.Send(&clientMap[packet.clientInfo.index].address, &packet, sizeof(NetworkPacket));
 	clientMap.erase(packet.clientInfo.index);
 
-	//TODO: remove players
+	//delete players
+	erase_if(playerMap, [&](pair<int, Player> it) -> bool {
+		if (it.second.clientIndex == packet.clientInfo.index) {
+			NetworkPacket delPacket;
+
+			//data to delete one specific player
+			delPacket.meta.type = NetworkPacket::Type::PLAYER_DELETE;
+			delPacket.playerInfo.playerIndex = it.first;
+
+			//send to all
+			PumpPacket(delPacket);
+
+			return true;
+		}
+		return false;
+	});
 
 	cout << "disconnect, total: " << clientMap.size() << endl;
+}
+
+void ServerApplication::HandleSynchronize(NetworkPacket packet) {
+	//send all the server's data to this client
+	NetworkPacket newPacket;
+
+	//players
+	newPacket.meta.type = NetworkPacket::Type::PLAYER_UPDATE;
+	for (auto& it : playerMap) {
+		newPacket.playerInfo.playerIndex = it.first;
+		snprintf(newPacket.playerInfo.handle, PACKET_STRING_SIZE, "%s", it.second.handle.c_str());
+		snprintf(newPacket.playerInfo.avatar, PACKET_STRING_SIZE, "%s", it.second.avatar.c_str());
+		newPacket.playerInfo.position = it.second.position;
+		newPacket.playerInfo.motion = it.second.motion;
+		network.Send(&clientMap[packet.clientInfo.index].address, &newPacket, sizeof(NetworkPacket));
+	}
 }
 
 void ServerApplication::HandleShutdown(NetworkPacket packet) {
@@ -213,7 +250,7 @@ void ServerApplication::HandlePlayerNew(NetworkPacket packet) {
 	newPlayer.clientIndex = packet.playerInfo.clientIndex;
 	newPlayer.handle = packet.playerInfo.handle;
 	newPlayer.avatar = packet.playerInfo.avatar;
-	newPlayer.position = {0,0};
+	newPlayer.position = {(rand() % config.Int("screen.w")),(rand() % config.Int("screen.h"))};
 	newPlayer.motion = {0,0};
 
 	//push this player
@@ -229,7 +266,6 @@ void ServerApplication::HandlePlayerNew(NetworkPacket packet) {
 
 	//finish this routine
 	Player::counter++;
-	cout << "new player, total: " << playerMap.size() << endl;
 }
 
 void ServerApplication::HandlePlayerDelete(NetworkPacket packet) {
@@ -237,9 +273,22 @@ void ServerApplication::HandlePlayerDelete(NetworkPacket packet) {
 		throw(std::runtime_error("Cannot delete a non-existant player"));
 	}
 
-	playerMap.erase(packet.playerInfo.playerIndex);
+	//delete players
+	erase_if(playerMap, [&](pair<int, Player> it) -> bool {
+		if (it.first == packet.playerInfo.playerIndex) {
+			NetworkPacket delPacket;
 
-	PumpPacket(packet);
+			//data to delete one specific player
+			delPacket.meta.type = NetworkPacket::Type::PLAYER_DELETE;
+			delPacket.playerInfo.playerIndex = it.first;
+
+			//send to all
+			PumpPacket(delPacket);
+
+			return true;
+		}
+		return false;
+	});
 }
 
 void ServerApplication::HandlePlayerUpdate(NetworkPacket packet) {

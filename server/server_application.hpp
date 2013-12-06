@@ -72,6 +72,7 @@ private:
 	void HandleBroadcastRequest(NetworkPacket);
 	void HandleJoinRequest(NetworkPacket);
 	void HandleDisconnect(NetworkPacket);
+	void HandleSynchronize(NetworkPacket);
 	void HandleShutdown(NetworkPacket);
 	void HandlePlayerNew(NetworkPacket);
 	void HandlePlayerDelete(NetworkPacket);

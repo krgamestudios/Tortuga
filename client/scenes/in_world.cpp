@@ -66,6 +66,10 @@ InWorld::InWorld(ConfigUtility* const arg1, UDPNetworkUtility* const arg2, int* 
 
 	//send it
 	network.Send(Channels::SERVER, &packet, sizeof(NetworkPacket));
+
+	//request a sync
+	packet.meta.type = NetworkPacket::Type::SYNCHRONIZE;
+	network.Send(Channels::SERVER, &packet, sizeof(NetworkPacket));
 }
 
 InWorld::~InWorld() {
@@ -209,8 +213,8 @@ void InWorld::HandlePlayerDelete(NetworkPacket packet) {
 
 void InWorld::HandlePlayerUpdate(NetworkPacket packet) {
 	if (playerCharacters.find(packet.playerInfo.playerIndex) == playerCharacters.end()) {
-		//TODO: reroute to HandlePlayerNew()
-		throw(std::runtime_error("Cannot update non-existant players"));
+		HandlePlayerNew(packet);
+		return;
 	}
 
 	playerCharacters[packet.playerInfo.playerIndex].SetPosition(packet.playerInfo.position);
