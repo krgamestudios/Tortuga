@@ -1,5 +1,5 @@
 #config
-COMMONDIR+=..
+COMMONDIR+=.. ../graphics
 COMMON+=../../libcommon.a
 LIB+=
 CXXFLAGS+=-std=c++11 -DDEBUG $(addprefix -I,$(COMMONDIR))
