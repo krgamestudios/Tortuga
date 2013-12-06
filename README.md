@@ -1,6 +1,8 @@
 _This project is currently in it's early prototype stage. You can see other versions in various branches or tagged as prototype-X._
 
-Tortuga is an open source 2D multiplayer role playing game featuring permadeath (deletion of a character upon death). The emphasis of this game is on multiplayer cooperation, competition, and customization. The game runs on highly customizable server software that can support up to 150 simultaneous players or more.
+You can find the [latest nightly build here](https://dl.dropboxusercontent.com/u/46669050/Tortuga.rar).
+
+Tortuga is an open source 2D multiplayer role playing game featuring permadeath (deletion of a character upon death). The emphasis of this game is on multiplayer cooperation, competition, and customization. The game runs on customizable server software that can support up to 150 simultaneous players or more.
 
 This game is inspired by classic 2D RPGs, as well as more modern sandbox MMOs. This project is currently independently created and funded, with the goal of creating a game that will engage user's imagination and inspire a large modding community.
 
