@@ -34,25 +34,14 @@
 #include "config_utility.hpp"
 #include "vector2.hpp"
 
+#include "client.hpp"
+#include "player.hpp"
+
+#include "world_room.hpp"
+
 //STL
 #include <map>
 #include <string>
-
-//hold the client info
-struct Client {
-	static int counter;
-	IPaddress address;
-};
-
-//hold the player info
-struct Player {
-	static int counter;
-	int clientIndex;
-	std::string handle;
-	std::string avatar;
-	Vector2 position;
-	Vector2 motion;
-};
 
 //The main application class
 class ServerApplication {
@@ -90,8 +79,14 @@ private:
 	bool running = true;
 	ConfigUtility config;
 
-	std::map<int, Client> clientMap;
-	std::map<int, Player> playerMap;
+	//global lists
+	ClientMap clientMap;
+	PlayerMap playerMap;
+	WorldRoomMap worldRoomMap;
+
+	int clientCounter = 0;
+	int playerCounter = 0;
+	int worldRoomCounter = 0;
 };
 
 #endif

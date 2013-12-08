@@ -33,13 +33,6 @@
 using namespace std;
 
 //-------------------------
-//Declarations
-//-------------------------
-
-int Client::counter = 0;
-int Player::counter = 0;
-
-//-------------------------
 //Define the ServerApplication
 //-------------------------
 
@@ -53,6 +46,12 @@ ServerApplication::~ServerApplication() {
 
 void ServerApplication::Init(int argc, char** argv) {
 	//TODO: proper command line option parsing
+
+	//Check prerequisites
+	if (!sqlite3_threadsafe()) {
+		throw(runtime_error("Cannot run without thread safety"));
+	}
+	cout << "Thread safety confirmed" << endl;
 
 	//load config
 	config.Load("rsc\\config.cfg");
@@ -180,15 +179,15 @@ void ServerApplication::HandleJoinRequest(NetworkPacket packet) {
 	newClient.address = packet.meta.srcAddress;
 
 	//push the new client
-	clientMap[Client::counter] = newClient;
+	clientMap[clientCounter] = newClient;
 
 	//send the client their info
 	packet.meta.type = NetworkPacket::Type::JOIN_RESPONSE;
-	packet.clientInfo.index = Client::counter;
+	packet.clientInfo.index = clientCounter;
 	network.Send(&newClient.address, &packet, sizeof(NetworkPacket));
 
 	//finished this routine
-	Client::counter++;
+	clientCounter++;
 	cout << "connect, total: " << clientMap.size() << endl;
 }
 
@@ -227,8 +226,8 @@ void ServerApplication::HandleSynchronize(NetworkPacket packet) {
 		newPacket.playerInfo.playerIndex = it.first;
 		snprintf(newPacket.playerInfo.handle, PACKET_STRING_SIZE, "%s", it.second.handle.c_str());
 		snprintf(newPacket.playerInfo.avatar, PACKET_STRING_SIZE, "%s", it.second.avatar.c_str());
-		newPacket.playerInfo.position = it.second.position;
-		newPacket.playerInfo.motion = it.second.motion;
+		newPacket.playerInfo.position = {0,0};
+		newPacket.playerInfo.motion = {0,0};
 		network.Send(&clientMap[packet.clientInfo.index].address, &newPacket, sizeof(NetworkPacket));
 	}
 }
@@ -250,22 +249,20 @@ void ServerApplication::HandlePlayerNew(NetworkPacket packet) {
 	newPlayer.clientIndex = packet.playerInfo.clientIndex;
 	newPlayer.handle = packet.playerInfo.handle;
 	newPlayer.avatar = packet.playerInfo.avatar;
-	newPlayer.position = {(rand() % config.Int("screen.w")),(rand() % config.Int("screen.h"))};
-	newPlayer.motion = {0,0};
 
 	//push this player
-	playerMap[Player::counter] = newPlayer;
+	playerMap[playerCounter] = newPlayer;
 
 	//send the client their info
-	packet.playerInfo.playerIndex = Player::counter;
-	packet.playerInfo.position = newPlayer.position;
-	packet.playerInfo.motion = newPlayer.motion;
+	packet.playerInfo.playerIndex = playerCounter;
+	packet.playerInfo.position = {0,0};
+	packet.playerInfo.motion = {0,0};
 
 	//actually send to everyone
 	PumpPacket(packet);
 
 	//finish this routine
-	Player::counter++;
+	playerCounter++;
 }
 
 void ServerApplication::HandlePlayerDelete(NetworkPacket packet) {
@@ -297,8 +294,8 @@ void ServerApplication::HandlePlayerUpdate(NetworkPacket packet) {
 	}
 
 	//server is the slave to the clients, but only for now
-	playerMap[packet.playerInfo.playerIndex].position = packet.playerInfo.position;
-	playerMap[packet.playerInfo.playerIndex].motion = packet.playerInfo.motion;
+//	playerMap[packet.playerInfo.playerIndex].position = packet.playerInfo.position;
+//	playerMap[packet.playerInfo.playerIndex].motion = packet.playerInfo.motion;
 
 	PumpPacket(packet);
 }
