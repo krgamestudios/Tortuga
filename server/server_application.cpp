@@ -88,6 +88,17 @@ void ServerApplication::Init(int argc, char** argv) {
 	getline(is, script, '\0');
 	is.close();
 	sqlite3_exec(database, script.c_str(), nullptr, nullptr, nullptr);
+
+	//open the rooms
+	cout << "DEBUG: inserting the room..." << endl;
+	worldRoomMap.insert( pair<int, WorldRoom>(worldRoomCounter++, WorldRoom(playerMap)));
+
+	cout << "DEBUG: opening the rooms..." << endl;
+
+	for (auto& it : worldRoomMap) {
+		it.second.OpenRoom();
+	}
+	cout << "DEBUG: Finished initialization" << endl;
 }
 
 void ServerApplication::Loop() {
@@ -114,6 +125,12 @@ void ServerApplication::Loop() {
 }
 
 void ServerApplication::Quit() {
+	//close the rooms
+	for (auto& it : worldRoomMap) {
+		it.second.CloseRoom();
+	}
+	worldRoomMap.clear();
+
 	//members
 	network.Close();
 
@@ -124,6 +141,11 @@ void ServerApplication::Quit() {
 }
 
 void ServerApplication::HandlePacket(NetworkPacket packet) {
+	//debgging
+	for (auto& it : worldRoomMap) {
+		it.second.GetInQueue()->PushBack(packet);
+	}
+
 	switch(packet.meta.type) {
 		case NetworkPacket::Type::BROADCAST_REQUEST:
 			HandleBroadcastRequest(packet);
