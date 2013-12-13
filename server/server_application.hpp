@@ -82,7 +82,7 @@ private:
 	//global lists
 	ClientMap clientMap;
 	PlayerMap playerMap;
-	WorldRoomMap worldRoomMap;
+	std::map<int, WorldRoom*> worldRoomMap;
 
 	int clientCounter = 0;
 	int playerCounter = 0;

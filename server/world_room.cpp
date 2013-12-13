@@ -27,22 +27,16 @@
 using namespace std;
 
 int worldRoomThread(void* arg) {
-	cout << "DEBUG: in room thread" << endl;
 	WorldRoom* room = reinterpret_cast<WorldRoom*>(arg);
-	cout << "DEBUG: Beginning try block" << endl;
 	try {
-		cout << "DEBUG: Init" << endl;
 		room->Init();
-		cout << "DEBUG: Loop" << endl;
 		room->Loop();
-		cout << "DEBUG: Quit" << endl;
 		room->Quit();
 	}
 	catch(exception& e) {
 		cerr << "Fatal room error: " << e.what() << endl;
 		return 1;
 	}
-	cout << "DEBUG: Successfully ending room thread" << endl;
 	return 0;
 }
 
@@ -57,18 +51,15 @@ WorldRoom::~WorldRoom() {
 }
 
 void WorldRoom::OpenRoom() {
-	cout << "DEBUG: In OpenRoom" << endl;
 	if (running) {
 		throw(std::runtime_error("Cannot open a room that is already running"));
 	}
 
 	running = true;
 
-	cout << "DEBUG: Attempting to create thread" << endl;
 	if (!(thread = SDL_CreateThread(worldRoomThread, this))) {
 		throw(std::runtime_error("Failed to open the room thread"));
 	}
-	cout << "DEBUG: End of thread call" << endl;
 }
 
 void WorldRoom::CloseRoom() {
@@ -86,9 +77,7 @@ void WorldRoom::Init() {
 }
 
 void WorldRoom::Loop() {
-	cout << "DEBUG: In Loop" << endl;
 	while(running) {
-		cout << "DEBUG: Top of loop" << endl;
 		while(networkInQueue.Size() > 0) {
 			HandlePacket(networkInQueue.PopFront());
 		}

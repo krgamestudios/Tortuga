@@ -60,6 +60,4 @@ private:
 	PlayerMap playerMap;
 };
 
-typedef std::map<int, WorldRoom> WorldRoomMap;
-
 #endif
