@@ -19,33 +19,20 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#include "splash_screen.hpp"
+#ifndef PLAYERENTITY_HPP_
+#define PLAYERENTITY_HPP_
 
-//-------------------------
-//Public access members
-//-------------------------
+#include "vector2.hpp"
 
-SplashScreen::SplashScreen(ConfigUtility* const argConfig):
-	config(*argConfig)
-{
-	logo.LoadSurface(config["dir.logos"] + "krstudios.bmp");
-	startTick = std::chrono::steady_clock::now();
-}
+#include <map>
+#include <string>
 
-SplashScreen::~SplashScreen() {
-	//
-}
+struct PlayerEntity {
+	int playerIndex;
+	Vector2 position;
+	Vector2 motion;
+};
 
-//-------------------------
-//Frame loop
-//-------------------------
+typedef std::map<int, PlayerEntity> PlayerEntityMap;
 
-void SplashScreen::Update(double delta) {
-	if (std::chrono::steady_clock::now() - startTick > std::chrono::duration<int>(1)) {
-		SetNextScene(SceneList::MAINMENU);
-	}
-}
-
-void SplashScreen::Render(SDL_Surface* const screen) {
-	logo.DrawTo(screen, (screen->w - logo.GetClipW()) / 2, (screen->h - logo.GetClipH()) / 2);
-}
+#endif

@@ -25,6 +25,7 @@
 #include "network_packet.hpp"
 #include "thread_safe_queue.hpp"
 #include "player.hpp"
+#include "player_entity.hpp"
 
 #include "SDL/SDL_thread.h"
 
@@ -58,6 +59,7 @@ private:
 	ThreadSafeQueue<NetworkPacket> networkOutQueue;
 
 	PlayerMap playerMap;
+	PlayerEntityMap playerEntityMap;
 };
 
 #endif

@@ -25,8 +25,8 @@
 //Public access members
 //-------------------------
 
-MainMenu::MainMenu(ConfigUtility* const arg1):
-	config(*arg1)
+MainMenu::MainMenu(ConfigUtility* const argConfig):
+	config(*argConfig)
 {
 	//setup the utility objects
 	image.LoadSurface(config["dir.interface"] + "button_menu.bmp");

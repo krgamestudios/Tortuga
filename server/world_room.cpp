@@ -26,8 +26,8 @@
 
 using namespace std;
 
-int worldRoomThread(void* arg) {
-	WorldRoom* room = reinterpret_cast<WorldRoom*>(arg);
+int worldRoomThread(void* argRoom) {
+	WorldRoom* room = reinterpret_cast<WorldRoom*>(argRoom);
 	try {
 		room->Init();
 		room->Loop();
@@ -40,8 +40,8 @@ int worldRoomThread(void* arg) {
 	return 0;
 }
 
-WorldRoom::WorldRoom(PlayerMap const& arg1):
-	playerMap(arg1)
+WorldRoom::WorldRoom(PlayerMap const& argPlayerMap):
+	playerMap(argPlayerMap)
 {
 	//
 }

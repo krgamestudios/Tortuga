@@ -29,10 +29,10 @@
 //Public access members
 //-------------------------
 
-LobbyMenu::LobbyMenu(ConfigUtility* const arg1, UDPNetworkUtility* const arg2, int* const arg3):
-	config(*arg1),
-	network(*arg2),
-	clientIndex(*arg3)
+LobbyMenu::LobbyMenu(ConfigUtility* const argConfig, UDPNetworkUtility* const argNetwork, int* const argClientIndex):
+	config(*argConfig),
+	network(*argNetwork),
+	clientIndex(*argClientIndex)
 {
 	//setup the utility objects
 	image.LoadSurface(config["dir.interface"] + "button_menu.bmp");
