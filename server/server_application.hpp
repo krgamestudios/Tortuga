@@ -37,8 +37,6 @@
 #include "client.hpp"
 #include "player.hpp"
 
-#include "world_room.hpp"
-
 //STL
 #include <map>
 #include <string>
@@ -82,11 +80,9 @@ private:
 	//global lists
 	ClientMap clientMap;
 	PlayerMap playerMap;
-	std::map<int, WorldRoom*> worldRoomMap;
 
 	int clientCounter = 0;
 	int playerCounter = 0;
-	int worldRoomCounter = 0;
 };
 
 #endif

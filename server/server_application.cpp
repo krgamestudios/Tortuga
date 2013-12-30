@@ -21,8 +21,6 @@
 */
 #include "server_application.hpp"
 
-#include "network_packet.hpp"
-
 #include "utility.hpp"
 
 #include <stdexcept>
@@ -46,12 +44,6 @@ ServerApplication::~ServerApplication() {
 
 void ServerApplication::Init(int argc, char** argv) {
 	//TODO: proper command line option parsing
-
-	//Check prerequisites
-	if (!sqlite3_threadsafe()) {
-		throw(runtime_error("Cannot run without thread safety"));
-	}
-	cout << "Thread safety confirmed" << endl;
 
 	//load config
 	config.Load("rsc\\config.cfg");
@@ -88,13 +80,6 @@ void ServerApplication::Init(int argc, char** argv) {
 	getline(is, script, '\0');
 	is.close();
 	sqlite3_exec(database, script.c_str(), nullptr, nullptr, nullptr);
-
-	//open the rooms
-	worldRoomMap.insert( pair<int, WorldRoom*>(worldRoomCounter++, new WorldRoom(playerMap)));
-
-	for (auto& it : worldRoomMap) {
-		it.second->OpenRoom();
-	}
 }
 
 void ServerApplication::Loop() {
@@ -119,13 +104,6 @@ void ServerApplication::Loop() {
 }
 
 void ServerApplication::Quit() {
-	//close the rooms
-	for (auto& it : worldRoomMap) {
-		it.second->CloseRoom();
-		delete it.second;
-	}
-	worldRoomMap.clear();
-
 	//members
 	network.Close();
 
@@ -136,11 +114,6 @@ void ServerApplication::Quit() {
 }
 
 void ServerApplication::HandlePacket(NetworkPacket packet) {
-	//debgging
-	for (auto& it : worldRoomMap) {
-		it.second->GetInQueue()->PushBack(packet);
-	}
-
 	switch(packet.meta.type) {
 		case NetworkPacket::Type::BROADCAST_REQUEST:
 			HandleBroadcastRequest(packet);
