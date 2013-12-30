@@ -216,8 +216,8 @@ void ServerApplication::HandleSynchronize(NetworkPacket packet) {
 		newPacket.playerInfo.playerIndex = it.first;
 		snprintf(newPacket.playerInfo.handle, PACKET_STRING_SIZE, "%s", it.second.handle.c_str());
 		snprintf(newPacket.playerInfo.avatar, PACKET_STRING_SIZE, "%s", it.second.avatar.c_str());
-		newPacket.playerInfo.position = {0,0};
-		newPacket.playerInfo.motion = {0,0};
+		newPacket.playerInfo.position = it.second.position;
+		newPacket.playerInfo.motion = it.second.motion;
 		network.Send(&clientMap[packet.clientInfo.index].address, &newPacket, sizeof(NetworkPacket));
 	}
 }
@@ -239,14 +239,16 @@ void ServerApplication::HandlePlayerNew(NetworkPacket packet) {
 	newPlayer.clientIndex = packet.playerInfo.clientIndex;
 	newPlayer.handle = packet.playerInfo.handle;
 	newPlayer.avatar = packet.playerInfo.avatar;
+	newPlayer.position = {0,0};
+	newPlayer.motion = {0,0};
 
 	//push this player
 	playerMap[playerCounter] = newPlayer;
 
 	//send the client their info
 	packet.playerInfo.playerIndex = playerCounter;
-	packet.playerInfo.position = {0,0};
-	packet.playerInfo.motion = {0,0};
+	packet.playerInfo.position = playerMap[playerCounter].position;
+	packet.playerInfo.motion = playerMap[playerCounter].motion;
 
 	//actually send to everyone
 	PumpPacket(packet);
@@ -284,8 +286,8 @@ void ServerApplication::HandlePlayerUpdate(NetworkPacket packet) {
 	}
 
 	//server is the slave to the clients, but only for now
-//	playerMap[packet.playerInfo.playerIndex].position = packet.playerInfo.position;
-//	playerMap[packet.playerInfo.playerIndex].motion = packet.playerInfo.motion;
+	playerMap[packet.playerInfo.playerIndex].position = packet.playerInfo.position;
+	playerMap[packet.playerInfo.playerIndex].motion = packet.playerInfo.motion;
 
 	PumpPacket(packet);
 }

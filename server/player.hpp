@@ -22,6 +22,8 @@
 #ifndef PLAYER_HPP_
 #define PLAYER_HPP_
 
+#include "vector2.hpp"
+
 #include <string>
 #include <map>
 
@@ -32,6 +34,8 @@ struct Player {
 	int clientIndex;
 	std::string handle;
 	std::string avatar;
+	Vector2 position;
+	Vector2 motion;
 };
 
 typedef std::map<int, Player> PlayerMap;
