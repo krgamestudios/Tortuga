@@ -54,21 +54,6 @@ EditorScene::EditorScene(ConfigUtility* const arg1):
 		{"Edit", "-Set Tile", "-Load Sheet", "-Delete Sheet", "-Metadata", "-Run Script"},
 		{"Debugging", "Debug On", "Debug Off", "Toggle Debug", "Testificate"}
 	});
-
-	//setup the pager
-	pager.SetOnNew([](Region* const ptr){
-		printf("New Region: %d, %d\n", ptr->GetX(), ptr->GetY());
-	});
-
-	pager.SetOnDelete([](Region* const ptr){
-		printf("Delete Region: %d, %d\n", ptr->GetX(), ptr->GetY());
-	});
-
-	//Set a resonable size for the regions
-	pager.SetWidth(32*4);
-	pager.SetHeight(32*4);
-
-	sheetMgr.LoadSheet(config["dir.tilesets"] + "terrain.bmp", 32, 32);
 }
 
 EditorScene::~EditorScene() {
@@ -84,7 +69,7 @@ void EditorScene::FrameStart() {
 }
 
 void EditorScene::Update(double delta) {
-	pager.Prune(camera.x, camera.y, camera.x + GetScreen()->w, camera.y + GetScreen()->h);
+	//
 }
 
 void EditorScene::FrameEnd() {
@@ -92,9 +77,6 @@ void EditorScene::FrameEnd() {
 }
 
 void EditorScene::Render(SDL_Surface* const screen) {
-	//draw the map
-	pager.DrawTo(screen, &sheetMgr, camera.x, camera.y);
-
 	//draw a big bar across the top
 	buttonImage.SetClipY(0);
 	for (int i = 0; i < screen->w; i += buttonImage.GetClipW()) {
@@ -130,24 +112,6 @@ void EditorScene::DrawToDebugInfo(std::string str, int line) {
 void EditorScene::MouseMotion(SDL_MouseMotionEvent const& motion) {
 	menuBar.MouseMotion(motion);
 
-	if (motion.state & SDL_BUTTON_LMASK && motion.y >= buttonImage.GetClipH()) {
-		Region* regionPtr = pager.GetRegion(
-			snapToBase(pager.GetWidth(), motion.x + camera.x),
-			snapToBase(pager.GetHeight(), motion.y + camera.y)
-		);
-
-		TileSheet* sheetPtr = sheetMgr.GetSheetByIndex(tileCounter);
-
-		regionPtr->NewTileA({
-			snapToBase(sheetPtr->GetTileW(), motion.x + camera.x), //x
-			snapToBase(sheetPtr->GetTileH(), motion.y + camera.y), //y
-			0, //depth
-			sheetPtr->GetTileW(), //width
-			sheetPtr->GetTileH(), //height
-			tileCounter++ //value
-		});
-	}
-
 	if (motion.state & SDL_BUTTON_RMASK) {
 		camera.x -= motion.xrel;
 		camera.y -= motion.yrel;
@@ -156,24 +120,6 @@ void EditorScene::MouseMotion(SDL_MouseMotionEvent const& motion) {
 
 void EditorScene::MouseButtonDown(SDL_MouseButtonEvent const& button) {
 	menuBar.MouseButtonDown(button);
-
-	if (button.button == SDL_BUTTON_LEFT && button.y >= buttonImage.GetClipH()) {
-		Region* regionPtr = pager.GetRegion(
-			snapToBase(pager.GetWidth(), button.x + camera.x),
-			snapToBase(pager.GetHeight(), button.y + camera.y)
-		);
-
-		TileSheet* sheetPtr = sheetMgr.GetSheetByIndex(tileCounter);
-
-		regionPtr->NewTileA({
-			snapToBase(sheetPtr->GetTileW(), button.x + camera.x), //x
-			snapToBase(sheetPtr->GetTileH(), button.y + camera.y), //y
-			0, //depth
-			sheetPtr->GetTileW(), //width
-			sheetPtr->GetTileH(), //height
-			tileCounter++ //value
-		});
-	}
 }
 
 void EditorScene::MouseButtonUp(SDL_MouseButtonEvent const& button) {

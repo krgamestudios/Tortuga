@@ -24,9 +24,6 @@
 
 #include "base_scene.hpp"
 
-#include "region_pager.hpp"
-#include "tile_sheet_manager.hpp"
-
 #include "config_utility.hpp"
 #include "image.hpp"
 #include "raster_font.hpp"
@@ -62,19 +59,13 @@ protected:
 	Image debugInfo;
 	bool debugOpen = true;
 
-	RegionPager pager;
-	TileSheetManager sheetMgr;
-
 	RasterFont font;
 	Image buttonImage;
-
 	MenuBar menuBar;
 
 	struct {
 		int x = 0, y = 0;
 	} camera;
-
-	int tileCounter = 0;
 };
 
 #endif

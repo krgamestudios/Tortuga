@@ -25,8 +25,6 @@
 #include "base_scene.hpp"
 
 #include "config_utility.hpp"
-#include "tile_Sheet_manager.hpp"
-#include "region_pager.hpp"
 
 class TestificateScene : public BaseScene {
 public:
@@ -50,10 +48,6 @@ protected:
 
 	//globals
 	ConfigUtility& config;
-
-	//members
-	TileSheetManager sheetMgr;
-	RegionPager pager;
 };
 
 #endif
