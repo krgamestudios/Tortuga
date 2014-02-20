@@ -21,42 +21,60 @@
 */
 #include "region_pager.hpp"
 
-RegionPager::RegionPager(int argWidth, int argHeight, int argDepth):
+#include "utility.hpp"
+
+#include <algorithm>
+
+RegionPagerBase::RegionPagerBase(int argWidth, int argHeight, int argDepth):
 	regionWidth(argWidth),
 	regionHeight(argHeight),
 	regionDepth(argDepth)
 {
-	//
+	//EMPTY
 }
 
-RegionPager::~RegionPager() {
-	//
+RegionPagerBase::~RegionPagerBase() {
+	//EMPTY
 }
 
-int RegionPager::SetTile(int x, int y, int z, int v) {
-	//
+int RegionPagerBase::SetTile(int x, int y, int z, int v) {
+	Region* ptr = GetRegion(snapToBase(regionWidth, x), snapToBase(regionHeight, y));
+	return ptr->SetTile(x - ptr->GetX(), y = ptr->GetY(), z, v);
 }
 
-int RegionPager::GetTile(int x, int y, int z) {
-	//
+int RegionPagerBase::GetTile(int x, int y, int z) {
+	Region* ptr = GetRegion(snapToBase(regionWidth, x), snapToBase(regionHeight, y));
+	return ptr->GetTile(x - ptr->GetX(), y = ptr->GetY(), z);
 }
 
-Region* RegionPager::GetRegion(int x, int y) {
-	//
+Region* RegionPagerBase::GetRegion(int x, int y) {
+	//TODO: clean this up
+	Region* ptr = nullptr;
+
+	//find the loaded region
+	auto iter = std::find_if(regionList.begin(), regionList.end(), [x,y](Region& it) {
+		if (it.GetX() == x && it.GetY() == y)
+			return true;
+		else
+			return false;
+	});
+	if (iter != regionList.end()) { //ugly hack
+		ptr = &(*iter);
+	}
+
+	//or load the region
+	if (!ptr) {
+		ptr = LoadRegion(x, y);
+	}
+
+	//or create the region
+	if (!ptr) {
+		ptr = CreateRegion(x, y);
+	}
+
+	return ptr;
 }
 
-void RegionPager::LoadRegion(int x, int y) {
-	//
-}
-
-void RegionPager::SaveRegion(int x, int y) {
-	//
-}
-
-void RegionPager::CreateRegion(int x, int y) {
-	//
-}
-
-void RegionPager::UnloadRegion(int x, int y) {
-	//
+void RegionPagerBase::Update() {
+	//TODO
 }
