@@ -38,25 +38,25 @@ RegionPagerBase::~RegionPagerBase() {
 }
 
 int RegionPagerBase::SetTile(int x, int y, int z, int v) {
-	Region* ptr = GetRegion(snapToBase(regionWidth, x), snapToBase(regionHeight, y));
+	Region* ptr = GetRegion(x, y);
 	return ptr->SetTile(x - ptr->GetX(), y = ptr->GetY(), z, v);
 }
 
 int RegionPagerBase::GetTile(int x, int y, int z) {
-	Region* ptr = GetRegion(snapToBase(regionWidth, x), snapToBase(regionHeight, y));
+	Region* ptr = GetRegion(x, y);
 	return ptr->GetTile(x - ptr->GetX(), y = ptr->GetY(), z);
 }
 
 Region* RegionPagerBase::GetRegion(int x, int y) {
-	//TODO: clean this up
+	//snap the coords
+	x = snapToBase(regionWidth, x);
+	y = snapToBase(regionHeight, y);
+
 	Region* ptr = nullptr;
 
 	//find the loaded region
 	auto iter = std::find_if(regionList.begin(), regionList.end(), [x,y](Region& it) {
-		if (it.GetX() == x && it.GetY() == y)
-			return true;
-		else
-			return false;
+		return it.GetX() == x && it.GetY() == y;
 	});
 	if (iter != regionList.end()) { //ugly hack
 		ptr = &(*iter);

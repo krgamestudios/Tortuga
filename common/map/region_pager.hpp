@@ -23,7 +23,9 @@
 #define REGIONPAGER_HPP_
 
 #include "region.hpp"
+#include "utility.hpp"
 
+#include <algorithm>
 #include <list>
 
 class RegionPagerBase {
@@ -59,26 +61,73 @@ protected:
 template<typename MapGenerator, typename MapFileFormat>
 class RegionPager : public RegionPagerBase {
 public:
+	RegionPager() = delete;
+	RegionPager(int w, int h, int d):
+		RegionPagerBase(w, h, d)
+	{
+		//EMPTY
+	}
+	~RegionPager() = default;
+
 	Region* LoadRegion(int x, int y) {
-		//TODO
-		//if there's no region to load, return null
+		//snap the coords
+		x = snapToBase(regionWidth, x);
+		y = snapToBase(regionHeight, y);
+
+		//load the region if possible
+		Region* region = nullptr;
+		format.Load(&region, x, y);
+		if (region) {
+			regionList.push_back(std::move(*region));
+			return &regionList.back();
+		}
+		return nullptr;
 	}
 
 	Region* SaveRegion(int x, int y) {
-		//TODO
-		//save the region using the functor
+		//snap the coords
+		x = snapToBase(regionWidth, x);
+		y = snapToBase(regionHeight, y);
+
+		//find the specified region
+		auto iter = std::find_if(regionList.begin(), regionList.end(), [x, y](Region& it){
+			return it.GetX() == x && it.GetY() == y;
+		});
+
+		//save the region if it's loaded
+		if (iter != regionList.end()) {
+			format.Save(&(*iter, x, y));
+			return &(*iter);
+		}
+		return nullptr;
 	}
 
 	Region* CreateRegion(int x, int y) {
-		//TODO
-		//create the region
-		//DON'T call this on a non-zero region,
-		//or if there's a region saved to the disk
+		//snap the coords
+		x = snapToBase(regionWidth, x);
+		y = snapToBase(regionHeight, y);
+
+		//create and push the object
+		Region* region = nullptr;
+		generator.Create(&region);
+		regionList.push_back(std::move(*region));
+		return regionList.back();
 	}
 
 	void UnloadRegion(int x, int y) {
-		//TODO
-		//free the region, possibly saving it
+		//snap the coords
+		x = snapToBase(regionWidth, x);
+		y = snapToBase(regionHeight, y);
+
+		//find the specified region
+		auto iter = std::find_if(regionList.begin(), regionList.end(), [x, y](Region& it){
+			return it.GetX() == x && it.GetY() == y;
+		});
+
+		//pass it to the generator for unloading
+		if (iter != regionList.end()) {
+			generator.Unload(&(*iter));
+		}
 	}
 
 	//accessors
