@@ -12,7 +12,7 @@ This game is inspired by classic 2D RPGs, as well as more modern sandbox MMOs. T
 ## Documentation
 
 [Tortuga Game Design Document](https://github.com/Ratstail91/Tortuga/blob/docs/design%20doc.docx?raw=true)  
-[Tortuga Technical Document](https://docs.google.com/document/d/1ASTfM_1e0yE1cFP-IZey_rHEC6k2kmVY56X4K407sw0/edit?usp=sharing) (Outdated)
+[Tortuga Technical Document](https://github.com/Ratstail91/Tortuga/blob/docs/technical%20doc.docx?raw=true)
 
 ## Copyright
 
