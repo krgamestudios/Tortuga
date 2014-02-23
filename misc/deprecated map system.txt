@@ -1,0 +1,84 @@
+The Game Map
+
+This section outlines the game’s map system. This system utilizes pagination to create a theoretically infinite game map, as well as supporting multiple tilesets in the same map. The goal of this design is to create a system with as much flexibility as possible, and simply enforcing a more rigid approach higher in the tool chain.
+
+Tile
+
+The Tile class is the basic unit of the map system, and is explicitly a POD (plain old data) structure. A tile has these members:
+
+X Position
+Y Position
+Depth
+Width
+Height
+Tile Index
+
+The tile’s X and Y positions are relative to their container region’s location. A tile’s depth allows multiple tiles to be drawn at the same location, and in the correct order; tiles with lower depths (including below zero) are drawn first. If a new tile has the same X position, Y position and depth as an existing tile, the old tile is overwritten.
+
+The width and height members indicate the graphical size of the tile (not actually used when drawing), while the tile index is the specific tile for the sheet manager to draw. A negative value here is considered an error message.
+
+Region
+
+The region class has these members:
+
+X Position
+Y Position
+Width
+Height
+Tile Container
+
+Each region in a certain map must have the same width and height, and it’s X and Y positions must be multiples of those width and height values, respectfully. The outcome of this restriction is a theoretically infinite grid of region objects.
+
+Each region holds a set of tiles corresponding to the region’s bounds. The tiles’ X and Y positions are relative to the regions’, so moving the region will move the tiles as well. A region object is created or loaded when a tile is place in it’s bounds; similarly, if a region has no tiles it should be deleted or removed from memory.
+
+The exact width and height of a region has no significant impact, other than loading or transmission costs. The width and height of a map can be adjusted as needed.
+
+Region Pager
+
+The region pager class has these members:
+
+Region Width
+Region Height
+On New Callback
+On Delete Callback
+Region Container
+
+The Region Pager class holds a series of region objects, as well as creating and deleting them as needed. Every region theoretically exists at any time, so if a non-existent region object is requested, it is created and then returned. This class also has the Prune() method, which removes all regions out of bounds from memory, and the DrawTo method, which takes (among other things) the sheet manager for the map.
+
+The width and height members must be set before the pager is used, and must not be changed while it still has regions loaded. These are used to create region objects as needed.
+
+Each pager can also have two different callbacks set: “on new” and “on delete”. If either of these are set (that is, not null) then each region object’s address is passed to these after it is created or before it is destroyed, respectfully. The callbacks are intended to be used for domain specific processes, such as loading or saving data, or even requesting data from a remote server.
+
+Tile Sheet
+
+A tileset is a series of tile graphics stored in a single file. The tile sheet class loads a tile set into memory, and provides utilities for drawing them to the screen. The tile sheet class has these members:
+
+Image
+X Count
+Y Count
+Total Count
+Begin
+End
+
+The Image class is utilized heavily here by storing the graphical data and the tile size. Any file loaded into a sheet object must have all tile images arranged in a grid pattern, and they must all have the same width and height. The width and height must be provided when the file is loaded.
+
+The X and Y counts are the number of tiles along the X and Y axis of the sheet’s image, and the total count is the number of tiles in the whole sheet (which is equal to the product of the X and Y counts).
+
+Begin is the index of the first tile on the sheet (default is zero), and end is the index after the last tile (defaults to the value of total count). These indicate the range of the tiles, and are mostly used by the sheet manager. They are also used by the InRange() method, which checks to see if a certain tile is in that sheet.
+
+Tile Sheet Manager
+
+This class has these members:
+
+Tile Sheet Container
+Range End
+
+This class is a wrapper around a key-value container, using strings as the keys. Given a specific tile index, this class will draw the correct tile from the loaded sheets, or it throws an error.
+
+Also, this class keeps track of the end of the sheet’s ranges.
+
+TODO
+
+Map File Format
+
+TODO
