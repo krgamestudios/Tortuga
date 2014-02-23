@@ -19,32 +19,17 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef REGION_HPP_
-#define REGION_HPP_
+#ifndef MAPGENERATOR_HPP_
+#define MAPGENERATOR_HPP_
 
-class Region {
+#include "region.hpp"
+
+class MapGenerator {
 public:
-	Region() = delete;
-	Region(int width, int height, int depth, int x, int y);
-	~Region();
-
-	int SetTile(int x, int y, int z, int v);
-	int GetTile(int x, int y, int z);
-
-	//accessors
-	int GetWidth() { return width; }
-	int GetHeight() { return height; }
-	int GetDepth() { return depth; }
-	int GetX() { return x; }
-	int GetY() { return y; }
+	void Create(Region** const, int width, int height, int depth, int x, int y);
+	void Unload(Region* const);
 private:
-	const int width;
-	const int height;
-	const int depth;
-	const int x;
-	const int y;
-
-	int* tiles = nullptr;
+	//
 };
 
 #endif

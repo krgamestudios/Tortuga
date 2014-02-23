@@ -18,7 +18,7 @@
  * 
  * 3. This notice may not be removed or altered from any source
  * distribution.
-*/
+* /
 #include "editor_application.hpp"
 
 #include <stdexcept>
@@ -38,5 +38,21 @@ int main(int, char**) {
 		return 1;
 	}
 	cout << "Clean exit" << endl;
+	return 0;
+}
+*/
+#include "region_pager.hpp"
+#include "map_file_format.hpp"
+#include "map_generator.hpp"
+
+#include <iostream>
+
+int main() {
+	RegionPager<MapGenerator, MapFileFormat> pager(40, 40, 3);
+	pager.CreateRegion(0, 0);
+	pager.SaveRegion(0, 0);
+	pager.LoadRegion(0, 0);
+	pager.UnloadRegion(0, 0);
+	std::cout << "Finishing program" << std::endl;
 	return 0;
 }

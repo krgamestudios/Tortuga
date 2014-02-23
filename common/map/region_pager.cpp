@@ -23,7 +23,7 @@
 
 #include "utility.hpp"
 
-#include <algorithm>
+#include <iostream>
 
 RegionPagerBase::RegionPagerBase(int argWidth, int argHeight, int argDepth):
 	regionWidth(argWidth),
@@ -34,6 +34,7 @@ RegionPagerBase::RegionPagerBase(int argWidth, int argHeight, int argDepth):
 }
 
 RegionPagerBase::~RegionPagerBase() {
+	std::cout << "final size: " << regionList.size() << std::endl;
 	//EMPTY
 }
 
@@ -52,27 +53,17 @@ Region* RegionPagerBase::GetRegion(int x, int y) {
 	x = snapToBase(regionWidth, x);
 	y = snapToBase(regionHeight, y);
 
-	Region* ptr = nullptr;
-
-	//find the loaded region
-	auto iter = std::find_if(regionList.begin(), regionList.end(), [x,y](Region& it) {
-		return it.GetX() == x && it.GetY() == y;
-	});
-	if (iter != regionList.end()) { //ugly hack
-		ptr = &(*iter);
+	//find the region
+	for (std::list<Region*>::iterator it = regionList.begin(); it != regionList.end(); it++) {
+		if ((*it)->GetX() == x && (*it)->GetY() == y) {
+			return *it;
+		}
 	}
 
-	//or load the region
-	if (!ptr) {
-		ptr = LoadRegion(x, y);
-	}
-
-	//or create the region
-	if (!ptr) {
-		ptr = CreateRegion(x, y);
-	}
-
-	return ptr;
+	//get the region by other means
+	Region* ptr = LoadRegion(x, y);
+	if (ptr) return ptr;
+	return CreateRegion(x, y);
 }
 
 void RegionPagerBase::Update() {

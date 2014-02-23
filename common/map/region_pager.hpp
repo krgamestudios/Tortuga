@@ -25,14 +25,13 @@
 #include "region.hpp"
 #include "utility.hpp"
 
-#include <algorithm>
 #include <list>
 
 class RegionPagerBase {
 public:
 	RegionPagerBase() = delete;
 	RegionPagerBase(int regionWidth, int regionHeight, int regionDepth);
-	~RegionPagerBase();
+	virtual ~RegionPagerBase();
 
 	int SetTile(int x, int y, int z, int v);
 	int GetTile(int x, int y, int z);
@@ -55,7 +54,7 @@ protected:
 	const int regionWidth;
 	const int regionHeight;
 	const int regionDepth;
-	std::list<Region> regionList;
+	std::list<Region*> regionList;
 };
 
 template<typename MapGenerator, typename MapFileFormat>
@@ -75,11 +74,11 @@ public:
 		y = snapToBase(regionHeight, y);
 
 		//load the region if possible
-		Region* region = nullptr;
-		format.Load(&region, x, y);
-		if (region) {
-			regionList.push_back(std::move(*region));
-			return &regionList.back();
+		Region* ptr = nullptr;
+		format.Load(&ptr, x, y);
+		if (ptr) {
+			regionList.push_back(ptr);
+			return ptr;
 		}
 		return nullptr;
 	}
@@ -89,15 +88,12 @@ public:
 		x = snapToBase(regionWidth, x);
 		y = snapToBase(regionHeight, y);
 
-		//find the specified region
-		auto iter = std::find_if(regionList.begin(), regionList.end(), [x, y](Region& it){
-			return it.GetX() == x && it.GetY() == y;
-		});
-
-		//save the region if it's loaded
-		if (iter != regionList.end()) {
-			format.Save(&(*iter, x, y));
-			return &(*iter);
+		//find & save the region
+		for (std::list<Region*>::iterator it = regionList.begin(); it != regionList.end(); it++) {
+			if ((*it)->GetX() == x && (*it)->GetY() == y) {
+				format.Save(*it);
+				return *it;
+			}
 		}
 		return nullptr;
 	}
@@ -108,10 +104,10 @@ public:
 		y = snapToBase(regionHeight, y);
 
 		//create and push the object
-		Region* region = nullptr;
-		generator.Create(&region);
-		regionList.push_back(std::move(*region));
-		return regionList.back();
+		Region* ptr = nullptr;
+		generator.Create(&ptr, regionWidth, regionHeight, regionDepth, x, y);
+		regionList.push_back(ptr);
+		return ptr;
 	}
 
 	void UnloadRegion(int x, int y) {
@@ -119,14 +115,16 @@ public:
 		x = snapToBase(regionWidth, x);
 		y = snapToBase(regionHeight, y);
 
-		//find the specified region
-		auto iter = std::find_if(regionList.begin(), regionList.end(), [x, y](Region& it){
-			return it.GetX() == x && it.GetY() == y;
-		});
+		for (std::list<Region*>::iterator it = regionList.begin(); it != regionList.end(); /* EMPTY */) {
+			if ((*it)->GetX() == x && (*it)->GetY() == y) {
+				generator.Unload(*it);
+				regionList.erase(it);
 
-		//pass it to the generator for unloading
-		if (iter != regionList.end()) {
-			generator.Unload(&(*iter));
+				//reset the loop, because of reasons
+				it = regionList.begin();
+				continue;
+			}
+			++it;
 		}
 	}
 
