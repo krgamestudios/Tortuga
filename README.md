@@ -1,6 +1,4 @@
-You can find the [latest nightly build here](https://dl.dropboxusercontent.com/u/46669050/Tortuga.rar).
-
-Tortuga is an open source 2D multiplayer role playing game featuring permadeath (deletion of a character upon death). The emphasis of this game is on multiplayer cooperation, competition, and customization. The game runs on customizable server software that can support up to 150 simultaneous players or more.
+Tortuga is an open source 2D multiplayer role playing game featuring permadeath (deletion of a character upon death). The emphasis of this game is on multiplayer cooperation, competition, exploration and customization. The game runs on customizable server software that can support up to 150 simultaneous players or more.
 
 This game is inspired by classic 2D RPGs, as well as more modern sandbox MMOs. This project is currently independently created and funded, with the goal of creating a game that will engage user's imagination and inspire a large modding community.
 
@@ -13,14 +11,14 @@ This game is inspired by classic 2D RPGs, as well as more modern sandbox MMOs. T
 
 ## Documentation
 
-[Tortuga Game Design Document](https://docs.google.com/document/d/17SjOTdacKKWX0Z-UkaiFnVnjfEeMsc5LRmARtnjh5UI/edit?usp=sharing)  
-[Tortuga Technical Document](https://docs.google.com/document/d/1ASTfM_1e0yE1cFP-IZey_rHEC6k2kmVY56X4K407sw0/edit?usp=sharing)
+[Tortuga Game Design Document](https://github.com/Ratstail91/Tortuga/blob/docs/design%20doc.docx?raw=true)  
+[Tortuga Technical Document](https://docs.google.com/document/d/1ASTfM_1e0yE1cFP-IZey_rHEC6k2kmVY56X4K407sw0/edit?usp=sharing) (Outdated)
 
 ## Copyright
 
 The current version of Tortuga is released under the [zlib license](http://en.wikipedia.org/wiki/Zlib_License).  
 
-Copyright (c) 2013 Kayne Ruse
+Copyright (c) 2013, 2014 Kayne Ruse
 
 This software is provided 'as-is', without any express or implied warranty. In no event will the authors be held liable for any damages arising from the use of this software.
 
