@@ -1,4 +1,4 @@
-/* Copyright: (c) Kayne Ruse 2013
+/* Copyright: (c) Kayne Ruse 2014
  * 
  * This software is provided 'as-is', without any express or implied
  * warranty. In no event will the authors be held liable for any damages
@@ -19,24 +19,34 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#include "editor_application.hpp"
+#ifndef TILESHEET_HPP_
+#define TILESHEET_HPP_
 
-#include <stdexcept>
-#include <iostream>
+#include "image.hpp"
 
-using namespace std;
+#include <string>
 
-int main(int, char**) {
-	cout << "Beginning editor" << endl;
-	try {
-		EditorApplication::GetInstance()->Init();
-		EditorApplication::GetInstance()->Proc();
-		EditorApplication::GetInstance()->Quit();
-	}
-	catch(exception& e) {
-		cerr << "Fatal exception thrown: " << e.what() << endl;
-		return 1;
-	}
-	cout << "Clean exit" << endl;
-	return 0;
-}
+class TileSheet {
+public:
+	TileSheet() = default;
+	TileSheet(std::string f, int x, int y) { Load(f, x, y); }
+	~TileSheet() = default;
+
+	void Load(std::string fname, int XCount, int YCount);
+	void Unload();
+
+	void DrawTo(SDL_Surface* const dest, int x, int y, int tile);
+
+	//accessors
+	Image* GetImage() { return &image; }
+	int GetXCount() { return XCount; }
+	int GetYCount() { return YCount; }
+	int GetTileW() { return image.GetClipW(); }
+	int GetTileH() { return image.GetClipH(); }
+private:
+	Image image;
+	int XCount = 0, YCount = 0;
+};
+
+#endif
+ 
