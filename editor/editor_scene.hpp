@@ -29,7 +29,8 @@
 #include "raster_font.hpp"
 #include "menu_bar.hpp"
 
-//#include "map_loader.hpp"
+#include "region_pager.hpp"
+#include "tile_sheet.hpp"
 
 class EditorScene : public BaseScene {
 public:
@@ -66,6 +67,9 @@ protected:
 	struct {
 		int x = 0, y = 0;
 	} camera;
+
+	Region region;
+	TileSheet tsheet;
 };
 
 #endif

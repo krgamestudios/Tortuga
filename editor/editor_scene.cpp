@@ -34,7 +34,8 @@ using namespace std;
 //-------------------------
 
 EditorScene::EditorScene(ConfigUtility* const arg1):
-	config(*arg1)
+	config(*arg1),
+	region(20, 20, 1, 0, 0)
 {
 	//create the debugging "window"
 	debugInfo.CreateSurface(256, 256);
@@ -54,6 +55,12 @@ EditorScene::EditorScene(ConfigUtility* const arg1):
 		{"Edit", "-Set Tile", "-Load Sheet", "-Delete Sheet", "-Metadata", "-Run Script"},
 		{"Debugging", "Debug On", "Debug Off", "Toggle Debug", "Testificate"}
 	});
+
+	//debug
+	tsheet.Load("rsc\\graphics\\tilesets\\sand.bmp", 12, 3);
+	cout << region.GetWidth() << endl;
+	cout << region.GetHeight() << endl;
+	cout << region.GetDepth() << endl;
 }
 
 EditorScene::~EditorScene() {
@@ -77,6 +84,16 @@ void EditorScene::FrameEnd() {
 }
 
 void EditorScene::Render(SDL_Surface* const screen) {
+	//debug
+	for (int i = 0; i < region.GetWidth(); i++) {
+		for (int j = 0; j < region.GetHeight(); j++) {
+//			for (int k = 0; k < region.GetDepth(); k++) {
+				cout << region.GetTile(i,j,0) << endl;
+				tsheet.DrawTo(screen, i*tsheet.GetTileW(), j*tsheet.GetTileH(), region.GetTile(i,j,0));
+//			}
+		}
+	}
+
 	//draw a big bar across the top
 	buttonImage.SetClipY(0);
 	for (int i = 0; i < screen->w; i += buttonImage.GetClipW()) {
