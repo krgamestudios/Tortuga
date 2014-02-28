@@ -30,17 +30,32 @@ Region::Region(int argWidth, int argHeight, int argDepth, int argX, int argY):
 	x(argX),
 	y(argY)
 {
-	tiles = static_cast<int*>(calloc(width * height * depth, sizeof(int)));
+	tiles = new int**[width];
+	for (int i = 0; i < width; ++i) {
+		tiles[i] = new int*[height];
+		for (int j = 0; j < height; ++j) {
+			tiles[i][j] = new int[depth];
+			for (int k = 0; k < depth; ++k) {
+				tiles[i][j][k] = 0;
+			}
+		}
+	}
 }
 
 Region::~Region() {
-	free(tiles);
+	for (int i = 0; i < width; ++i) {
+		for (int j = 0; j < height; j++) {
+			delete tiles[i][j];
+		}
+		delete tiles[i];
+	}
+	delete tiles;
 }
 
 int Region::SetTile(int x, int y, int z, int v) {
-	return *(tiles + x*width + y*height + z*depth) = v;
+	return tiles[x][y][z] = v;
 }
 
 int Region::GetTile(int x, int y, int z) {
-	return *(tiles + x*width + y*height + z*depth);
+	return tiles[x][y][z];
 }

@@ -35,7 +35,7 @@ using namespace std;
 
 EditorScene::EditorScene(ConfigUtility* const arg1):
 	config(*arg1),
-	region(20, 20, 1, 0, 0)
+	region(20, 20, 3, 0, 0)
 {
 	//create the debugging "window"
 	debugInfo.CreateSurface(256, 256);
@@ -51,8 +51,8 @@ EditorScene::EditorScene(ConfigUtility* const arg1):
 	menuBar.SetImage(&buttonImage);
 
 	menuBar.SetEntries({
-		{"File", "-New", "-Open", "-Save", "-Save As...", "-Close", "Exit"},
-		{"Edit", "-Set Tile", "-Load Sheet", "-Delete Sheet", "-Metadata", "-Run Script"},
+		{"File", "New", "Open", "Save", "Save As...", "Close", "Exit"},
+		{"Edit", "Set Tile", "Load Sheet", "Delete Sheet", "Metadata", "Run Script"},
 		{"Debugging", "Debug On", "Debug Off", "Toggle Debug", "Testificate"}
 	});
 
@@ -87,10 +87,14 @@ void EditorScene::Render(SDL_Surface* const screen) {
 	//debug
 	for (int i = 0; i < region.GetWidth(); i++) {
 		for (int j = 0; j < region.GetHeight(); j++) {
-//			for (int k = 0; k < region.GetDepth(); k++) {
-				cout << region.GetTile(i,j,0) << endl;
-				tsheet.DrawTo(screen, i*tsheet.GetTileW(), j*tsheet.GetTileH(), region.GetTile(i,j,0));
-//			}
+			for (int k = 0; k < region.GetDepth(); k++) {
+				tsheet.DrawTo(
+					screen,
+					i*tsheet.GetTileW()+region.GetX()-camera.x,
+					j*tsheet.GetTileH()+region.GetY()-camera.y,
+					region.GetTile(i,j,k)
+				);
+			}
 		}
 	}
 
@@ -168,7 +172,7 @@ void EditorScene::MouseButtonUp(SDL_MouseButtonEvent const& button) {
 				break;
 
 				case 5: {
-					//Quit
+					//EXIT
 					SDL_Event e;
 					e.type = SDL_QUIT;
 					SDL_PushEvent(&e);

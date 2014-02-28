@@ -44,7 +44,7 @@ private:
 	const int x;
 	const int y;
 
-	int* tiles = nullptr;
+	int*** tiles = nullptr;
 };
 
 #endif
