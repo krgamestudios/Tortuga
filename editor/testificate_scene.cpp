@@ -33,18 +33,7 @@ using std::endl;
 TestificateScene::TestificateScene(ConfigUtility* const arg1):
 	config(*arg1)
 {
-	sheetMgr.LoadSheet(config["dir.tilesets"] + "grass.bmp", 32, 32);
-	sheetMgr.LoadSheet(config["dir.tilesets"] + "longgrass.bmp", 32, 32);
-	sheetMgr.LoadSheet(config["dir.tilesets"] + "sand.bmp", 32, 32);
-	sheetMgr.LoadSheet(config["dir.tilesets"] + "dirt.bmp", 32, 32);
-	sheetMgr.LoadSheet(config["dir.tilesets"] + "water.bmp", 32, 32);
-
-	cout << "Range End: " << sheetMgr.GetRangeEnd() << endl;
-
-	pager.SetWidth(128);
-	pager.SetHeight(128);
-
-	pager.GetRegion(0, 0)->NewTileR({0, 0, 0, 32, 32, 0});
+	//
 }
 
 TestificateScene::~TestificateScene() {
@@ -68,12 +57,7 @@ void TestificateScene::FrameEnd() {
 }
 
 void TestificateScene::Render(SDL_Surface* const screen) {
-	//dump all tile graphics to the screen
-	for (int i = 0; i < sheetMgr.GetRangeEnd(); i++) {
-		sheetMgr.DrawTo(screen, i * 32 % screen->w, i * 32 / screen->w * 32, i);
-	}
-
-//	pager.DrawTo(screen, &sheetMgr, 0, 0);
+	//
 }
 
 //-------------------------

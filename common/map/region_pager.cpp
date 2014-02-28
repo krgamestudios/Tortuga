@@ -1,4 +1,4 @@
-/* Copyright: (c) Kayne Ruse 2013
+/* Copyright: (c) Kayne Ruse 2014
  * 
  * This software is provided 'as-is', without any express or implied
  * warranty. In no event will the authors be held liable for any damages
@@ -23,99 +23,46 @@
 
 #include "utility.hpp"
 
-#include <stdexcept>
-#include <string>
-
-RegionPager::RegionPager() {
-	//
+RegionPagerBase::RegionPagerBase(int argWidth, int argHeight, int argDepth):
+	regionWidth(argWidth),
+	regionHeight(argHeight),
+	regionDepth(argDepth)
+{
+	//EMPTY
 }
 
-RegionPager::~RegionPager() {
-	if (onDelete) {
-		for (auto& i : regionList) {
-			onDelete(&i);
-		}
-	}
+RegionPagerBase::~RegionPagerBase() {
+	//EMPTY
 }
 
-Region* RegionPager::NewRegion(int x, int y) {
-	for (auto& i : regionList) {
-		if (i.GetX() == x && i.GetY() == y) {
-			throw(std::runtime_error("Duplicate Regions detected"));
-		}
-	}
-
-	regionList.push_front({x, y, regionWidth, regionHeight});
-	if (onNew) {
-		onNew(&regionList.front());
-	}
-	return &regionList.front();
+int RegionPagerBase::SetTile(int x, int y, int z, int v) {
+	Region* ptr = GetRegion(x, y);
+	return ptr->SetTile(x - ptr->GetX(), y - ptr->GetY(), z, v);
 }
 
-Region* RegionPager::GetRegion(int x, int y) {
-	for (auto& i : regionList) {
-		if (i.GetX() == x && i.GetY() == y) {
-			return &i;
-		}
-	}
-	//create, insert and return
-	regionList.push_front({x, y, regionWidth, regionHeight});
-	if (onNew) {
-		onNew(&regionList.front());
-	}
-	return &regionList.front();
+int RegionPagerBase::GetTile(int x, int y, int z) {
+	Region* ptr = GetRegion(x, y);
+	return ptr->GetTile(x - ptr->GetX(), y - ptr->GetY(), z);
 }
 
-void RegionPager::DeleteRegion(int x, int y) {
-	for (std::list<Region>::iterator i = regionList.begin(); i != regionList.end(); i++) {
-		if (i->GetX() == x && i->GetY() == y) {
-			if (onDelete) {
-				onDelete(&(*i));
-			}
-			regionList.erase(i);
-			break;
+Region* RegionPagerBase::GetRegion(int x, int y) {
+	//snap the coords
+	x = snapToBase(regionWidth, x);
+	y = snapToBase(regionHeight, y);
+
+	//find the region
+	for (std::list<Region*>::iterator it = regionList.begin(); it != regionList.end(); it++) {
+		if ((*it)->GetX() == x && (*it)->GetY() == y) {
+			return *it;
 		}
 	}
+
+	//get the region by other means
+	Region* ptr = LoadRegion(x, y);
+	if (ptr) return ptr;
+	return CreateRegion(x, y);
 }
 
-void RegionPager::DrawTo(SDL_Surface* const dest, TileSheetManager* const sheetMgr, int camX, int camY) {
-	for (auto& regionIter : regionList) {
-
-#ifdef DEBUG
-		//draw the region's location
-		SDL_Rect box = {
-			Sint16(regionIter.GetX() - camX),
-			Sint16(regionIter.GetY() - camY),
-			Uint16(regionIter.GetWidth()),
-			Uint16(regionIter.GetHeight())
-		};
-		SDL_FillRect(dest, &box, SDL_MapRGB(dest->format, 10, 10, 20));
-#endif
-
-		//draw each tile
-		for (auto& tileIter : *regionIter.GetTiles()) {
-			sheetMgr->DrawTo(
-				dest,
-				tileIter.x + regionIter.GetX() - camX,
-				tileIter.y + regionIter.GetY() - camY,
-				tileIter.tileIndex
-			);
-		}
-	}
-}
-
-void RegionPager::Prune(int left, int top, int right, int bottom) {
-	std::list<Region>::iterator it = regionList.begin();
-
-	while(it != regionList.end()) {
-		if (it->GetX() >= right || it->GetY() >= bottom || it->GetX() + it->GetWidth() < left || it->GetY() + it->GetHeight() < top) {
-			if (onDelete) {
-				onDelete(&(*it));
-			}
-			regionList.erase(it);
-			it = regionList.begin();
-			continue;
-		}
-		it++;
-	}
+void RegionPagerBase::Update() {
+	//TODO
 }

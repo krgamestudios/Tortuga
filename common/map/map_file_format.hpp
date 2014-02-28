@@ -1,4 +1,4 @@
-/* Copyright: (c) Kayne Ruse 2013
+/* Copyright: (c) Kayne Ruse 2014
  * 
  * This software is provided 'as-is', without any express or implied
  * warranty. In no event will the authors be held liable for any damages
@@ -19,32 +19,17 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef TILE_HPP_
-#define TILE_HPP_
+#ifndef MAPFILEFORMAT_HPP_
+#define MAPFILEFORMAT_HPP_
 
-//explicitly a POD
-struct Tile {
-	//position relative to the Region
-	int x, y, depth;
+#include "region.hpp"
 
-	//graphics
-	int width, height;
-	int tileIndex;
-
-	Tile() = default;
-	Tile(int _x, int _y, int _depth, int _width, int _height, int _tileIndex) {
-		//The order of the arguments should be explicit
-		x = _x;
-		y = _y;
-		depth = _depth;
-		width = _width;
-		height = _height;
-		tileIndex = _tileIndex;
-	}
+class MapFileFormat {
+public:
+	void Load(Region** const, int x, int y);
+	void Save(Region* const);
+private:
+	//
 };
-
-bool operator<(Tile const& lhs, Tile const& rhs);
-bool operator>(Tile const& lhs, Tile const& rhs);
-bool operator==(Tile const& lhs, Tile const& rhs);
 
 #endif

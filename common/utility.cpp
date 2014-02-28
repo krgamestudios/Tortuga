@@ -27,9 +27,9 @@ int snapToBase(int base, int x) {
 	//snap to a grid
 	if (x < 0) {
 		x++;
-		return x - x % base - base;
+		return x / base * base - base;
 	}
-	return x - x % base;
+	return x / base * base;
 }
 
 std::string truncatePath(std::string pathname) {

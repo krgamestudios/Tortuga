@@ -1,4 +1,4 @@
-/* Copyright: (c) Kayne Ruse 2013
+/* Copyright: (c) Kayne Ruse 2014
  * 
  * This software is provided 'as-is', without any express or implied
  * warranty. In no event will the authors be held liable for any damages
@@ -23,47 +23,117 @@
 #define REGIONPAGER_HPP_
 
 #include "region.hpp"
-#include "tile_sheet_manager.hpp"
+#include "utility.hpp"
 
 #include <list>
 
-class RegionPager {
+class RegionPagerBase {
 public:
-	//for simplicity and consistency
-	typedef void (*regionCallback_t)(Region* const);
+	RegionPagerBase() = delete;
+	RegionPagerBase(int regionWidth, int regionHeight, int regionDepth);
+	virtual ~RegionPagerBase();
 
-	RegionPager();
-	~RegionPager();
+	int SetTile(int x, int y, int z, int v);
+	int GetTile(int x, int y, int z);
 
-	//these parameters MUST be multiples of the width & height
-	Region* NewRegion(int x, int y);
+	void Update();
+
 	Region* GetRegion(int x, int y);
-	void DeleteRegion(int x, int y);
 
-	//call this to draw to the screen
-	void DrawTo(SDL_Surface* const, TileSheetManager* const, int camX, int camY);
+	//interface
+	virtual Region* LoadRegion(int x, int y) = 0;
+	virtual Region* SaveRegion(int x, int y) = 0;
+	virtual Region* CreateRegion(int x, int y) = 0;
+	virtual void UnloadRegion(int x, int y) = 0;
 
-	//callback hooks
-	void SetOnNew(regionCallback_t f) { onNew = f; }
-	void SetOnDelete(regionCallback_t f) { onDelete = f; }
+	//accessors
+	int GetRegionWidth() { return regionWidth; }
+	int GetRegionHeight() { return regionHeight; }
+	int GetRegionDepth() { return regionDepth; }
+protected:
+	const int regionWidth;
+	const int regionHeight;
+	const int regionDepth;
+	std::list<Region*> regionList;
+};
 
-	//params: Absolute values
-	void Prune(int left, int top, int right, int bottom);
+template<typename MapGenerator, typename MapFileFormat>
+class RegionPager : public RegionPagerBase {
+public:
+	RegionPager() = delete;
+	RegionPager(int w, int h, int d):
+		RegionPagerBase(w, h, d)
+	{
+		//EMPTY
+	}
+	~RegionPager() = default;
 
-	//accessors and mutators
-	int SetWidth(int i) { return regionWidth = i; }
-	int SetHeight(int i) { return regionHeight = i; }
+	Region* LoadRegion(int x, int y) {
+		//snap the coords
+		x = snapToBase(regionWidth, x);
+		y = snapToBase(regionHeight, y);
 
-	int GetWidth() const { return regionWidth; }
-	int GetHeight() const { return regionHeight; }
+		//load the region if possible
+		Region* ptr = nullptr;
+		format.Load(&ptr, x, y);
+		if (ptr) {
+			regionList.push_back(ptr);
+			return ptr;
+		}
+		return nullptr;
+	}
 
-	std::list<Region>* GetRegions() { return &regionList; }
-private:
-	std::list<Region> regionList;
-	int regionWidth = 0, regionHeight = 0;
+	Region* SaveRegion(int x, int y) {
+		//snap the coords
+		x = snapToBase(regionWidth, x);
+		y = snapToBase(regionHeight, y);
 
-	regionCallback_t onNew = nullptr;
-	regionCallback_t onDelete = nullptr;
+		//find & save the region
+		for (std::list<Region*>::iterator it = regionList.begin(); it != regionList.end(); it++) {
+			if ((*it)->GetX() == x && (*it)->GetY() == y) {
+				format.Save(*it);
+				return *it;
+			}
+		}
+		return nullptr;
+	}
+
+	Region* CreateRegion(int x, int y) {
+		//snap the coords
+		x = snapToBase(regionWidth, x);
+		y = snapToBase(regionHeight, y);
+
+		//create and push the object
+		Region* ptr = nullptr;
+		generator.Create(&ptr, regionWidth, regionHeight, regionDepth, x, y);
+		regionList.push_back(ptr);
+		return ptr;
+	}
+
+	void UnloadRegion(int x, int y) {
+		//snap the coords
+		x = snapToBase(regionWidth, x);
+		y = snapToBase(regionHeight, y);
+
+		for (std::list<Region*>::iterator it = regionList.begin(); it != regionList.end(); /* EMPTY */) {
+			if ((*it)->GetX() == x && (*it)->GetY() == y) {
+				generator.Unload(*it);
+				regionList.erase(it);
+
+				//reset the loop, because of reasons
+				it = regionList.begin();
+				continue;
+			}
+			++it;
+		}
+	}
+
+	//accessors
+	MapGenerator* GetGenerator() { return &generator; }
+	MapFileFormat* GetFormat() { return &format; }
+protected:
+	MapGenerator generator;
+	MapFileFormat format;
 };
 
 #endif

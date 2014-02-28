@@ -1,4 +1,4 @@
-/* Copyright: (c) Kayne Ruse 2013
+/* Copyright: (c) Kayne Ruse 2014
  * 
  * This software is provided 'as-is', without any express or implied
  * warranty. In no event will the authors be held liable for any damages
@@ -22,91 +22,29 @@
 #ifndef REGION_HPP_
 #define REGION_HPP_
 
-#include "tile.hpp"
-
-#include <set>
-
-/* A single section of the map.
- * This class stores the tiles relative to it's own position, but
- * there are functions for referencing the tiles' absolute position.
- * These functions simply wrap the normal functions.
-*/
 class Region {
 public:
 	Region() = delete;
-	Region(int x, int y, int width, int height);
-	~Region() = default;
+	Region(int width, int height, int depth, int x, int y);
+	~Region();
 
-	//create and insert a new tile, overwriting an existing tile at that location
-	int NewTileR(Tile const& tile);
-	int NewTileA(Tile const& tile) {
-		//these can change, if the Tile class is changed
-		return NewTileR({
-			tile.x - x,
-			tile.y - y,
-			tile.depth,
-			tile.width,
-			tile.height,
-			tile.tileIndex
-		});
-	}
+	int SetTile(int x, int y, int z, int v);
+	int GetTile(int x, int y, int z);
 
-	//find the first tile at this location, with the specified minimum depth
-	Tile GetTileR(int tx, int ty, int minDepth);
-	Tile GetTileA(int tx, int ty, int minDepth) {
-		return GetTileR(tx - x, ty - y, minDepth);
-	}
-
-	//wrap the other delete functions
-	int DeleteTileR(int tx, int ty, int minDepth) {
-		return DeleteTileR(GetTileR(tx, ty, minDepth));
-	}
-	int DeleteTileA(int tx, int ty, int minDepth) {
-		//explicitly skip one function call by adjusting from A to R
-		return DeleteTileR(GetTileR(tx - x, ty - y, minDepth));
-	}
-
-	//delete the specified tile
-	int DeleteTileR(Tile const& tile);
-	int DeleteTileA(Tile const& tile) {
-		//these can change, if the Tile class is changed
-		return DeleteTileR({
-			tile.x - x,
-			tile.y - y,
-			tile.depth,
-			tile.width,
-			tile.height,
-			tile.tileIndex
-		});
-	}
-
-	//find if the specified location exists within the region's bounds
-	bool InBoundsR(int i, int j) {
-		return (i >= 0) && (j >= 0) && (i < width) && (j < height);
-	}
-	bool InBoundsA(int i, int j) {
-		return InBoundsR(i - x, j - y);
-	}
-
-	//Raw accessors & mutators
-	int GetX() const { return x; }
-	int GetY() const { return y; }
-	int GetWidth() const { return width; }
-	int GetHeight() const { return height; }
-
-	std::set<Tile>* GetTiles() { return &tiles; }
-
-	//sorting the regions by the locations
-	friend bool operator<(Region const& lhs, Region const& rhs);
-	friend bool operator>(Region const& lhs, Region const& rhs);
-	friend bool operator==(Region const& lhs, Region const& rhs);
-
+	//accessors
+	int GetWidth() { return width; }
+	int GetHeight() { return height; }
+	int GetDepth() { return depth; }
+	int GetX() { return x; }
+	int GetY() { return y; }
 private:
-	int const x;
-	int const y;
-	int const width;
-	int const height;
-	std::set<Tile> tiles;
+	const int width;
+	const int height;
+	const int depth;
+	const int x;
+	const int y;
+
+	int*** tiles = nullptr;
 };
 
 #endif

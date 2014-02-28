@@ -1,4 +1,4 @@
-/* Copyright: (c) Kayne Ruse 2013
+/* Copyright: (c) Kayne Ruse 2014
  * 
  * This software is provided 'as-is', without any express or implied
  * warranty. In no event will the authors be held liable for any damages
@@ -21,39 +21,21 @@
 */
 #include "tile_sheet.hpp"
 
-#include <stdexcept>
-
-void TileSheet::Load(std::string fname, Uint16 w, Uint16 h) {
-	//setup the image
+void TileSheet::Load(std::string fname, int xc, int yc) {
+	XCount = xc;
+	YCount = yc;
 	image.LoadSurface(fname);
-	image.SetClipW(w);
-	image.SetClipH(h);
-
-	//get the tile counts
-	xCount = image.GetSurface()->w / w;
-	yCount = image.GetSurface()->h / h;
-	totalCount = xCount * yCount;
-
-	//set begin & end (usually temporary)
-	begin = 0;
-	end = totalCount;
+	image.SetClipW(image.GetClipW()/XCount);
+	image.SetClipH(image.GetClipH()/YCount);
 }
 
 void TileSheet::Unload() {
 	image.FreeSurface();
-	totalCount = xCount = yCount = 0;
-	begin = end = -1;
+	XCount = YCount = 0;
 }
 
-void TileSheet::DrawTo(SDL_Surface* const dest, int x, int y, int tileIndex) {
-	if (!InRange(tileIndex)) {
-		throw(std::invalid_argument("Tile index out of range"));
-	}
-	Sint16 clipX = (tileIndex-begin) % xCount * image.GetClipW();
-	Sint16 clipY = (tileIndex-begin) / xCount * image.GetClipH();
-
-	image.SetClipX(clipX);
-	image.SetClipY(clipY);
-
+void TileSheet::DrawTo(SDL_Surface* const dest, int x, int y, int tile) {
+	image.SetClipX(tile % XCount * image.GetClipW());
+	image.SetClipY(tile / XCount * image.GetClipH());
 	image.DrawTo(dest, x, y);
 }

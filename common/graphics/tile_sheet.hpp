@@ -1,4 +1,4 @@
-/* Copyright: (c) Kayne Ruse 2013
+/* Copyright: (c) Kayne Ruse 2014
  * 
  * This software is provided 'as-is', without any express or implied
  * warranty. In no event will the authors be held liable for any damages
@@ -26,45 +26,26 @@
 
 #include <string>
 
-/* The TileSheet class is used for drawing tiles of the map to the screen.
- * This class also tracks the range of the tile images.
-*/
 class TileSheet {
 public:
 	TileSheet() = default;
+	TileSheet(std::string f, int x, int y) { Load(f, x, y); }
 	~TileSheet() = default;
 
-	//these load/set functions need to be followed by bookkeeping code
-	//w & h are the width & height of individual tiles
-	//TODO: rename these
-	void Load(std::string fname, Uint16 w, Uint16 h);
+	void Load(std::string fname, int XCount, int YCount);
 	void Unload();
 
-	void DrawTo(SDL_Surface* const dest, int x, int y, int tileIndex);
+	void DrawTo(SDL_Surface* const dest, int x, int y, int tile);
 
-	bool InRange(int i) { return i >= begin && i < end; }
-
-	//accessors and mutators
+	//accessors
 	Image* GetImage() { return &image; }
-
-	int GetTileW() const { return image.GetClipW(); }
-	int GetTileH() const { return image.GetClipH(); }
-
-	int GetTotalCount() const { return totalCount; }
-	int GetXCount() const { return xCount; }
-	int GetYCount() const { return yCount; }
-
-	int SetBegin(int i) { return begin = i; }
-	int SetEnd(int i) { return end = i; }
-
-	int GetBegin() const { return begin; }
-	int GetEnd() const { return end; }
+	int GetXCount() { return XCount; }
+	int GetYCount() { return YCount; }
+	int GetTileW() { return image.GetClipW(); }
+	int GetTileH() { return image.GetClipH(); }
 private:
 	Image image;
-
-	//these are generated and used by internal processes
-	int totalCount = 0, xCount = 0, yCount = 0;
-	int begin = -1, end = -1;
+	int XCount = 0, YCount = 0;
 };
 
 #endif

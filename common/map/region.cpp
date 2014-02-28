@@ -1,4 +1,4 @@
-/* Copyright: (c) Kayne Ruse 2013
+/* Copyright: (c) Kayne Ruse 2014
  * 
  * This software is provided 'as-is', without any express or implied
  * warranty. In no event will the authors be held liable for any damages
@@ -21,103 +21,39 @@
 */
 #include "region.hpp"
 
-#include "utility.hpp"
-
-#include <stdexcept>
-#include <sstream>
-
-Region::Region(int _x, int _y, int _w, int _h):
-	x(_x),
-	y(_y),
-	width(_w),
-	height(_h)
+Region::Region(int argWidth, int argHeight, int argDepth, int argX, int argY):
+	width(argWidth),
+	height(argHeight),
+	depth(argDepth),
+	x(argX),
+	y(argY)
 {
-	//make sure that the region's position lines up
-	if (x != snapToBase(width, x) || y != snapToBase(height, y)) {
-		std::ostringstream os;
-		os << "Region is unaligned; x: " << x << ", y: " << y << ", width: " << width << ", height: " << height;
-		throw(std::runtime_error(os.str()));
-	}
-}
-
-int Region::NewTileR(Tile const& tile) {
-	//return 1 for overwrite, 0 for insert
-	if (!InBoundsR(tile.x, tile.y)) {
-		std::ostringstream os;
-		os << "New tile location out of bounds: " <<
-			"(" << x << "," << y << ")->" <<
-			"(" << tile.x << "," << tile.y << ")"
-		;
-		throw(std::runtime_error(os.str()));
-	}
-
-	int ret = tiles.erase(tile);
-	tiles.insert(tile);
-	return ret;
-}
-
-Tile Region::GetTileR(int tx, int ty, int minDepth) {
-	std::set<Tile>::iterator ptr = tiles.begin();
-
-	//skip the tiles that are too deep
-	while(ptr != tiles.end()) {
-		if (ptr->depth >= minDepth) {
-			break;
+	tiles = new int**[width];
+	for (int i = 0; i < width; ++i) {
+		tiles[i] = new int*[height];
+		for (int j = 0; j < height; ++j) {
+			tiles[i][j] = new int[depth];
+			for (int k = 0; k < depth; ++k) {
+				tiles[i][j][k] = 0;
+			}
 		}
-		ptr++;
 	}
+}
 
-	//find the first tile here
-	while(ptr != tiles.end()) {
-		//bounds
-		if ((ptr->x <= tx) && (ptr->y <= ty) && (ptr->x + ptr->width > tx) && (ptr->y + ptr->height > ty)) {
-			break;
+Region::~Region() {
+	for (int i = 0; i < width; ++i) {
+		for (int j = 0; j < height; j++) {
+			delete tiles[i][j];
 		}
-		ptr++;
+		delete tiles[i];
 	}
-
-	//found it
-	if (ptr != tiles.end()) {
-		return *ptr;
-	}
-
-	//a tileIndex of -1 is an error code, the rest is for show
-	return {0,0,0,-1,-1,-1};
+	delete tiles;
 }
 
-int Region::DeleteTileR(Tile const& tile) {
-	if (!InBoundsR(tile.x, tile.y)) {
-		throw(std::runtime_error("Deleted tile location out of bounds"));
-
-		std::ostringstream os;
-		os << "Deleted tile location out of bounds: " <<
-			"(" << x << "," << y << ")->" <<
-			"(" << tile.x << "," << tile.y << ")"
-		;
-		throw(std::runtime_error(os.str()));
-	}
-	//sentinel/error code
-	if (tile.tileIndex == -1) {
-		return 0;
-	}
-	return tiles.erase(tile);
+int Region::SetTile(int x, int y, int z, int v) {
+	return tiles[x][y][z] = v;
 }
 
-bool operator<(Region const& lhs, Region const& rhs) {
-	//sort by y -> x
-	if (lhs.y == rhs.y) {
-		return lhs.x < rhs.x;
-	}
-	return lhs.y < rhs.y;
-}
-
-inline bool operator>(Region const& lhs, Region const& rhs) {
-	//wrap the other operator
-	return rhs < lhs;
-}
-
-inline bool operator==(Region const& lhs, Region const& rhs) {
-	//comparisons work on the location ONLY
-	//this function is redundant as far as the std::set object is concerned
-	return (lhs.x == rhs.x) && (lhs.y == rhs.y);
+int Region::GetTile(int x, int y, int z) {
+	return tiles[x][y][z];
 }

@@ -24,15 +24,15 @@
 
 #include "base_scene.hpp"
 
-#include "region_pager.hpp"
-#include "tile_sheet_manager.hpp"
-
 #include "config_utility.hpp"
 #include "image.hpp"
 #include "raster_font.hpp"
 #include "menu_bar.hpp"
 
-//#include "map_loader.hpp"
+#include "region_pager.hpp"
+#include "map_generator.hpp"
+#include "map_file_format.hpp"
+#include "tile_sheet.hpp"
 
 class EditorScene : public BaseScene {
 public:
@@ -62,19 +62,16 @@ protected:
 	Image debugInfo;
 	bool debugOpen = true;
 
-	RegionPager pager;
-	TileSheetManager sheetMgr;
-
 	RasterFont font;
 	Image buttonImage;
-
 	MenuBar menuBar;
 
 	struct {
 		int x = 0, y = 0;
 	} camera;
 
-	int tileCounter = 0;
+	RegionPager<MapGenerator, MapFileFormat> pager;
+	TileSheet tsheet;
 };
 
 #endif

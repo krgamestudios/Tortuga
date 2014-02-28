@@ -1,4 +1,4 @@
-/* Copyright: (c) Kayne Ruse 2013
+/* Copyright: (c) Kayne Ruse 2014
  * 
  * This software is provided 'as-is', without any express or implied
  * warranty. In no event will the authors be held liable for any damages
@@ -19,33 +19,12 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef TILESHEETMANAGER_HPP_
-#define TILESHEETMANAGER_HPP_
+#include "map_generator.hpp"
 
-#include "tile_sheet.hpp"
+void MapGenerator::Create(Region** const ptr, int width, int height, int depth, int x, int y) {
+	(*ptr) = new Region(width, height, depth, x, y);
+}
 
-#include <map>
-#include <string>
-
-class TileSheetManager {
-public:
-	TileSheetManager() = default;
-	~TileSheetManager() = default;
-
-	TileSheet* LoadSheet(std::string fname, Uint16 w, Uint16 h);
-	TileSheet* GetSheet(std::string name);
-	TileSheet* GetSheetByIndex(int tileIndex);
-	void UnloadSheet(std::string name);
-
-	void DrawTo(SDL_Surface* const, int x, int y, int tileIndex);
-
-	int SetRangeEnd(int i) { return rangeEnd += i; }
-	int GetRangeEnd() const { return rangeEnd; }
-
-	std::map<std::string, TileSheet>* GetSheetMap() { return &sheetMap; }
-private:
-	std::map<std::string, TileSheet> sheetMap;
-	int rangeEnd = 0;
-};
-
-#endif
+void MapGenerator::Unload(Region* const ptr) {
+	delete ptr;
+}

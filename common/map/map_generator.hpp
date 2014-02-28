@@ -1,4 +1,4 @@
-/* Copyright: (c) Kayne Ruse 2013
+/* Copyright: (c) Kayne Ruse 2014
  * 
  * This software is provided 'as-is', without any express or implied
  * warranty. In no event will the authors be held liable for any damages
@@ -19,26 +19,17 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#include "tile.hpp"
+#ifndef MAPGENERATOR_HPP_
+#define MAPGENERATOR_HPP_
 
-bool operator<(Tile const& lhs, Tile const& rhs) {
-	//sort by depth -> y -> x
-	if (lhs.depth == rhs.depth) {
-		if (lhs.y == rhs.y) {
-			return lhs.x < rhs.x;
-		}
-		return lhs.y < rhs.y;
-	}
-	return lhs.depth < rhs.depth;
-}
+#include "region.hpp"
 
-inline bool operator>(Tile const& lhs, Tile const& rhs) {
-	//wrap the other operator
-	return rhs < lhs;
-}
+class MapGenerator {
+public:
+	void Create(Region** const, int width, int height, int depth, int x, int y);
+	void Unload(Region* const);
+private:
+	//
+};
 
-inline bool operator==(Tile const& lhs, Tile const& rhs) {
-	//comparisons work on the location ONLY
-	//this function is redundant as far as the std::set object is concerned
-	return (lhs.x == rhs.x) && (lhs.y == rhs.y) && (lhs.depth == rhs.depth);
-}
+#endif

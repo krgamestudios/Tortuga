@@ -1,4 +1,4 @@
-/* Copyright: (c) Kayne Ruse 2013
+/* Copyright: (c) Kayne Ruse 2014
  * 
  * This software is provided 'as-is', without any express or implied
  * warranty. In no event will the authors be held liable for any damages
@@ -19,24 +19,12 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#include "editor_application.hpp"
+#include "map_file_format.hpp"
 
-#include <stdexcept>
-#include <iostream>
+void MapFileFormat::Load(Region** const ptr, int x, int y) {
+	//TODO
+}
 
-using namespace std;
-
-int main(int, char**) {
-	cout << "Beginning editor" << endl;
-	try {
-		EditorApplication::GetInstance()->Init();
-		EditorApplication::GetInstance()->Proc();
-		EditorApplication::GetInstance()->Quit();
-	}
-	catch(exception& e) {
-		cerr << "Fatal exception thrown: " << e.what() << endl;
-		return 1;
-	}
-	cout << "Clean exit" << endl;
-	return 0;
+void MapFileFormat::Save(Region* const ptr) {
+	//TODO
 }
