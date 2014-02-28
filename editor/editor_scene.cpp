@@ -35,7 +35,7 @@ using namespace std;
 
 EditorScene::EditorScene(ConfigUtility* const arg1):
 	config(*arg1),
-	region(20, 20, 3, 0, 0)
+	pager(20, 20, 3)
 {
 	//create the debugging "window"
 	debugInfo.CreateSurface(256, 256);
@@ -58,9 +58,6 @@ EditorScene::EditorScene(ConfigUtility* const arg1):
 
 	//debug
 	tsheet.Load("rsc\\graphics\\tilesets\\sand.bmp", 12, 3);
-	cout << region.GetWidth() << endl;
-	cout << region.GetHeight() << endl;
-	cout << region.GetDepth() << endl;
 }
 
 EditorScene::~EditorScene() {
@@ -85,14 +82,14 @@ void EditorScene::FrameEnd() {
 
 void EditorScene::Render(SDL_Surface* const screen) {
 	//debug
-	for (int i = 0; i < region.GetWidth(); i++) {
-		for (int j = 0; j < region.GetHeight(); j++) {
-			for (int k = 0; k < region.GetDepth(); k++) {
+	for (int i = 0; i < pager.GetRegionWidth()*2; i++) {
+		for (int j = 0; j < pager.GetRegionHeight()*2; j++) {
+			for (int k = 0; k < pager.GetRegionDepth(); k++) {
 				tsheet.DrawTo(
 					screen,
-					i*tsheet.GetTileW()+region.GetX()-camera.x,
-					j*tsheet.GetTileH()+region.GetY()-camera.y,
-					region.GetTile(i,j,k)
+					i*tsheet.GetTileW()-camera.x,
+					j*tsheet.GetTileH()-camera.y,
+					pager.GetTile(i,j,k)
 				);
 			}
 		}

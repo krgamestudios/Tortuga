@@ -23,8 +23,6 @@
 
 #include "utility.hpp"
 
-#include <iostream>
-
 RegionPagerBase::RegionPagerBase(int argWidth, int argHeight, int argDepth):
 	regionWidth(argWidth),
 	regionHeight(argHeight),
@@ -34,18 +32,17 @@ RegionPagerBase::RegionPagerBase(int argWidth, int argHeight, int argDepth):
 }
 
 RegionPagerBase::~RegionPagerBase() {
-	std::cout << "final size: " << regionList.size() << std::endl;
 	//EMPTY
 }
 
 int RegionPagerBase::SetTile(int x, int y, int z, int v) {
 	Region* ptr = GetRegion(x, y);
-	return ptr->SetTile(x - ptr->GetX(), y = ptr->GetY(), z, v);
+	return ptr->SetTile(x - ptr->GetX(), y - ptr->GetY(), z, v);
 }
 
 int RegionPagerBase::GetTile(int x, int y, int z) {
 	Region* ptr = GetRegion(x, y);
-	return ptr->GetTile(x - ptr->GetX(), y = ptr->GetY(), z);
+	return ptr->GetTile(x - ptr->GetX(), y - ptr->GetY(), z);
 }
 
 Region* RegionPagerBase::GetRegion(int x, int y) {

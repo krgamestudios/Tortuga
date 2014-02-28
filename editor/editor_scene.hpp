@@ -30,6 +30,8 @@
 #include "menu_bar.hpp"
 
 #include "region_pager.hpp"
+#include "map_generator.hpp"
+#include "map_file_format.hpp"
 #include "tile_sheet.hpp"
 
 class EditorScene : public BaseScene {
@@ -68,7 +70,7 @@ protected:
 		int x = 0, y = 0;
 	} camera;
 
-	Region region;
+	RegionPager<MapGenerator, MapFileFormat> pager;
 	TileSheet tsheet;
 };
 

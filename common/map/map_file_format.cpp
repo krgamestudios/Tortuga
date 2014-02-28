@@ -21,14 +21,10 @@
 */
 #include "map_file_format.hpp"
 
-#include <iostream>
-
 void MapFileFormat::Load(Region** const ptr, int x, int y) {
 	//TODO
-	std::cout << "Load" << std::endl;
 }
 
 void MapFileFormat::Save(Region* const ptr) {
 	//TODO
-	std::cout << "Save" << std::endl;
 }

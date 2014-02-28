@@ -21,14 +21,10 @@
 */
 #include "map_generator.hpp"
 
-#include <iostream>
-
 void MapGenerator::Create(Region** const ptr, int width, int height, int depth, int x, int y) {
 	(*ptr) = new Region(width, height, depth, x, y);
-	std::cout << "Create" << std::endl;
 }
 
 void MapGenerator::Unload(Region* const ptr) {
 	delete ptr;
-	std::cout << "Unload" << std::endl;
 }

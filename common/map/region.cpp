@@ -21,8 +21,6 @@
 */
 #include "region.hpp"
 
-#include <cstdlib>
-
 Region::Region(int argWidth, int argHeight, int argDepth, int argX, int argY):
 	width(argWidth),
 	height(argHeight),
