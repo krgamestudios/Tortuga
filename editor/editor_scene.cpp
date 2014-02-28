@@ -114,13 +114,15 @@ void EditorScene::Render(SDL_Surface* const screen) {
 }
 
 void EditorScene::DrawToDebugInfo(std::string str, int line) {
-	//draw the debug info on the right
-	font.DrawStringTo(
-		str,
-		debugInfo.GetSurface(),
-		debugInfo.GetClipW() - str.size() * font.GetCharW(),
-		font.GetCharH() * line
-	);
+	//draw the debug info on the right, with a grey background
+	SDL_Rect clip = {
+		Sint16(debugInfo.GetClipW() - str.size() * font.GetCharW()),
+		Sint16(font.GetCharH() * line),
+		Uint16(str.size() * font.GetCharW()),
+		Uint16(font.GetCharH())
+	};
+	SDL_FillRect(debugInfo.GetSurface(), &clip, SDL_MapRGB(debugInfo.GetSurface()->format, 64, 64, 64));
+	font.DrawStringTo(str, debugInfo.GetSurface(), clip.x, clip.y);
 }
 
 //-------------------------
