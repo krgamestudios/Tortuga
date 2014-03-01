@@ -54,6 +54,9 @@ protected:
 	void KeyDown(SDL_KeyboardEvent const&);
 	void KeyUp(SDL_KeyboardEvent const&);
 
+	//members
+	void HandleMenuOption(int entry, int drop);
+
 	//globals
 	ConfigUtility& config;
 

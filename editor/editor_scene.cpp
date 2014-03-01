@@ -51,9 +51,9 @@ EditorScene::EditorScene(ConfigUtility* const arg1):
 	menuBar.SetImage(&buttonImage);
 
 	menuBar.SetEntries({
-		{"File", "New", "Open", "Save", "Save As...", "Close", "Exit"},
-		{"Edit", "Set Tile", "Load Sheet", "Delete Sheet", "Metadata", "Run Script"},
-		{"Debugging", "Debug On", "Debug Off", "Toggle Debug", "Testificate"}
+		{"File", "New", "Open", "Save", "Close"},
+		{"Edit", "Set Tile", "Set Brush", "Script"},
+		{"Debug", "Debug On", "Debug Off", "Toggle", "Testificate"}
 	});
 
 	//debug
@@ -95,7 +95,7 @@ void EditorScene::Render(SDL_Surface* const screen) {
 		}
 	}
 
-	//draw a big bar across the top
+	//draw a big bar across the top (hackish)
 	buttonImage.SetClipY(0);
 	for (int i = 0; i < screen->w; i += buttonImage.GetClipW()) {
 		buttonImage.DrawTo(screen, i, 0);
@@ -145,85 +145,7 @@ void EditorScene::MouseButtonDown(SDL_MouseButtonEvent const& button) {
 void EditorScene::MouseButtonUp(SDL_MouseButtonEvent const& button) {
 	int entry, drop;
 	menuBar.MouseButtonUp(button, &entry, &drop);
-
-	//manage input from the menu bar
-	switch(entry) {
-		case 0: //File
-			switch(drop) {
-				case 0:
-					//TODO: NEW
-				break;
-
-				case 1:
-					//TODO: OPEN
-				break;
-
-				case 2:
-					//TODO: SAVE
-				break;
-
-				case 3:
-					//TODO: SAVE AS
-				break;
-
-				case 4:
-					//TODO: CLOSE
-				break;
-
-				case 5: {
-					//EXIT
-					SDL_Event e;
-					e.type = SDL_QUIT;
-					SDL_PushEvent(&e);
-				}
-				break;
-			}
-		break;
-
-		case 1: //Edit
-			switch(drop) {
-				case 0:
-					//TODO: SET TILE
-				break;
-
-				case 1:
-					//TODO: LOAD SHEET
-				break;
-
-				case 2:
-					//TODO: DELETE SHEET
-				break;
-
-				case 3:
-					//TODO: METADATA
-				break;
-
-				case 4:
-					//TODO: RUN SCRIPT
-				break;
-			}
-		break;
-
-		case 2: //Debug
-			switch(drop) {
-				case 0:
-					debugOpen = true;
-				break;
-
-				case 1:
-					debugOpen = false;
-				break;
-
-				case 2:
-					debugOpen = !debugOpen;
-				break;
-
-				case 3:
-					SetNextScene(SceneList::TESTIFICATESCENE);
-				break;
-			}
-		break;
-	}
+	HandleMenuOption(entry, drop);
 }
 
 void EditorScene::KeyDown(SDL_KeyboardEvent const& key) {
@@ -231,12 +153,10 @@ void EditorScene::KeyDown(SDL_KeyboardEvent const& key) {
 		case SDLK_ESCAPE:
 			QuitEvent();
 		break;
-
 		case SDLK_SPACE:
 			camera.x = 0;
 			camera.y = 0;
 		break;
-
 		case SDLK_TAB:
 			debugOpen = !debugOpen;
 		break;
@@ -245,4 +165,59 @@ void EditorScene::KeyDown(SDL_KeyboardEvent const& key) {
 
 void EditorScene::KeyUp(SDL_KeyboardEvent const& key) {
 	//
+}
+
+//-------------------------
+//Members
+//-------------------------
+
+void EditorScene::HandleMenuOption(int entry, int drop) {
+	//manage input from the menu bar
+	switch(entry) {
+		case 0: //File
+			switch(drop) {
+				case 0:
+					//TODO: NEW
+				break;
+				case 1:
+					//TODO: OPEN
+				break;
+				case 2:
+					//TODO: SAVE
+				break;
+				case 3:
+					//TODO: CLOSE
+				break;
+			}
+		break;
+		case 1: //Edit
+			switch(drop) {
+				case 0:
+					//TODO: SET TILE
+				break;
+				case 1:
+					//TODO: SET BRUSH
+				break;
+				case 2:
+					//TODO: SCRIPT
+				break;
+			}
+		break;
+		case 2: //Debug
+			switch(drop) {
+				case 0:
+					debugOpen = true;
+				break;
+				case 1:
+					debugOpen = false;
+				break;
+				case 2:
+					debugOpen = !debugOpen;
+				break;
+				case 3:
+					SetNextScene(SceneList::TESTIFICATESCENE);
+				break;
+			}
+		break;
+	}
 }
