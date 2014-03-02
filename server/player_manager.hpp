@@ -1,4 +1,4 @@
-/* Copyright: (c) Kayne Ruse 2013
+/* Copyright: (c) Kayne Ruse 2014
  * 
  * This software is provided 'as-is', without any express or implied
  * warranty. In no event will the authors be held liable for any damages
@@ -19,25 +19,41 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef PLAYER_HPP_
-#define PLAYER_HPP_
+#ifndef PLAYERMANAGER_HPP_
+#define PLAYERMANAGER_HPP_
 
 #include "vector2.hpp"
 
-#include <string>
 #include <map>
+#include <string>
 
-/* Hold the player info.
-*/
-
-struct Player {
+struct PlayerEntry {
 	int clientIndex;
-	std::string handle;
-	std::string avatar;
+	int mapIndex;
 	Vector2 position;
 	Vector2 motion;
 };
 
-typedef std::map<int, Player> PlayerMap;
+class PlayerManager {
+public:
+	//These functions interact with the database
+	//*Deletion, *Load and *Unload returns: 0 success, -1 failure
+	//*Creation returns the uniqueID, but doesn't load
+	//  that object; call *Load directly afterward
+
+	int HandlePlayerCreation	(std::string name, std::string avatar);
+	int HandlePlayerDeletion	(int uniqueID);
+	int HandlePlayerLoad		(int uniqueID, int clientIndex);
+	int HandlePlayerUnload		(int uniqueID);
+
+	//basic accessor
+	PlayerEntry* GetPlayer		(int uniqueID);
+
+	//update each player's position
+	void Update(double delta);
+private:
+	std::map<int, PlayerEntry> playerMap;
+	//database connection here
+};
 
 #endif
