@@ -38,6 +38,12 @@ int ClientManager::HandleDisconnection(int i) {
 	return -1;
 }
 
+void ClientManager::ForEach(Lambda fn) {
+	for(Iterator it = clientMap.begin(); it != clientMap.end(); it++) {
+		fn(it);
+	}
+}
+
 ClientEntry* ClientManager::GetClient(int i) {
 	for (auto& it : clientMap) {
 		if (it.first == i) {

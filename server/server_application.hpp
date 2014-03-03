@@ -31,11 +31,12 @@
 #include "SDL/SDL.h"
 
 //misc
+#include "client_manager.hpp"
+#include "player_manager.hpp"
+
+//common
 #include "config_utility.hpp"
 #include "vector2.hpp"
-
-#include "client.hpp"
-#include "player.hpp"
 
 //STL
 #include <map>
@@ -45,8 +46,8 @@
 class ServerApplication {
 public:
 	//standard functions
-	ServerApplication();
-	~ServerApplication();
+	ServerApplication() = default;
+	~ServerApplication() = default;
 
 	void Init(int argc, char** argv);
 	void Loop();
@@ -59,13 +60,11 @@ private:
 	void HandleBroadcastRequest(NetworkPacket);
 	void HandleJoinRequest(NetworkPacket);
 	void HandleDisconnect(NetworkPacket);
-	void HandleSynchronize(NetworkPacket);
+//	void HandleSynchronize(NetworkPacket);
 	void HandleShutdown(NetworkPacket);
-	void HandlePlayerNew(NetworkPacket);
-	void HandlePlayerDelete(NetworkPacket);
-	void HandlePlayerUpdate(NetworkPacket);
-
-	void PumpPacket(NetworkPacket);
+//	void HandlePlayerNew(NetworkPacket);
+//	void HandlePlayerDelete(NetworkPacket);
+//	void HandlePlayerUpdate(NetworkPacket);
 
 	//networking
 	UDPNetworkUtility network;
@@ -73,16 +72,14 @@ private:
 	//database
 	sqlite3* database = nullptr;
 
+	//lua
+	//TODO
+
 	//misc
 	bool running = true;
 	ConfigUtility config;
 
-	//global lists
-	ClientMap clientMap;
-	PlayerMap playerMap;
-
-	int clientCounter = 0;
-	int playerCounter = 0;
+	ClientManager clientMgr;
 };
 
 #endif

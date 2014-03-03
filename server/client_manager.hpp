@@ -24,6 +24,7 @@
 
 #include "SDL/SDL_net.h"
 
+#include <functional>
 #include <map>
 
 struct ClientEntry {
@@ -32,15 +33,24 @@ struct ClientEntry {
 
 class ClientManager {
 public:
+	//clarity typedefs
+	typedef std::map<int, ClientEntry>		Container;
+	typedef Container::iterator				Iterator;
+	typedef std::function<void(Iterator)>	Lambda;
+
 	//returns the internal index
 	int HandleConnection(IPaddress);
 	int HandleDisconnection(int i);
 
+	//lambdas
+	void ForEach(Lambda);
+
 	//accessors
 	ClientEntry* GetClient(int i);
 	ClientEntry* GetClient(IPaddress);
+	int Size() { return clientMap.size(); }
 private:
-	std::map<int, ClientEntry> clientMap;
+	Container clientMap;
 	int counter = 0;
 };
 

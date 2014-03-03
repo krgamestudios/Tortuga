@@ -94,6 +94,9 @@ union NetworkPacket {
 		Vector2 motion;
 	}playerInfo;
 
+	//map data
+	//...
+
 	//defaults
 	NetworkPacket() {
 		meta.type = Type::NONE;
