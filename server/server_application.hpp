@@ -27,6 +27,7 @@
 #include "udp_network_utility.hpp"
 
 //APIs
+#include "lua/lua.hpp"
 #include "sqlite3/sqlite3.h"
 #include "SDL/SDL.h"
 
@@ -73,13 +74,14 @@ private:
 	sqlite3* database = nullptr;
 
 	//lua
-	//TODO
+	lua_State* luaState = nullptr;
 
 	//misc
 	bool running = true;
 	ConfigUtility config;
 
 	ClientManager clientMgr;
+	PlayerManager playerMgr;
 };
 
 #endif

@@ -37,6 +37,12 @@ int PlayerManager::HandlePlayerUnload(int uniqueID) {
 	//
 }
 
+void PlayerManager::ForEach(Lambda fn) {
+	for(Iterator it = playerMap.begin(); it != playerMap.end(); it++) {
+		fn(it);
+	}
+}
+
 PlayerEntry* PlayerManager::GetPlayer(int uniqueID) {
 	for (auto& it : playerMap) {
 		if (it.first == uniqueID) {

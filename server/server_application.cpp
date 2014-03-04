@@ -30,16 +30,18 @@
 
 using namespace std;
 
-void runSQLScript(sqlite3* db, std::string fname) {
-	//Run setup scripts
+int runSQLScript(sqlite3* db, std::string fname) {
 	ifstream is(fname);
 	if (!is.is_open()) {
-		throw(runtime_error("Failed to run SQL script"));
+		return -1;
 	}
 	string script;
 	getline(is, script, '\0');
 	is.close();
-	sqlite3_exec(db, script.c_str(), nullptr, nullptr, nullptr);
+	//TODO: flesh out this error if needed
+	if (sqlite3_exec(db, script.c_str(), nullptr, nullptr, nullptr) != SQLITE_OK) {
+		return -2;
+	}
 }
 
 //-------------------------
@@ -47,6 +49,9 @@ void runSQLScript(sqlite3* db, std::string fname) {
 //-------------------------
 
 void ServerApplication::Init(int argc, char** argv) {
+	cout << "Beginning startup" << endl;
+	int ret = 0;
+
 	//load config
 	config.Load("rsc\\config.cfg");
 
@@ -54,28 +59,45 @@ void ServerApplication::Init(int argc, char** argv) {
 	if (SDL_Init(0)) {
 		throw(runtime_error("Failed to initialize SDL"));
 	}
-	cout << "initialized SDL" << endl;
+	cout << "Initialized SDL" << endl;
 
 	//Init SDL_net
 	if (SDLNet_Init()) {
 		throw(runtime_error("Failed to initialize SDL_net"));
 	}
 	network.Open(config.Int("server.port"), sizeof(NetworkPacket));
-	cout << "initialized SDL_net" << endl;
+	cout << "Initialized SDL_net" << endl;
 
 	//Init SQL
-	int ret = sqlite3_open_v2(config["server.dbname"].c_str(), &database, SQLITE_OPEN_READWRITE|SQLITE_OPEN_CREATE, nullptr);
+	ret = sqlite3_open_v2(config["server.dbname"].c_str(), &database, SQLITE_OPEN_READWRITE|SQLITE_OPEN_CREATE, nullptr);
 	if (ret != SQLITE_OK || !database) {
-		throw(runtime_error("Failed to open the server database"));
+		throw(runtime_error(string() + "Failed to initialize SQL: " + sqlite3_errmsg(database) ));
 	}
-	cout << "initialized SQL" << endl;
+	playerMgr.SetDatabase(database);
+	cout << "Initialized SQL" << endl;
 
 	//setup the database
-	runSQLScript(database, config["dir.scripts"] + "setup_server.sql");
-	cout << "initialized " << config["server.dbname"] << endl;
+	if (runSQLScript(database, config["dir.scripts"] + "setup_server.sql")) {
+		throw(runtime_error("Failed to initialize SQL's setup script"));
+	}
+	cout << "Initialized SQL's setup script" << endl;
 
 	//lua
-	//TODO
+	luaState = luaL_newstate();
+	if (!luaState) {
+		throw(runtime_error("Failed to initialize lua"));
+	}
+	luaL_openlibs(luaState);
+	cout << "Initialized lua" << endl;
+
+	//run the startup script
+	if (luaL_dofile(luaState, (config["dir.scripts"] + "setup_server.lua").c_str())) {
+		throw(runtime_error(string() + "Failed to initialize lua's setup script: " + lua_tostring(luaState, -1) ));
+	}
+	cout << "Initialized lua's setup script" << endl;
+
+	//finalize the startup
+	cout << "Startup completed successfully" << endl;
 }
 
 void ServerApplication::Loop() {
@@ -96,15 +118,19 @@ void ServerApplication::Loop() {
 }
 
 void ServerApplication::Quit() {
+	cout << "Shutting down" << endl;
 	//empty the members
 	//TODO: player manager
 	//TODO: client manager
 
 	//APIs
+	lua_close(luaState);
+	playerMgr.SetDatabase(nullptr);
 	sqlite3_close_v2(database);
 	network.Close();
 	SDLNet_Quit();
 	SDL_Quit();
+	cout << "Shutdown finished" << endl;
 }
 
 //-------------------------

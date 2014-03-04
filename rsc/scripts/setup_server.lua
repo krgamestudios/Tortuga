@@ -1,0 +1,1 @@
+print("Lua script check OK")

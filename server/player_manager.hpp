@@ -24,6 +24,9 @@
 
 #include "vector2.hpp"
 
+#include "sqlite3/sqlite3.h"
+
+#include <functional>
 #include <map>
 #include <string>
 
@@ -36,24 +39,33 @@ struct PlayerEntry {
 
 class PlayerManager {
 public:
+	//clarity typedefs
+	typedef std::map<int, PlayerEntry>		Container;
+	typedef Container::iterator				Iterator;
+	typedef std::function<void(Iterator)>	Lambda;
+
 	//These functions interact with the database
 	//*Deletion, *Load and *Unload returns: 0 success, -1 failure
 	//*Creation returns the uniqueID, but doesn't load
 	//  that object; call *Load directly afterward
-
 	int HandlePlayerCreation	(std::string name, std::string avatar);
 	int HandlePlayerDeletion	(int uniqueID);
 	int HandlePlayerLoad		(int uniqueID, int clientIndex);
 	int HandlePlayerUnload		(int uniqueID);
 
-	//basic accessor
-	PlayerEntry* GetPlayer		(int uniqueID);
+	//lambdas
+	void ForEach(Lambda);
+
+	//accessors
+	PlayerEntry* GetPlayer(int uniqueID);
+	sqlite3* SetDatabase(sqlite3* db) { return database = db; }
+	sqlite3* GetDatabase() { return database; }
 
 	//update each player's position
 	void Update(double delta);
 private:
-	std::map<int, PlayerEntry> playerMap;
-	//database connection here
+	Container playerMap;
+	sqlite3* database = nullptr;
 };
 
 #endif
