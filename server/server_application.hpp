@@ -25,6 +25,7 @@
 //networking
 #include "network_packet.hpp"
 #include "udp_network_utility.hpp"
+#include "serial.hpp"
 
 //APIs
 #include "sqlite3/sqlite3.h"

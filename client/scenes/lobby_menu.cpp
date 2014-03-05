@@ -80,7 +80,7 @@ void LobbyMenu::Update(double delta) {
 	//suck in all waiting packets
 	NetworkPacket packet;
 	while(network.Receive()) {
-		memcpy(&packet, network.GetInData(), sizeof(NetworkPacket));
+		deserialize(&packet, network.GetInData());
 		packet.meta.srcAddress = network.GetInPacket()->address;
 		HandlePacket(packet);
 	}
@@ -128,7 +128,9 @@ void LobbyMenu::MouseButtonUp(SDL_MouseButtonEvent const& button) {
 		//broadcast to the network, or a specific server
 		NetworkPacket packet;
 		packet.meta.type = NetworkPacket::Type::BROADCAST_REQUEST;
-		network.Send(config["server.host"].c_str(), config.Int("server.port"), reinterpret_cast<void*>(&packet), sizeof(NetworkPacket));
+		char buffer[sizeof(NetworkPacket)];
+		serialize(&packet, buffer);
+		network.Send(config["server.host"].c_str(), config.Int("server.port"), buffer, sizeof(NetworkPacket));
 
 		//reset the server list
 		serverInfo.clear();
@@ -139,7 +141,9 @@ void LobbyMenu::MouseButtonUp(SDL_MouseButtonEvent const& button) {
 		//join the selected server
 		NetworkPacket packet;
 		packet.meta.type = NetworkPacket::Type::JOIN_REQUEST;
-		network.Send(&selection->address, &packet, sizeof(NetworkPacket));
+		char buffer[sizeof(NetworkPacket)];
+		serialize(&packet, buffer);
+		network.Send(&selection->address, buffer, sizeof(NetworkPacket));
 		selection = nullptr;
 	}
 

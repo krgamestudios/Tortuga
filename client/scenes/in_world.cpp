@@ -65,11 +65,14 @@ InWorld::InWorld(ConfigUtility* const argConfig, UDPNetworkUtility* const argNet
 	packet.playerInfo.motion = {0,0};
 
 	//send it
-	network.Send(Channels::SERVER, &packet, sizeof(NetworkPacket));
+	char buffer[sizeof(NetworkPacket)];
+	serialize(&packet, buffer);
+	network.Send(Channels::SERVER, buffer, sizeof(NetworkPacket));
 
 	//request a sync
 	packet.meta.type = NetworkPacket::Type::SYNCHRONIZE;
-	network.Send(Channels::SERVER, &packet, sizeof(NetworkPacket));
+	serialize(&packet, buffer);
+	network.Send(Channels::SERVER, buffer, sizeof(NetworkPacket));
 }
 
 InWorld::~InWorld() {
@@ -295,7 +298,10 @@ void InWorld::SendState() {
 	packet.playerInfo.position = localCharacter->GetPosition();
 	packet.playerInfo.motion = localCharacter->GetMotion();
 
-	network.Send(Channels::SERVER, &packet, sizeof(NetworkPacket));
+	char buffer[sizeof(NetworkPacket)];
+	serialize(&packet, buffer);
+
+	network.Send(Channels::SERVER, buffer, sizeof(NetworkPacket));
 }
 
 void InWorld::RequestDisconnect() {
@@ -303,7 +309,9 @@ void InWorld::RequestDisconnect() {
 	NetworkPacket packet;
 	packet.meta.type = NetworkPacket::Type::DISCONNECT;
 	packet.clientInfo.index = clientIndex;
-	network.Send(Channels::SERVER, &packet, sizeof(NetworkPacket));
+	char buffer[sizeof(NetworkPacket)];
+	serialize(&packet, buffer);
+	network.Send(Channels::SERVER, buffer, sizeof(NetworkPacket));
 }
 
 void InWorld::RequestShutDown() {
@@ -311,5 +319,7 @@ void InWorld::RequestShutDown() {
 	NetworkPacket packet;
 	packet.meta.type = NetworkPacket::Type::SHUTDOWN;
 	packet.clientInfo.index = clientIndex;
-	network.Send(Channels::SERVER, &packet, sizeof(NetworkPacket));
+	char buffer[sizeof(NetworkPacket)];
+	serialize(&packet, buffer);
+	network.Send(Channels::SERVER, buffer, sizeof(NetworkPacket));
 }

@@ -89,7 +89,7 @@ void ServerApplication::Loop() {
 		//suck in the waiting packets & process them
 		try {
 			while(network.Receive()) {
-				memcpy(&packet, network.GetInData(), sizeof(NetworkPacket));
+				deserialize(&packet, network.GetInData());
 				packet.meta.srcAddress = network.GetInPacket()->address;
 				HandlePacket(packet);
 			}
@@ -158,7 +158,9 @@ void ServerApplication::HandleBroadcastRequest(NetworkPacket packet) {
 	//send back the server's name
 	packet.meta.type = NetworkPacket::Type::BROADCAST_RESPONSE;
 	snprintf(packet.serverInfo.name, PACKET_STRING_SIZE, "%s", config["server.name"].c_str());
-	network.Send(&packet.meta.srcAddress, &packet, sizeof(NetworkPacket));
+	char buffer[sizeof(NetworkPacket)];
+	serialize(&packet, buffer);
+	network.Send(&packet.meta.srcAddress, buffer, sizeof(NetworkPacket));
 }
 
 void ServerApplication::HandleJoinRequest(NetworkPacket packet) {
@@ -174,7 +176,9 @@ void ServerApplication::HandleJoinRequest(NetworkPacket packet) {
 	//send the client their info
 	packet.meta.type = NetworkPacket::Type::JOIN_RESPONSE;
 	packet.clientInfo.index = clientCounter;
-	network.Send(&newClient.address, &packet, sizeof(NetworkPacket));
+	char buffer[sizeof(NetworkPacket)];
+	serialize(&packet, buffer);
+	network.Send(&newClient.address, buffer, sizeof(NetworkPacket));
 
 	//finished this routine
 	clientCounter++;
@@ -183,7 +187,9 @@ void ServerApplication::HandleJoinRequest(NetworkPacket packet) {
 
 void ServerApplication::HandleDisconnect(NetworkPacket packet) {
 	//disconnect the specified client
-	network.Send(&clientMap[packet.clientInfo.index].address, &packet, sizeof(NetworkPacket));
+	char buffer[sizeof(NetworkPacket)];
+	serialize(&packet, buffer);
+	network.Send(&clientMap[packet.clientInfo.index].address, buffer, sizeof(NetworkPacket));
 	clientMap.erase(packet.clientInfo.index);
 
 	//delete players
@@ -209,6 +215,7 @@ void ServerApplication::HandleDisconnect(NetworkPacket packet) {
 void ServerApplication::HandleSynchronize(NetworkPacket packet) {
 	//send all the server's data to this client
 	NetworkPacket newPacket;
+	char buffer[sizeof(NetworkPacket)];
 
 	//players
 	newPacket.meta.type = NetworkPacket::Type::PLAYER_UPDATE;
@@ -218,7 +225,8 @@ void ServerApplication::HandleSynchronize(NetworkPacket packet) {
 		snprintf(newPacket.playerInfo.avatar, PACKET_STRING_SIZE, "%s", it.second.avatar.c_str());
 		newPacket.playerInfo.position = it.second.position;
 		newPacket.playerInfo.motion = it.second.motion;
-		network.Send(&clientMap[packet.clientInfo.index].address, &newPacket, sizeof(NetworkPacket));
+		serialize(&newPacket, buffer);
+		network.Send(&clientMap[packet.clientInfo.index].address, buffer, sizeof(NetworkPacket));
 	}
 }
 
@@ -294,7 +302,9 @@ void ServerApplication::HandlePlayerUpdate(NetworkPacket packet) {
 
 void ServerApplication::PumpPacket(NetworkPacket packet) {
 	//send this packet to all clients
+	char buffer[sizeof(NetworkPacket)];
+	serialize(&packet, buffer);
 	for (auto& it : clientMap) {
-		network.Send(&it.second.address, &packet, sizeof(NetworkPacket));
+		network.Send(&it.second.address, buffer, sizeof(NetworkPacket));
 	}
 }
