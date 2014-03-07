@@ -1,4 +1,4 @@
-/* Copyright: (c) Kayne Ruse 2013
+/* Copyright: (c) Kayne Ruse 2014
  * 
  * This software is provided 'as-is', without any express or implied
  * warranty. In no event will the authors be held liable for any damages
@@ -19,25 +19,46 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef PLAYER_HPP_
-#define PLAYER_HPP_
+#include "client_manager.hpp"
 
-#include "vector2.hpp"
+int ClientManager::HandleConnection(IPaddress add) {
+	ClientEntry c;
+	c.address = add;
+	clientMap[counter] = c;
+	return counter++;
+}
 
-#include <string>
-#include <map>
+int ClientManager::HandleDisconnection(int i) {
+	for (auto& it : clientMap) {
+		if (it.first == i) {
+			clientMap.erase(it.first);
+			return 0;
+		}
+	}
+	return -1;
+}
 
-/* Hold the player info.
-*/
+void ClientManager::ForEach(Lambda fn) {
+	for(Iterator it = clientMap.begin(); it != clientMap.end(); it++) {
+		fn(it);
+	}
+}
 
-struct Player {
-	int clientIndex;
-	std::string handle;
-	std::string avatar;
-	Vector2 position;
-	Vector2 motion;
-};
+ClientEntry* ClientManager::GetClient(int i) {
+	for (auto& it : clientMap) {
+		if (it.first == i) {
+			return &it.second;
+		}
+	}
+	return nullptr;
+}
 
-typedef std::map<int, Player> PlayerMap;
-
-#endif
+ClientEntry* ClientManager::GetClient(IPaddress add) {
+	for (auto& it : clientMap) {
+		if (it.second.address.host == add.host &&
+			it.second.address.port == add.port) {
+			return &it.second;
+		}
+	}
+	return nullptr;
+}

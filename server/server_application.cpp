@@ -30,20 +30,28 @@
 
 using namespace std;
 
-//-------------------------
-//Define the ServerApplication
-//-------------------------
-
-ServerApplication::ServerApplication() {
-	//
+int runSQLScript(sqlite3* db, std::string fname) {
+	ifstream is(fname);
+	if (!is.is_open()) {
+		return -1;
+	}
+	string script;
+	getline(is, script, '\0');
+	is.close();
+	//TODO: flesh out this error if needed
+	if (sqlite3_exec(db, script.c_str(), nullptr, nullptr, nullptr) != SQLITE_OK) {
+		return -2;
+	}
+	return 0;
 }
 
-ServerApplication::~ServerApplication() {
-	//
-}
+//-------------------------
+//Define the public members
+//-------------------------
 
 void ServerApplication::Init(int argc, char** argv) {
-	//TODO: proper command line option parsing
+	cout << "Beginning startup" << endl;
+	int ret = 0;
 
 	//load config
 	config.Load("rsc\\config.cfg");
@@ -52,101 +60,110 @@ void ServerApplication::Init(int argc, char** argv) {
 	if (SDL_Init(0)) {
 		throw(runtime_error("Failed to initialize SDL"));
 	}
-	cout << "initialized SDL" << endl;
+	cout << "Initialized SDL" << endl;
 
 	//Init SDL_net
 	if (SDLNet_Init()) {
-		throw(runtime_error("Failed to init SDL_net"));
+		throw(runtime_error("Failed to initialize SDL_net"));
 	}
 	network.Open(config.Int("server.port"), sizeof(NetworkPacket));
-	cout << "initialized SDL_net" << endl;
+	cout << "Initialized SDL_net" << endl;
 
 	//Init SQL
-	string dbname = (config["server.dbname"].size()) ? config["server.dbname"] : std::string(argv[0]) + ".db"; //fancy and unnecessary
-	int ret = sqlite3_open_v2(dbname.c_str(), &database, SQLITE_OPEN_READWRITE|SQLITE_OPEN_CREATE|SQLITE_OPEN_FULLMUTEX, nullptr);
+	ret = sqlite3_open_v2(config["server.dbname"].c_str(), &database, SQLITE_OPEN_READWRITE|SQLITE_OPEN_CREATE, nullptr);
 	if (ret != SQLITE_OK || !database) {
-		throw(runtime_error("Failed to open the server database"));
+		throw(runtime_error(string() + "Failed to initialize SQL: " + sqlite3_errmsg(database) ));
 	}
-	cout << "initialized SQL" << endl;
-	cout << "Database filename: " << dbname << endl;
+	playerMgr.SetDatabase(database);
+	cout << "Initialized SQL" << endl;
 
-	//TODO: move this into a function?
-	//Run setup scripts
-	ifstream is("rsc\\scripts\\setup_server.sql");
-	if (!is.is_open()) {
-		throw(runtime_error("Failed to run database setup script"));
+	//setup the database
+	if (runSQLScript(database, config["dir.scripts"] + "setup_server.sql")) {
+		throw(runtime_error("Failed to initialize SQL's setup script"));
 	}
-	string script;
-	getline(is, script, '\0');
-	is.close();
-	sqlite3_exec(database, script.c_str(), nullptr, nullptr, nullptr);
+	cout << "Initialized SQL's setup script" << endl;
+
+	//lua
+	luaState = luaL_newstate();
+	if (!luaState) {
+		throw(runtime_error("Failed to initialize lua"));
+	}
+	luaL_openlibs(luaState);
+	cout << "Initialized lua" << endl;
+
+	//run the startup script
+	if (luaL_dofile(luaState, (config["dir.scripts"] + "setup_server.lua").c_str())) {
+		throw(runtime_error(string() + "Failed to initialize lua's setup script: " + lua_tostring(luaState, -1) ));
+	}
+	cout << "Initialized lua's setup script" << endl;
+
+	//finalize the startup
+	cout << "Startup completed successfully" << endl;
 }
 
 void ServerApplication::Loop() {
 	NetworkPacket packet;
-
 	while(running) {
 		//suck in the waiting packets & process them
-		try {
-			while(network.Receive()) {
-				deserialize(&packet, network.GetInData());
-				packet.meta.srcAddress = network.GetInPacket()->address;
-				HandlePacket(packet);
-			}
+		while(network.Receive()) {
+			//get the packet
+			deserialize(&packet, network.GetInData());
+			//cache the source address
+			packet.meta.srcAddress = network.GetInPacket()->address;
+			//we need to go deeper
+			HandlePacket(packet);
 		}
-		catch(exception& e) {
-			cerr << "Network Error: " << e.what() << endl;
-		}
-
 		//give the computer a break
 		SDL_Delay(10);
 	}
 }
 
 void ServerApplication::Quit() {
-	//members
-	network.Close();
+	cout << "Shutting down" << endl;
+	//empty the members
+	//TODO: player manager
+	//TODO: client manager
 
 	//APIs
+	lua_close(luaState);
+	playerMgr.SetDatabase(nullptr);
 	sqlite3_close_v2(database);
+	network.Close();
 	SDLNet_Quit();
 	SDL_Quit();
+	cout << "Shutdown finished" << endl;
 }
+
+//-------------------------
+//Define the uber switch
+//-------------------------
 
 void ServerApplication::HandlePacket(NetworkPacket packet) {
 	switch(packet.meta.type) {
 		case NetworkPacket::Type::BROADCAST_REQUEST:
 			HandleBroadcastRequest(packet);
 		break;
-
 		case NetworkPacket::Type::JOIN_REQUEST:
 			HandleJoinRequest(packet);
 		break;
-
 		case NetworkPacket::Type::DISCONNECT:
 			HandleDisconnect(packet);
 		break;
-
 		case NetworkPacket::Type::SYNCHRONIZE:
-			HandleSynchronize(packet);
+//			HandleSynchronize(packet);
 		break;
-
 		case NetworkPacket::Type::SHUTDOWN:
 			HandleShutdown(packet);
 		break;
-
 		case NetworkPacket::Type::PLAYER_NEW:
-			HandlePlayerNew(packet);
+//			HandlePlayerNew(packet);
 		break;
-
 		case NetworkPacket::Type::PLAYER_DELETE:
-			HandlePlayerDelete(packet);
+//			HandlePlayerDelete(packet);
 		break;
-
 		case NetworkPacket::Type::PLAYER_UPDATE:
-			HandlePlayerUpdate(packet);
+//			HandlePlayerUpdate(packet);
 		break;
-
 		//handle errors
 		default:
 			throw(runtime_error("Unknown NetworkPacket::Type encountered"));
@@ -154,45 +171,45 @@ void ServerApplication::HandlePacket(NetworkPacket packet) {
 	}
 }
 
+//-------------------------
+//Handle various network input
+//-------------------------
+
 void ServerApplication::HandleBroadcastRequest(NetworkPacket packet) {
-	//send back the server's name
+	//send back the server's metadata
 	packet.meta.type = NetworkPacket::Type::BROADCAST_RESPONSE;
+	//TODO: version info
 	snprintf(packet.serverInfo.name, PACKET_STRING_SIZE, "%s", config["server.name"].c_str());
+	//TODO: player count
 	char buffer[sizeof(NetworkPacket)];
 	serialize(&packet, buffer);
 	network.Send(&packet.meta.srcAddress, buffer, sizeof(NetworkPacket));
 }
 
 void ServerApplication::HandleJoinRequest(NetworkPacket packet) {
-	//TODO: prevent duplicate logins from the same address?
-
-	//create the new client, filling it with the correct info
-	Client newClient;
-	newClient.address = packet.meta.srcAddress;
-
-	//push the new client
-	clientMap[clientCounter] = newClient;
+	//register the new client
+	int index = clientMgr.HandleConnection(packet.meta.srcAddress);
 
 	//send the client their info
 	packet.meta.type = NetworkPacket::Type::JOIN_RESPONSE;
-	packet.clientInfo.index = clientCounter;
+	packet.clientInfo.index = index;
+
 	char buffer[sizeof(NetworkPacket)];
 	serialize(&packet, buffer);
-	network.Send(&newClient.address, buffer, sizeof(NetworkPacket));
+	network.Send(&clientMgr.GetClient(index)->address, buffer, sizeof(NetworkPacket));
 
 	//finished this routine
-	clientCounter++;
-	cout << "connect, total: " << clientMap.size() << endl;
+	cout << "connect, total: " << clientMgr.Size() << endl;
 }
 
 void ServerApplication::HandleDisconnect(NetworkPacket packet) {
 	//disconnect the specified client
 	char buffer[sizeof(NetworkPacket)];
 	serialize(&packet, buffer);
-	network.Send(&clientMap[packet.clientInfo.index].address, buffer, sizeof(NetworkPacket));
-	clientMap.erase(packet.clientInfo.index);
+	network.Send(&clientMgr.GetClient(packet.clientInfo.index)->address, buffer, sizeof(NetworkPacket));
+	clientMgr.HandleDisconnection(packet.clientInfo.index);
 
-	//delete players
+/*	//delete players
 	erase_if(playerMap, [&](pair<int, Player> it) -> bool {
 		if (it.second.clientIndex == packet.clientInfo.index) {
 			NetworkPacket delPacket;
@@ -208,10 +225,12 @@ void ServerApplication::HandleDisconnect(NetworkPacket packet) {
 		}
 		return false;
 	});
+*/
 
-	cout << "disconnect, total: " << clientMap.size() << endl;
+	//finished this routine
+	cout << "disconnect, total: " << clientMgr.Size() << endl;
 }
-
+/*
 void ServerApplication::HandleSynchronize(NetworkPacket packet) {
 	//send all the server's data to this client
 	NetworkPacket newPacket;
@@ -229,18 +248,21 @@ void ServerApplication::HandleSynchronize(NetworkPacket packet) {
 		network.Send(&clientMap[packet.clientInfo.index].address, buffer, sizeof(NetworkPacket));
 	}
 }
-
+*/
 void ServerApplication::HandleShutdown(NetworkPacket packet) {
 	//end the server
 	running = false;
 
 	//disconnect all clients
 	packet.meta.type = NetworkPacket::Type::DISCONNECT;
-	PumpPacket(packet);
+	clientMgr.ForEach([&](ClientManager::Iterator it) -> void {
+		this->network.Send(&it->second.address, &packet, sizeof(NetworkPacket));
+	});
 
+	//finished this routine
 	cout << "shutting down" << endl;
 }
-
+/*
 void ServerApplication::HandlePlayerNew(NetworkPacket packet) {
 	//create the new player object
 	Player newPlayer;
@@ -299,12 +321,4 @@ void ServerApplication::HandlePlayerUpdate(NetworkPacket packet) {
 
 	PumpPacket(packet);
 }
-
-void ServerApplication::PumpPacket(NetworkPacket packet) {
-	//send this packet to all clients
-	char buffer[sizeof(NetworkPacket)];
-	serialize(&packet, buffer);
-	for (auto& it : clientMap) {
-		network.Send(&it.second.address, buffer, sizeof(NetworkPacket));
-	}
-}
+*/

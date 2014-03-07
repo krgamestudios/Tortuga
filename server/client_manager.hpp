@@ -1,4 +1,4 @@
-/* Copyright: (c) Kayne Ruse 2013
+/* Copyright: (c) Kayne Ruse 2014
  * 
  * This software is provided 'as-is', without any express or implied
  * warranty. In no event will the authors be held liable for any damages
@@ -19,20 +19,39 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef CLIENT_HPP_
-#define CLIENT_HPP_
+#ifndef CLIENTMANAGER_HPP_
+#define CLIENTMANAGER_HPP_
 
 #include "SDL/SDL_net.h"
 
+#include <functional>
 #include <map>
 
-/* Hold the client info.
-*/
-
-struct Client {
+struct ClientEntry {
 	IPaddress address;
 };
 
-typedef std::map<int, Client> ClientMap;
+class ClientManager {
+public:
+	//clarity typedefs
+	typedef std::map<int, ClientEntry>		Container;
+	typedef Container::iterator				Iterator;
+	typedef std::function<void(Iterator)>	Lambda;
+
+	//returns the internal index
+	int HandleConnection(IPaddress);
+	int HandleDisconnection(int i);
+
+	//lambdas
+	void ForEach(Lambda);
+
+	//accessors
+	ClientEntry* GetClient(int i);
+	ClientEntry* GetClient(IPaddress);
+	int Size() { return clientMap.size(); }
+private:
+	Container clientMap;
+	int counter = 0;
+};
 
 #endif
