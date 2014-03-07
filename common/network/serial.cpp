@@ -139,7 +139,6 @@ void serialize(NetworkPacket* packet, void* buffer) {
 		case NetworkPacket::Type::BROADCAST_REQUEST:
 		case NetworkPacket::Type::JOIN_REQUEST:
 		case NetworkPacket::Type::SYNCHRONIZE:
-		case NetworkPacket::Type::SHUTDOWN:
 			serializeType(packet, reinterpret_cast<char*>(buffer));
 		break;
 
@@ -151,6 +150,7 @@ void serialize(NetworkPacket* packet, void* buffer) {
 		//Client info
 		case NetworkPacket::Type::JOIN_RESPONSE:
 		case NetworkPacket::Type::DISCONNECT:
+		case NetworkPacket::Type::SHUTDOWN:
 			serializeClient(packet, reinterpret_cast<char*>(buffer));
 		break;
 
@@ -178,7 +178,6 @@ void deserialize(NetworkPacket* packet, void* buffer) {
 		case NetworkPacket::Type::BROADCAST_REQUEST:
 		case NetworkPacket::Type::JOIN_REQUEST:
 		case NetworkPacket::Type::SYNCHRONIZE:
-		case NetworkPacket::Type::SHUTDOWN:
 			//
 		break;
 
@@ -190,6 +189,7 @@ void deserialize(NetworkPacket* packet, void* buffer) {
 		//Client info
 		case NetworkPacket::Type::JOIN_RESPONSE:
 		case NetworkPacket::Type::DISCONNECT:
+		case NetworkPacket::Type::SHUTDOWN:
 			deserializeClient(packet, reinterpret_cast<char*>(buffer));
 		break;
 

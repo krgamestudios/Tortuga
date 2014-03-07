@@ -290,6 +290,9 @@ void InWorld::HandlePlayerUpdate(NetworkPacket packet) {
 
 void InWorld::SendState() {
 	NetworkPacket packet;
+	char buffer[sizeof(NetworkPacket)];
+
+	//pack the packet
 	packet.meta.type = NetworkPacket::Type::PLAYER_UPDATE;
 	packet.playerInfo.clientIndex = clientIndex;
 	packet.playerInfo.playerIndex = playerIndex;
@@ -298,28 +301,28 @@ void InWorld::SendState() {
 	packet.playerInfo.position = localCharacter->GetPosition();
 	packet.playerInfo.motion = localCharacter->GetMotion();
 
-	char buffer[sizeof(NetworkPacket)];
 	serialize(&packet, buffer);
-
 	network.Send(Channels::SERVER, buffer, sizeof(NetworkPacket));
 }
 
 void InWorld::RequestDisconnect() {
-	//send a disconnect request
 	NetworkPacket packet;
+	char buffer[sizeof(NetworkPacket)];
+
+	//send a disconnect request
 	packet.meta.type = NetworkPacket::Type::DISCONNECT;
 	packet.clientInfo.index = clientIndex;
-	char buffer[sizeof(NetworkPacket)];
 	serialize(&packet, buffer);
 	network.Send(Channels::SERVER, buffer, sizeof(NetworkPacket));
 }
 
 void InWorld::RequestShutDown() {
-	//send a shutdown request
 	NetworkPacket packet;
+	char buffer[sizeof(NetworkPacket)];
+
+	//send a shutdown request
 	packet.meta.type = NetworkPacket::Type::SHUTDOWN;
 	packet.clientInfo.index = clientIndex;
-	char buffer[sizeof(NetworkPacket)];
 	serialize(&packet, buffer);
 	network.Send(Channels::SERVER, buffer, sizeof(NetworkPacket));
 }

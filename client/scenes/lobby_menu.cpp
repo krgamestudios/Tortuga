@@ -125,10 +125,12 @@ void LobbyMenu::MouseButtonDown(SDL_MouseButtonEvent const& button) {
 
 void LobbyMenu::MouseButtonUp(SDL_MouseButtonEvent const& button) {
 	if (search.MouseButtonUp(button) == Button::State::HOVER) {
-		//broadcast to the network, or a specific server
+		//the vars
 		NetworkPacket packet;
-		packet.meta.type = NetworkPacket::Type::BROADCAST_REQUEST;
 		char buffer[sizeof(NetworkPacket)];
+
+		//broadcast to the network, or a specific server
+		packet.meta.type = NetworkPacket::Type::BROADCAST_REQUEST;
 		serialize(&packet, buffer);
 		network.Send(config["server.host"].c_str(), config.Int("server.port"), buffer, sizeof(NetworkPacket));
 
@@ -138,10 +140,12 @@ void LobbyMenu::MouseButtonUp(SDL_MouseButtonEvent const& button) {
 	}
 
 	else if (join.MouseButtonUp(button) == Button::State::HOVER && selection != nullptr) {
-		//join the selected server
+		//the vars
 		NetworkPacket packet;
-		packet.meta.type = NetworkPacket::Type::JOIN_REQUEST;
 		char buffer[sizeof(NetworkPacket)];
+
+		//join the selected server
+		packet.meta.type = NetworkPacket::Type::JOIN_REQUEST;
 		serialize(&packet, buffer);
 		network.Send(&selection->address, buffer, sizeof(NetworkPacket));
 		selection = nullptr;
