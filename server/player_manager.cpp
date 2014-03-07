@@ -37,9 +37,20 @@ int PlayerManager::HandlePlayerUnload(int uniqueID) {
 	//
 }
 
-void PlayerManager::ForEach(Lambda fn) {
+void PlayerManager::ForEach(std::function<void(Iterator)> fn) {
 	for(Iterator it = playerMap.begin(); it != playerMap.end(); it++) {
 		fn(it);
+	}
+}
+
+void PlayerManager::EraseIf(std::function<bool(Iterator)> fn) {
+	for(Iterator it = playerMap.begin(); it != playerMap.end(); /* empty */) {
+		if(fn(it)) {
+			it = playerMap.erase(it);
+		}
+		else {
+			++it;
+		}
 	}
 }
 

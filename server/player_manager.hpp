@@ -40,9 +40,8 @@ struct PlayerEntry {
 class PlayerManager {
 public:
 	//clarity typedefs
-	typedef std::map<int, PlayerEntry>		Container;
-	typedef Container::iterator				Iterator;
-	typedef std::function<void(Iterator)>	Lambda;
+	typedef std::map<int, PlayerEntry> Container;
+	typedef Container::iterator Iterator;
 
 	//These functions interact with the database
 	//*Deletion, *Load and *Unload returns: 0 success, -1 failure
@@ -54,7 +53,8 @@ public:
 	int HandlePlayerUnload		(int uniqueID);
 
 	//lambdas
-	void ForEach(Lambda);
+	void ForEach(std::function<void(Iterator)> fn);
+	void EraseIf(std::function<bool(Iterator)> fn);
 
 	//accessors
 	PlayerEntry* GetPlayer(int uniqueID);

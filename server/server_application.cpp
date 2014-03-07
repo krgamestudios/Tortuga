@@ -209,23 +209,20 @@ void ServerApplication::HandleDisconnect(NetworkPacket packet) {
 	network.Send(&clientMgr.GetClient(packet.clientInfo.index)->address, buffer, sizeof(NetworkPacket));
 	clientMgr.HandleDisconnection(packet.clientInfo.index);
 
-/*	//delete players
-	erase_if(playerMap, [&](pair<int, Player> it) -> bool {
-		if (it.second.clientIndex == packet.clientInfo.index) {
-			NetworkPacket delPacket;
+	//delete players from all clients
+	NetworkPacket delPacket;
+	delPacket.meta.type = NetworkPacket::Type::PLAYER_DELETE;
 
-			//data to delete one specific player
-			delPacket.meta.type = NetworkPacket::Type::PLAYER_DELETE;
-			delPacket.playerInfo.playerIndex = it.first;
-
-			//send to all
+	playerMgr.EraseIf([&](PlayerManager::Iterator it) -> bool {
+		//find the internal players to delete
+		if (it->first == packet.clientInfo.index) {
+			delPacket.playerInfo.playerIndex = it->first;
+			//send the delete player command to all clients
 			PumpPacket(delPacket);
-
 			return true;
 		}
 		return false;
 	});
-*/
 
 	//finished this routine
 	cout << "disconnect, total: " << clientMgr.Size() << endl;
@@ -233,6 +230,7 @@ void ServerApplication::HandleDisconnect(NetworkPacket packet) {
 /*
 void ServerApplication::HandleSynchronize(NetworkPacket packet) {
 	//send all the server's data to this client
+	//TODO: compensate for large distances
 	NetworkPacket newPacket;
 	char buffer[sizeof(NetworkPacket)];
 
@@ -322,3 +320,12 @@ void ServerApplication::HandlePlayerUpdate(NetworkPacket packet) {
 	PumpPacket(packet);
 }
 */
+
+void ServerApplication::PumpPacket(NetworkPacket packet) {
+	//I don't really like this, but it'll do for now
+	char buffer[sizeof(NetworkPacket)];
+	serialize(&packet, buffer);
+	clientMgr.ForEach([&](ClientManager::Iterator it) {
+		network.Send(&it->second.address, buffer, sizeof(NetworkPacket));
+	});
+}

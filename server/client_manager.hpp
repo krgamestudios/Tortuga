@@ -34,16 +34,16 @@ struct ClientEntry {
 class ClientManager {
 public:
 	//clarity typedefs
-	typedef std::map<int, ClientEntry>		Container;
-	typedef Container::iterator				Iterator;
-	typedef std::function<void(Iterator)>	Lambda;
+	typedef std::map<int, ClientEntry> Container;
+	typedef Container::iterator Iterator;
 
 	//returns the internal index
 	int HandleConnection(IPaddress);
 	int HandleDisconnection(int i);
 
 	//lambdas
-	void ForEach(Lambda);
+	void ForEach(std::function<void(Iterator)> fn);
+	void EraseIf(std::function<bool(Iterator)> fn);
 
 	//accessors
 	ClientEntry* GetClient(int i);

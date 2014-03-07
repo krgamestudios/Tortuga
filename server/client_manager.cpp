@@ -38,9 +38,20 @@ int ClientManager::HandleDisconnection(int i) {
 	return -1;
 }
 
-void ClientManager::ForEach(Lambda fn) {
+void ClientManager::ForEach(std::function<void(Iterator)> fn) {
 	for(Iterator it = clientMap.begin(); it != clientMap.end(); it++) {
 		fn(it);
+	}
+}
+
+void ClientManager::EraseIf(std::function<bool(Iterator)> fn) {
+	for(Iterator it = clientMap.begin(); it != clientMap.end(); /* empty */) {
+		if(fn(it)) {
+			it = clientMap.erase(it);
+		}
+		else {
+			++it;
+		}
 	}
 }
 
