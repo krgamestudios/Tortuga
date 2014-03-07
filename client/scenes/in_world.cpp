@@ -91,7 +91,7 @@ void InWorld::Update(double delta) {
 	//suck in all waiting packets
 	NetworkPacket packet;
 	while(network.Receive()) {
-		memcpy(&packet, network.GetInData(), sizeof(NetworkPacket));
+		deserialize(&packet, network.GetInData());
 		packet.meta.srcAddress = network.GetInPacket()->address;
 		HandlePacket(packet);
 	}

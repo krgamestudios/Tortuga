@@ -22,55 +22,108 @@
 #include "serial.hpp"
 
 #include <cstring>
-#include <iostream>
-using namespace std;
+//#include <iostream>
+
+//using namespace std;
 
 //-------------------------
 //internal serialization functions
 //-------------------------
 
-void serializeType(NetworkPacket* packet, void* buffer) {
+void serializeType(NetworkPacket* packet, char* buffer) {
+//	cout << "serializeType" << endl;
 	memcpy(buffer, &packet->meta.type, sizeof(NetworkPacket::Type));
 }
 
-void serializeServer(NetworkPacket* packet, void* buffer) {
-	int len = 0;
-	memcpy((void*)((int)buffer + len), &packet->meta.type, sizeof(NetworkPacket::Type));
-	len += sizeof(NetworkPacket::Type);
-	memcpy((void*)((int)buffer + len), packet->serverInfo.name, PACKET_STRING_SIZE);
-	len += PACKET_STRING_SIZE;
+void serializeServer(NetworkPacket* packet, char* buffer) {
+//	cout << "serializeServer" << endl;
+	memcpy(buffer, &packet->meta.type, sizeof(NetworkPacket::Type));
+	buffer += sizeof(NetworkPacket::Type);
+	memcpy(buffer, packet->serverInfo.name, PACKET_STRING_SIZE);
 }
 
-void serializeClient(NetworkPacket* packet, void* buffer) {
-	//TODO
+void serializeClient(NetworkPacket* packet, char* buffer) {
+//	cout << "serializeClient" << endl;
+	memcpy(buffer, &packet->meta.type, sizeof(NetworkPacket::Type));
+	buffer += sizeof(NetworkPacket::Type);
+	memcpy(buffer, &packet->clientInfo.index, sizeof(int));
 }
 
-void serializePlayer(NetworkPacket* packet, void* buffer) {
-	//TODO
+void serializePlayer(NetworkPacket* packet, char* buffer) {
+//	cout << "serializePlayer" << endl;
+	memcpy(buffer, &packet->meta.type, sizeof(NetworkPacket::Type));
+	buffer += sizeof(NetworkPacket::Type);
+
+	//indexes
+	memcpy(buffer, &packet->playerInfo.clientIndex, sizeof(int));
+	buffer += sizeof(int);
+	memcpy(buffer, &packet->playerInfo.playerIndex, sizeof(int));
+	buffer += sizeof(int);
+
+	//text
+	memcpy(buffer, packet->playerInfo.handle, PACKET_STRING_SIZE);
+	buffer += PACKET_STRING_SIZE;
+	memcpy(buffer, packet->playerInfo.avatar, PACKET_STRING_SIZE);
+	buffer += PACKET_STRING_SIZE;
+
+	//vectors
+	memcpy(buffer, &packet->playerInfo.position.x, sizeof(double));
+	buffer += sizeof(double);
+	memcpy(buffer, &packet->playerInfo.position.y, sizeof(double));
+	buffer += sizeof(double);
+	memcpy(buffer, &packet->playerInfo.motion.x, sizeof(double));
+	buffer += sizeof(double);
+	memcpy(buffer, &packet->playerInfo.motion.y, sizeof(double));
 }
 
 //-------------------------
 //internal deserialization functions
 //-------------------------
 
-void deserializeType(NetworkPacket* packet, void* buffer) {
+void deserializeType(NetworkPacket* packet, char* buffer) {
+//	cout << "deserializeType" << endl;
 	memcpy(&packet->meta.type, buffer, sizeof(NetworkPacket::Type));
 }
 
-void deserializeServer(NetworkPacket* packet, void* buffer) {
-	int len = 0;
-	memcpy(&packet->meta.type, (void*)((int)buffer + len), sizeof(NetworkPacket::Type));
-	len += sizeof(NetworkPacket::Type);
-	memcpy(packet->serverInfo.name, (void*)((int)buffer + len), PACKET_STRING_SIZE);
-	len += PACKET_STRING_SIZE;
+void deserializeServer(NetworkPacket* packet, char* buffer) {
+//	cout << "deserializeServer" << endl;
+	memcpy(&packet->meta.type, buffer, sizeof(NetworkPacket::Type));
+	buffer += sizeof(NetworkPacket::Type);
+	memcpy(packet->serverInfo.name, buffer, PACKET_STRING_SIZE);
 }
 
-void deserializeClient(NetworkPacket* packet, void* buffer) {
-	//TODO
+void deserializeClient(NetworkPacket* packet, char* buffer) {
+//	cout << "deserializeClient" << endl;
+	memcpy(&packet->meta.type, buffer, sizeof(NetworkPacket::Type));
+	buffer += sizeof(NetworkPacket::Type);
+	memcpy(&packet->clientInfo.index, buffer, sizeof(int));
 }
 
-void deserializePlayer(NetworkPacket* packet, void* buffer) {
-	//TODO
+void deserializePlayer(NetworkPacket* packet, char* buffer) {
+//	cout << "deserializePlayer" << endl;
+	memcpy(&packet->meta.type, buffer, sizeof(NetworkPacket::Type));
+	buffer += sizeof(NetworkPacket::Type);
+
+	//indexes
+	memcpy(&packet->playerInfo.clientIndex, buffer, sizeof(int));
+	buffer += sizeof(int);
+	memcpy(&packet->playerInfo.playerIndex, buffer, sizeof(int));
+	buffer += sizeof(int);
+
+	//text
+	memcpy(packet->playerInfo.handle, buffer, PACKET_STRING_SIZE);
+	buffer += PACKET_STRING_SIZE;
+	memcpy(packet->playerInfo.avatar, buffer, PACKET_STRING_SIZE);
+	buffer += PACKET_STRING_SIZE;
+
+	//vectors
+	memcpy(&packet->playerInfo.position.x, buffer, sizeof(double));
+	buffer += sizeof(double);
+	memcpy(&packet->playerInfo.position.y, buffer, sizeof(double));
+	buffer += sizeof(double);
+	memcpy(&packet->playerInfo.motion.x, buffer, sizeof(double));
+	buffer += sizeof(double);
+	memcpy(&packet->playerInfo.motion.y, buffer, sizeof(double));
 }
 
 //-------------------------
@@ -78,7 +131,6 @@ void deserializePlayer(NetworkPacket* packet, void* buffer) {
 //-------------------------
 
 void serialize(NetworkPacket* packet, void* buffer) {
-	cout << (int)packet->meta.type << endl;
 	switch(packet->meta.type) {
 		//No extra data
 		case NetworkPacket::Type::NONE:
@@ -86,33 +138,38 @@ void serialize(NetworkPacket* packet, void* buffer) {
 		case NetworkPacket::Type::PONG:
 		case NetworkPacket::Type::BROADCAST_REQUEST:
 		case NetworkPacket::Type::JOIN_REQUEST:
+		case NetworkPacket::Type::SYNCHRONIZE:
 		case NetworkPacket::Type::SHUTDOWN:
-			serializeType(packet, buffer);
+			serializeType(packet, reinterpret_cast<char*>(buffer));
 		break;
 
 		//Server info
 		case NetworkPacket::Type::BROADCAST_RESPONSE:
-			serializeServer(packet, buffer);
+			serializeServer(packet, reinterpret_cast<char*>(buffer));
 		break;
 
 		//Client info
 		case NetworkPacket::Type::JOIN_RESPONSE:
 		case NetworkPacket::Type::DISCONNECT:
-		case NetworkPacket::Type::SYNCHRONIZE:
-			serializeClient(packet, buffer);
+			serializeClient(packet, reinterpret_cast<char*>(buffer));
 		break;
 
 		//Player info
 		case NetworkPacket::Type::PLAYER_NEW:
 		case NetworkPacket::Type::PLAYER_DELETE:
 		case NetworkPacket::Type::PLAYER_UPDATE:
-			serializePlayer(packet, buffer);
+			serializePlayer(packet, reinterpret_cast<char*>(buffer));
 		break;
 	}
+//	for (int i = 0; i < sizeof(NetworkPacket); i++) {
+//		cout << ((char*)(buffer))[i];
+//	}
+//	cout << endl;
 }
 
 void deserialize(NetworkPacket* packet, void* buffer) {
-	cout << (int)packet->meta.type << endl;
+	//find the type, so that you can actually deserialize the packet!
+	deserializeType(packet, reinterpret_cast<char*>(buffer));
 	switch(packet->meta.type) {
 		//No extra data
 		case NetworkPacket::Type::NONE:
@@ -120,27 +177,31 @@ void deserialize(NetworkPacket* packet, void* buffer) {
 		case NetworkPacket::Type::PONG:
 		case NetworkPacket::Type::BROADCAST_REQUEST:
 		case NetworkPacket::Type::JOIN_REQUEST:
+		case NetworkPacket::Type::SYNCHRONIZE:
 		case NetworkPacket::Type::SHUTDOWN:
-			deserializeType(packet, buffer);
+			//
 		break;
 
 		//Server info
 		case NetworkPacket::Type::BROADCAST_RESPONSE:
-			deserializeServer(packet, buffer);
+			deserializeServer(packet, reinterpret_cast<char*>(buffer));
 		break;
 
 		//Client info
 		case NetworkPacket::Type::JOIN_RESPONSE:
 		case NetworkPacket::Type::DISCONNECT:
-		case NetworkPacket::Type::SYNCHRONIZE:
-			deserializeClient(packet, buffer);
+			deserializeClient(packet, reinterpret_cast<char*>(buffer));
 		break;
 
 		//Player info
 		case NetworkPacket::Type::PLAYER_NEW:
 		case NetworkPacket::Type::PLAYER_DELETE:
 		case NetworkPacket::Type::PLAYER_UPDATE:
-			deserializePlayer(packet, buffer);
+			deserializePlayer(packet, reinterpret_cast<char*>(buffer));
 		break;
 	}
+//	for (int i = 0; i < sizeof(NetworkPacket); i++) {
+//		cout << ((char*)(buffer))[i];
+//	}
+//	cout << endl;
 }
