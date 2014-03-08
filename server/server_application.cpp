@@ -150,7 +150,7 @@ void ServerApplication::HandlePacket(NetworkPacket packet) {
 			HandleDisconnect(packet);
 		break;
 		case NetworkPacket::Type::SYNCHRONIZE:
-//			HandleSynchronize(packet);
+			HandleSynchronize(packet);
 		break;
 		case NetworkPacket::Type::SHUTDOWN:
 			HandleShutdown(packet);
@@ -227,7 +227,7 @@ void ServerApplication::HandleDisconnect(NetworkPacket packet) {
 	//finished this routine
 	cout << "disconnect, total: " << clientMgr.Size() << endl;
 }
-/*
+
 void ServerApplication::HandleSynchronize(NetworkPacket packet) {
 	//send all the server's data to this client
 	//TODO: compensate for large distances
@@ -235,18 +235,19 @@ void ServerApplication::HandleSynchronize(NetworkPacket packet) {
 	char buffer[sizeof(NetworkPacket)];
 
 	//players
+	//TODO: replace these lambda functions with proper iteration members
 	newPacket.meta.type = NetworkPacket::Type::PLAYER_UPDATE;
-	for (auto& it : playerMap) {
-		newPacket.playerInfo.playerIndex = it.first;
-		snprintf(newPacket.playerInfo.handle, PACKET_STRING_SIZE, "%s", it.second.handle.c_str());
-		snprintf(newPacket.playerInfo.avatar, PACKET_STRING_SIZE, "%s", it.second.avatar.c_str());
-		newPacket.playerInfo.position = it.second.position;
-		newPacket.playerInfo.motion = it.second.motion;
+	playerMgr.ForEach([&](PlayerManager::Iterator it) {
+		newPacket.playerInfo.playerIndex = it->first;
+//		snprintf(newPacket.playerInfo.handle, PACKET_STRING_SIZE, "%s", it->second.handle.c_str());
+//		snprintf(newPacket.playerInfo.avatar, PACKET_STRING_SIZE, "%s", it->second.avatar.c_str());
+		newPacket.playerInfo.position = it->second.position;
+		newPacket.playerInfo.motion = it->second.motion;
 		serialize(&newPacket, buffer);
-		network.Send(&clientMap[packet.clientInfo.index].address, buffer, sizeof(NetworkPacket));
-	}
+		network.Send(&clientMgr.GetClient(it->second.clientIndex)->address, buffer, sizeof(NetworkPacket));
+	});
 }
-*/
+
 void ServerApplication::HandleShutdown(NetworkPacket packet) {
 	//end the server
 	running = false;
@@ -320,7 +321,6 @@ void ServerApplication::HandlePlayerUpdate(NetworkPacket packet) {
 	PumpPacket(packet);
 }
 */
-
 void ServerApplication::PumpPacket(NetworkPacket packet) {
 	//I don't really like this, but it'll do for now
 	char buffer[sizeof(NetworkPacket)];
