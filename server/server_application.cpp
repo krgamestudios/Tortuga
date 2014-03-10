@@ -238,7 +238,6 @@ void ServerApplication::HandleSynchronize(NetworkPacket packet) {
 	char buffer[sizeof(NetworkPacket)];
 
 	//players
-	//TODO: replace these lambda functions with proper iteration members
 	newPacket.meta.type = NetworkPacket::Type::PLAYER_UPDATE;
 	for (auto& it : playerMap) {
 		newPacket.playerInfo.playerIndex = it.first;
