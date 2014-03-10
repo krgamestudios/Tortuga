@@ -74,7 +74,6 @@ void ServerApplication::Init(int argc, char** argv) {
 	if (ret != SQLITE_OK || !database) {
 		throw(runtime_error(string() + "Failed to initialize SQL: " + sqlite3_errmsg(database) ));
 	}
-	playerMgr.SetDatabase(database);
 	cout << "Initialized SQL" << endl;
 
 	//setup the database
@@ -126,7 +125,6 @@ void ServerApplication::Quit() {
 
 	//APIs
 	lua_close(luaState);
-	playerMgr.SetDatabase(nullptr);
 	sqlite3_close_v2(database);
 	network.Close();
 	SDLNet_Quit();
@@ -156,13 +154,13 @@ void ServerApplication::HandlePacket(NetworkPacket packet) {
 			HandleShutdown(packet);
 		break;
 		case NetworkPacket::Type::PLAYER_NEW:
-//			HandlePlayerNew(packet);
+			HandlePlayerNew(packet);
 		break;
 		case NetworkPacket::Type::PLAYER_DELETE:
-//			HandlePlayerDelete(packet);
+			HandlePlayerDelete(packet);
 		break;
 		case NetworkPacket::Type::PLAYER_UPDATE:
-//			HandlePlayerUpdate(packet);
+			HandlePlayerUpdate(packet);
 		break;
 		//handle errors
 		default:
@@ -188,35 +186,40 @@ void ServerApplication::HandleBroadcastRequest(NetworkPacket packet) {
 
 void ServerApplication::HandleJoinRequest(NetworkPacket packet) {
 	//register the new client
-	int index = clientMgr.HandleConnection(packet.meta.srcAddress);
+	ClientEntry c;
+	c.address = packet.meta.srcAddress;
+	clientMap[clientCounter] = c;
 
 	//send the client their info
-	packet.meta.type = NetworkPacket::Type::JOIN_RESPONSE;
-	packet.clientInfo.index = index;
-
 	char buffer[sizeof(NetworkPacket)];
+
+	packet.meta.type = NetworkPacket::Type::JOIN_RESPONSE;
+	packet.clientInfo.index = clientCounter;
 	serialize(&packet, buffer);
-	network.Send(&clientMgr.GetClient(index)->address, buffer, sizeof(NetworkPacket));
+
+	network.Send(&clientMap[clientCounter].address, buffer, sizeof(NetworkPacket));
 
 	//finished this routine
-	cout << "connect, total: " << clientMgr.Size() << endl;
+	clientCounter++;
+	cout << "connect, total: " << clientMap.size() << endl;
 }
 
 void ServerApplication::HandleDisconnect(NetworkPacket packet) {
 	//disconnect the specified client
+	//TODO: authenticate who is disconnecting/kicking
 	char buffer[sizeof(NetworkPacket)];
 	serialize(&packet, buffer);
-	network.Send(&clientMgr.GetClient(packet.clientInfo.index)->address, buffer, sizeof(NetworkPacket));
-	clientMgr.HandleDisconnection(packet.clientInfo.index);
+	network.Send(&clientMap[packet.clientInfo.index].address, buffer, sizeof(NetworkPacket));
+	clientMap.erase(packet.clientInfo.index);
 
 	//delete players from all clients
 	NetworkPacket delPacket;
 	delPacket.meta.type = NetworkPacket::Type::PLAYER_DELETE;
 
-	playerMgr.EraseIf([&](PlayerManager::Iterator it) -> bool {
+	erase_if(playerMap, [&](std::pair<int, PlayerEntry> it) -> bool {
 		//find the internal players to delete
-		if (it->first == packet.clientInfo.index) {
-			delPacket.playerInfo.playerIndex = it->first;
+		if (it.first == packet.clientInfo.index) {
+			delPacket.playerInfo.playerIndex = it.first;
 			//send the delete player command to all clients
 			PumpPacket(delPacket);
 			return true;
@@ -225,7 +228,7 @@ void ServerApplication::HandleDisconnect(NetworkPacket packet) {
 	});
 
 	//finished this routine
-	cout << "disconnect, total: " << clientMgr.Size() << endl;
+	cout << "disconnect, total: " << clientMap.size() << endl;
 }
 
 void ServerApplication::HandleSynchronize(NetworkPacket packet) {
@@ -237,15 +240,15 @@ void ServerApplication::HandleSynchronize(NetworkPacket packet) {
 	//players
 	//TODO: replace these lambda functions with proper iteration members
 	newPacket.meta.type = NetworkPacket::Type::PLAYER_UPDATE;
-	playerMgr.ForEach([&](PlayerManager::Iterator it) {
-		newPacket.playerInfo.playerIndex = it->first;
-//		snprintf(newPacket.playerInfo.handle, PACKET_STRING_SIZE, "%s", it->second.handle.c_str());
-//		snprintf(newPacket.playerInfo.avatar, PACKET_STRING_SIZE, "%s", it->second.avatar.c_str());
-		newPacket.playerInfo.position = it->second.position;
-		newPacket.playerInfo.motion = it->second.motion;
+	for (auto& it : playerMap) {
+		newPacket.playerInfo.playerIndex = it.first;
+		snprintf(newPacket.playerInfo.handle, PACKET_STRING_SIZE, "%s", it.second.handle.c_str());
+		snprintf(newPacket.playerInfo.avatar, PACKET_STRING_SIZE, "%s", it.second.avatar.c_str());
+		newPacket.playerInfo.position = it.second.position;
+		newPacket.playerInfo.motion = it.second.motion;
 		serialize(&newPacket, buffer);
-		network.Send(&clientMgr.GetClient(it->second.clientIndex)->address, buffer, sizeof(NetworkPacket));
-	});
+		network.Send(&clientMap[it.second.clientIndex].address, buffer, sizeof(NetworkPacket));
+	}
 }
 
 void ServerApplication::HandleShutdown(NetworkPacket packet) {
@@ -254,18 +257,19 @@ void ServerApplication::HandleShutdown(NetworkPacket packet) {
 
 	//disconnect all clients
 	packet.meta.type = NetworkPacket::Type::DISCONNECT;
-	clientMgr.ForEach([&](ClientManager::Iterator it) -> void {
-		this->network.Send(&it->second.address, &packet, sizeof(NetworkPacket));
-	});
+	for (auto& it : clientMap) {
+		network.Send(&it.second.address, &packet, sizeof(NetworkPacket));
+	}
 
 	//finished this routine
 	cout << "shutting down" << endl;
 }
-/*
+
 void ServerApplication::HandlePlayerNew(NetworkPacket packet) {
 	//create the new player object
-	Player newPlayer;
+	PlayerEntry newPlayer;
 	newPlayer.clientIndex = packet.playerInfo.clientIndex;
+	newPlayer.mapIndex = 0;
 	newPlayer.handle = packet.playerInfo.handle;
 	newPlayer.avatar = packet.playerInfo.avatar;
 	newPlayer.position = {0,0};
@@ -292,7 +296,7 @@ void ServerApplication::HandlePlayerDelete(NetworkPacket packet) {
 	}
 
 	//delete players
-	erase_if(playerMap, [&](pair<int, Player> it) -> bool {
+	erase_if(playerMap, [&](pair<int, PlayerEntry> it) -> bool {
 		if (it.first == packet.playerInfo.playerIndex) {
 			NetworkPacket delPacket;
 
@@ -320,12 +324,12 @@ void ServerApplication::HandlePlayerUpdate(NetworkPacket packet) {
 
 	PumpPacket(packet);
 }
-*/
+
 void ServerApplication::PumpPacket(NetworkPacket packet) {
 	//I don't really like this, but it'll do for now
 	char buffer[sizeof(NetworkPacket)];
 	serialize(&packet, buffer);
-	clientMgr.ForEach([&](ClientManager::Iterator it) {
-		network.Send(&it->second.address, buffer, sizeof(NetworkPacket));
-	});
+	for (auto& it : clientMap) {
+		network.Send(&it.second.address, buffer, sizeof(NetworkPacket));
+	}
 }

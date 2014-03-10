@@ -32,10 +32,6 @@
 #include "sqlite3/sqlite3.h"
 #include "SDL/SDL.h"
 
-//misc
-#include "client_manager.hpp"
-#include "player_manager.hpp"
-
 //common
 #include "config_utility.hpp"
 #include "vector2.hpp"
@@ -43,6 +39,19 @@
 //STL
 #include <map>
 #include <string>
+
+struct ClientEntry {
+	IPaddress address;
+};
+
+struct PlayerEntry {
+	int clientIndex;
+	int mapIndex;
+	std::string handle;
+	std::string avatar;
+	Vector2 position;
+	Vector2 motion;
+};
 
 //The main application class
 class ServerApplication {
@@ -83,8 +92,11 @@ private:
 	bool running = true;
 	ConfigUtility config;
 
-	ClientManager clientMgr;
-	PlayerManager playerMgr;
+	std::map<int, ClientEntry> clientMap;
+	std::map<int, PlayerEntry> playerMap;
+
+	int clientCounter = 0;
+	int playerCounter = 0;
 };
 
 #endif
