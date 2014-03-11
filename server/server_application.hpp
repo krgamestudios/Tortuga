@@ -25,28 +25,40 @@
 //networking
 #include "network_packet.hpp"
 #include "udp_network_utility.hpp"
+#include "serial.hpp"
 
 //APIs
+#include "lua/lua.hpp"
 #include "sqlite3/sqlite3.h"
 #include "SDL/SDL.h"
 
-//misc
+//common
 #include "config_utility.hpp"
 #include "vector2.hpp"
-
-#include "client.hpp"
-#include "player.hpp"
 
 //STL
 #include <map>
 #include <string>
 
+struct ClientEntry {
+	IPaddress address;
+};
+
+struct PlayerEntry {
+	int clientIndex;
+	int mapIndex;
+	std::string handle;
+	std::string avatar;
+	Vector2 position;
+	Vector2 motion;
+};
+
 //The main application class
 class ServerApplication {
 public:
 	//standard functions
-	ServerApplication();
-	~ServerApplication();
+	ServerApplication() = default;
+	~ServerApplication() = default;
 
 	void Init(int argc, char** argv);
 	void Loop();
@@ -73,13 +85,15 @@ private:
 	//database
 	sqlite3* database = nullptr;
 
+	//lua
+	lua_State* luaState = nullptr;
+
 	//misc
 	bool running = true;
 	ConfigUtility config;
 
-	//global lists
-	ClientMap clientMap;
-	PlayerMap playerMap;
+	std::map<int, ClientEntry> clientMap;
+	std::map<int, PlayerEntry> playerMap;
 
 	int clientCounter = 0;
 	int playerCounter = 0;

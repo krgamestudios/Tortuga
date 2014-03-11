@@ -1,4 +1,4 @@
-/* Copyright: (c) Kayne Ruse 2013
+/* Copyright: (c) Kayne Ruse 2014
  * 
  * This software is provided 'as-is', without any express or implied
  * warranty. In no event will the authors be held liable for any damages
@@ -19,20 +19,12 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef CLIENT_HPP_
-#define CLIENT_HPP_
+#ifndef SERIAL_HPP_
+#define SERIAL_HPP_
 
-#include "SDL/SDL_net.h"
+#include "network_packet.hpp"
 
-#include <map>
-
-/* Hold the client info.
-*/
-
-struct Client {
-	IPaddress address;
-};
-
-typedef std::map<int, Client> ClientMap;
+void serialize(NetworkPacket* const, void*);
+void deserialize(NetworkPacket* const, void*);
 
 #endif

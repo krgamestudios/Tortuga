@@ -27,6 +27,7 @@
 #include "config_utility.hpp"
 #include "udp_network_utility.hpp"
 #include "network_packet.hpp"
+#include "serial.hpp"
 #include "image.hpp"
 #include "raster_font.hpp"
 #include "button.hpp"
