@@ -218,7 +218,7 @@ void ServerApplication::HandleDisconnect(NetworkPacket packet) {
 
 	erase_if(playerMap, [&](std::pair<int, PlayerEntry> it) -> bool {
 		//find the internal players to delete
-		if (it.first == packet.clientInfo.index) {
+		if (it.second.clientIndex == packet.clientInfo.index) {
 			delPacket.playerInfo.playerIndex = it.first;
 			//send the delete player command to all clients
 			PumpPacket(delPacket);
@@ -246,7 +246,7 @@ void ServerApplication::HandleSynchronize(NetworkPacket packet) {
 		newPacket.playerInfo.position = it.second.position;
 		newPacket.playerInfo.motion = it.second.motion;
 		serialize(&newPacket, buffer);
-		network.Send(&clientMap[it.second.clientIndex].address, buffer, sizeof(NetworkPacket));
+		network.Send(&clientMap[packet.clientInfo.index].address, buffer, sizeof(NetworkPacket));
 	}
 }
 
@@ -256,9 +256,7 @@ void ServerApplication::HandleShutdown(NetworkPacket packet) {
 
 	//disconnect all clients
 	packet.meta.type = NetworkPacket::Type::DISCONNECT;
-	for (auto& it : clientMap) {
-		network.Send(&it.second.address, &packet, sizeof(NetworkPacket));
-	}
+	PumpPacket(packet);
 
 	//finished this routine
 	cout << "shutting down" << endl;
