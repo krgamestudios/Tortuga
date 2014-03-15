@@ -27,6 +27,8 @@
 
 #include "SDL/SDL_net.h"
 
+#include <algorithm>
+
 #define PACKET_STRING_SIZE 100
 
 #pragma pack(push, 0)
@@ -113,5 +115,7 @@ union NetworkPacket {
 };
 
 #pragma pack(pop)
+
+#define PACKET_BUFFER_SIZE std::max(sizeof(NetworkPacket), REGION_WIDTH * REGION_HEIGHT * REGION_DEPTH * sizeof(Region::type_t) + sizeof(NetworkPacket::Metadata))
 
 #endif

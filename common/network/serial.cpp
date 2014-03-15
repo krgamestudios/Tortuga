@@ -76,6 +76,14 @@ void serializePlayer(NetworkPacket* packet, char* buffer) {
 	memcpy(buffer, &packet->playerInfo.motion.y, sizeof(double));
 }
 
+void serializeRegion(NetworkPacket* packet, char* buffer) {
+//	cout << "serializeRegion" << endl;
+	memcpy(buffer, &packet->meta.type, sizeof(NetworkPacket::Type));
+	buffer += sizeof(NetworkPacket::Type);
+
+	//TODO
+}
+
 //-------------------------
 //internal deserialization functions
 //-------------------------
@@ -126,6 +134,14 @@ void deserializePlayer(NetworkPacket* packet, char* buffer) {
 	memcpy(&packet->playerInfo.motion.y, buffer, sizeof(double));
 }
 
+void deserializeRegion(NetworkPacket* packet, char* buffer) {
+//	cout << "deserializeRegion" << endl;
+	memcpy(&packet->meta.type, buffer, sizeof(NetworkPacket::Type));
+	buffer += sizeof(NetworkPacket::Type);
+
+	//TODO
+}
+
 //-------------------------
 //the interface functions
 //-------------------------
@@ -159,6 +175,11 @@ void serialize(NetworkPacket* packet, void* buffer) {
 		case NetworkPacket::Type::PLAYER_DELETE:
 		case NetworkPacket::Type::PLAYER_UPDATE:
 			serializePlayer(packet, reinterpret_cast<char*>(buffer));
+		break;
+
+		//map info
+		case NetworkPacket::Type::REGION_CONTENT:
+			serializeRegion(packet, reinterpret_cast<char*>(buffer));
 		break;
 	}
 //	for (int i = 0; i < sizeof(NetworkPacket); i++) {
@@ -198,6 +219,11 @@ void deserialize(NetworkPacket* packet, void* buffer) {
 		case NetworkPacket::Type::PLAYER_DELETE:
 		case NetworkPacket::Type::PLAYER_UPDATE:
 			deserializePlayer(packet, reinterpret_cast<char*>(buffer));
+		break;
+
+		//map info
+		case NetworkPacket::Type::REGION_CONTENT:
+			serializeRegion(packet, reinterpret_cast<char*>(buffer));
 		break;
 	}
 //	for (int i = 0; i < sizeof(NetworkPacket); i++) {
