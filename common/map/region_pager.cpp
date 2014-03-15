@@ -62,7 +62,3 @@ Region* RegionPagerBase::GetRegion(int x, int y) {
 	if (ptr) return ptr;
 	return CreateRegion(x, y);
 }
-
-void RegionPagerBase::Update() {
-	//TODO
-}
