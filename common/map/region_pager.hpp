@@ -33,8 +33,8 @@ public:
 	RegionPagerBase(int regionWidth, int regionHeight, int regionDepth);
 	virtual ~RegionPagerBase();
 
-	int SetTile(int x, int y, int z, int v);
-	int GetTile(int x, int y, int z);
+	Region::type_t SetTile(int x, int y, int z, Region::type_t v);
+	Region::type_t GetTile(int x, int y, int z);
 
 	Region* GetRegion(int x, int y);
 

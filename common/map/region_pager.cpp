@@ -35,12 +35,12 @@ RegionPagerBase::~RegionPagerBase() {
 	//EMPTY
 }
 
-int RegionPagerBase::SetTile(int x, int y, int z, int v) {
+Region::type_t RegionPagerBase::SetTile(int x, int y, int z, Region::type_t v) {
 	Region* ptr = GetRegion(x, y);
 	return ptr->SetTile(x - ptr->GetX(), y - ptr->GetY(), z, v);
 }
 
-int RegionPagerBase::GetTile(int x, int y, int z) {
+Region::type_t RegionPagerBase::GetTile(int x, int y, int z) {
 	Region* ptr = GetRegion(x, y);
 	return ptr->GetTile(x - ptr->GetX(), y - ptr->GetY(), z);
 }

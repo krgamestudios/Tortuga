@@ -56,12 +56,12 @@ EditorScene::EditorScene(ConfigUtility* const arg1):
 	});
 
 	//setup the map
-	pager.SetRegionWidth(config.Int("map.pager.width"));
-	pager.SetRegionHeight(config.Int("map.pager.height"));
-	pager.SetRegionDepth(config.Int("map.pager.depth"));
+	pager.SetRegionWidth(REGION_WIDTH);
+	pager.SetRegionHeight(REGION_HEIGHT);
+	pager.SetRegionDepth(REGION_DEPTH);
 
 	//debug
-	tsheet.Load("rsc\\graphics\\tilesets\\sand.bmp", 12, 3);
+	tsheet.Load(config["dir.tilesets"] + "sand.bmp", 12, 3);
 }
 
 EditorScene::~EditorScene() {

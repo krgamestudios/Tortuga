@@ -97,13 +97,14 @@ void ServerApplication::Init(int argc, char** argv) {
 	cout << "Initialized lua's setup script" << endl;
 
 	//setup the map object
-	mapPager.SetRegionWidth(config.Int("map.pager.width"));
-	mapPager.SetRegionHeight(config.Int("map.pager.height"));
-	mapPager.SetRegionDepth(config.Int("map.pager.depth"));
+	mapPager.SetRegionWidth(REGION_WIDTH);
+	mapPager.SetRegionHeight(REGION_HEIGHT);
+	mapPager.SetRegionDepth(REGION_DEPTH);
 	//TODO: pass args to the generator & format as needed
 	//NOTE: I might need to rearrange the init process so that lua & SQL can interact
 	//      with the map system as needed.
 	cout << "Initialized the map system" << endl;
+	cout << "\tsizeof(NetworkPacket): " << sizeof(NetworkPacket) << endl;
 
 	//finalize the startup
 	cout << "Startup completed successfully" << endl;

@@ -22,21 +22,28 @@
 #ifndef REGION_HPP_
 #define REGION_HPP_
 
+//temporary?
+#define REGION_WIDTH 20
+#define REGION_HEIGHT 20
+#define REGION_DEPTH 3
+
 class Region {
 public:
+	typedef unsigned short type_t;
+
 	Region() = delete;
 	Region(int width, int height, int depth, int x, int y);
 	~Region();
 
-	int SetTile(int x, int y, int z, int v);
-	int GetTile(int x, int y, int z);
+	type_t SetTile(int x, int y, int z, type_t v);
+	type_t GetTile(int x, int y, int z);
 
 	//accessors
-	int GetWidth() { return width; }
-	int GetHeight() { return height; }
-	int GetDepth() { return depth; }
-	int GetX() { return x; }
-	int GetY() { return y; }
+	int GetWidth() const { return width; }
+	int GetHeight() const { return height; }
+	int GetDepth() const { return depth; }
+	int GetX() const { return x; }
+	int GetY() const { return y; }
 private:
 	const int width;
 	const int height;
@@ -44,7 +51,7 @@ private:
 	const int x;
 	const int y;
 
-	int*** tiles = nullptr;
+	type_t*** tiles = nullptr;
 };
 
 #endif

@@ -22,9 +22,10 @@
 #ifndef NETWORKPACKET_HPP_
 #define NETWORKPACKET_HPP_
 
-#include "SDL/SDL_net.h"
-
 #include "vector2.hpp"
+#include "region.hpp"
+
+#include "SDL/SDL_net.h"
 
 #define PACKET_STRING_SIZE 100
 
@@ -61,6 +62,9 @@ union NetworkPacket {
 		PLAYER_NEW = 10,
 		PLAYER_DELETE = 11,
 		PLAYER_UPDATE = 12,
+
+		//map data
+		REGION_CONTENT = 13,
 	};
 
 	//metadata on the packet itself
@@ -75,6 +79,7 @@ union NetworkPacket {
 		//TODO: version info
 		char name[PACKET_STRING_SIZE];
 		//TODO: player count
+		//TODO: map format
 	}serverInfo;
 
 	//information about the client
@@ -95,7 +100,10 @@ union NetworkPacket {
 	}playerInfo;
 
 	//map data
-	//...
+	struct MapInformation {
+		Metadata meta;
+		Region* region;
+	}mapInfo;
 
 	//defaults
 	NetworkPacket() {
