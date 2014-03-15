@@ -116,6 +116,6 @@ union NetworkPacket {
 
 #pragma pack(pop)
 
-#define PACKET_BUFFER_SIZE std::max(sizeof(NetworkPacket), REGION_WIDTH * REGION_HEIGHT * REGION_DEPTH * sizeof(Region::type_t) + sizeof(NetworkPacket::Metadata))
+#define PACKET_BUFFER_SIZE std::max(sizeof(NetworkPacket), REGION_WIDTH * REGION_HEIGHT * REGION_DEPTH * sizeof(Region::type_t) + sizeof(int) * 2 + sizeof(NetworkPacket::Metadata))
 
 #endif

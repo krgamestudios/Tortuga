@@ -22,17 +22,29 @@
 #ifndef INWORLD_HPP_
 #define INWORLD_HPP_
 
-#include "base_scene.hpp"
+//maps
+#include "map_generator.hpp"
+#include "map_file_format.hpp"
+#include "region_pager.hpp"
 
-#include "config_utility.hpp"
+//networking
 #include "udp_network_utility.hpp"
 #include "network_packet.hpp"
 #include "serial.hpp"
+
+//graphics
 #include "image.hpp"
 #include "raster_font.hpp"
 #include "button.hpp"
+
+//common
+#include "config_utility.hpp"
+
+//client
+#include "base_scene.hpp"
 #include "player_character.hpp"
 
+//STL
 #include <map>
 
 class InWorld : public BaseScene {
@@ -66,16 +78,26 @@ protected:
 	void RequestDisconnect();
 	void RequestShutDown();
 
-	//global
+	//globals
 	ConfigUtility& config;
 	UDPNetworkUtility& network;
 	int& clientIndex;
 
-	//members
-	Image image;
+	//graphics
+	Image buttonImage;
 	RasterFont font;
+
+	//map
+	RegionPager<MapGenerator, MapFileFormat> mapPager;
+
+	//UI
 	Button disconnectButton;
 	Button shutDownButton;
+	struct {
+		int x = 0, y = 0;
+	} camera;
+
+	//game
 	std::map<int, PlayerCharacter> playerCharacters;
 	PlayerCharacter* localCharacter = nullptr;
 	int playerIndex = -1;

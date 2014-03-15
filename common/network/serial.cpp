@@ -81,7 +81,15 @@ void serializeRegion(NetworkPacket* packet, char* buffer) {
 	memcpy(buffer, &packet->meta.type, sizeof(NetworkPacket::Type));
 	buffer += sizeof(NetworkPacket::Type);
 
-	//TODO
+	//TODO: incomplete
+/*	for (register int i = 0; i < packet->mapInfo.region->GetWidth(); i++) {
+		for (register int j = 0; j < packet->mapInfo.region->GetHeight(); j++) {
+			for (register int k = 0; k < packet->mapInfo.region->GetDepth(); k++) {
+				memcpy(buffer, &packet->mapInfo.region->GetTile(i, j, k), sizeof(Region::type_t));
+				buffer += sizeof(Region::type_t);
+			}
+		}
+	}*/
 }
 
 //-------------------------
