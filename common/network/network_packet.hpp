@@ -66,7 +66,8 @@ union NetworkPacket {
 		PLAYER_UPDATE = 12,
 
 		//map data
-		REGION_CONTENT = 13,
+		REGION_REQUEST = 13,
+		REGION_CONTENT = 14,
 	};
 
 	//metadata on the packet itself
@@ -102,10 +103,11 @@ union NetworkPacket {
 	}playerInfo;
 
 	//map data
-	struct MapInformation {
+	struct RegionInformation {
 		Metadata meta;
+		int x, y;
 		Region* region;
-	}mapInfo;
+	}regionInfo;
 
 	//defaults
 	NetworkPacket() {
@@ -116,6 +118,10 @@ union NetworkPacket {
 
 #pragma pack(pop)
 
+/* content: width * height * depth * sizoeof(type)
+ * map size: sizeof(int) * 2
+ * metadata: sizeof(metadata)
+*/
 #define PACKET_BUFFER_SIZE std::max(sizeof(NetworkPacket), REGION_WIDTH * REGION_HEIGHT * REGION_DEPTH * sizeof(Region::type_t) + sizeof(int) * 2 + sizeof(NetworkPacket::Metadata))
 
 #endif

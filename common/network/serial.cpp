@@ -76,11 +76,7 @@ void serializePlayer(NetworkPacket* packet, char* buffer) {
 	memcpy(buffer, &packet->playerInfo.motion.y, sizeof(double));
 }
 
-void serializeRegion(NetworkPacket* packet, char* buffer) {
-//	cout << "serializeRegion" << endl;
-	memcpy(buffer, &packet->meta.type, sizeof(NetworkPacket::Type));
-	buffer += sizeof(NetworkPacket::Type);
-
+void serializeRegionContent(NetworkPacket* packet, char* buffer) {
 	//TODO: incomplete
 /*	for (register int i = 0; i < packet->mapInfo.region->GetWidth(); i++) {
 		for (register int j = 0; j < packet->mapInfo.region->GetHeight(); j++) {
@@ -90,6 +86,22 @@ void serializeRegion(NetworkPacket* packet, char* buffer) {
 			}
 		}
 	}*/
+}
+
+void serializeRegion(NetworkPacket* packet, char* buffer) {
+//	cout << "serializeRegion" << endl;
+	memcpy(buffer, &packet->meta.type, sizeof(NetworkPacket::Type));
+	buffer += sizeof(NetworkPacket::Type);
+
+	//x & y
+	memcpy(buffer, &packet->regionInfo.x, sizeof(int));
+	buffer += sizeof(int);
+	memcpy(buffer, &packet->regionInfo.y, sizeof(int));
+	buffer += sizeof(int);
+
+	if (packet->meta.type == NetworkPacket::Type::REGION_CONTENT) {
+		serializeRegionContent(packet, buffer);
+	}
 }
 
 //-------------------------
@@ -142,12 +154,24 @@ void deserializePlayer(NetworkPacket* packet, char* buffer) {
 	memcpy(&packet->playerInfo.motion.y, buffer, sizeof(double));
 }
 
+void deserializeRegionContent(NetworkPacket* packet, char* buffer) {
+	//TODO
+}
+
 void deserializeRegion(NetworkPacket* packet, char* buffer) {
 //	cout << "deserializeRegion" << endl;
 	memcpy(&packet->meta.type, buffer, sizeof(NetworkPacket::Type));
 	buffer += sizeof(NetworkPacket::Type);
 
-	//TODO
+	//x & y
+	memcpy(&packet->regionInfo.x, buffer, sizeof(int));
+	buffer += sizeof(int);
+	memcpy(&packet->regionInfo.y, buffer, sizeof(int));
+	buffer += sizeof(int);
+
+	if (packet->meta.type == NetworkPacket::Type::REGION_CONTENT) {
+		deserializeRegionContent(packet, buffer);
+	}
 }
 
 //-------------------------
@@ -185,7 +209,8 @@ void serialize(NetworkPacket* packet, void* buffer) {
 			serializePlayer(packet, reinterpret_cast<char*>(buffer));
 		break;
 
-		//map info
+		//region info
+		case NetworkPacket::Type::REGION_REQUEST:
 		case NetworkPacket::Type::REGION_CONTENT:
 			serializeRegion(packet, reinterpret_cast<char*>(buffer));
 		break;
@@ -207,7 +232,7 @@ void deserialize(NetworkPacket* packet, void* buffer) {
 		case NetworkPacket::Type::BROADCAST_REQUEST:
 		case NetworkPacket::Type::JOIN_REQUEST:
 		case NetworkPacket::Type::SYNCHRONIZE:
-			//
+			//NOTHING
 		break;
 
 		//Server info
@@ -230,8 +255,9 @@ void deserialize(NetworkPacket* packet, void* buffer) {
 		break;
 
 		//map info
+		case NetworkPacket::Type::REGION_REQUEST:
 		case NetworkPacket::Type::REGION_CONTENT:
-			serializeRegion(packet, reinterpret_cast<char*>(buffer));
+			deserializeRegion(packet, reinterpret_cast<char*>(buffer));
 		break;
 	}
 //	for (int i = 0; i < sizeof(NetworkPacket); i++) {
