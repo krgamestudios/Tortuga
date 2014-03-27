@@ -24,7 +24,7 @@
 
 #include "lua/lua.hpp"
 
-#define LUA_REGIONLIBNAME "region"
+#define LUA_REGIONLIBNAME "Region"
 LUAMOD_API int luaopen_regionapi(lua_State* L);
 
 #endif

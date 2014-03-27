@@ -110,6 +110,10 @@ void ServerApplication::Init(int argc, char** argv) {
 
 	//finalize the startup
 	cout << "Startup completed successfully" << endl;
+
+	//debugging
+	mapPager.GetRegion(0,0);
+	mapPager.GetRegion(128,256);
 }
 
 void ServerApplication::Loop() {

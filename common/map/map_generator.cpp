@@ -42,7 +42,7 @@ void LuaGenerator::Create(Region** const ptr, int width, int height, int depth, 
 
 	//generate the lua-driven maps
 	lua_getglobal(state, "CreateRegion");
-	lua_pushlightuserdata(state, ptr);
+	lua_pushlightuserdata(state, *ptr);
 	lua_pcall(state, 1, 0, 0);
 }
 

@@ -21,7 +21,53 @@
 */
 #include "region_api.hpp"
 
+#include "region.hpp"
+
+static int setTile(lua_State* L) {
+//	Region* ptr = lua_touserdata(L, 1);
+//	ptr->SetTile
+}
+
+static int getTile(lua_State* L) {
+	//TODO
+}
+
+static int getWidth(lua_State* L) {
+	//TODO
+}
+
+static int getHeight(lua_State* L) {
+	//TODO
+}
+
+static int getDepth(lua_State* L) {
+	//TODO
+}
+
+static int getX(lua_State* L) {
+	Region* ptr = (Region*)lua_touserdata(L, 1);
+	lua_pushinteger(L, ptr->GetX());
+	return 1;
+}
+
+static int getY(lua_State* L) {
+	Region* ptr = (Region*)lua_touserdata(L, 1);
+	lua_pushinteger(L, ptr->GetY());
+	return 1;
+}
+
+static const luaL_Reg regionlib[] = {
+	{"SetTile",setTile},
+	{"GetTile",getTile},
+	{"GetWidth",getWidth},
+	{"GetHeight",getHeight},
+	{"GetDepth",getDepth},
+	{"GetX",getX},
+	{"GetY",getY},
+	{nullptr, nullptr}
+};
+
 LUAMOD_API int luaopen_regionapi(lua_State* L) {
-	//TODO: stuff
+	luaL_newlib(L, regionlib);
 	return 1;
 }
