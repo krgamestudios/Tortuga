@@ -21,10 +21,31 @@
 */
 #include "map_generator.hpp"
 
-void MapGenerator::Create(Region** const ptr, int width, int height, int depth, int x, int y) {
+void BlankGenerator::Create(Region** const ptr, int width, int height, int depth, int x, int y) {
 	(*ptr) = new Region(width, height, depth, x, y);
 }
 
-void MapGenerator::Unload(Region* const ptr) {
+void BlankGenerator::Unload(Region* const ptr) {
+	delete ptr;
+}
+/*
+void PerlinGenerator::Create(Region** const ptr, int width, int height, int depth, int x, int y) {
+	(*ptr) = new Region(width, height, depth, x, y);
+}
+
+void PerlinGenerator::Unload(Region* const ptr) {
+	delete ptr;
+}
+*/
+void LuaGenerator::Create(Region** const ptr, int width, int height, int depth, int x, int y) {
+	(*ptr) = new Region(width, height, depth, x, y);
+
+	//generate the lua-driven maps
+	lua_getglobal(state, "CreateRegion");
+	lua_pushlightuserdata(state, ptr);
+	lua_pcall(state, 1, 0, 0);
+}
+
+void LuaGenerator::Unload(Region* const ptr) {
 	delete ptr;
 }

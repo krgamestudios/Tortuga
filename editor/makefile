@@ -1,6 +1,6 @@
 #config
 INCLUDES+=../common ../common/graphics ../common/map ../common/ui
-LIBS+=../libcommon.a -lmingw32 -lSDLmain -lSDL
+LIBS+=../libcommon.a -lmingw32 -lSDLmain -lSDL -llua
 CXXFLAGS+=-std=c++11 -DDEBUG $(addprefix -I,$(INCLUDES))
 CFLAGS+=-DDEBUG $(addprefix -I,$(INCLUDES))
 

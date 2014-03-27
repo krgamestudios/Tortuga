@@ -21,10 +21,27 @@
 */
 #include "map_file_format.hpp"
 
-void MapFileFormat::Load(Region** const ptr, int x, int y) {
+void DummyFormat::Load(Region** const ptr, int x, int y) {
 	//TODO
 }
 
-void MapFileFormat::Save(Region* const ptr) {
+void DummyFormat::Save(Region* const ptr) {
 	//TODO
 }
+/*
+void VerboseFormat::Load(Region** const ptr, int x, int y) {
+	//TODO
+}
+
+void VerboseFormat::Save(Region* const ptr) {
+	//TODO
+}
+
+void CompactFormat::Load(Region** const ptr, int x, int y) {
+	//TODO
+}
+
+void CompactFormat::Save(Region* const ptr) {
+	//TODO
+}
+*/

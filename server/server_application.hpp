@@ -85,7 +85,7 @@ private:
 	void PumpPacket(NetworkPacket);
 
 	//maps
-	RegionPager<MapGenerator, MapFileFormat> mapPager;
+	RegionPager<LuaGenerator, DummyFormat> mapPager;
 
 	//networking
 	UDPNetworkUtility network;

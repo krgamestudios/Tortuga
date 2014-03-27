@@ -19,33 +19,12 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef MAPFILEFORMAT_HPP_
-#define MAPFILEFORMAT_HPP_
+#ifndef REGIONAPI_HPP_
+#define REGIONAPI_HPP_
 
-#include "region.hpp"
+#include "lua/lua.hpp"
 
-class DummyFormat {
-public:
-	void Load(Region** const, int x, int y);
-	void Save(Region* const);
-private:
-	//
-};
-/*
-class VerboseFormat {
-public:
-	void Load(Region** const, int x, int y);
-	void Save(Region* const);
-private:
-	//
-};
+#define LUA_REGIONLIBNAME "region"
+LUAMOD_API int luaopen_regionapi(lua_State* L);
 
-class CompactFormat {
-public:
-	void Load(Region** const, int x, int y);
-	void Save(Region* const);
-private:
-	//
-};
-*/
 #endif

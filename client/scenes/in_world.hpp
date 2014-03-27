@@ -88,7 +88,7 @@ protected:
 	RasterFont font;
 
 	//map
-	RegionPager<MapGenerator, MapFileFormat> mapPager;
+	RegionPager<BlankGenerator, DummyFormat> mapPager;
 
 	//UI
 	Button disconnectButton;

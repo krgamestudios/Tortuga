@@ -1,5 +1,5 @@
 #config
-INCLUDES+=. ../common ../common/map ../common/network
+INCLUDES+=. ../common ../common/map ../common/script ../common/network
 LIBS+=../libcommon.a -lSDL_net -lwsock32 -liphlpapi -lmingw32 -lSDLmain -lSDL -llua -lsqlite3
 CXXFLAGS+=-std=c++11 -DDEBUG $(addprefix -I,$(INCLUDES))
 CFLAGS+=-DDEBUG $(addprefix -I,$(INCLUDES))

@@ -100,6 +100,7 @@ void ServerApplication::Init(int argc, char** argv) {
 	mapPager.SetRegionWidth(REGION_WIDTH);
 	mapPager.SetRegionHeight(REGION_HEIGHT);
 	mapPager.SetRegionDepth(REGION_DEPTH);
+	mapPager.GetGenerator()->SetLuaState(luaState);
 	//TODO: pass args to the generator & format as needed
 	//NOTE: I might need to rearrange the init process so that lua & SQL can interact
 	//      with the map system as needed.
@@ -212,7 +213,7 @@ void ServerApplication::HandleJoinRequest(NetworkPacket packet) {
 
 	//finished this routine
 	clientCounter++;
-	cout << "connect, total: " << clientMap.size() << endl;
+	cout << "Connect, total: " << clientMap.size() << endl;
 }
 
 void ServerApplication::HandleDisconnect(NetworkPacket packet) {
@@ -239,7 +240,7 @@ void ServerApplication::HandleDisconnect(NetworkPacket packet) {
 	});
 
 	//finished this routine
-	cout << "disconnect, total: " << clientMap.size() << endl;
+	cout << "Disconnect, total: " << clientMap.size() << endl;
 }
 
 void ServerApplication::HandleSynchronize(NetworkPacket packet) {
@@ -270,7 +271,7 @@ void ServerApplication::HandleShutdown(NetworkPacket packet) {
 	PumpPacket(packet);
 
 	//finished this routine
-	cout << "shutting down" << endl;
+	cout << "Shutdown signal accepted" << endl;
 }
 
 void ServerApplication::HandlePlayerNew(NetworkPacket packet) {
