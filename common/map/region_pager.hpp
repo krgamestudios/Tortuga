@@ -43,7 +43,6 @@ public:
 	virtual Region* SaveRegion(int x, int y) = 0;
 	virtual Region* CreateRegion(int x, int y) = 0;
 	virtual void UnloadRegion(int x, int y) = 0;
-	virtual void UnloadAll() = 0;
 
 	//accessors
 	//NOTE: don't change the sizes mid-program, it will cause issues
