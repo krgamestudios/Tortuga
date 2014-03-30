@@ -24,24 +24,34 @@
 #include "region.hpp"
 
 static int setTile(lua_State* L) {
-//	Region* ptr = lua_touserdata(L, 1);
-//	ptr->SetTile
+	Region* ptr = (Region*)lua_touserdata(L, 1);
+	ptr->SetTile(lua_tointeger(L, 2)-1, lua_tointeger(L, 3)-1, lua_tointeger(L, 4)-1, lua_tointeger(L, 5));
+	return 0;
 }
 
 static int getTile(lua_State* L) {
-	//TODO
+	Region* ptr = (Region*)lua_touserdata(L, 1);
+	int ret = ptr->GetTile(lua_tointeger(L, 2)-1, lua_tointeger(L, 3)-1, lua_tointeger(L, 4)-1);
+	lua_pushnumber(L, ret);
+	return 1;
 }
 
 static int getWidth(lua_State* L) {
-	//TODO
+	Region* ptr = (Region*)lua_touserdata(L, 1);
+	lua_pushinteger(L, ptr->GetWidth());
+	return 1;
 }
 
 static int getHeight(lua_State* L) {
-	//TODO
+	Region* ptr = (Region*)lua_touserdata(L, 1);
+	lua_pushinteger(L, ptr->GetHeight());
+	return 1;
 }
 
 static int getDepth(lua_State* L) {
-	//TODO
+	Region* ptr = (Region*)lua_touserdata(L, 1);
+	lua_pushinteger(L, ptr->GetDepth());
+	return 1;
 }
 
 static int getX(lua_State* L) {
@@ -56,6 +66,10 @@ static int getY(lua_State* L) {
 	return 1;
 }
 
+static int dummy(lua_State* L) {
+	return 0;
+}
+
 static const luaL_Reg regionlib[] = {
 	{"SetTile",setTile},
 	{"GetTile",getTile},
@@ -64,6 +78,10 @@ static const luaL_Reg regionlib[] = {
 	{"GetDepth",getDepth},
 	{"GetX",getX},
 	{"GetY",getY},
+	{"Create", dummy},
+	{"Unload", dummy},
+	{"Load", dummy},
+	{"Save", dummy},
 	{nullptr, nullptr}
 };
 

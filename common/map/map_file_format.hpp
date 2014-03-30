@@ -24,28 +24,56 @@
 
 #include "region.hpp"
 
+#include "lua/lua.hpp"
+
+#include <string>
+
 class DummyFormat {
 public:
-	void Load(Region** const, int x, int y);
+	void Load(Region** const, int width, int height, int depth, int x, int y);
 	void Save(Region* const);
+
+	std::string SetSaveDir(std::string s) { return saveDir = s; }
+	std::string GetSaveDir() { return saveDir; }
 private:
-	//
+	std::string saveDir;
 };
 /*
 class VerboseFormat {
 public:
-	void Load(Region** const, int x, int y);
+	void Load(Region** const, int width, int height, int depth, int x, int y);
 	void Save(Region* const);
+
+	std::string SetSaveDir(std::string s) { return saveDir = s; }
+	std::string GetSaveDir() { return saveDir; }
 private:
-	//
+	std::string saveDir;
 };
 
 class CompactFormat {
 public:
-	void Load(Region** const, int x, int y);
+	void Load(Region** const, int width, int height, int depth, int x, int y);
 	void Save(Region* const);
+
+	std::string SetSaveDir(std::string s) { return saveDir = s; }
+	std::string GetSaveDir() { return saveDir; }
 private:
-	//
+	std::string saveDir;
 };
 */
+class LuaFormat {
+public:
+	void Load(Region** const, int width, int height, int depth, int x, int y);
+	void Save(Region* const);
+
+	std::string SetSaveDir(std::string s) { return saveDir = s; }
+	std::string GetSaveDir() { return saveDir; }
+
+	lua_State* SetLuaState(lua_State* L) { return state = L; }
+	lua_State* GetLuaState() { return state; }
+private:
+	std::string saveDir;
+	lua_State* state = nullptr;
+};
+
 #endif

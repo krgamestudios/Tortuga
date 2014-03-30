@@ -101,6 +101,8 @@ void ServerApplication::Init(int argc, char** argv) {
 	mapPager.SetRegionHeight(REGION_HEIGHT);
 	mapPager.SetRegionDepth(REGION_DEPTH);
 	mapPager.GetGenerator()->SetLuaState(luaState);
+	mapPager.GetFormat()->SetLuaState(luaState);
+	mapPager.GetFormat()->SetSaveDir("save/mapname/");
 	//TODO: pass args to the generator & format as needed
 	//NOTE: I might need to rearrange the init process so that lua & SQL can interact
 	//      with the map system as needed.
@@ -112,8 +114,7 @@ void ServerApplication::Init(int argc, char** argv) {
 	cout << "Startup completed successfully" << endl;
 
 	//debugging
-	mapPager.GetRegion(0,0);
-	mapPager.GetRegion(128,256);
+	//
 }
 
 void ServerApplication::Loop() {
@@ -136,6 +137,7 @@ void ServerApplication::Loop() {
 void ServerApplication::Quit() {
 	cout << "Shutting down" << endl;
 	//empty the members
+	mapPager.UnloadAll();
 	//TODO: player manager
 	//TODO: client manager
 
