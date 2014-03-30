@@ -43,6 +43,7 @@ public:
 	virtual Region* SaveRegion(int x, int y) = 0;
 	virtual Region* CreateRegion(int x, int y) = 0;
 	virtual void UnloadRegion(int x, int y) = 0;
+	virtual void UnloadAll() = 0;
 
 	//accessors
 	//NOTE: don't change the sizes mid-program, it will cause issues
@@ -69,7 +70,9 @@ public:
 	{
 		//EMPTY
 	}
-	~RegionPager() = default;
+	~RegionPager() {
+		UnloadAll();
+	}
 
 	Region* LoadRegion(int x, int y) {
 		//snap the coords
@@ -78,7 +81,7 @@ public:
 
 		//load the region if possible
 		Region* ptr = nullptr;
-		format.Load(&ptr, x, y);
+		format.Load(&ptr, regionWidth, regionHeight, regionDepth, x, y);
 		if (ptr) {
 			regionList.push_back(ptr);
 			return ptr;
@@ -129,6 +132,12 @@ public:
 			}
 			++it;
 		}
+	}
+	void UnloadAll() {
+		for (auto& it : regionList) {
+			generator.Unload(it);
+		}
+		regionList.clear();
 	}
 
 	//accessors

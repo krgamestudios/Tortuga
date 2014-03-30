@@ -73,7 +73,7 @@ protected:
 		int x = 0, y = 0;
 	} camera;
 
-	RegionPager<MapGenerator, MapFileFormat> pager;
+	RegionPager<BlankGenerator, DummyFormat> pager;
 	TileSheet tsheet;
 };
 
