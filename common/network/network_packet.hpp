@@ -27,8 +27,6 @@
 
 #include "SDL/SDL_net.h"
 
-#include <algorithm>
-
 #define PACKET_STRING_SIZE 100
 
 #pragma pack(push, 0)
@@ -105,7 +103,7 @@ union NetworkPacket {
 	//map data
 	struct RegionInformation {
 		Metadata meta;
-		int x, y;
+		int width, height, depth, x, y;
 		Region* region;
 	}regionInfo;
 
@@ -117,11 +115,5 @@ union NetworkPacket {
 };
 
 #pragma pack(pop)
-
-/* content: width * height * depth * sizoeof(type)
- * map size: sizeof(int) * 2
- * metadata: sizeof(metadata)
-*/
-#define PACKET_BUFFER_SIZE std::max(sizeof(NetworkPacket), REGION_WIDTH * REGION_HEIGHT * REGION_DEPTH * sizeof(Region::type_t) + sizeof(int) * 2 + sizeof(NetworkPacket::Metadata))
 
 #endif

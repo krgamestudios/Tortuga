@@ -24,6 +24,13 @@
 
 #include "network_packet.hpp"
 
+/* Sending regions are the largest type of packet
+ *  content: width * height * depth * sizoeof(type)
+ *  map format: sizeof(int) * 5
+ *  metadata: sizeof(metadata)
+*/
+#define PACKET_BUFFER_SIZE REGION_WIDTH * REGION_HEIGHT * REGION_DEPTH * sizeof(Region::type_t) + sizeof(int) * 5 + sizeof(NetworkPacket::Metadata)
+
 void serialize(NetworkPacket* const, void*);
 void deserialize(NetworkPacket* const, void*);
 
