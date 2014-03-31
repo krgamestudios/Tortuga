@@ -29,14 +29,12 @@
 
 class RegionPagerBase {
 public:
-	RegionPagerBase() = delete;
+	RegionPagerBase() = default;
 	RegionPagerBase(int regionWidth, int regionHeight, int regionDepth);
 	virtual ~RegionPagerBase();
 
-	int SetTile(int x, int y, int z, int v);
-	int GetTile(int x, int y, int z);
-
-	void Update();
+	Region::type_t SetTile(int x, int y, int z, Region::type_t v);
+	Region::type_t GetTile(int x, int y, int z);
 
 	Region* GetRegion(int x, int y);
 
@@ -47,26 +45,33 @@ public:
 	virtual void UnloadRegion(int x, int y) = 0;
 
 	//accessors
-	int GetRegionWidth() { return regionWidth; }
-	int GetRegionHeight() { return regionHeight; }
-	int GetRegionDepth() { return regionDepth; }
+	//NOTE: don't change the sizes mid-program, it will cause issues
+	int SetRegionWidth(int i) { return regionWidth = i; }
+	int SetRegionHeight(int i) { return regionHeight = i; }
+	int SetRegionDepth(int i) { return regionDepth = i; }
+
+	int GetRegionWidth() const { return regionWidth; }
+	int GetRegionHeight() const { return regionHeight; }
+	int GetRegionDepth() const { return regionDepth; }
 protected:
-	const int regionWidth;
-	const int regionHeight;
-	const int regionDepth;
+	int regionWidth;
+	int regionHeight;
+	int regionDepth;
 	std::list<Region*> regionList;
 };
 
 template<typename MapGenerator, typename MapFileFormat>
 class RegionPager : public RegionPagerBase {
 public:
-	RegionPager() = delete;
+	RegionPager() = default;
 	RegionPager(int w, int h, int d):
 		RegionPagerBase(w, h, d)
 	{
 		//EMPTY
 	}
-	~RegionPager() = default;
+	~RegionPager() {
+		UnloadAll();
+	}
 
 	Region* LoadRegion(int x, int y) {
 		//snap the coords
@@ -75,7 +80,7 @@ public:
 
 		//load the region if possible
 		Region* ptr = nullptr;
-		format.Load(&ptr, x, y);
+		format.Load(&ptr, regionWidth, regionHeight, regionDepth, x, y);
 		if (ptr) {
 			regionList.push_back(ptr);
 			return ptr;
@@ -126,6 +131,12 @@ public:
 			}
 			++it;
 		}
+	}
+	void UnloadAll() {
+		for (auto& it : regionList) {
+			generator.Unload(it);
+		}
+		regionList.clear();
 	}
 
 	//accessors

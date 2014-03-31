@@ -34,8 +34,7 @@ using namespace std;
 //-------------------------
 
 EditorScene::EditorScene(ConfigUtility* const arg1):
-	config(*arg1),
-	pager(20, 20, 3)
+	config(*arg1)
 {
 	//create the debugging "window"
 	debugInfo.CreateSurface(256, 256);
@@ -56,8 +55,13 @@ EditorScene::EditorScene(ConfigUtility* const arg1):
 		{"Debug", "Debug On", "Debug Off", "Toggle", "Testificate"}
 	});
 
+	//setup the map
+	pager.SetRegionWidth(REGION_WIDTH);
+	pager.SetRegionHeight(REGION_HEIGHT);
+	pager.SetRegionDepth(REGION_DEPTH);
+
 	//debug
-	tsheet.Load("rsc\\graphics\\tilesets\\sand.bmp", 12, 3);
+	tsheet.Load(config["dir.tilesets"] + "sand.bmp", 12, 3);
 }
 
 EditorScene::~EditorScene() {
@@ -85,6 +89,7 @@ void EditorScene::Render(SDL_Surface* const screen) {
 	for (int i = 0; i < pager.GetRegionWidth()*2; i++) {
 		for (int j = 0; j < pager.GetRegionHeight()*2; j++) {
 			for (int k = 0; k < pager.GetRegionDepth(); k++) {
+				//TODO: skip the out-of-bounds regions
 				tsheet.DrawTo(
 					screen,
 					i*tsheet.GetTileW()-camera.x,

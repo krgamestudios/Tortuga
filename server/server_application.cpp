@@ -66,7 +66,7 @@ void ServerApplication::Init(int argc, char** argv) {
 	if (SDLNet_Init()) {
 		throw(runtime_error("Failed to initialize SDL_net"));
 	}
-	network.Open(config.Int("server.port"), sizeof(NetworkPacket));
+	network.Open(config.Int("server.port"), PACKET_BUFFER_SIZE);
 	cout << "Initialized SDL_net" << endl;
 
 	//Init SQL
@@ -96,8 +96,25 @@ void ServerApplication::Init(int argc, char** argv) {
 	}
 	cout << "Initialized lua's setup script" << endl;
 
+	//setup the map object
+	mapPager.SetRegionWidth(REGION_WIDTH);
+	mapPager.SetRegionHeight(REGION_HEIGHT);
+	mapPager.SetRegionDepth(REGION_DEPTH);
+	mapPager.GetGenerator()->SetLuaState(luaState);
+	mapPager.GetFormat()->SetLuaState(luaState);
+	mapPager.GetFormat()->SetSaveDir("save/mapname/");
+	//TODO: pass args to the generator & format as needed
+	//NOTE: I might need to rearrange the init process so that lua & SQL can interact
+	//      with the map system as needed.
+	cout << "Initialized the map system" << endl;
+	cout << "\tsizeof(NetworkPacket): " << sizeof(NetworkPacket) << endl;
+	cout << "\tPACKET_BUFFER_SIZE: " << PACKET_BUFFER_SIZE << endl;
+
 	//finalize the startup
 	cout << "Startup completed successfully" << endl;
+
+	//debugging
+	//
 }
 
 void ServerApplication::Loop() {
@@ -120,6 +137,7 @@ void ServerApplication::Loop() {
 void ServerApplication::Quit() {
 	cout << "Shutting down" << endl;
 	//empty the members
+	mapPager.UnloadAll();
 	//TODO: player manager
 	//TODO: client manager
 
@@ -179,9 +197,9 @@ void ServerApplication::HandleBroadcastRequest(NetworkPacket packet) {
 	//TODO: version info
 	snprintf(packet.serverInfo.name, PACKET_STRING_SIZE, "%s", config["server.name"].c_str());
 	//TODO: player count
-	char buffer[sizeof(NetworkPacket)];
+	char buffer[PACKET_BUFFER_SIZE];
 	serialize(&packet, buffer);
-	network.Send(&packet.meta.srcAddress, buffer, sizeof(NetworkPacket));
+	network.Send(&packet.meta.srcAddress, buffer, PACKET_BUFFER_SIZE);
 }
 
 void ServerApplication::HandleJoinRequest(NetworkPacket packet) {
@@ -191,25 +209,25 @@ void ServerApplication::HandleJoinRequest(NetworkPacket packet) {
 	clientMap[clientCounter] = c;
 
 	//send the client their info
-	char buffer[sizeof(NetworkPacket)];
+	char buffer[PACKET_BUFFER_SIZE];
 
 	packet.meta.type = NetworkPacket::Type::JOIN_RESPONSE;
 	packet.clientInfo.index = clientCounter;
 	serialize(&packet, buffer);
 
-	network.Send(&clientMap[clientCounter].address, buffer, sizeof(NetworkPacket));
+	network.Send(&clientMap[clientCounter].address, buffer, PACKET_BUFFER_SIZE);
 
 	//finished this routine
 	clientCounter++;
-	cout << "connect, total: " << clientMap.size() << endl;
+	cout << "Connect, total: " << clientMap.size() << endl;
 }
 
 void ServerApplication::HandleDisconnect(NetworkPacket packet) {
 	//disconnect the specified client
 	//TODO: authenticate who is disconnecting/kicking
-	char buffer[sizeof(NetworkPacket)];
+	char buffer[PACKET_BUFFER_SIZE];
 	serialize(&packet, buffer);
-	network.Send(&clientMap[packet.clientInfo.index].address, buffer, sizeof(NetworkPacket));
+	network.Send(&clientMap[packet.clientInfo.index].address, buffer, PACKET_BUFFER_SIZE);
 	clientMap.erase(packet.clientInfo.index);
 
 	//delete players from all clients
@@ -228,14 +246,14 @@ void ServerApplication::HandleDisconnect(NetworkPacket packet) {
 	});
 
 	//finished this routine
-	cout << "disconnect, total: " << clientMap.size() << endl;
+	cout << "Disconnect, total: " << clientMap.size() << endl;
 }
 
 void ServerApplication::HandleSynchronize(NetworkPacket packet) {
 	//send all the server's data to this client
 	//TODO: compensate for large distances
 	NetworkPacket newPacket;
-	char buffer[sizeof(NetworkPacket)];
+	char buffer[PACKET_BUFFER_SIZE];
 
 	//players
 	newPacket.meta.type = NetworkPacket::Type::PLAYER_UPDATE;
@@ -246,7 +264,7 @@ void ServerApplication::HandleSynchronize(NetworkPacket packet) {
 		newPacket.playerInfo.position = it.second.position;
 		newPacket.playerInfo.motion = it.second.motion;
 		serialize(&newPacket, buffer);
-		network.Send(&clientMap[packet.clientInfo.index].address, buffer, sizeof(NetworkPacket));
+		network.Send(&clientMap[packet.clientInfo.index].address, buffer, PACKET_BUFFER_SIZE);
 	}
 }
 
@@ -259,7 +277,7 @@ void ServerApplication::HandleShutdown(NetworkPacket packet) {
 	PumpPacket(packet);
 
 	//finished this routine
-	cout << "shutting down" << endl;
+	cout << "Shutdown signal accepted" << endl;
 }
 
 void ServerApplication::HandlePlayerNew(NetworkPacket packet) {
@@ -324,9 +342,9 @@ void ServerApplication::HandlePlayerUpdate(NetworkPacket packet) {
 
 void ServerApplication::PumpPacket(NetworkPacket packet) {
 	//I don't really like this, but it'll do for now
-	char buffer[sizeof(NetworkPacket)];
+	char buffer[PACKET_BUFFER_SIZE];
 	serialize(&packet, buffer);
 	for (auto& it : clientMap) {
-		network.Send(&it.second.address, buffer, sizeof(NetworkPacket));
+		network.Send(&it.second.address, buffer, PACKET_BUFFER_SIZE);
 	}
 }

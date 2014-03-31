@@ -22,6 +22,7 @@ all: $(OBJ) $(OUT)
 	ar -crs $(OUT) $(OBJ)
 	$(MAKE) -C graphics
 	$(MAKE) -C map
+	$(MAKE) -C script
 	$(MAKE) -C network
 	$(MAKE) -C ui
 

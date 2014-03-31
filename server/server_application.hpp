@@ -22,19 +22,24 @@
 #ifndef SERVERAPPLICATION_HPP_
 #define SERVERAPPLICATION_HPP_
 
+//maps
+#include "map_generator.hpp"
+#include "map_file_format.hpp"
+#include "region_pager.hpp"
+
 //networking
 #include "network_packet.hpp"
 #include "udp_network_utility.hpp"
 #include "serial.hpp"
 
+//common
+#include "config_utility.hpp"
+#include "vector2.hpp"
+
 //APIs
 #include "lua/lua.hpp"
 #include "sqlite3/sqlite3.h"
 #include "SDL/SDL.h"
-
-//common
-#include "config_utility.hpp"
-#include "vector2.hpp"
 
 //STL
 #include <map>
@@ -78,6 +83,9 @@ private:
 	void HandlePlayerUpdate(NetworkPacket);
 
 	void PumpPacket(NetworkPacket);
+
+	//maps
+	RegionPager<LuaGenerator, LuaFormat> mapPager;
 
 	//networking
 	UDPNetworkUtility network;

@@ -35,21 +35,21 @@ InWorld::InWorld(ConfigUtility* const argConfig, UDPNetworkUtility* const argNet
 	clientIndex(*argClientIndex)
 {
 	//setup the utility objects
-	image.LoadSurface(config["dir.interface"] + "button_menu.bmp");
-	image.SetClipH(image.GetClipH()/3);
+	buttonImage.LoadSurface(config["dir.interface"] + "button_menu.bmp");
+	buttonImage.SetClipH(buttonImage.GetClipH()/3);
 	font.LoadSurface(config["dir.fonts"] + "pk_white_8.bmp");
 
 	//pass the utility objects
-	disconnectButton.SetImage(&image);
+	disconnectButton.SetImage(&buttonImage);
 	disconnectButton.SetFont(&font);
-	shutDownButton.SetImage(&image);
+	shutDownButton.SetImage(&buttonImage);
 	shutDownButton.SetFont(&font);
 
 	//set the button positions
 	disconnectButton.SetX(50);
-	disconnectButton.SetY(50 + image.GetClipH() * 0);
+	disconnectButton.SetY(50 + buttonImage.GetClipH() * 0);
 	shutDownButton.SetX(50);
-	shutDownButton.SetY(50 + image.GetClipH() * 1);
+	shutDownButton.SetY(50 + buttonImage.GetClipH() * 1);
 
 	//set the button texts
 	disconnectButton.SetText("Disconnect");
@@ -65,14 +65,14 @@ InWorld::InWorld(ConfigUtility* const argConfig, UDPNetworkUtility* const argNet
 	packet.playerInfo.motion = {0,0};
 
 	//send it
-	char buffer[sizeof(NetworkPacket)];
+	char buffer[PACKET_BUFFER_SIZE];
 	serialize(&packet, buffer);
-	network.Send(Channels::SERVER, buffer, sizeof(NetworkPacket));
+	network.Send(Channels::SERVER, buffer, PACKET_BUFFER_SIZE);
 
 	//request a sync
 	packet.meta.type = NetworkPacket::Type::SYNCHRONIZE;
 	serialize(&packet, buffer);
-	network.Send(Channels::SERVER, buffer, sizeof(NetworkPacket));
+	network.Send(Channels::SERVER, buffer, PACKET_BUFFER_SIZE);
 }
 
 InWorld::~InWorld() {
@@ -290,7 +290,7 @@ void InWorld::HandlePlayerUpdate(NetworkPacket packet) {
 
 void InWorld::SendState() {
 	NetworkPacket packet;
-	char buffer[sizeof(NetworkPacket)];
+	char buffer[PACKET_BUFFER_SIZE];
 
 	//pack the packet
 	packet.meta.type = NetworkPacket::Type::PLAYER_UPDATE;
@@ -302,27 +302,27 @@ void InWorld::SendState() {
 	packet.playerInfo.motion = localCharacter->GetMotion();
 
 	serialize(&packet, buffer);
-	network.Send(Channels::SERVER, buffer, sizeof(NetworkPacket));
+	network.Send(Channels::SERVER, buffer, PACKET_BUFFER_SIZE);
 }
 
 void InWorld::RequestDisconnect() {
 	NetworkPacket packet;
-	char buffer[sizeof(NetworkPacket)];
+	char buffer[PACKET_BUFFER_SIZE];
 
 	//send a disconnect request
 	packet.meta.type = NetworkPacket::Type::DISCONNECT;
 	packet.clientInfo.index = clientIndex;
 	serialize(&packet, buffer);
-	network.Send(Channels::SERVER, buffer, sizeof(NetworkPacket));
+	network.Send(Channels::SERVER, buffer, PACKET_BUFFER_SIZE);
 }
 
 void InWorld::RequestShutDown() {
 	NetworkPacket packet;
-	char buffer[sizeof(NetworkPacket)];
+	char buffer[PACKET_BUFFER_SIZE];
 
 	//send a shutdown request
 	packet.meta.type = NetworkPacket::Type::SHUTDOWN;
 	packet.clientInfo.index = clientIndex;
 	serialize(&packet, buffer);
-	network.Send(Channels::SERVER, buffer, sizeof(NetworkPacket));
+	network.Send(Channels::SERVER, buffer, PACKET_BUFFER_SIZE);
 }
