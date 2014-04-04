@@ -88,8 +88,20 @@ void InWorld::FrameStart() {
 }
 
 void InWorld::Update(double delta) {
-	//suck in all waiting packets
 	NetworkPacket packet;
+
+	//update the camera
+	if(localCharacter) {
+		int marginX = (GetScreen()->w / 2 - localCharacter->GetSprite()->GetImage()->GetClipW() / 2);
+		int marginY = (GetScreen()->h / 2 - localCharacter->GetSprite()->GetImage()->GetClipH() / 2);
+		camera.x = localCharacter->GetPosition().x - marginX;
+		camera.y = localCharacter->GetPosition().y - marginY;
+	}
+
+	//check the map
+	UpdateMap();
+
+	//suck in all waiting packets
 	while(network.Receive()) {
 		deserialize(&packet, network.GetInData());
 		packet.meta.srcAddress = network.GetInPacket()->address;
@@ -107,7 +119,7 @@ void InWorld::FrameEnd() {
 
 void InWorld::Render(SDL_Surface* const screen) {
 	for (auto& it : playerCharacters) {
-		it.second.DrawTo(screen);
+		it.second.DrawTo(screen, camera.x, camera.y);
 	}
 	disconnectButton.DrawTo(screen);
 	shutDownButton.DrawTo(screen);
@@ -212,24 +224,24 @@ void InWorld::KeyUp(SDL_KeyboardEvent const& key) {
 	}
 }
 
+//-------------------------
+//Network handlers
+//-------------------------
+
 void InWorld::HandlePacket(NetworkPacket packet) {
 	switch(packet.meta.type) {
 		case NetworkPacket::Type::DISCONNECT:
 			HandleDisconnect(packet);
 		break;
-
 		case NetworkPacket::Type::PLAYER_NEW:
 			HandlePlayerNew(packet);
 		break;
-
 		case NetworkPacket::Type::PLAYER_DELETE:
 			HandlePlayerDelete(packet);
 		break;
-
 		case NetworkPacket::Type::PLAYER_UPDATE:
 			HandlePlayerUpdate(packet);
 		break;
-
 		//handle errors
 		default:
 			throw(std::runtime_error("Unknown NetworkPacket::Type encountered"));
@@ -288,6 +300,10 @@ void InWorld::HandlePlayerUpdate(NetworkPacket packet) {
 	playerCharacters[packet.playerInfo.playerIndex].ResetDirection();
 }
 
+//-------------------------
+//Server control
+//-------------------------
+
 void InWorld::SendState() {
 	NetworkPacket packet;
 	char buffer[PACKET_BUFFER_SIZE];
@@ -325,4 +341,12 @@ void InWorld::RequestShutDown() {
 	packet.clientInfo.index = clientIndex;
 	serialize(&packet, buffer);
 	network.Send(Channels::SERVER, buffer, PACKET_BUFFER_SIZE);
+}
+
+void InWorld::UpdateMap() {
+	//
+}
+
+void InWorld::RequestRegion(int x, int y) {
+	//
 }

@@ -36,7 +36,7 @@ public:
 
 	void Update(double delta);
 
-	void DrawTo(SDL_Surface* const dest) { sprite.DrawTo(dest, position.x, position.y); }
+	void DrawTo(SDL_Surface* const dest, int camX, int camY) { sprite.DrawTo(dest, position.x - camX, position.y - camY); }
 
 	//clunky code results in smooth movement and controls
 	void AdjustDirection(Direction);

@@ -68,15 +68,19 @@ protected:
 	void KeyDown(SDL_KeyboardEvent const&);
 	void KeyUp(SDL_KeyboardEvent const&);
 
+	//Network handlers
 	void HandlePacket(NetworkPacket);
 	void HandleDisconnect(NetworkPacket);
 	void HandlePlayerNew(NetworkPacket);
 	void HandlePlayerDelete(NetworkPacket);
 	void HandlePlayerUpdate(NetworkPacket);
 
+	//Server control
 	void SendState();
 	void RequestDisconnect();
 	void RequestShutDown();
+	void UpdateMap();
+	void RequestRegion(int x, int y);
 
 	//globals
 	ConfigUtility& config;
