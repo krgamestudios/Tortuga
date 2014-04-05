@@ -60,6 +60,9 @@ InWorld::InWorld(ConfigUtility* const argConfig, UDPNetworkUtility* const argNet
 	disconnectButton.SetText("Disconnect");
 	shutDownButton.SetText("Shut Down");
 
+	//load the tilesheet
+	tileSheet.Load(config["dir.tilesets"] + "terrain.bmp", 12, 15);
+
 	//setup the map object
 	mapPager.SetRegionWidth(REGION_WIDTH);
 	mapPager.SetRegionHeight(REGION_HEIGHT);
@@ -132,7 +135,9 @@ void InWorld::FrameEnd() {
 
 void InWorld::Render(SDL_Surface* const screen) {
 	//draw the map
-	//TODO
+	ForNearbyRegions([&](Region* const region) {
+		tileSheet.DrawRegionTo(screen, region, camera.x, camera.y);
+	});
 
 	//draw characters
 	for (auto& it : playerCharacters) {
@@ -291,6 +296,9 @@ void InWorld::HandlePlayerNew(NetworkPacket packet) {
 	if (packet.playerInfo.clientIndex == clientIndex && !localCharacter) {
 		playerIndex = packet.playerInfo.playerIndex;
 		localCharacter = &playerCharacters[playerIndex];
+		//setup the camera
+		camera.width = GetScreen()->w;
+		camera.height = GetScreen()->h;
 		//center on the player's character
 		camera.marginX = (GetScreen()->w / 2 - localCharacter->GetSprite()->GetImage()->GetClipW() / 2);
 		camera.marginY = (GetScreen()->h / 2 - localCharacter->GetSprite()->GetImage()->GetClipH() / 2);
@@ -355,8 +363,6 @@ void InWorld::SendState() {
 	packet.meta.type = NetworkPacket::Type::PLAYER_UPDATE;
 	packet.playerInfo.clientIndex = clientIndex;
 	packet.playerInfo.playerIndex = playerIndex;
-//	snprintf(packet.playerInfo.handle, PACKET_STRING_SIZE, "%s", config["player.handle"].c_str());
-//	snprintf(packet.playerInfo.avatar, PACKET_STRING_SIZE, "%s", config["player.avatar"].c_str());
 	packet.playerInfo.position = localCharacter->GetPosition();
 	packet.playerInfo.motion = localCharacter->GetMotion();
 
@@ -386,10 +392,6 @@ void InWorld::RequestShutDown() {
 	network.Send(Channels::SERVER, buffer, PACKET_BUFFER_SIZE);
 }
 
-void InWorld::UpdateMap() {
-	//TODO
-}
-
 void InWorld::RequestRegion(int x, int y) {
 	NetworkPacket packet;
 	char buffer[PACKET_BUFFER_SIZE];
@@ -400,4 +402,28 @@ void InWorld::RequestRegion(int x, int y) {
 	packet.regionInfo.y = y;
 	serialize(&packet, buffer);
 	network.Send(Channels::SERVER, buffer, PACKET_BUFFER_SIZE);
+}
+
+//-------------------------
+//Utilities
+//-------------------------
+
+void InWorld::UpdateMap() {
+	//TODO
+}
+
+void InWorld::ForNearbyRegions(std::function<void (Region* const)> func) {
+	//TODO: switch this to "is nearby"
+	//this is ugly
+	for (int i = snapToBase(mapPager.GetRegionWidth() * tileSheet.GetTileW(), camera.x);
+		i < camera.x + camera.width;
+		i += mapPager.GetRegionWidth() * tileSheet.GetTileW()
+		) {
+		for (int j = snapToBase(mapPager.GetRegionHeight() * tileSheet.GetTileH(), camera.y);
+			j < camera.y + camera.height;
+			j += mapPager.GetRegionHeight() * tileSheet.GetTileH()
+			) {
+			func(mapPager.GetRegion(i, j));
+		}
+	}
 }

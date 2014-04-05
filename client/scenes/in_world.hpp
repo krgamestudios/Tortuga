@@ -36,6 +36,7 @@
 #include "image.hpp"
 #include "raster_font.hpp"
 #include "button.hpp"
+#include "tile_sheet.hpp"
 
 //common
 #include "config_utility.hpp"
@@ -45,6 +46,7 @@
 #include "player_character.hpp"
 
 //STL
+#include <functional>
 #include <map>
 
 class InWorld : public BaseScene {
@@ -80,8 +82,11 @@ protected:
 	void SendState();
 	void RequestDisconnect();
 	void RequestShutDown();
-	void UpdateMap();
 	void RequestRegion(int x, int y);
+
+	//utilities
+	void UpdateMap();
+	void ForNearbyRegions(std::function<void (Region* const)> func);
 
 	//globals
 	ConfigUtility& config;
@@ -91,6 +96,7 @@ protected:
 	//graphics
 	Image buttonImage;
 	RasterFont font;
+	TileSheet tileSheet;
 
 	//map
 	RegionPager<BlankGenerator, DummyFormat> mapPager;
@@ -100,6 +106,7 @@ protected:
 	Button shutDownButton;
 	struct {
 		int x = 0, y = 0;
+		int width = 0, height = 0;
 		int marginX = 0, marginY = 0;
 	} camera;
 

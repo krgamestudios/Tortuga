@@ -22,6 +22,8 @@
 #ifndef TILESHEET_HPP_
 #define TILESHEET_HPP_
 
+#include "region.hpp"
+
 #include "image.hpp"
 
 #include <string>
@@ -35,7 +37,8 @@ public:
 	void Load(std::string fname, int XCount, int YCount);
 	void Unload();
 
-	void DrawTo(SDL_Surface* const dest, int x, int y, int tile);
+	void DrawTo(SDL_Surface* const dest, int x, int y, Region::type_t tile);
+	void DrawRegionTo(SDL_Surface* const dest, Region* const region, int camX, int camY);
 
 	//accessors
 	Image* GetImage() { return &image; }
