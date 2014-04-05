@@ -21,12 +21,6 @@
 */
 #include "region.hpp"
 
-#include <stdexcept>
-#include <iostream>
-
-//decorator
-#define TRY(x) try { x } catch(std::exception& e) { throw std::runtime_error(std::string() + e.what() + ": " + #x); }
-
 Region::Region(int argWidth, int argHeight, int argDepth, int argX, int argY):
 	width(argWidth),
 	height(argHeight),
@@ -34,11 +28,11 @@ Region::Region(int argWidth, int argHeight, int argDepth, int argX, int argY):
 	x(argX),
 	y(argY)
 {
-	TRY(tiles = new type_t**[width];)
+	tiles = new type_t**[width];
 	for (register int i = 0; i < width; ++i) {
-		TRY(tiles[i] = new type_t*[height];)
+		tiles[i] = new type_t*[height];
 		for (register int j = 0; j < height; ++j) {
-			TRY(tiles[i][j] = new type_t[depth];)
+			tiles[i][j] = new type_t[depth];
 			for (register int k = 0; k < depth; ++k) {
 				tiles[i][j][k] = 0;
 			}

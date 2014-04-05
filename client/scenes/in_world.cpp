@@ -25,6 +25,11 @@
 
 #include <stdexcept>
 
+//debugging
+#include <iostream>
+using std::cout;
+using std::endl;
+
 //-------------------------
 //Public access members
 //-------------------------
@@ -80,7 +85,7 @@ InWorld::InWorld(ConfigUtility* const argConfig, UDPNetworkUtility* const argNet
 	network.Send(Channels::SERVER, buffer, PACKET_BUFFER_SIZE);
 
 	//debug
-	mapPager.GetRegion(0, 0);
+	RequestRegion(0, 0);
 }
 
 InWorld::~InWorld() {
@@ -327,6 +332,15 @@ void InWorld::HandleRegionContent(NetworkPacket packet) {
 	}
 	mapPager.PushRegion(packet.regionInfo.region);
 	packet.regionInfo.region = nullptr;
+
+	//debugging
+	cout << "Received region: " << packet.regionInfo.x << ", " << packet.regionInfo.y << endl;
+	if (mapPager.FindRegion(packet.regionInfo.x, packet.regionInfo.y)) {
+		cout << "Success" << endl;
+	}
+	else {
+		cout << "Failure" << endl;
+	}
 }
 
 //-------------------------
@@ -373,7 +387,7 @@ void InWorld::RequestShutDown() {
 }
 
 void InWorld::UpdateMap() {
-	//
+	//TODO
 }
 
 void InWorld::RequestRegion(int x, int y) {
@@ -382,9 +396,6 @@ void InWorld::RequestRegion(int x, int y) {
 
 	//pack the region's data
 	packet.meta.type = NetworkPacket::Type::REGION_REQUEST;
-	packet.regionInfo.width = mapPager.GetRegionWidth();
-	packet.regionInfo.height = mapPager.GetRegionHeight();
-	packet.regionInfo.depth = mapPager.GetRegionDepth();
 	packet.regionInfo.x = x;
 	packet.regionInfo.y = y;
 	serialize(&packet, buffer);

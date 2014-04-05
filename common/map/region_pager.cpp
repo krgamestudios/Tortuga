@@ -23,11 +23,6 @@
 
 #include "utility.hpp"
 
-#include <stdexcept>
-#include <iostream>
-
-using namespace std;
-
 RegionPagerBase::RegionPagerBase(int argWidth, int argHeight, int argDepth):
 	regionWidth(argWidth),
 	regionHeight(argHeight),
@@ -59,29 +54,11 @@ Region* RegionPagerBase::GetRegion(int x, int y) {
 
 	//TODO: revert this try/catch point
 	Region* ptr = nullptr;
-	try {
-		ptr = FindRegion(x, y);
-		if (ptr) return ptr;
-	}
-	catch(exception& e) {
-		cerr << "FindRegion Error: " << e.what() << endl;
-	}
-
-	try {
-		ptr = LoadRegion(x, y);
-		if (ptr) return ptr;
-	}
-	catch(exception& e) {
-		cerr << "LoadRegion Error: " << e.what() << endl;
-	}
-
-	try {
-		return CreateRegion(x, y);
-	}
-	catch(exception& e) {
-		cerr << "CreateRegion Error: " << e.what() << endl;
-	}
-	return nullptr;
+	ptr = FindRegion(x, y);
+	if (ptr) return ptr;
+	ptr = LoadRegion(x, y);
+	if (ptr) return ptr;
+	return CreateRegion(x, y);
 }
 
 Region* RegionPagerBase::FindRegion(int x, int y) {
