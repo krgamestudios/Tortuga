@@ -33,18 +33,23 @@ public:
 	RegionPagerBase(int regionWidth, int regionHeight, int regionDepth);
 	virtual ~RegionPagerBase();
 
+	//tile manipulation
 	Region::type_t SetTile(int x, int y, int z, Region::type_t v);
 	Region::type_t GetTile(int x, int y, int z);
 
+	//region manipulation
 	Region* GetRegion(int x, int y);
+	Region* FindRegion(int x, int y);
+	Region* PushRegion(Region*);
 
 	//interface
 	virtual Region* LoadRegion(int x, int y) = 0;
 	virtual Region* SaveRegion(int x, int y) = 0;
 	virtual Region* CreateRegion(int x, int y) = 0;
 	virtual void UnloadRegion(int x, int y) = 0;
+	//TODO: delete?
 
-	//accessors
+	//accessors & mutators
 	//NOTE: don't change the sizes mid-program, it will cause issues
 	int SetRegionWidth(int i) { return regionWidth = i; }
 	int SetRegionHeight(int i) { return regionHeight = i; }

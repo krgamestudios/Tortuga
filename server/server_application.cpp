@@ -114,7 +114,7 @@ void ServerApplication::Init(int argc, char** argv) {
 	cout << "Startup completed successfully" << endl;
 
 	//debugging
-	//
+	mapPager.GetRegion(0, 0);
 }
 
 void ServerApplication::Loop() {

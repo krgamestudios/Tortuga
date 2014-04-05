@@ -55,6 +55,11 @@ InWorld::InWorld(ConfigUtility* const argConfig, UDPNetworkUtility* const argNet
 	disconnectButton.SetText("Disconnect");
 	shutDownButton.SetText("Shut Down");
 
+	//setup the map object
+	mapPager.SetRegionWidth(REGION_WIDTH);
+	mapPager.SetRegionHeight(REGION_HEIGHT);
+	mapPager.SetRegionDepth(REGION_DEPTH);
+
 	//create the server-side player object
 	NetworkPacket packet;
 	packet.meta.type = NetworkPacket::Type::PLAYER_NEW;
@@ -73,6 +78,9 @@ InWorld::InWorld(ConfigUtility* const argConfig, UDPNetworkUtility* const argNet
 	packet.meta.type = NetworkPacket::Type::SYNCHRONIZE;
 	serialize(&packet, buffer);
 	network.Send(Channels::SERVER, buffer, PACKET_BUFFER_SIZE);
+
+	//debug
+	mapPager.GetRegion(0, 0);
 }
 
 InWorld::~InWorld() {
@@ -90,17 +98,6 @@ void InWorld::FrameStart() {
 void InWorld::Update(double delta) {
 	NetworkPacket packet;
 
-	//update the camera
-	if(localCharacter) {
-		int marginX = (GetScreen()->w / 2 - localCharacter->GetSprite()->GetImage()->GetClipW() / 2);
-		int marginY = (GetScreen()->h / 2 - localCharacter->GetSprite()->GetImage()->GetClipH() / 2);
-		camera.x = localCharacter->GetPosition().x - marginX;
-		camera.y = localCharacter->GetPosition().y - marginY;
-	}
-
-	//check the map
-	UpdateMap();
-
 	//suck in all waiting packets
 	while(network.Receive()) {
 		deserialize(&packet, network.GetInData());
@@ -108,9 +105,20 @@ void InWorld::Update(double delta) {
 		HandlePacket(packet);
 	}
 
+	//update the characters
 	for (auto& it : playerCharacters) {
 		it.second.Update(delta);
 	}
+	//TODO: sort the players and entities by Y position
+
+	//update the camera
+	if(localCharacter) {
+		camera.x = localCharacter->GetPosition().x - camera.marginX;
+		camera.y = localCharacter->GetPosition().y - camera.marginY;
+	}
+
+	//check the map
+	UpdateMap();
 }
 
 void InWorld::FrameEnd() {
@@ -118,9 +126,15 @@ void InWorld::FrameEnd() {
 }
 
 void InWorld::Render(SDL_Surface* const screen) {
+	//draw the map
+	//TODO
+
+	//draw characters
 	for (auto& it : playerCharacters) {
 		it.second.DrawTo(screen, camera.x, camera.y);
 	}
+
+	//draw UI
 	disconnectButton.DrawTo(screen);
 	shutDownButton.DrawTo(screen);
 }
@@ -242,6 +256,9 @@ void InWorld::HandlePacket(NetworkPacket packet) {
 		case NetworkPacket::Type::PLAYER_UPDATE:
 			HandlePlayerUpdate(packet);
 		break;
+		case NetworkPacket::Type::REGION_CONTENT:
+			HandleRegionContent(packet);
+		break;
 		//handle errors
 		default:
 			throw(std::runtime_error("Unknown NetworkPacket::Type encountered"));
@@ -269,6 +286,9 @@ void InWorld::HandlePlayerNew(NetworkPacket packet) {
 	if (packet.playerInfo.clientIndex == clientIndex && !localCharacter) {
 		playerIndex = packet.playerInfo.playerIndex;
 		localCharacter = &playerCharacters[playerIndex];
+		//center on the player's character
+		camera.marginX = (GetScreen()->w / 2 - localCharacter->GetSprite()->GetImage()->GetClipW() / 2);
+		camera.marginY = (GetScreen()->h / 2 - localCharacter->GetSprite()->GetImage()->GetClipH() / 2);
 	}
 }
 
@@ -298,6 +318,15 @@ void InWorld::HandlePlayerUpdate(NetworkPacket packet) {
 		playerCharacters[packet.playerInfo.playerIndex].SetMotion(packet.playerInfo.motion);
 	}
 	playerCharacters[packet.playerInfo.playerIndex].ResetDirection();
+}
+
+void InWorld::HandleRegionContent(NetworkPacket packet) {
+	//replace existing regions
+	if (mapPager.FindRegion(packet.regionInfo.x, packet.regionInfo.y)) {
+		mapPager.UnloadRegion(packet.regionInfo.x, packet.regionInfo.y);
+	}
+	mapPager.PushRegion(packet.regionInfo.region);
+	packet.regionInfo.region = nullptr;
 }
 
 //-------------------------
@@ -348,5 +377,16 @@ void InWorld::UpdateMap() {
 }
 
 void InWorld::RequestRegion(int x, int y) {
-	//
+	NetworkPacket packet;
+	char buffer[PACKET_BUFFER_SIZE];
+
+	//pack the region's data
+	packet.meta.type = NetworkPacket::Type::REGION_REQUEST;
+	packet.regionInfo.width = mapPager.GetRegionWidth();
+	packet.regionInfo.height = mapPager.GetRegionHeight();
+	packet.regionInfo.depth = mapPager.GetRegionDepth();
+	packet.regionInfo.x = x;
+	packet.regionInfo.y = y;
+	serialize(&packet, buffer);
+	network.Send(Channels::SERVER, buffer, PACKET_BUFFER_SIZE);
 }

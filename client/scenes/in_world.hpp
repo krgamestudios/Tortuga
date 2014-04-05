@@ -74,6 +74,7 @@ protected:
 	void HandlePlayerNew(NetworkPacket);
 	void HandlePlayerDelete(NetworkPacket);
 	void HandlePlayerUpdate(NetworkPacket);
+	void HandleRegionContent(NetworkPacket);
 
 	//Server control
 	void SendState();
@@ -99,6 +100,7 @@ protected:
 	Button shutDownButton;
 	struct {
 		int x = 0, y = 0;
+		int marginX = 0, marginY = 0;
 	} camera;
 
 	//game

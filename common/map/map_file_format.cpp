@@ -24,11 +24,11 @@
 #include <stdexcept>
 
 void DummyFormat::Load(Region** const ptr, int width, int height, int depth, int x, int y) {
-	//TODO
+	//EMPTY
 }
 
 void DummyFormat::Save(Region* const ptr) {
-	//TODO
+	//EMPTY
 }
 /*
 void VerboseFormat::Load(Region** const ptr, int x, int y) {
