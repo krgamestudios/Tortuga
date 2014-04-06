@@ -62,7 +62,7 @@ void ClientApplication::Init() {
 	if (SDL_Init(SDL_INIT_VIDEO)) {
 		throw(std::runtime_error("Failed to initialize SDL"));
 	}
-	BaseScene::SetScreen(config.Int("screen.w"), config.Int("screen.h"), 0, (config.Bool("screen.f")) ? SDL_HWSURFACE|SDL_DOUBLEBUF : SDL_HWSURFACE);
+	BaseScene::SetScreen(config.Int("screen.w"), config.Int("screen.h"), 0, (config.Bool("screen.f")) ? SDL_HWSURFACE|SDL_DOUBLEBUF|SDL_FULLSCREEN : SDL_HWSURFACE|SDL_DOUBLEBUF);
 
 	//initialize SDL_net
 	if (SDLNet_Init()) {
@@ -77,7 +77,7 @@ void ClientApplication::Proc() {
 	//prepare the time system
 	typedef std::chrono::steady_clock Clock;
 
-	Clock::duration delta(16 * Clock::duration::period::den / std::milli::den);
+	std::chrono::duration<int, std::milli> delta(16);
 	Clock::time_point simTime = Clock::now();
 	Clock::time_point realTime;
 
@@ -95,15 +95,12 @@ void ClientApplication::Proc() {
 		//simulate game time
 		while (simTime < realTime) {
 			//call each user defined function
-			activeScene->RunFrame(double(delta.count()) / Clock::duration::period::den);
+			activeScene->RunFrame(double(delta.count()) / std::chrono::duration<int, std::milli>::period::den);
 			simTime += delta;
 		}
 
 		//draw the game to the screen
 		activeScene->RenderFrame();
-
-		//give the computer a break
-		SDL_Delay(10);
 	}
 
 	UnloadScene();
@@ -121,7 +118,6 @@ void ClientApplication::Quit() {
 
 void ClientApplication::LoadScene(SceneList sceneIndex) {
 	UnloadScene();
-
 	switch(sceneIndex) {
 		//add scene creation calls here
 		case SceneList::FIRST:
@@ -143,7 +139,6 @@ void ClientApplication::LoadScene(SceneList sceneIndex) {
 		case SceneList::INCOMBAT:
 			activeScene = new InCombat();
 		break;
-
 		default:
 			throw(std::logic_error("Failed to recognize the scene index"));
 	}

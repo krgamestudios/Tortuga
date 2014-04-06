@@ -133,6 +133,12 @@ void InWorld::FrameEnd() {
 	//
 }
 
+void InWorld::RenderFrame() {
+//	SDL_FillRect(GetScreen(), 0, 0);
+	Render(GetScreen());
+	SDL_Flip(GetScreen());
+}
+
 void InWorld::Render(SDL_Surface* const screen) {
 	//draw the map
 	ForNearbyRegions([&](Region* const region) {
@@ -147,6 +153,10 @@ void InWorld::Render(SDL_Surface* const screen) {
 	//draw UI
 	disconnectButton.DrawTo(screen);
 	shutDownButton.DrawTo(screen);
+
+	font.DrawStringTo(to_string_custom(fps.GetFrameRate()), screen, 0, 0);
+
+	fps.Calculate();
 }
 
 //-------------------------

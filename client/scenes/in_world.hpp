@@ -40,6 +40,7 @@
 
 //common
 #include "config_utility.hpp"
+#include "frame_rate.hpp"
 
 //client
 #include "base_scene.hpp"
@@ -60,6 +61,7 @@ protected:
 	void FrameStart();
 	void Update(double delta);
 	void FrameEnd();
+	void RenderFrame();
 	void Render(SDL_Surface* const);
 
 	//Event handlers
@@ -90,6 +92,7 @@ protected:
 
 	//globals
 	ConfigUtility& config;
+	FrameRate fps;
 	UDPNetworkUtility& network;
 	int& clientIndex;
 
