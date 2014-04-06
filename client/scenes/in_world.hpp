@@ -87,6 +87,7 @@ protected:
 	void RequestRegion(int x, int y);
 
 	//utilities
+	int CheckBufferDistance(Region* const);
 	void UpdateMap();
 	void ForNearbyRegions(std::function<void (Region* const)> func);
 

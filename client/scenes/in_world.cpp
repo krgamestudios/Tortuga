@@ -23,6 +23,8 @@
 
 #include "channels.hpp"
 
+#include <algorithm>
+#include <cmath>
 #include <stdexcept>
 
 //debugging
@@ -417,6 +419,54 @@ void InWorld::RequestRegion(int x, int y) {
 //-------------------------
 //Utilities
 //-------------------------
+
+int InWorld::CheckBufferDistance(Region* const region) {
+	/* DOCUMENTATION
+	 * This algorithm is extremely complex and involed, but initial tests show
+	 * that it gives the right answers. The purpose is to determine how far off screen
+	 * a certain region is, so that it can be unloaded when necessary.
+	 * 
+	 * If the region is actually onscreen, then there's no reason to run the rest, so
+	 * the algorithm corrects for the camera's location, before checking the bounds of
+	 * the screen.
+	 * 
+	 * The next part is tricky. If X or Y is negative, then it is divided by the
+	 * graphical size of the regions, resulting in a usable integer, representing how
+	 * far from the screen it is in "region units". If, however, X or Y is larger than
+	 * 0, than first, the size of the screen is subtracted from that variable, before
+	 * it is then divided by the graphical size of a region. Finally, to compensate for
+	 * the off by one error, 1 is added at the end.
+	 *
+	 * Since only the magnitude of the distance in either direction is needed, this
+	 * method returns the largest absolute value of X or Y.
+	 * 
+	 * The final result of this algorithm is an integer representing how far, rounded
+	 * up, a certain region is from the screen's edges in any direction, measured in
+	 * "region units". This algorithm may be flawed, in which case, I recommend simply
+	 * replacing it with a boolean check, to see if the region's distance from the player
+	 * is larger than a certain value. This algorithm lacks the advantages I initially
+	 * expected, so that may be beneficial at some point.
+	*/
+
+	//locations relative to the camera
+	int x = region->GetX() - camera.x;
+	int y = region->GetY() - camera.y;
+
+	//if the region is visible, return -1
+	if (x >= -mapPager.GetRegionWidth() * tileSheet.GetTileW() && x < camera.width &&
+		y >= -mapPager.GetRegionHeight() * tileSheet.GetTileH() && y < camera.height) {
+		return -1;
+	}
+
+	//prune the screen's area from the algorithm; get the pseudo-indexes
+	if (x < 0) x /= (mapPager.GetRegionWidth() * tileSheet.GetTileW());
+	if (y < 0) y /= (mapPager.GetRegionHeight() * tileSheet.GetTileH());
+	if (x > 0) x = (x - camera.width) / (mapPager.GetRegionWidth() * tileSheet.GetTileW()) + 1;
+	if (y > 0) y = (y - camera.height) / (mapPager.GetRegionHeight() * tileSheet.GetTileH()) + 1;
+
+	//return the pseudo-index with the greatest magnitude
+	return std::max(abs(x), abs(y));
+}
 
 void InWorld::UpdateMap() {
 	//TODO
