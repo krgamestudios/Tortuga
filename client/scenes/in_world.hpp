@@ -47,7 +47,6 @@
 #include "player_character.hpp"
 
 //STL
-#include <functional>
 #include <map>
 
 class InWorld : public BaseScene {
@@ -89,7 +88,6 @@ protected:
 	//utilities
 	int CheckBufferDistance(Region* const);
 	void UpdateMap();
-	void ForNearbyRegions(std::function<void (Region* const)> func);
 
 	//globals
 	ConfigUtility& config;

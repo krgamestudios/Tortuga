@@ -58,6 +58,8 @@ public:
 	int GetRegionWidth() const { return regionWidth; }
 	int GetRegionHeight() const { return regionHeight; }
 	int GetRegionDepth() const { return regionDepth; }
+
+	std::list<Region*>* GetContainer() { return &regionList; }
 protected:
 	int regionWidth;
 	int regionHeight;

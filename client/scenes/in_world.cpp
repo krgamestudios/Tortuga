@@ -90,7 +90,7 @@ InWorld::InWorld(ConfigUtility* const argConfig, UDPNetworkUtility* const argNet
 	network.Send(Channels::SERVER, buffer, PACKET_BUFFER_SIZE);
 
 	//debug
-	RequestRegion(0, 0);
+//	RequestRegion(0, 0);
 }
 
 InWorld::~InWorld() {
@@ -143,9 +143,9 @@ void InWorld::RenderFrame() {
 
 void InWorld::Render(SDL_Surface* const screen) {
 	//draw the map
-	ForNearbyRegions([&](Region* const region) {
-		tileSheet.DrawRegionTo(screen, region, camera.x, camera.y);
-	});
+	for (auto it = mapPager.GetContainer()->begin(); it != mapPager.GetContainer()->end(); it++) {
+		tileSheet.DrawRegionTo(screen, *it, camera.x, camera.y);
+	}
 
 	//draw characters
 	for (auto& it : playerCharacters) {
@@ -469,21 +469,31 @@ int InWorld::CheckBufferDistance(Region* const region) {
 }
 
 void InWorld::UpdateMap() {
-	//TODO
-}
+	//prune distant regions
+	for (auto it = mapPager.GetContainer()->begin(); it != mapPager.GetContainer()->end(); /* EMPTY */) {
+		if (CheckBufferDistance(*it) > 2) {
+			//debugging
+			cout << "unloading: " << (*it)->GetX() << ", " << (*it)->GetY() << endl;
 
-void InWorld::ForNearbyRegions(std::function<void (Region* const)> func) {
-	//TODO: switch this to "is nearby"
-	//this is ugly
-	for (int i = snapToBase(mapPager.GetRegionWidth() * tileSheet.GetTileW(), camera.x);
-		i < camera.x + camera.width;
-		i += mapPager.GetRegionWidth() * tileSheet.GetTileW()
-		) {
-		for (int j = snapToBase(mapPager.GetRegionHeight() * tileSheet.GetTileH(), camera.y);
-			j < camera.y + camera.height;
-			j += mapPager.GetRegionHeight() * tileSheet.GetTileH()
-			) {
-			func(mapPager.GetRegion(i, j));
+			mapPager.UnloadRegion((*it)->GetX(), (*it)->GetY());
+
+			//reset
+			it = mapPager.GetContainer()->begin();
+			continue;
+		}
+		++it;
+	}
+
+	//TODO: make the region units official
+	int regionUnitX = mapPager.GetRegionWidth() * tileSheet.GetTileW();
+	int regionUnitY = mapPager.GetRegionHeight() * tileSheet.GetTileH();
+
+	//request empty regions, including buffers (-1 & +1 region unit)
+	for (int i = snapToBase(regionUnitX, camera.x - regionUnitX); i <= snapToBase(regionUnitX, camera.x + camera.width + regionUnitX); i += regionUnitX) {
+		for (int j = snapToBase(regionUnitY, camera.y - regionUnitY); j <= snapToBase(regionUnitY, camera.y + camera.height + regionUnitY); j += regionUnitY) {
+			if (!mapPager.FindRegion(i, j)) {
+				RequestRegion(i, j);
+			}
 		}
 	}
 }
