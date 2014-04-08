@@ -180,6 +180,9 @@ void ServerApplication::HandlePacket(NetworkPacket packet) {
 		case NetworkPacket::Type::PLAYER_UPDATE:
 			HandlePlayerUpdate(packet);
 		break;
+		case NetworkPacket::Type::REGION_REQUEST:
+			HandleRegionRequest(packet);
+		break;
 		//handle errors
 		default:
 			throw(runtime_error("Unknown NetworkPacket::Type encountered"));
@@ -338,6 +341,14 @@ void ServerApplication::HandlePlayerUpdate(NetworkPacket packet) {
 	playerMap[packet.playerInfo.playerIndex].motion = packet.playerInfo.motion;
 
 	PumpPacket(packet);
+}
+
+void ServerApplication::HandleRegionRequest(NetworkPacket packet) {
+	char buffer[PACKET_BUFFER_SIZE];
+	packet.meta.type = NetworkPacket::Type::REGION_CONTENT;
+	packet.regionInfo.region = mapPager.GetRegion(packet.regionInfo.x, packet.regionInfo.y);
+	serialize(&packet, buffer);
+	network.Send(&packet.meta.srcAddress, buffer, PACKET_BUFFER_SIZE);
 }
 
 void ServerApplication::PumpPacket(NetworkPacket packet) {

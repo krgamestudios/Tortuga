@@ -81,6 +81,7 @@ private:
 	void HandlePlayerNew(NetworkPacket);
 	void HandlePlayerDelete(NetworkPacket);
 	void HandlePlayerUpdate(NetworkPacket);
+	void HandleRegionRequest(NetworkPacket);
 
 	void PumpPacket(NetworkPacket);
 

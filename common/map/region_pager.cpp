@@ -50,15 +50,28 @@ Region* RegionPagerBase::GetRegion(int x, int y) {
 	x = snapToBase(regionWidth, x);
 	y = snapToBase(regionHeight, y);
 
+	//get the region by various means
+
+	//TODO: revert this try/catch point
+	Region* ptr = nullptr;
+	ptr = FindRegion(x, y);
+	if (ptr) return ptr;
+	ptr = LoadRegion(x, y);
+	if (ptr) return ptr;
+	return CreateRegion(x, y);
+}
+
+Region* RegionPagerBase::FindRegion(int x, int y) {
 	//find the region
 	for (std::list<Region*>::iterator it = regionList.begin(); it != regionList.end(); it++) {
 		if ((*it)->GetX() == x && (*it)->GetY() == y) {
 			return *it;
 		}
 	}
+	return nullptr;
+}
 
-	//get the region by other means
-	Region* ptr = LoadRegion(x, y);
-	if (ptr) return ptr;
-	return CreateRegion(x, y);
+Region* RegionPagerBase::PushRegion(Region* ptr) {
+	regionList.push_front(ptr);
+	return regionList.front();
 }

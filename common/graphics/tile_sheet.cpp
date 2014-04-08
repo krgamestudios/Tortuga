@@ -34,8 +34,28 @@ void TileSheet::Unload() {
 	XCount = YCount = 0;
 }
 
-void TileSheet::DrawTo(SDL_Surface* const dest, int x, int y, int tile) {
-	image.SetClipX(tile % XCount * image.GetClipW());
-	image.SetClipY(tile / XCount * image.GetClipH());
+void TileSheet::DrawTo(SDL_Surface* const dest, int x, int y, Region::type_t tile) {
+	//0 is invisible
+	if (tile == 0) return;
+	image.SetClipX((tile-1) % XCount * image.GetClipW());
+	image.SetClipY((tile-1) / XCount * image.GetClipH());
 	image.DrawTo(dest, x, y);
+}
+
+void TileSheet::DrawRegionTo(SDL_Surface* const dest, Region* const region, int camX, int camY) {
+	Region::type_t tile = 0;
+	for (register int i = 0; i < region->GetWidth(); ++i) {
+		for (register int j = 0; j < region->GetHeight(); ++j) {
+			for (register int k = 0; k < region->GetDepth(); ++k) {
+				tile = region->GetTile(i, j, k);
+				//0 is invisible
+				if (tile == 0) continue;
+				image.SetClipX((tile-1) % XCount * image.GetClipW());
+				image.SetClipY((tile-1) / XCount * image.GetClipH());
+				image.DrawTo(dest,
+					region->GetX() + i * image.GetClipW() - camX,
+					region->GetY() + j * image.GetClipH() - camY);
+			}
+		}
+	}
 }

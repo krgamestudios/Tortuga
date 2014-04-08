@@ -61,7 +61,13 @@ EditorScene::EditorScene(ConfigUtility* const arg1):
 	pager.SetRegionDepth(REGION_DEPTH);
 
 	//debug
-	tsheet.Load(config["dir.tilesets"] + "sand.bmp", 12, 3);
+	tsheet.Load(config["dir.tilesets"] + "terrain.bmp", 12, 15);
+	for (int i = 0; i < REGION_WIDTH; i++) {
+		for (int j = 0; j < REGION_HEIGHT; j++) {
+			pager.SetTile(i, j, 0, 14);
+		}
+	}
+	pager.SetTile(5, 10, 1, 48);
 }
 
 EditorScene::~EditorScene() {
@@ -85,7 +91,8 @@ void EditorScene::FrameEnd() {
 }
 
 void EditorScene::Render(SDL_Surface* const screen) {
-	//debug
+	tsheet.DrawRegionTo(screen, pager.GetRegion(0, 0), camera.x, camera.y);
+/*	//debug
 	for (int i = 0; i < pager.GetRegionWidth()*2; i++) {
 		for (int j = 0; j < pager.GetRegionHeight()*2; j++) {
 			for (int k = 0; k < pager.GetRegionDepth(); k++) {
@@ -99,7 +106,7 @@ void EditorScene::Render(SDL_Surface* const screen) {
 			}
 		}
 	}
-
+*/
 	//draw a big bar across the top (hackish)
 	buttonImage.SetClipY(0);
 	for (int i = 0; i < screen->w; i += buttonImage.GetClipW()) {

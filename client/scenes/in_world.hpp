@@ -36,9 +36,11 @@
 #include "image.hpp"
 #include "raster_font.hpp"
 #include "button.hpp"
+#include "tile_sheet.hpp"
 
 //common
 #include "config_utility.hpp"
+#include "frame_rate.hpp"
 
 //client
 #include "base_scene.hpp"
@@ -58,6 +60,7 @@ protected:
 	void FrameStart();
 	void Update(double delta);
 	void FrameEnd();
+	void RenderFrame();
 	void Render(SDL_Surface* const);
 
 	//Event handlers
@@ -68,24 +71,34 @@ protected:
 	void KeyDown(SDL_KeyboardEvent const&);
 	void KeyUp(SDL_KeyboardEvent const&);
 
+	//Network handlers
 	void HandlePacket(NetworkPacket);
 	void HandleDisconnect(NetworkPacket);
 	void HandlePlayerNew(NetworkPacket);
 	void HandlePlayerDelete(NetworkPacket);
 	void HandlePlayerUpdate(NetworkPacket);
+	void HandleRegionContent(NetworkPacket);
 
+	//Server control
 	void SendState();
 	void RequestDisconnect();
 	void RequestShutDown();
+	void RequestRegion(int x, int y);
+
+	//utilities
+	int CheckBufferDistance(Region* const);
+	void UpdateMap();
 
 	//globals
 	ConfigUtility& config;
+	FrameRate fps;
 	UDPNetworkUtility& network;
 	int& clientIndex;
 
 	//graphics
 	Image buttonImage;
 	RasterFont font;
+	TileSheet tileSheet;
 
 	//map
 	RegionPager<BlankGenerator, DummyFormat> mapPager;
@@ -95,6 +108,8 @@ protected:
 	Button shutDownButton;
 	struct {
 		int x = 0, y = 0;
+		int width = 0, height = 0;
+		int marginX = 0, marginY = 0;
 	} camera;
 
 	//game

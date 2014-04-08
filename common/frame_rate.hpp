@@ -19,36 +19,30 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef TILESHEET_HPP_
-#define TILESHEET_HPP_
+#ifndef FRAMERATE_HPP_
+#define FRAMERATE_HPP_
 
-#include "region.hpp"
+#include <chrono>
 
-#include "image.hpp"
-
-#include <string>
-
-class TileSheet {
+class FrameRate {
 public:
-	TileSheet() = default;
-	TileSheet(std::string f, int x, int y) { Load(f, x, y); }
-	~TileSheet() = default;
+	typedef std::chrono::high_resolution_clock Clock;
 
-	void Load(std::string fname, int XCount, int YCount);
-	void Unload();
-
-	void DrawTo(SDL_Surface* const dest, int x, int y, Region::type_t tile);
-	void DrawRegionTo(SDL_Surface* const dest, Region* const region, int camX, int camY);
-
-	//accessors
-	Image* GetImage() { return &image; }
-	int GetXCount() { return XCount; }
-	int GetYCount() { return YCount; }
-	int GetTileW() { return image.GetClipW(); }
-	int GetTileH() { return image.GetClipH(); }
+	FrameRate() = default;
+	int Calculate() {
+		frameCount++;
+		if (Clock::now() - tick >= std::chrono::duration<int>(1)) {
+			lastFrameRate = frameCount;
+			frameCount = 0;
+			tick = Clock::now();
+		}
+		return lastFrameRate;
+	}
+	int GetFrameRate() { return lastFrameRate; }
 private:
-	Image image;
-	int XCount = 0, YCount = 0;
+	int frameCount = 0;
+	int lastFrameRate = 0;
+	Clock::time_point tick = Clock::now();
 };
 
 #endif
