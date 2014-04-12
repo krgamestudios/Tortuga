@@ -19,28 +19,15 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef PLAYERENTITY_HPP_
-#define PLAYERENTITY_HPP_
+#ifndef CLIENT_HPP_
+#define CLIENT_HPP_
 
-#include <string>
+#include "SDL/SDL_net.h"
 
-struct PlayerEntity {
-	int clientIndex;
-	std::string handle;
-	std::string avatar;
-	int level;
-	int exp;
-	int maxHP;
-	int health;
-	int maxMP;
-	int mana;
-	int attack;
-	int defence;
-	int intelligence;
-	int resistance;
-	float accuracy;
-	float evasion;
-	float luck;
+struct Client {
+	IPaddress address;
+	unsigned int uid;
+	static unsigned int uidCounter;
 };
 
 #endif

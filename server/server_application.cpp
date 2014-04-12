@@ -54,6 +54,7 @@ void ServerApplication::Init(int argc, char** argv) {
 	int ret = 0;
 
 	//initial setup
+	Client::uidCounter = 0;
 	Entity::uidCounter = 0;
 	config.Load("rsc\\config.cfg");
 
@@ -103,6 +104,7 @@ void ServerApplication::Init(int argc, char** argv) {
 	mapPager.SetRegionDepth(REGION_DEPTH);
 	mapPager.GetGenerator()->SetLuaState(luaState);
 	mapPager.GetFormat()->SetLuaState(luaState);
+	//TODO: config parameter
 	mapPager.GetFormat()->SetSaveDir("save/mapname/");
 	//TODO: pass args to the generator & format as needed
 	//NOTE: I might need to rearrange the init process so that lua & SQL can interact
@@ -208,21 +210,21 @@ void ServerApplication::HandleBroadcastRequest(NetworkPacket packet) {
 
 void ServerApplication::HandleJoinRequest(NetworkPacket packet) {
 	//register the new client
-	ClientEntry c;
+	Client c;
 	c.address = packet.meta.srcAddress;
-	clientMap[clientCounter] = c;
+	clientMap[Client::uidCounter] = c;
 
 	//send the client their info
 	char buffer[PACKET_BUFFER_SIZE];
 
 	packet.meta.type = NetworkPacket::Type::JOIN_RESPONSE;
-	packet.clientInfo.index = clientCounter;
+	packet.clientInfo.index = Client::uidCounter;
 	serialize(&packet, buffer);
 
-	network.Send(&clientMap[clientCounter].address, buffer, PACKET_BUFFER_SIZE);
+	network.Send(&clientMap[Client::uidCounter].address, buffer, PACKET_BUFFER_SIZE);
 
-	//finished this routine
-	clientCounter++;
+	//finished this routine+
+	Client::uidCounter++;
 	cout << "Connect, total: " << clientMap.size() << endl;
 }
 

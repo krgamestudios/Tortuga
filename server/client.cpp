@@ -19,28 +19,11 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef PLAYERENTITY_HPP_
-#define PLAYERENTITY_HPP_
+#include "client.hpp"
 
-#include <string>
+#include <type_traits>
 
-struct PlayerEntity {
-	int clientIndex;
-	std::string handle;
-	std::string avatar;
-	int level;
-	int exp;
-	int maxHP;
-	int health;
-	int maxMP;
-	int mana;
-	int attack;
-	int defence;
-	int intelligence;
-	int resistance;
-	float accuracy;
-	float evasion;
-	float luck;
-};
+//This is explicitly a POD
+static_assert(std::is_pod<Client>::value, "Client is not a POD");
 
-#endif
+unsigned int Client::uidCounter;

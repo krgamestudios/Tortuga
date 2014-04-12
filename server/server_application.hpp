@@ -23,6 +23,7 @@
 #define SERVERAPPLICATION_HPP_
 
 //server specific stuff
+#include "client.hpp"
 #include "entity.hpp"
 #include "player_entity.hpp"
 
@@ -48,19 +49,6 @@
 //STL
 #include <map>
 #include <string>
-
-struct ClientEntry {
-	IPaddress address;
-};
-
-struct PlayerEntry {
-	int clientIndex;
-	int mapIndex;
-	std::string handle;
-	std::string avatar;
-	Vector2 position;
-	Vector2 motion;
-};
 
 //The main application class
 class ServerApplication {
@@ -89,6 +77,9 @@ private:
 
 	void PumpPacket(NetworkPacket);
 
+	//APIs
+	std::map<int, Client> clientMap;
+
 	//maps
 	RegionPager<LuaGenerator, LuaFormat> mapPager;
 
@@ -104,12 +95,6 @@ private:
 	//misc
 	bool running = true;
 	ConfigUtility config;
-
-	std::map<int, ClientEntry> clientMap;
-	std::map<int, PlayerEntry> playerMap;
-
-	int clientCounter = 0;
-	int playerCounter = 0;
 };
 
 #endif
