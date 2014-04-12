@@ -53,7 +53,8 @@ void ServerApplication::Init(int argc, char** argv) {
 	cout << "Beginning startup" << endl;
 	int ret = 0;
 
-	//load config
+	//initial setup
+	Entity::uidCounter = 0;
 	config.Load("rsc\\config.cfg");
 
 	//Init SDL

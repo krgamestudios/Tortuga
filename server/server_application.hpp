@@ -22,6 +22,10 @@
 #ifndef SERVERAPPLICATION_HPP_
 #define SERVERAPPLICATION_HPP_
 
+//server specific stuff
+#include "entity.hpp"
+#include "player_entity.hpp"
+
 //maps
 #include "map_generator.hpp"
 #include "map_file_format.hpp"

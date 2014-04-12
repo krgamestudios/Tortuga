@@ -22,6 +22,7 @@
 #ifndef VECTOR2_HPP_
 #define VECTOR2_HPP_
 
+#include <type_traits>
 #include <stdexcept>
 #include <cmath>
 
@@ -29,7 +30,6 @@ class Vector2 {
 public:
 	double x, y;
 
-	//This is explicitly a POD
 	Vector2() = default;
 	Vector2(double i, double j): x(i), y(j) {};
 	~Vector2() = default;
@@ -111,5 +111,8 @@ template<typename T> Vector2 operator/(T t, Vector2 v) { return v / t; }
 
 template<typename T> bool operator==(T t, Vector2 v) { return v == t; }
 template<typename T> bool operator!=(T t, Vector2 v) { return v != t; }
+
+//This is explicitly a POD
+static_assert(std::is_pod<Vector2>::value, "Vector2 is not a POD");
 
 #endif
