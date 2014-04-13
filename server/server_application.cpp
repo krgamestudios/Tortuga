@@ -51,11 +51,11 @@ int runSQLScript(sqlite3* db, std::string fname) {
 
 void ServerApplication::Init(int argc, char** argv) {
 	cout << "Beginning startup" << endl;
-	int ret = 0;
 
 	//initial setup
 	Client::uidCounter = 0;
 	Entity::uidCounter = 0;
+	PlayerEntity::uidCounter = 0;
 	config.Load("rsc\\config.cfg");
 
 	//Init SDL
@@ -72,7 +72,7 @@ void ServerApplication::Init(int argc, char** argv) {
 	cout << "Initialized SDL_net" << endl;
 
 	//Init SQL
-	ret = sqlite3_open_v2(config["server.dbname"].c_str(), &database, SQLITE_OPEN_READWRITE|SQLITE_OPEN_CREATE, nullptr);
+	int ret = sqlite3_open_v2(config["server.dbname"].c_str(), &database, SQLITE_OPEN_READWRITE|SQLITE_OPEN_CREATE, nullptr);
 	if (ret != SQLITE_OK || !database) {
 		throw(runtime_error(string() + "Failed to initialize SQL: " + sqlite3_errmsg(database) ));
 	}
@@ -99,13 +99,13 @@ void ServerApplication::Init(int argc, char** argv) {
 	cout << "Initialized lua's setup script" << endl;
 
 	//setup the map object
-	mapPager.SetRegionWidth(REGION_WIDTH);
-	mapPager.SetRegionHeight(REGION_HEIGHT);
-	mapPager.SetRegionDepth(REGION_DEPTH);
-	mapPager.GetGenerator()->SetLuaState(luaState);
-	mapPager.GetFormat()->SetLuaState(luaState);
+	regionPager.SetRegionWidth(REGION_WIDTH);
+	regionPager.SetRegionHeight(REGION_HEIGHT);
+	regionPager.SetRegionDepth(REGION_DEPTH);
+	regionPager.GetGenerator()->SetLuaState(luaState);
+	regionPager.GetFormat()->SetLuaState(luaState);
 	//TODO: config parameter
-	mapPager.GetFormat()->SetSaveDir("save/mapname/");
+	regionPager.GetFormat()->SetSaveDir("save/mapname/");
 	//TODO: pass args to the generator & format as needed
 	//NOTE: I might need to rearrange the init process so that lua & SQL can interact
 	//      with the map system as needed.
@@ -133,6 +133,7 @@ void ServerApplication::Loop() {
 			HandlePacket(packet);
 		}
 		//give the computer a break
+		//TODO: remove this?
 		SDL_Delay(10);
 	}
 }
@@ -140,9 +141,7 @@ void ServerApplication::Loop() {
 void ServerApplication::Quit() {
 	cout << "Shutting down" << endl;
 	//empty the members
-	mapPager.UnloadAll();
-	//TODO: player manager
-	//TODO: client manager
+	regionPager.UnloadAll();
 
 	//APIs
 	lua_close(luaState);
@@ -210,44 +209,54 @@ void ServerApplication::HandleBroadcastRequest(NetworkPacket packet) {
 
 void ServerApplication::HandleJoinRequest(NetworkPacket packet) {
 	//register the new client
-	Client c;
-	c.address = packet.meta.srcAddress;
-	clientMap[Client::uidCounter] = c;
+	clientMap[Client::uidCounter] = {packet.meta.srcAddress};
 
-	//send the client their info
+	//send the client their index
 	char buffer[PACKET_BUFFER_SIZE];
-
 	packet.meta.type = NetworkPacket::Type::JOIN_RESPONSE;
 	packet.clientInfo.index = Client::uidCounter;
 	serialize(&packet, buffer);
 
-	network.Send(&clientMap[Client::uidCounter].address, buffer, PACKET_BUFFER_SIZE);
+	//bounce this packet
+	network.Send(&packet.meta.srcAddress, buffer, PACKET_BUFFER_SIZE);
 
-	//finished this routine+
+	//finished this routine
 	Client::uidCounter++;
 	cout << "Connect, total: " << clientMap.size() << endl;
 }
 
 void ServerApplication::HandleDisconnect(NetworkPacket packet) {
-	//disconnect the specified client
 	//TODO: authenticate who is disconnecting/kicking
+
+	//disconnect the specified client
 	char buffer[PACKET_BUFFER_SIZE];
 	serialize(&packet, buffer);
 	network.Send(&clientMap[packet.clientInfo.index].address, buffer, PACKET_BUFFER_SIZE);
 	clientMap.erase(packet.clientInfo.index);
 
-	//delete players from all clients
+	//prep the delete packet
 	NetworkPacket delPacket;
 	delPacket.meta.type = NetworkPacket::Type::PLAYER_DELETE;
 
-	erase_if(playerMap, [&](std::pair<int, PlayerEntry> it) -> bool {
+	//TODO: can this use DeletePlayer() instead?
+	//delete PlayerEntity, Entity, and client side players
+	erase_if(playerMap, [&](std::pair<unsigned int, PlayerEntity> playerIter) -> bool {
 		//find the internal players to delete
-		if (it.second.clientIndex == packet.clientInfo.index) {
-			delPacket.playerInfo.playerIndex = it.first;
+		if (playerIter.second.clientIndex == packet.clientInfo.index) {
 			//send the delete player command to all clients
+			delPacket.playerInfo.playerIndex = playerIter.first;
 			PumpPacket(delPacket);
+
+			//erase the corresponding Entity
+			erase_if(entityMap, [&](std::pair<unsigned int, Entity> entityIter) -> bool {
+				return entityIter.second.type == Entity::Type::PLAYER && entityIter.second.externalID == playerIter.first;
+			});
+
+			//delete this player object
 			return true;
 		}
+
+		//don't delete this player object
 		return false;
 	});
 
@@ -256,19 +265,40 @@ void ServerApplication::HandleDisconnect(NetworkPacket packet) {
 }
 
 void ServerApplication::HandleSynchronize(NetworkPacket packet) {
-	//send all the server's data to this client
 	//TODO: compensate for large distances
+
+	//send all the server's data to this client
 	NetworkPacket newPacket;
 	char buffer[PACKET_BUFFER_SIZE];
 
-	//players
-	newPacket.meta.type = NetworkPacket::Type::PLAYER_UPDATE;
-	for (auto& it : playerMap) {
-		newPacket.playerInfo.playerIndex = it.first;
-		snprintf(newPacket.playerInfo.handle, PACKET_STRING_SIZE, "%s", it.second.handle.c_str());
-		snprintf(newPacket.playerInfo.avatar, PACKET_STRING_SIZE, "%s", it.second.avatar.c_str());
-		newPacket.playerInfo.position = it.second.position;
-		newPacket.playerInfo.motion = it.second.motion;
+	//TODO: map?
+
+	//entities
+	for (auto& it : entityMap) {
+		//what are we sending?
+		switch(it.second.type) {
+			case Entity::Type::PLAYER:
+				//TODO: update the network code to match the entity code
+				newPacket.meta.type = NetworkPacket::Type::PLAYER_UPDATE;
+				newPacket.playerInfo.playerIndex = it.first;
+				snprintf(newPacket.playerInfo.handle, PACKET_STRING_SIZE, "%s", playerMap[it.second.externalID].handle.c_str());
+				snprintf(newPacket.playerInfo.avatar, PACKET_STRING_SIZE, "%s", playerMap[it.second.externalID].avatar.c_str());
+				newPacket.playerInfo.position = it.second.position;
+				newPacket.playerInfo.motion = it.second.motion;
+			break;
+			case Entity::Type::PORTAL:
+				//TODO
+			break;
+			case Entity::Type::ITEMS:
+				//TODO
+			break;
+			case Entity::Type::CHEST:
+				//TODO
+			break;
+			case Entity::Type::DOOR:
+				//TODO
+			break;
+		}
 		serialize(&newPacket, buffer);
 		network.Send(&clientMap[packet.clientInfo.index].address, buffer, PACKET_BUFFER_SIZE);
 	}
@@ -287,47 +317,70 @@ void ServerApplication::HandleShutdown(NetworkPacket packet) {
 }
 
 void ServerApplication::HandlePlayerNew(NetworkPacket packet) {
-	//create the new player object
-	PlayerEntry newPlayer;
-	newPlayer.clientIndex = packet.playerInfo.clientIndex;
-	newPlayer.mapIndex = 0;
-	newPlayer.handle = packet.playerInfo.handle;
-	newPlayer.avatar = packet.playerInfo.avatar;
-	newPlayer.position = {0,0};
-	newPlayer.motion = {0,0};
+	//register the new Entity
+	entityMap[Entity::uidCounter] = {
+		Entity::Type::PLAYER,
+		0,
+		{0, 0},
+		{0, 0},
+		{0, 0, 0, 0},
+		PlayerEntity::uidCounter
+	};
 
-	//push this player
-	playerMap[playerCounter] = newPlayer;
+	//register the new PlayerEntity
+	playerMap[PlayerEntity::uidCounter] = {
+		packet.playerInfo.clientIndex,
+		packet.playerInfo.handle,
+		packet.playerInfo.avatar,
+		0,
+		0,
+		0,
+		0,
+		0,
+		0,
+		0,
+		0,
+		0,
+		0,
+		0.0,
+		0.0,
+		0.0
+	};
 
 	//send the client their info
-	packet.playerInfo.playerIndex = playerCounter;
-	packet.playerInfo.position = playerMap[playerCounter].position;
-	packet.playerInfo.motion = playerMap[playerCounter].motion;
+	packet.playerInfo.playerIndex = PlayerEntity::uidCounter;
+	packet.playerInfo.position = entityMap[Entity::uidCounter].position;
+	packet.playerInfo.motion = entityMap[Entity::uidCounter].motion;
 
 	//actually send to everyone
 	PumpPacket(packet);
 
 	//finish this routine
-	playerCounter++;
+	Entity::uidCounter++;
+	PlayerEntity::uidCounter++;
 }
 
 void ServerApplication::HandlePlayerDelete(NetworkPacket packet) {
-	if (playerMap.find(packet.playerInfo.playerIndex) == playerMap.end()) {
+	//TODO: remove this?
+	if (entityMap.find(packet.playerInfo.playerIndex) == entityMap.end()) {
 		throw(std::runtime_error("Cannot delete a non-existant player"));
 	}
 
-	//delete players
-	erase_if(playerMap, [&](pair<int, PlayerEntry> it) -> bool {
-		if (it.first == packet.playerInfo.playerIndex) {
-			NetworkPacket delPacket;
+	//prep the delete packet
+	NetworkPacket delPacket;
+	delPacket.meta.type = NetworkPacket::Type::PLAYER_DELETE;
 
-			//data to delete one specific player
-			delPacket.meta.type = NetworkPacket::Type::PLAYER_DELETE;
-			delPacket.playerInfo.playerIndex = it.first;
-
+	//delete the specified Entity, PlayerEntity
+	erase_if(entityMap, [&](std::pair<unsigned int, Entity> entityIter) -> bool {
+		//find the specified Entity
+		if (entityIter.first == packet.playerInfo.playerIndex) {
 			//send to all
+			delPacket.playerInfo.playerIndex = entityIter.first;
 			PumpPacket(delPacket);
-
+			//erase matching PlayerEntity
+			erase_if(playerMap, [&](std::pair<unsigned int, PlayerEntity> playerIter) -> bool {
+				return playerIter.first == entityIter.second.externalID;
+			});
 			return true;
 		}
 		return false;
@@ -335,13 +388,14 @@ void ServerApplication::HandlePlayerDelete(NetworkPacket packet) {
 }
 
 void ServerApplication::HandlePlayerUpdate(NetworkPacket packet) {
-	if (playerMap.find(packet.playerInfo.playerIndex) == playerMap.end()) {
+	//TODO: Lookup the reference once, and operate on that instead of looking it up 3 times
+	if (entityMap.find(packet.playerInfo.playerIndex) == entityMap.end()) {
 		throw(std::runtime_error("Cannot update a non-existant player"));
 	}
 
-	//server is the slave to the clients, but only for now
-	playerMap[packet.playerInfo.playerIndex].position = packet.playerInfo.position;
-	playerMap[packet.playerInfo.playerIndex].motion = packet.playerInfo.motion;
+	//TODO: the server needs it's own movement system too
+	entityMap[packet.playerInfo.playerIndex].position = packet.playerInfo.position;
+	entityMap[packet.playerInfo.playerIndex].motion = packet.playerInfo.motion;
 
 	PumpPacket(packet);
 }
@@ -349,7 +403,7 @@ void ServerApplication::HandlePlayerUpdate(NetworkPacket packet) {
 void ServerApplication::HandleRegionRequest(NetworkPacket packet) {
 	char buffer[PACKET_BUFFER_SIZE];
 	packet.meta.type = NetworkPacket::Type::REGION_CONTENT;
-	packet.regionInfo.region = mapPager.GetRegion(packet.regionInfo.x, packet.regionInfo.y);
+	packet.regionInfo.region = regionPager.GetRegion(packet.regionInfo.x, packet.regionInfo.y);
 	serialize(&packet, buffer);
 	network.Send(&packet.meta.srcAddress, buffer, PACKET_BUFFER_SIZE);
 }

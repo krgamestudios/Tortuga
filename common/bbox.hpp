@@ -26,6 +26,7 @@
 #include <stdexcept>
 #include <algorithm>
 
+//TODO: This is supposed to interact with the vector
 class BBox {
 public:
 	double x, y;

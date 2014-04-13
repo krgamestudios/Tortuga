@@ -40,7 +40,7 @@ struct Entity {
 	Vector2 position;
 	Vector2 motion;
 	BBox bbox;
-	unsigned int uid;
+	unsigned int externalID;
 	static unsigned int uidCounter;
 };
 

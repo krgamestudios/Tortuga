@@ -75,22 +75,22 @@ private:
 	void HandlePlayerUpdate(NetworkPacket);
 	void HandleRegionRequest(NetworkPacket);
 
+	//TODO: a function that sends to players in a certain proximity
 	void PumpPacket(NetworkPacket);
 
 	//APIs
-	std::map<int, Client> clientMap;
+	UDPNetworkUtility network;
+	sqlite3* database = nullptr;
+	lua_State* luaState = nullptr;
+
+	//server tables
+	std::map<unsigned int, Client> clientMap;
+	std::map<unsigned int, Entity> entityMap;
+	std::map<unsigned int, PlayerEntity> playerMap;
 
 	//maps
-	RegionPager<LuaGenerator, LuaFormat> mapPager;
-
-	//networking
-	UDPNetworkUtility network;
-
-	//database
-	sqlite3* database = nullptr;
-
-	//lua
-	lua_State* luaState = nullptr;
+	//TODO: I need to handle multiple map objects
+	RegionPager<LuaGenerator, LuaFormat> regionPager;
 
 	//misc
 	bool running = true;

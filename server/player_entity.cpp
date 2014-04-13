@@ -19,34 +19,6 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef PLAYERENTITY_HPP_
-#define PLAYERENTITY_HPP_
+#include "player_entity.hpp"
 
-#include <string>
-
-struct PlayerEntity {
-	//metadata
-	int clientIndex;
-	std::string handle;
-	std::string avatar;
-
-	//statistics
-	int level;
-	int exp;
-	int maxHP;
-	int health;
-	int maxMP;
-	int mana;
-	int attack;
-	int defence;
-	int intelligence;
-	int resistance;
-	float accuracy;
-	float evasion;
-	float luck;
-
-	//uid
-	static unsigned int uidCounter;
-};
-
-#endif
+unsigned int PlayerEntity::uidCounter;

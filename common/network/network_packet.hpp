@@ -31,6 +31,7 @@
 
 #pragma pack(push, 0)
 
+//TODO: update the code here to match the entity code
 union NetworkPacket {
 	//types of packets
 	enum class Type {
