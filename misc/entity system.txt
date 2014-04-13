@@ -1,0 +1,14 @@
+Entity: //the basic unit that is being stored in the primary container
+	enum Type type //this mimics the NetworkPacket pattern a bit, I wonder if it's a good idea or not
+	position //will always need to know it's location, because of the big maps
+	motion //probably not necessary for anything other than the players. Still might as well include it, since I'm using pretty much everything else
+	box //bounding box, because of reasons?
+	id //the unique entity ID. can be used to lookup an instance in a different container
+
+entities include:
+
+* Players
+* Combat portals
+* item drops? I don't know if these are visible in the world
+* chests
+* dungeon doors?
