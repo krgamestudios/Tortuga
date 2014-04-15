@@ -22,6 +22,11 @@
 #ifndef SERVERAPPLICATION_HPP_
 #define SERVERAPPLICATION_HPP_
 
+//server specific stuff
+#include "client.hpp"
+#include "entity.hpp"
+#include "player_entity.hpp"
+
 //maps
 #include "map_generator.hpp"
 #include "map_file_format.hpp"
@@ -44,19 +49,6 @@
 //STL
 #include <map>
 #include <string>
-
-struct ClientEntry {
-	IPaddress address;
-};
-
-struct PlayerEntry {
-	int clientIndex;
-	int mapIndex;
-	std::string handle;
-	std::string avatar;
-	Vector2 position;
-	Vector2 motion;
-};
 
 //The main application class
 class ServerApplication {
@@ -83,29 +75,26 @@ private:
 	void HandlePlayerUpdate(NetworkPacket);
 	void HandleRegionRequest(NetworkPacket);
 
+	//TODO: a function that sends to players in a certain proximity
 	void PumpPacket(NetworkPacket);
 
-	//maps
-	RegionPager<LuaGenerator, LuaFormat> mapPager;
-
-	//networking
+	//APIs
 	UDPNetworkUtility network;
-
-	//database
 	sqlite3* database = nullptr;
-
-	//lua
 	lua_State* luaState = nullptr;
+
+	//server tables
+	std::map<unsigned int, Client> clientMap;
+	std::map<unsigned int, Entity> entityMap;
+	std::map<unsigned int, PlayerEntity> playerMap;
+
+	//maps
+	//TODO: I need to handle multiple map objects
+	RegionPager<LuaGenerator, LuaFormat> regionPager;
 
 	//misc
 	bool running = true;
 	ConfigUtility config;
-
-	std::map<int, ClientEntry> clientMap;
-	std::map<int, PlayerEntry> playerMap;
-
-	int clientCounter = 0;
-	int playerCounter = 0;
 };
 
 #endif
