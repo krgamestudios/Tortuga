@@ -23,9 +23,8 @@
 #define SERVERAPPLICATION_HPP_
 
 //server specific stuff
-#include "client.hpp"
-#include "entity.hpp"
-#include "player_entity.hpp"
+#include "client_entry.hpp"
+#include "player_entry.hpp"
 
 //maps
 #include "map_generator.hpp"
@@ -84,9 +83,8 @@ private:
 	lua_State* luaState = nullptr;
 
 	//server tables
-	std::map<unsigned int, Client> clientMap;
-	std::map<unsigned int, Entity> entityMap;
-	std::map<unsigned int, PlayerEntity> playerMap;
+	std::map<unsigned int, ClientEntry> clientMap;
+	std::map<unsigned int, PlayerEntry> playerMap;
 
 	//maps
 	//TODO: I need to handle multiple map objects

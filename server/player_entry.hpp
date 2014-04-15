@@ -19,28 +19,43 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef ENTITY_HPP_
-#define ENTITY_HPP_
+#ifndef PLAYERENTRY_HPP_
+#define PLAYERENTRY_HPP_
 
 //POD members
-#include "vector2.hpp"
 #include "bbox.hpp"
+#include "vector2.hpp"
 
-struct Entity {
-	enum Type {
-		PLAYER,
-		PORTAL,
-		ITEMS,
-		CHEST,
-		DOOR,
-	};
+#include <string>
 
-	Type type;
+struct PlayerEntry {
+	//metadata
+	int clientIndex;
+	std::string handle;
+	std::string avatar;
+
+	//world position
 	int mapIndex;
 	Vector2 position;
 	Vector2 motion;
 	BBox bbox;
-	unsigned int externalID;
+
+	//statistics
+	int level;
+	int exp;
+	int maxHP;
+	int health;
+	int maxMP;
+	int mana;
+	int attack;
+	int defence;
+	int intelligence;
+	int resistance;
+	float accuracy;
+	float evasion;
+	float luck;
+
+	//uid
 	static unsigned int uidCounter;
 };
 

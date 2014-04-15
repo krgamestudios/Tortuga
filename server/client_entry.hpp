@@ -19,11 +19,14 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#include "client.hpp"
+#ifndef CLIENTENTRY_HPP_
+#define CLIENTENTRY_HPP_
 
-#include <type_traits>
+#include "SDL/SDL_net.h"
 
-//This is explicitly a POD
-static_assert(std::is_pod<Client>::value, "Client is not a POD");
+struct ClientEntry {
+	IPaddress address;
+	static unsigned int uidCounter;
+};
 
-unsigned int Client::uidCounter;
+#endif

@@ -31,7 +31,7 @@
 
 #pragma pack(push, 0)
 
-//TODO: update the code here to match the entity code
+//TODO: rename to serial packet
 union NetworkPacket {
 	//types of packets
 	enum class Type {
@@ -85,6 +85,7 @@ union NetworkPacket {
 	}serverInfo;
 
 	//information about the client
+	//TODO: login credentials
 	struct ClientInformation {
 		Metadata meta;
 		int index;
@@ -95,6 +96,8 @@ union NetworkPacket {
 		Metadata meta;
 		int clientIndex;
 		int playerIndex;
+		//TODO: should probably move these into the client info
+		//TODO: these might actually do better during the login system
 		char handle[PACKET_STRING_SIZE];
 		char avatar[PACKET_STRING_SIZE];
 		Vector2 position;

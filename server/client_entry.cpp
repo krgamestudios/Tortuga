@@ -19,11 +19,6 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#include "entity.hpp"
+#include "client_entry.hpp"
 
-#include <type_traits>
-
-//This is explicitly a POD
-static_assert(std::is_pod<Entity>::value, "Entity is not a POD");
-
-unsigned int Entity::uidCounter;
+unsigned int ClientEntry::uidCounter;

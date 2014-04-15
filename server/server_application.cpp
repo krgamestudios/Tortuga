@@ -53,9 +53,8 @@ void ServerApplication::Init(int argc, char** argv) {
 	cout << "Beginning startup" << endl;
 
 	//initial setup
-	Client::uidCounter = 0;
-	Entity::uidCounter = 0;
-	PlayerEntity::uidCounter = 0;
+	ClientEntry::uidCounter = 0;
+	PlayerEntry::uidCounter = 0;
 	config.Load("rsc\\config.cfg");
 
 	//Init SDL
@@ -209,19 +208,21 @@ void ServerApplication::HandleBroadcastRequest(NetworkPacket packet) {
 
 void ServerApplication::HandleJoinRequest(NetworkPacket packet) {
 	//register the new client
-	clientMap[Client::uidCounter] = {packet.meta.srcAddress};
+	ClientEntry newClient;
+	newClient.address = packet.meta.srcAddress;
+	clientMap[ClientEntry::uidCounter] = newClient;
 
 	//send the client their index
 	char buffer[PACKET_BUFFER_SIZE];
 	packet.meta.type = NetworkPacket::Type::JOIN_RESPONSE;
-	packet.clientInfo.index = Client::uidCounter;
+	packet.clientInfo.index = ClientEntry::uidCounter;
 	serialize(&packet, buffer);
 
 	//bounce this packet
-	network.Send(&packet.meta.srcAddress, buffer, PACKET_BUFFER_SIZE);
+	network.Send(&newClient.address, buffer, PACKET_BUFFER_SIZE);
 
 	//finished this routine
-	Client::uidCounter++;
+	ClientEntry::uidCounter++;
 	cout << "Connect, total: " << clientMap.size() << endl;
 }
 
@@ -239,18 +240,13 @@ void ServerApplication::HandleDisconnect(NetworkPacket packet) {
 	delPacket.meta.type = NetworkPacket::Type::PLAYER_DELETE;
 
 	//TODO: can this use DeletePlayer() instead?
-	//delete PlayerEntity, Entity, and client side players
-	erase_if(playerMap, [&](std::pair<unsigned int, PlayerEntity> playerIter) -> bool {
+	//delete server and client side players
+	erase_if(playerMap, [&](std::pair<unsigned int, PlayerEntry> it) -> bool {
 		//find the internal players to delete
-		if (playerIter.second.clientIndex == packet.clientInfo.index) {
+		if (it.second.clientIndex == packet.clientInfo.index) {
 			//send the delete player command to all clients
-			delPacket.playerInfo.playerIndex = playerIter.first;
+			delPacket.playerInfo.playerIndex = it.first;
 			PumpPacket(delPacket);
-
-			//erase the corresponding Entity
-			erase_if(entityMap, [&](std::pair<unsigned int, Entity> entityIter) -> bool {
-				return entityIter.second.type == Entity::Type::PLAYER && entityIter.second.externalID == playerIter.first;
-			});
 
 			//delete this player object
 			return true;
@@ -273,32 +269,15 @@ void ServerApplication::HandleSynchronize(NetworkPacket packet) {
 
 	//TODO: map?
 
-	//entities
-	for (auto& it : entityMap) {
-		//what are we sending?
-		switch(it.second.type) {
-			case Entity::Type::PLAYER:
-				//TODO: update the network code to match the entity code
-				newPacket.meta.type = NetworkPacket::Type::PLAYER_UPDATE;
-				newPacket.playerInfo.playerIndex = it.first;
-				snprintf(newPacket.playerInfo.handle, PACKET_STRING_SIZE, "%s", playerMap[it.second.externalID].handle.c_str());
-				snprintf(newPacket.playerInfo.avatar, PACKET_STRING_SIZE, "%s", playerMap[it.second.externalID].avatar.c_str());
-				newPacket.playerInfo.position = it.second.position;
-				newPacket.playerInfo.motion = it.second.motion;
-			break;
-			case Entity::Type::PORTAL:
-				//TODO
-			break;
-			case Entity::Type::ITEMS:
-				//TODO
-			break;
-			case Entity::Type::CHEST:
-				//TODO
-			break;
-			case Entity::Type::DOOR:
-				//TODO
-			break;
-		}
+	//players
+	newPacket.meta.type = NetworkPacket::Type::PLAYER_UPDATE;
+	for (auto& it : playerMap) {
+		//TODO: update this for the expanded PlayerEntry structure
+		newPacket.playerInfo.playerIndex = it.first;
+		snprintf(newPacket.playerInfo.handle, PACKET_STRING_SIZE, "%s", it.second.handle.c_str());
+		snprintf(newPacket.playerInfo.avatar, PACKET_STRING_SIZE, "%s", it.second.avatar.c_str());
+		newPacket.playerInfo.position = it.second.position;
+		newPacket.playerInfo.motion = it.second.motion;
 		serialize(&newPacket, buffer);
 		network.Send(&clientMap[packet.clientInfo.index].address, buffer, PACKET_BUFFER_SIZE);
 	}
@@ -317,52 +296,42 @@ void ServerApplication::HandleShutdown(NetworkPacket packet) {
 }
 
 void ServerApplication::HandlePlayerNew(NetworkPacket packet) {
-	//register the new Entity
-	entityMap[Entity::uidCounter] = {
-		Entity::Type::PLAYER,
-		0,
-		{0, 0},
-		{0, 0},
-		{0, 0, 0, 0},
-		PlayerEntity::uidCounter
-	};
+	//register the new PlayerEntry
+	//NOTE: assigning each field one-by-one so adding or moving a field doesn't break this code
+	PlayerEntry newPlayer;
 
-	//register the new PlayerEntity
-	playerMap[PlayerEntity::uidCounter] = {
-		packet.playerInfo.clientIndex,
-		packet.playerInfo.handle,
-		packet.playerInfo.avatar,
-		0,
-		0,
-		0,
-		0,
-		0,
-		0,
-		0,
-		0,
-		0,
-		0,
-		0.0,
-		0.0,
-		0.0
-	};
+	//metadata
+	newPlayer.clientIndex = packet.playerInfo.clientIndex;
+	newPlayer.handle = packet.playerInfo.handle;
+	newPlayer.avatar = packet.playerInfo.avatar;
+
+	//position
+	newPlayer.mapIndex = 0;
+	newPlayer.position = {0,0};
+	newPlayer.motion = {0,0};
+	newPlayer.bbox = {0, 0, 0, 0};
+
+	//stats
+	//TODO
+
+	//push this player
+	playerMap[PlayerEntry::uidCounter] = newPlayer;
 
 	//send the client their info
-	packet.playerInfo.playerIndex = PlayerEntity::uidCounter;
-	packet.playerInfo.position = entityMap[Entity::uidCounter].position;
-	packet.playerInfo.motion = entityMap[Entity::uidCounter].motion;
+	packet.playerInfo.playerIndex = PlayerEntry::uidCounter;
+	packet.playerInfo.position = newPlayer.position;
+	packet.playerInfo.motion = newPlayer.motion;
 
 	//actually send to everyone
 	PumpPacket(packet);
 
 	//finish this routine
-	Entity::uidCounter++;
-	PlayerEntity::uidCounter++;
+	PlayerEntry::uidCounter++;
 }
 
 void ServerApplication::HandlePlayerDelete(NetworkPacket packet) {
 	//TODO: remove this?
-	if (entityMap.find(packet.playerInfo.playerIndex) == entityMap.end()) {
+	if (playerMap.find(packet.playerInfo.playerIndex) == playerMap.end()) {
 		throw(std::runtime_error("Cannot delete a non-existant player"));
 	}
 
@@ -370,32 +339,30 @@ void ServerApplication::HandlePlayerDelete(NetworkPacket packet) {
 	NetworkPacket delPacket;
 	delPacket.meta.type = NetworkPacket::Type::PLAYER_DELETE;
 
-	//delete the specified Entity, PlayerEntity
-	erase_if(entityMap, [&](std::pair<unsigned int, Entity> entityIter) -> bool {
-		//find the specified Entity
-		if (entityIter.first == packet.playerInfo.playerIndex) {
+	//delete the specified playerEntry
+	erase_if(playerMap, [&](std::pair<unsigned int, PlayerEntry> it) -> bool {
+		//find the specified PlayerEntry
+		if (it.first == packet.playerInfo.playerIndex) {
 			//send to all
-			delPacket.playerInfo.playerIndex = entityIter.first;
+			delPacket.playerInfo.playerIndex = it.first;
 			PumpPacket(delPacket);
-			//erase matching PlayerEntity
-			erase_if(playerMap, [&](std::pair<unsigned int, PlayerEntity> playerIter) -> bool {
-				return playerIter.first == entityIter.second.externalID;
-			});
+
+			//delete this player
 			return true;
 		}
+		//skip this player
 		return false;
 	});
 }
 
 void ServerApplication::HandlePlayerUpdate(NetworkPacket packet) {
-	//TODO: Lookup the reference once, and operate on that instead of looking it up 3 times
-	if (entityMap.find(packet.playerInfo.playerIndex) == entityMap.end()) {
+	if (playerMap.find(packet.playerInfo.playerIndex) == playerMap.end()) {
 		throw(std::runtime_error("Cannot update a non-existant player"));
 	}
 
 	//TODO: the server needs it's own movement system too
-	entityMap[packet.playerInfo.playerIndex].position = packet.playerInfo.position;
-	entityMap[packet.playerInfo.playerIndex].motion = packet.playerInfo.motion;
+	playerMap[packet.playerInfo.playerIndex].position = packet.playerInfo.position;
+	playerMap[packet.playerInfo.playerIndex].motion = packet.playerInfo.motion;
 
 	PumpPacket(packet);
 }
