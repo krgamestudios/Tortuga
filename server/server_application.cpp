@@ -38,7 +38,7 @@ int runSQLScript(sqlite3* db, std::string fname) {
 	string script;
 	getline(is, script, '\0');
 	is.close();
-	//TODO: flesh out this error if needed
+	//NOTE: flesh out this error if needed
 	if (sqlite3_exec(db, script.c_str(), nullptr, nullptr, nullptr) != SQLITE_OK) {
 		return -2;
 	}
@@ -201,6 +201,7 @@ void ServerApplication::HandleBroadcastRequest(NetworkPacket packet) {
 	//TODO: version info
 	snprintf(packet.serverInfo.name, PACKET_STRING_SIZE, "%s", config["server.name"].c_str());
 	//TODO: player count
+	//TODO: map format
 	char buffer[PACKET_BUFFER_SIZE];
 	serialize(&packet, buffer);
 	network.Send(&packet.meta.srcAddress, buffer, PACKET_BUFFER_SIZE);
@@ -331,6 +332,7 @@ void ServerApplication::HandlePlayerNew(NetworkPacket packet) {
 
 void ServerApplication::HandlePlayerDelete(NetworkPacket packet) {
 	//TODO: remove this?
+	//TODO: authenticate who is deleting this player
 	if (playerMap.find(packet.playerInfo.playerIndex) == playerMap.end()) {
 		throw(std::runtime_error("Cannot delete a non-existant player"));
 	}

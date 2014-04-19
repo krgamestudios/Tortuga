@@ -51,8 +51,6 @@ Region* RegionPagerBase::GetRegion(int x, int y) {
 	y = snapToBase(regionHeight, y);
 
 	//get the region by various means
-
-	//TODO: revert this try/catch point
 	Region* ptr = nullptr;
 	ptr = FindRegion(x, y);
 	if (ptr) return ptr;
