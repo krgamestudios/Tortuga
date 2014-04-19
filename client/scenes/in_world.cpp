@@ -467,7 +467,7 @@ void InWorld::UpdateMap() {
 		++it;
 	}
 
-	//TODO: make the region units official
+	//TODO: make the region units official?
 	int regionUnitX = REGION_WIDTH * tileSheet.GetTileW();
 	int regionUnitY = REGION_HEIGHT * tileSheet.GetTileH();
 

@@ -32,6 +32,7 @@
 //-------------------------
 
 void ServerApplication::Init(int argc, char** argv) {
+	//NOTE: I might need to rearrange the init process so that lua & SQL can interact with the map system as needed.
 	std::cout << "Beginning startup" << std::endl;
 
 	//initial setup
@@ -84,9 +85,7 @@ void ServerApplication::Init(int argc, char** argv) {
 	regionPager.GetFormat()->SetLuaState(luaState);
 	//TODO: config parameter
 	regionPager.GetFormat()->SetSaveDir("save/mapname/");
-	//TODO: pass args to the generator & format as needed
-	//NOTE: I might need to rearrange the init process so that lua & SQL can interact
-	//      with the map system as needed.
+
 	std::cout << "Initialized the map system" << std::endl;
 	std::cout << "\tsizeof(NetworkPacket): " << sizeof(NetworkPacket) << std::endl;
 	std::cout << "\tPACKET_BUFFER_SIZE: " << PACKET_BUFFER_SIZE << std::endl;
