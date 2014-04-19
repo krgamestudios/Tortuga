@@ -107,7 +107,7 @@ union NetworkPacket {
 	//map data
 	struct RegionInformation {
 		Metadata meta;
-		int width, height, depth, x, y;
+		int x, y;
 		Region* region;
 	}regionInfo;
 

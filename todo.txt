@@ -4,7 +4,7 @@
 *. Rename MapGenerator to MapAllocator
 -. Does the format need to be a functor too?
 -. Can the format functor go inside the allocator?
-5. lua API
+*. lua API
 
 4. in_world.cpp:487  make the region units official
 5. region_pager.hpp:50  delete?

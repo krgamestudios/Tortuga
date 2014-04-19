@@ -44,9 +44,9 @@ void TileSheet::DrawTo(SDL_Surface* const dest, int x, int y, Region::type_t til
 
 void TileSheet::DrawRegionTo(SDL_Surface* const dest, Region* const region, int camX, int camY) {
 	Region::type_t tile = 0;
-	for (register int i = 0; i < region->GetWidth(); ++i) {
-		for (register int j = 0; j < region->GetHeight(); ++j) {
-			for (register int k = 0; k < region->GetDepth(); ++k) {
+	for (register int i = 0; i < REGION_WIDTH; ++i) {
+		for (register int j = 0; j < REGION_HEIGHT; ++j) {
+			for (register int k = 0; k < REGION_DEPTH; ++k) {
 				tile = region->GetTile(i, j, k);
 				//0 is invisible
 				if (tile == 0) continue;
