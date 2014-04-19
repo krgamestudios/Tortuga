@@ -33,7 +33,8 @@ void DummyFormat::Save(Region* const ptr) {
 
 void LuaFormat::Load(Region** const ptr, int x, int y) {
 	//something to load into
-	if (!ptr) {
+
+	if (!(*ptr)) {
 		(*ptr) = new Region(x, y);
 	}
 
