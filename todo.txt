@@ -1,0 +1,12 @@
+#These were partially scraped from the TODO utility
+
+1. Implement the preprocessor values throughout the map system
+4. in_world.cpp:487  make the region units official
+5. region_pager.hpp:50  delete?
+16. editor_scene.cpp:99  skip the out-of-bounds regions
+24. server_application.cpp:106  config parameter
+25. server_application.cpp:108  pass args to the generator & format as needed
+31. server_application.cpp:264  compensate for large distances
+32. server_application.cpp:270  map?
+36. server_application.hpp:77  a function that sends to players in a certain proximity
+37. server_application.hpp:90  I need to handle multiple map objects
