@@ -23,18 +23,6 @@
 
 #include "utility.hpp"
 
-RegionPagerBase::RegionPagerBase(int argWidth, int argHeight, int argDepth):
-	regionWidth(argWidth),
-	regionHeight(argHeight),
-	regionDepth(argDepth)
-{
-	//EMPTY
-}
-
-RegionPagerBase::~RegionPagerBase() {
-	//EMPTY
-}
-
 Region::type_t RegionPagerBase::SetTile(int x, int y, int z, Region::type_t v) {
 	Region* ptr = GetRegion(x, y);
 	return ptr->SetTile(x - ptr->GetX(), y - ptr->GetY(), z, v);
@@ -47,12 +35,10 @@ Region::type_t RegionPagerBase::GetTile(int x, int y, int z) {
 
 Region* RegionPagerBase::GetRegion(int x, int y) {
 	//snap the coords
-	x = snapToBase(regionWidth, x);
-	y = snapToBase(regionHeight, y);
+	x = snapToBase(REGION_WIDTH, x);
+	y = snapToBase(REGION_HEIGHT, y);
 
 	//get the region by various means
-
-	//TODO: revert this try/catch point
 	Region* ptr = nullptr;
 	ptr = FindRegion(x, y);
 	if (ptr) return ptr;
@@ -62,6 +48,10 @@ Region* RegionPagerBase::GetRegion(int x, int y) {
 }
 
 Region* RegionPagerBase::FindRegion(int x, int y) {
+	//snap the coords
+	x = snapToBase(REGION_WIDTH, x);
+	y = snapToBase(REGION_HEIGHT, y);
+
 	//find the region
 	for (std::list<Region*>::iterator it = regionList.begin(); it != regionList.end(); it++) {
 		if ((*it)->GetX() == x && (*it)->GetY() == y) {

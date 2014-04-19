@@ -27,11 +27,6 @@
 #include <cmath>
 #include <stdexcept>
 
-//debugging
-#include <iostream>
-using std::cout;
-using std::endl;
-
 //-------------------------
 //Public access members
 //-------------------------
@@ -63,14 +58,11 @@ InWorld::InWorld(ConfigUtility* const argConfig, UDPNetworkUtility* const argNet
 	shutDownButton.SetText("Shut Down");
 
 	//load the tilesheet
+	//TODO: add the tilesheet to the map system?
 	tileSheet.Load(config["dir.tilesets"] + "terrain.bmp", 12, 15);
 
-	//setup the map object
-	mapPager.SetRegionWidth(REGION_WIDTH);
-	mapPager.SetRegionHeight(REGION_HEIGHT);
-	mapPager.SetRegionDepth(REGION_DEPTH);
-
 	//create the server-side player object
+	//TODO: the login system needs an overhaul
 	NetworkPacket packet;
 	packet.meta.type = NetworkPacket::Type::PLAYER_NEW;
 	packet.playerInfo.clientIndex = clientIndex;
@@ -143,7 +135,8 @@ void InWorld::RenderFrame() {
 
 void InWorld::Render(SDL_Surface* const screen) {
 	//draw the map
-	for (auto it = mapPager.GetContainer()->begin(); it != mapPager.GetContainer()->end(); it++) {
+	//TODO: figure out something to fix the region container access
+	for (auto it = regionPager.GetContainer()->begin(); it != regionPager.GetContainer()->end(); it++) {
 		tileSheet.DrawRegionTo(screen, *it, camera.x, camera.y);
 	}
 
@@ -347,20 +340,11 @@ void InWorld::HandlePlayerUpdate(NetworkPacket packet) {
 
 void InWorld::HandleRegionContent(NetworkPacket packet) {
 	//replace existing regions
-	if (mapPager.FindRegion(packet.regionInfo.x, packet.regionInfo.y)) {
-		mapPager.UnloadRegion(packet.regionInfo.x, packet.regionInfo.y);
+	if (regionPager.FindRegion(packet.regionInfo.x, packet.regionInfo.y)) {
+		regionPager.UnloadRegion(packet.regionInfo.x, packet.regionInfo.y);
 	}
-	mapPager.PushRegion(packet.regionInfo.region);
+	regionPager.PushRegion(packet.regionInfo.region);
 	packet.regionInfo.region = nullptr;
-
-	//debugging
-	cout << "Received region: " << packet.regionInfo.x << ", " << packet.regionInfo.y << endl;
-	if (mapPager.FindRegion(packet.regionInfo.x, packet.regionInfo.y)) {
-		cout << "Success" << endl;
-	}
-	else {
-		cout << "Failure" << endl;
-	}
 }
 
 //-------------------------
@@ -421,7 +405,8 @@ void InWorld::RequestRegion(int x, int y) {
 //-------------------------
 
 int InWorld::CheckBufferDistance(Region* const region) {
-	/* DOCUMENTATION
+	/* TODO: Remove InWorld::CheckBufferDistance(), and replace it with a simpler system
+	 * DOCUMENTATION
 	 * This algorithm is extremely complex and involed, but initial tests show
 	 * that it gives the right answers. The purpose is to determine how far off screen
 	 * a certain region is, so that it can be unloaded when necessary.
@@ -453,45 +438,43 @@ int InWorld::CheckBufferDistance(Region* const region) {
 	int y = region->GetY() - camera.y;
 
 	//if the region is visible, return -1
-	if (x >= -mapPager.GetRegionWidth() * tileSheet.GetTileW() && x < camera.width &&
-		y >= -mapPager.GetRegionHeight() * tileSheet.GetTileH() && y < camera.height) {
+	if (x >= -REGION_WIDTH * tileSheet.GetTileW() && x < camera.width &&
+		y >= -REGION_HEIGHT * tileSheet.GetTileH() && y < camera.height) {
 		return -1;
 	}
 
 	//prune the screen's area from the algorithm; get the pseudo-indexes
-	if (x < 0) x /= (mapPager.GetRegionWidth() * tileSheet.GetTileW());
-	if (y < 0) y /= (mapPager.GetRegionHeight() * tileSheet.GetTileH());
-	if (x > 0) x = (x - camera.width) / (mapPager.GetRegionWidth() * tileSheet.GetTileW()) + 1;
-	if (y > 0) y = (y - camera.height) / (mapPager.GetRegionHeight() * tileSheet.GetTileH()) + 1;
+	if (x < 0) x /= (REGION_WIDTH * tileSheet.GetTileW());
+	if (y < 0) y /= (REGION_HEIGHT * tileSheet.GetTileH());
+	if (x > 0) x = (x - camera.width) / (REGION_WIDTH * tileSheet.GetTileW()) + 1;
+	if (y > 0) y = (y - camera.height) / (REGION_HEIGHT * tileSheet.GetTileH()) + 1;
 
 	//return the pseudo-index with the greatest magnitude
 	return std::max(abs(x), abs(y));
 }
 
+//TODO: eew ugly
 void InWorld::UpdateMap() {
 	//prune distant regions
-	for (auto it = mapPager.GetContainer()->begin(); it != mapPager.GetContainer()->end(); /* EMPTY */) {
+	for (auto it = regionPager.GetContainer()->begin(); it != regionPager.GetContainer()->end(); /* EMPTY */) {
 		if (CheckBufferDistance(*it) > 2) {
-			//debugging
-			cout << "unloading: " << (*it)->GetX() << ", " << (*it)->GetY() << endl;
-
-			mapPager.UnloadRegion((*it)->GetX(), (*it)->GetY());
+			regionPager.UnloadRegion((*it)->GetX(), (*it)->GetY());
 
 			//reset
-			it = mapPager.GetContainer()->begin();
+			it = regionPager.GetContainer()->begin();
 			continue;
 		}
 		++it;
 	}
 
-	//TODO: make the region units official
-	int regionUnitX = mapPager.GetRegionWidth() * tileSheet.GetTileW();
-	int regionUnitY = mapPager.GetRegionHeight() * tileSheet.GetTileH();
+	//TODO: make the region units official?
+	int regionUnitX = REGION_WIDTH * tileSheet.GetTileW();
+	int regionUnitY = REGION_HEIGHT * tileSheet.GetTileH();
 
 	//request empty regions, including buffers (-1 & +1 region unit)
 	for (int i = snapToBase(regionUnitX, camera.x - regionUnitX); i <= snapToBase(regionUnitX, camera.x + camera.width + regionUnitX); i += regionUnitX) {
 		for (int j = snapToBase(regionUnitY, camera.y - regionUnitY); j <= snapToBase(regionUnitY, camera.y + camera.height + regionUnitY); j += regionUnitY) {
-			if (!mapPager.FindRegion(i, j)) {
+			if (!regionPager.FindRegion(i, j)) {
 				RequestRegion(i, j);
 			}
 		}

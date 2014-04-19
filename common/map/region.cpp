@@ -21,33 +21,13 @@
 */
 #include "region.hpp"
 
-Region::Region(int argWidth, int argHeight, int argDepth, int argX, int argY):
-	width(argWidth),
-	height(argHeight),
-	depth(argDepth),
+Region::Region(int argX, int argY):
 	x(argX),
 	y(argY)
 {
-	tiles = new type_t**[width];
-	for (register int i = 0; i < width; ++i) {
-		tiles[i] = new type_t*[height];
-		for (register int j = 0; j < height; ++j) {
-			tiles[i][j] = new type_t[depth];
-			for (register int k = 0; k < depth; ++k) {
-				tiles[i][j][k] = 0;
-			}
-		}
+	for (register int i = 0; i < REGION_WIDTH*REGION_HEIGHT*REGION_DEPTH; ++i) {
+		*(reinterpret_cast<type_t*>(tiles) + i) = 0;
 	}
-}
-
-Region::~Region() {
-	for (register int i = 0; i < width; ++i) {
-		for (register int j = 0; j < height; j++) {
-			delete tiles[i][j];
-		}
-		delete tiles[i];
-	}
-	delete tiles;
 }
 
 Region::type_t Region::SetTile(int x, int y, int z, type_t v) {

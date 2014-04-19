@@ -19,42 +19,13 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef MAPFILEFORMAT_HPP_
-#define MAPFILEFORMAT_HPP_
+#ifndef SERVERUTILITY_HPP_
+#define SERVERUTILITY_HPP_
 
-#include "region.hpp"
-
-#include "lua/lua.hpp"
+#include "sqlite3/sqlite3.h"
 
 #include <string>
 
-class DummyFormat {
-public:
-	void Load(Region** const, int x, int y);
-	void Save(Region* const);
-
-	std::string SetSaveDir(std::string s) { return saveDir = s; }
-	std::string GetSaveDir() { return saveDir; }
-private:
-	std::string saveDir;
-};
-
-//TODO: verbose save file format
-//TODO: compact save file format
-
-class LuaFormat {
-public:
-	void Load(Region** const, int x, int y);
-	void Save(Region* const);
-
-	std::string SetSaveDir(std::string s) { return saveDir = s; }
-	std::string GetSaveDir() { return saveDir; }
-
-	lua_State* SetLuaState(lua_State* L) { return state = L; }
-	lua_State* GetLuaState() { return state; }
-private:
-	std::string saveDir;
-	lua_State* state = nullptr;
-};
+int runSQLScript(sqlite3* db, std::string fname);
 
 #endif

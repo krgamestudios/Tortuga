@@ -19,29 +19,21 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#include "map_generator.hpp"
+#include "map_allocator.hpp"
 
 #include <stdexcept>
 
-void BlankGenerator::Create(Region** const ptr, int width, int height, int depth, int x, int y) {
-	(*ptr) = new Region(width, height, depth, x, y);
+void BlankAllocator::Create(Region** const ptr, int x, int y) {
+	(*ptr) = new Region(x, y);
 }
 
-void BlankGenerator::Unload(Region* const ptr) {
+void BlankAllocator::Unload(Region* const ptr) {
 	delete ptr;
-}
-/*
-void PerlinGenerator::Create(Region** const ptr, int width, int height, int depth, int x, int y) {
-	(*ptr) = new Region(width, height, depth, x, y);
 }
 
-void PerlinGenerator::Unload(Region* const ptr) {
-	delete ptr;
-}
-*/
-void LuaGenerator::Create(Region** const ptr, int width, int height, int depth, int x, int y) {
+void LuaAllocator::Create(Region** const ptr, int x, int y) {
 	//something to work on
-	(*ptr) = new Region(width, height, depth, x, y);
+	(*ptr) = new Region(x, y);
 
 	//API hook
 	lua_getglobal(state, "Region");
@@ -53,7 +45,7 @@ void LuaGenerator::Create(Region** const ptr, int width, int height, int depth, 
 	lua_pop(state, 1);
 }
 
-void LuaGenerator::Unload(Region* const ptr) {
+void LuaAllocator::Unload(Region* const ptr) {
 	//API hook
 	lua_getglobal(state, "Region");
 	lua_getfield(state, -1, "Unload");

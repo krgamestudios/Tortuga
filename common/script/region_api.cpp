@@ -37,20 +37,17 @@ static int getTile(lua_State* L) {
 }
 
 static int getWidth(lua_State* L) {
-	Region* ptr = (Region*)lua_touserdata(L, 1);
-	lua_pushinteger(L, ptr->GetWidth());
+	lua_pushinteger(L, REGION_WIDTH);
 	return 1;
 }
 
 static int getHeight(lua_State* L) {
-	Region* ptr = (Region*)lua_touserdata(L, 1);
-	lua_pushinteger(L, ptr->GetHeight());
+	lua_pushinteger(L, REGION_HEIGHT);
 	return 1;
 }
 
 static int getDepth(lua_State* L) {
-	Region* ptr = (Region*)lua_touserdata(L, 1);
-	lua_pushinteger(L, ptr->GetDepth());
+	lua_pushinteger(L, REGION_DEPTH);
 	return 1;
 }
 

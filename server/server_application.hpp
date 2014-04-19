@@ -1,4 +1,4 @@
-/* Copyright: (c) Kayne Ruse 2013
+/* Copyright: (c) Kayne Ruse 2013, 2014
  * 
  * This software is provided 'as-is', without any express or implied
  * warranty. In no event will the authors be held liable for any damages
@@ -23,11 +23,12 @@
 #define SERVERAPPLICATION_HPP_
 
 //server specific stuff
+#include "server_utility.hpp"
 #include "client_entry.hpp"
 #include "player_entry.hpp"
 
 //maps
-#include "map_generator.hpp"
+#include "map_allocator.hpp"
 #include "map_file_format.hpp"
 #include "region_pager.hpp"
 
@@ -47,7 +48,6 @@
 
 //STL
 #include <map>
-#include <string>
 
 //The main application class
 class ServerApplication {
@@ -88,7 +88,7 @@ private:
 
 	//maps
 	//TODO: I need to handle multiple map objects
-	RegionPager<LuaGenerator, LuaFormat> regionPager;
+	RegionPager<LuaAllocator, LuaFormat> regionPager;
 
 	//misc
 	bool running = true;

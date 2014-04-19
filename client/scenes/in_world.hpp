@@ -23,7 +23,7 @@
 #define INWORLD_HPP_
 
 //maps
-#include "map_generator.hpp"
+#include "map_allocator.hpp"
 #include "map_file_format.hpp"
 #include "region_pager.hpp"
 
@@ -101,11 +101,12 @@ protected:
 	TileSheet tileSheet;
 
 	//map
-	RegionPager<BlankGenerator, DummyFormat> mapPager;
+	RegionPager<BlankAllocator, DummyFormat> regionPager;
 
 	//UI
 	Button disconnectButton;
 	Button shutDownButton;
+	//TODO: Fix the camera
 	struct {
 		int x = 0, y = 0;
 		int width = 0, height = 0;

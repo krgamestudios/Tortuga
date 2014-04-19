@@ -29,9 +29,8 @@
 
 class RegionPagerBase {
 public:
-	RegionPagerBase() = default;
-	RegionPagerBase(int regionWidth, int regionHeight, int regionDepth);
-	virtual ~RegionPagerBase();
+	RegionPagerBase() {};
+	virtual ~RegionPagerBase() {};
 
 	//tile manipulation
 	Region::type_t SetTile(int x, int y, int z, Region::type_t v);
@@ -50,86 +49,66 @@ public:
 	//TODO: delete?
 
 	//accessors & mutators
-	//NOTE: don't change the sizes mid-program, it will cause issues
-	int SetRegionWidth(int i) { return regionWidth = i; }
-	int SetRegionHeight(int i) { return regionHeight = i; }
-	int SetRegionDepth(int i) { return regionDepth = i; }
-
-	int GetRegionWidth() const { return regionWidth; }
-	int GetRegionHeight() const { return regionHeight; }
-	int GetRegionDepth() const { return regionDepth; }
-
 	std::list<Region*>* GetContainer() { return &regionList; }
 protected:
-	int regionWidth;
-	int regionHeight;
-	int regionDepth;
 	std::list<Region*> regionList;
 };
 
-template<typename MapGenerator, typename MapFileFormat>
+template<typename Allocator, typename FileFormat>
 class RegionPager : public RegionPagerBase {
 public:
-	RegionPager() = default;
-	RegionPager(int w, int h, int d):
-		RegionPagerBase(w, h, d)
-	{
-		//EMPTY
-	}
+	RegionPager() {};
 	~RegionPager() {
 		UnloadAll();
 	}
 
 	Region* LoadRegion(int x, int y) {
 		//snap the coords
-		x = snapToBase(regionWidth, x);
-		y = snapToBase(regionHeight, y);
+		x = snapToBase(REGION_WIDTH, x);
+		y = snapToBase(REGION_HEIGHT, y);
 
 		//load the region if possible
 		Region* ptr = nullptr;
-		format.Load(&ptr, regionWidth, regionHeight, regionDepth, x, y);
+		format.Load(&ptr, x, y);
 		if (ptr) {
-			regionList.push_back(ptr);
-			return ptr;
+			return PushRegion(ptr);
 		}
 		return nullptr;
 	}
 
 	Region* SaveRegion(int x, int y) {
 		//snap the coords
-		x = snapToBase(regionWidth, x);
-		y = snapToBase(regionHeight, y);
+		x = snapToBase(REGION_WIDTH, x);
+		y = snapToBase(REGION_HEIGHT, y);
 
 		//find & save the region
-		for (std::list<Region*>::iterator it = regionList.begin(); it != regionList.end(); it++) {
-			if ((*it)->GetX() == x && (*it)->GetY() == y) {
-				format.Save(*it);
-				return *it;
-			}
+		Region* ptr = FindRegion(x, y);
+		if (ptr) {
+			format.Save(ptr);
 		}
-		return nullptr;
+		return ptr;
 	}
 
 	Region* CreateRegion(int x, int y) {
 		//snap the coords
-		x = snapToBase(regionWidth, x);
-		y = snapToBase(regionHeight, y);
+		x = snapToBase(REGION_WIDTH, x);
+		y = snapToBase(REGION_HEIGHT, y);
 
 		//create and push the object
 		Region* ptr = nullptr;
-		generator.Create(&ptr, regionWidth, regionHeight, regionDepth, x, y);
-		regionList.push_back(ptr);
-		return ptr;
+		allocator.Create(&ptr, x, y);
+		return PushRegion(ptr);
 	}
 
 	void UnloadRegion(int x, int y) {
 		//snap the coords
-		x = snapToBase(regionWidth, x);
-		y = snapToBase(regionHeight, y);
+		x = snapToBase(REGION_WIDTH, x);
+		y = snapToBase(REGION_HEIGHT, y);
 
+		//custom loop
 		for (std::list<Region*>::iterator it = regionList.begin(); it != regionList.end(); /* EMPTY */) {
 			if ((*it)->GetX() == x && (*it)->GetY() == y) {
-				generator.Unload(*it);
+				allocator.Unload(*it);
 				regionList.erase(it);
 
 				//reset the loop, because of reasons
@@ -141,17 +120,17 @@ public:
 	}
 	void UnloadAll() {
 		for (auto& it : regionList) {
-			generator.Unload(it);
+			allocator.Unload(it);
 		}
 		regionList.clear();
 	}
 
 	//accessors
-	MapGenerator* GetGenerator() { return &generator; }
-	MapFileFormat* GetFormat() { return &format; }
+	Allocator* GetAllocator() { return &allocator; }
+	FileFormat* GetFormat() { return &format; }
 protected:
-	MapGenerator generator;
-	MapFileFormat format;
+	Allocator allocator;
+	FileFormat format;
 };
 
 #endif

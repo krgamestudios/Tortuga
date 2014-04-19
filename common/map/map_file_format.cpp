@@ -23,33 +23,20 @@
 
 #include <stdexcept>
 
-void DummyFormat::Load(Region** const ptr, int width, int height, int depth, int x, int y) {
+void DummyFormat::Load(Region** const ptr, int x, int y) {
 	//EMPTY
 }
 
 void DummyFormat::Save(Region* const ptr) {
 	//EMPTY
 }
-/*
-void VerboseFormat::Load(Region** const ptr, int x, int y) {
-	//TODO
-}
 
-void VerboseFormat::Save(Region* const ptr) {
-	//TODO
-}
-
-void CompactFormat::Load(Region** const ptr, int x, int y) {
-	//TODO
-}
-
-void CompactFormat::Save(Region* const ptr) {
-	//TODO
-}
-*/
-void LuaFormat::Load(Region** const ptr, int width, int height, int depth, int x, int y) {
+void LuaFormat::Load(Region** const ptr, int x, int y) {
 	//something to load into
-	(*ptr) = new Region(width, height, depth, x, y);
+
+	if (!(*ptr)) {
+		(*ptr) = new Region(x, y);
+	}
 
 	//API hook
 	lua_getglobal(state, "Region");

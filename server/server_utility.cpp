@@ -19,42 +19,22 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef MAPFILEFORMAT_HPP_
-#define MAPFILEFORMAT_HPP_
+#include "server_utility.hpp"
 
-#include "region.hpp"
+#include <fstream>
 
-#include "lua/lua.hpp"
 
-#include <string>
-
-class DummyFormat {
-public:
-	void Load(Region** const, int x, int y);
-	void Save(Region* const);
-
-	std::string SetSaveDir(std::string s) { return saveDir = s; }
-	std::string GetSaveDir() { return saveDir; }
-private:
-	std::string saveDir;
-};
-
-//TODO: verbose save file format
-//TODO: compact save file format
-
-class LuaFormat {
-public:
-	void Load(Region** const, int x, int y);
-	void Save(Region* const);
-
-	std::string SetSaveDir(std::string s) { return saveDir = s; }
-	std::string GetSaveDir() { return saveDir; }
-
-	lua_State* SetLuaState(lua_State* L) { return state = L; }
-	lua_State* GetLuaState() { return state; }
-private:
-	std::string saveDir;
-	lua_State* state = nullptr;
-};
-
-#endif
+int runSQLScript(sqlite3* db, std::string fname) {
+	std::ifstream is(fname);
+	if (!is.is_open()) {
+		return -1;
+	}
+	std::string script;
+	getline(is, script, '\0');
+	is.close();
+	//NOTE: flesh out this error if needed
+	if (sqlite3_exec(db, script.c_str(), nullptr, nullptr, nullptr) != SQLITE_OK) {
+		return -2;
+	}
+	return 0;
+}
