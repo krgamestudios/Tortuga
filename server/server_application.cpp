@@ -1,4 +1,4 @@
-/* Copyright: (c) Kayne Ruse 2013
+/* Copyright: (c) Kayne Ruse 2013, 2014
  * 
  * This software is provided 'as-is', without any express or implied
  * warranty. In no event will the authors be held liable for any damages
@@ -26,31 +26,13 @@
 #include <stdexcept>
 #include <iostream>
 #include <string>
-#include <fstream>
-
-using namespace std;
-
-int runSQLScript(sqlite3* db, std::string fname) {
-	ifstream is(fname);
-	if (!is.is_open()) {
-		return -1;
-	}
-	string script;
-	getline(is, script, '\0');
-	is.close();
-	//NOTE: flesh out this error if needed
-	if (sqlite3_exec(db, script.c_str(), nullptr, nullptr, nullptr) != SQLITE_OK) {
-		return -2;
-	}
-	return 0;
-}
 
 //-------------------------
 //Define the public members
 //-------------------------
 
 void ServerApplication::Init(int argc, char** argv) {
-	cout << "Beginning startup" << endl;
+	std::cout << "Beginning startup" << std::endl;
 
 	//initial setup
 	ClientEntry::uidCounter = 0;
@@ -59,43 +41,43 @@ void ServerApplication::Init(int argc, char** argv) {
 
 	//Init SDL
 	if (SDL_Init(0)) {
-		throw(runtime_error("Failed to initialize SDL"));
+		throw(std::runtime_error("Failed to initialize SDL"));
 	}
-	cout << "Initialized SDL" << endl;
+	std::cout << "Initialized SDL" << std::endl;
 
 	//Init SDL_net
 	if (SDLNet_Init()) {
-		throw(runtime_error("Failed to initialize SDL_net"));
+		throw(std::runtime_error("Failed to initialize SDL_net"));
 	}
 	network.Open(config.Int("server.port"), PACKET_BUFFER_SIZE);
-	cout << "Initialized SDL_net" << endl;
+	std::cout << "Initialized SDL_net" << std::endl;
 
 	//Init SQL
 	int ret = sqlite3_open_v2(config["server.dbname"].c_str(), &database, SQLITE_OPEN_READWRITE|SQLITE_OPEN_CREATE, nullptr);
 	if (ret != SQLITE_OK || !database) {
-		throw(runtime_error(string() + "Failed to initialize SQL: " + sqlite3_errmsg(database) ));
+		throw(std::runtime_error(std::string() + "Failed to initialize SQL: " + sqlite3_errmsg(database) ));
 	}
-	cout << "Initialized SQL" << endl;
+	std::cout << "Initialized SQL" << std::endl;
 
 	//setup the database
 	if (runSQLScript(database, config["dir.scripts"] + "setup_server.sql")) {
-		throw(runtime_error("Failed to initialize SQL's setup script"));
+		throw(std::runtime_error("Failed to initialize SQL's setup script"));
 	}
-	cout << "Initialized SQL's setup script" << endl;
+	std::cout << "Initialized SQL's setup script" << std::endl;
 
 	//lua
 	luaState = luaL_newstate();
 	if (!luaState) {
-		throw(runtime_error("Failed to initialize lua"));
+		throw(std::runtime_error("Failed to initialize lua"));
 	}
 	luaL_openlibs(luaState);
-	cout << "Initialized lua" << endl;
+	std::cout << "Initialized lua" << std::endl;
 
 	//run the startup script
 	if (luaL_dofile(luaState, (config["dir.scripts"] + "setup_server.lua").c_str())) {
-		throw(runtime_error(string() + "Failed to initialize lua's setup script: " + lua_tostring(luaState, -1) ));
+		throw(std::runtime_error(std::string() + "Failed to initialize lua's setup script: " + lua_tostring(luaState, -1) ));
 	}
-	cout << "Initialized lua's setup script" << endl;
+	std::cout << "Initialized lua's setup script" << std::endl;
 
 	//setup the map object
 	regionPager.GetAllocator()->SetLuaState(luaState);
@@ -105,12 +87,12 @@ void ServerApplication::Init(int argc, char** argv) {
 	//TODO: pass args to the generator & format as needed
 	//NOTE: I might need to rearrange the init process so that lua & SQL can interact
 	//      with the map system as needed.
-	cout << "Initialized the map system" << endl;
-	cout << "\tsizeof(NetworkPacket): " << sizeof(NetworkPacket) << endl;
-	cout << "\tPACKET_BUFFER_SIZE: " << PACKET_BUFFER_SIZE << endl;
+	std::cout << "Initialized the map system" << std::endl;
+	std::cout << "\tsizeof(NetworkPacket): " << sizeof(NetworkPacket) << std::endl;
+	std::cout << "\tPACKET_BUFFER_SIZE: " << PACKET_BUFFER_SIZE << std::endl;
 
 	//finalize the startup
-	cout << "Startup completed successfully" << endl;
+	std::cout << "Startup completed successfully" << std::endl;
 
 	//debugging
 	//
@@ -135,7 +117,7 @@ void ServerApplication::Loop() {
 }
 
 void ServerApplication::Quit() {
-	cout << "Shutting down" << endl;
+	std::cout << "Shutting down" << std::endl;
 	//empty the members
 	regionPager.UnloadAll();
 
@@ -145,7 +127,7 @@ void ServerApplication::Quit() {
 	network.Close();
 	SDLNet_Quit();
 	SDL_Quit();
-	cout << "Shutdown finished" << endl;
+	std::cout << "Shutdown finished" << std::endl;
 }
 
 //-------------------------
@@ -183,7 +165,7 @@ void ServerApplication::HandlePacket(NetworkPacket packet) {
 		break;
 		//handle errors
 		default:
-			throw(runtime_error("Unknown NetworkPacket::Type encountered"));
+			throw(std::runtime_error("Unknown NetworkPacket::Type encountered"));
 		break;
 	}
 }
@@ -221,7 +203,7 @@ void ServerApplication::HandleJoinRequest(NetworkPacket packet) {
 
 	//finished this routine
 	ClientEntry::uidCounter++;
-	cout << "Connect, total: " << clientMap.size() << endl;
+	std::cout << "Connect, total: " << clientMap.size() << std::endl;
 }
 
 void ServerApplication::HandleDisconnect(NetworkPacket packet) {
@@ -255,7 +237,7 @@ void ServerApplication::HandleDisconnect(NetworkPacket packet) {
 	});
 
 	//finished this routine
-	cout << "Disconnect, total: " << clientMap.size() << endl;
+	std::cout << "Disconnect, total: " << clientMap.size() << std::endl;
 }
 
 void ServerApplication::HandleSynchronize(NetworkPacket packet) {
@@ -290,7 +272,7 @@ void ServerApplication::HandleShutdown(NetworkPacket packet) {
 	PumpPacket(packet);
 
 	//finished this routine
-	cout << "Shutdown signal accepted" << endl;
+	std::cout << "Shutdown signal accepted" << std::endl;
 }
 
 void ServerApplication::HandlePlayerNew(NetworkPacket packet) {

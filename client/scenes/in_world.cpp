@@ -27,11 +27,6 @@
 #include <cmath>
 #include <stdexcept>
 
-//debugging
-#include <iostream>
-using std::cout;
-using std::endl;
-
 //-------------------------
 //Public access members
 //-------------------------
@@ -350,15 +345,6 @@ void InWorld::HandleRegionContent(NetworkPacket packet) {
 	}
 	regionPager.PushRegion(packet.regionInfo.region);
 	packet.regionInfo.region = nullptr;
-
-	//debugging
-	cout << "Received region: " << packet.regionInfo.x << ", " << packet.regionInfo.y << endl;
-	if (regionPager.FindRegion(packet.regionInfo.x, packet.regionInfo.y)) {
-		cout << "Success" << endl;
-	}
-	else {
-		cout << "Failure" << endl;
-	}
 }
 
 //-------------------------
@@ -472,9 +458,6 @@ void InWorld::UpdateMap() {
 	//prune distant regions
 	for (auto it = regionPager.GetContainer()->begin(); it != regionPager.GetContainer()->end(); /* EMPTY */) {
 		if (CheckBufferDistance(*it) > 2) {
-			//debugging
-			cout << "unloading: " << (*it)->GetX() << ", " << (*it)->GetY() << endl;
-
 			regionPager.UnloadRegion((*it)->GetX(), (*it)->GetY());
 
 			//reset
