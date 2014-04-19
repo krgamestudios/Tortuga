@@ -167,6 +167,7 @@ void deserializeRegionContent(NetworkPacket* packet, char* buffer) {
 	memcpy(&packet->regionInfo.x, buffer, sizeof(int));
 	buffer += sizeof(int);
 	memcpy(&packet->regionInfo.y, buffer, sizeof(int));
+	buffer += sizeof(int);
 
 	//content
 	BlankAllocator().Create(

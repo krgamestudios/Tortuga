@@ -27,7 +27,7 @@
 #include "player_entry.hpp"
 
 //maps
-#include "map_generator.hpp"
+#include "map_allocator.hpp"
 #include "map_file_format.hpp"
 #include "region_pager.hpp"
 
@@ -88,7 +88,7 @@ private:
 
 	//maps
 	//TODO: I need to handle multiple map objects
-	RegionPager<LuaGenerator, LuaFormat> regionPager;
+	RegionPager<LuaAllocator, LuaFormat> regionPager;
 
 	//misc
 	bool running = true;

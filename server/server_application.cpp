@@ -98,10 +98,7 @@ void ServerApplication::Init(int argc, char** argv) {
 	cout << "Initialized lua's setup script" << endl;
 
 	//setup the map object
-	regionPager.SetRegionWidth(REGION_WIDTH);
-	regionPager.SetRegionHeight(REGION_HEIGHT);
-	regionPager.SetRegionDepth(REGION_DEPTH);
-	regionPager.GetGenerator()->SetLuaState(luaState);
+	regionPager.GetAllocator()->SetLuaState(luaState);
 	regionPager.GetFormat()->SetLuaState(luaState);
 	//TODO: config parameter
 	regionPager.GetFormat()->SetSaveDir("save/mapname/");

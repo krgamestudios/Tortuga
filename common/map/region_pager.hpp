@@ -29,8 +29,8 @@
 
 class RegionPagerBase {
 public:
-	RegionPagerBase() = default;
-	virtual ~RegionPagerBase() = default;
+	RegionPagerBase() {};
+	virtual ~RegionPagerBase() {};
 
 	//tile manipulation
 	Region::type_t SetTile(int x, int y, int z, Region::type_t v);
@@ -54,10 +54,10 @@ protected:
 	std::list<Region*> regionList;
 };
 
-template<typename MapGenerator, typename MapFileFormat>
+template<typename Allocator, typename FileFormat>
 class RegionPager : public RegionPagerBase {
 public:
-	RegionPager() = default;
+	RegionPager() {};
 	~RegionPager() {
 		UnloadAll();
 	}
@@ -96,7 +96,7 @@ public:
 
 		//create and push the object
 		Region* ptr = nullptr;
-		generator.Create(&ptr, x, y);
+		allocator.Create(&ptr, x, y);
 		return PushRegion(ptr);
 	}
 
@@ -108,7 +108,7 @@ public:
 		//custom loop
 		for (std::list<Region*>::iterator it = regionList.begin(); it != regionList.end(); /* EMPTY */) {
 			if ((*it)->GetX() == x && (*it)->GetY() == y) {
-				generator.Unload(*it);
+				allocator.Unload(*it);
 				regionList.erase(it);
 
 				//reset the loop, because of reasons
@@ -120,17 +120,17 @@ public:
 	}
 	void UnloadAll() {
 		for (auto& it : regionList) {
-			generator.Unload(it);
+			allocator.Unload(it);
 		}
 		regionList.clear();
 	}
 
 	//accessors
-	MapGenerator* GetGenerator() { return &generator; }
-	MapFileFormat* GetFormat() { return &format; }
+	Allocator* GetAllocator() { return &allocator; }
+	FileFormat* GetFormat() { return &format; }
 protected:
-	MapGenerator generator;
-	MapFileFormat format;
+	Allocator allocator;
+	FileFormat format;
 };
 
 #endif

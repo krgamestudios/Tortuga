@@ -1,4 +1,4 @@
-/* Copyright: (c) Kayne Ruse 2013
+/* Copyright: (c) Kayne Ruse 2013, 2014
  * 
  * This software is provided 'as-is', without any express or implied
  * warranty. In no event will the authors be held liable for any damages
@@ -54,11 +54,6 @@ EditorScene::EditorScene(ConfigUtility* const arg1):
 		{"Edit", "Set Tile", "Set Brush", "Script"},
 		{"Debug", "Debug On", "Debug Off", "Toggle", "Testificate"}
 	});
-
-	//setup the map
-	pager.SetRegionWidth(REGION_WIDTH);
-	pager.SetRegionHeight(REGION_HEIGHT);
-	pager.SetRegionDepth(REGION_DEPTH);
 
 	//debug
 	tsheet.Load(config["dir.tilesets"] + "terrain.bmp", 12, 15);
