@@ -468,6 +468,7 @@ int InWorld::CheckBufferDistance(Region* const region) {
 	return std::max(abs(x), abs(y));
 }
 
+//TODO: eew ugly
 void InWorld::UpdateMap() {
 	//prune distant regions
 	for (auto it = mapPager.GetContainer()->begin(); it != mapPager.GetContainer()->end(); /* EMPTY */) {

@@ -30,18 +30,7 @@
 
 class DummyFormat {
 public:
-	void Load(Region** const, int width, int height, int depth, int x, int y);
-	void Save(Region* const);
-
-	std::string SetSaveDir(std::string s) { return saveDir = s; }
-	std::string GetSaveDir() { return saveDir; }
-private:
-	std::string saveDir;
-};
-/*
-class VerboseFormat {
-public:
-	void Load(Region** const, int width, int height, int depth, int x, int y);
+	void Load(Region** const, int x, int y);
 	void Save(Region* const);
 
 	std::string SetSaveDir(std::string s) { return saveDir = s; }
@@ -50,20 +39,12 @@ private:
 	std::string saveDir;
 };
 
-class CompactFormat {
-public:
-	void Load(Region** const, int width, int height, int depth, int x, int y);
-	void Save(Region* const);
+//TODO: verbose save file format
+//TODO: compact save file format
 
-	std::string SetSaveDir(std::string s) { return saveDir = s; }
-	std::string GetSaveDir() { return saveDir; }
-private:
-	std::string saveDir;
-};
-*/
 class LuaFormat {
 public:
-	void Load(Region** const, int width, int height, int depth, int x, int y);
+	void Load(Region** const, int x, int y);
 	void Save(Region* const);
 
 	std::string SetSaveDir(std::string s) { return saveDir = s; }

@@ -1,6 +1,11 @@
 #These were partially scraped from the TODO utility
 
-1. Implement the preprocessor values throughout the map system
+*. Implement the preprocessor values throughout the map system
+*. Rename MapGenerator to MapAllocator
+-. Does the format need to be a functor too?
+-. Can the format functor go inside the allocator?
+5. lua API
+
 4. in_world.cpp:487  make the region units official
 5. region_pager.hpp:50  delete?
 16. editor_scene.cpp:99  skip the out-of-bounds regions

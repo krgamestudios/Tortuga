@@ -19,32 +19,24 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef MAPGENERATOR_HPP_
-#define MAPGENERATOR_HPP_
+#ifndef MAPALLOCATOR_HPP_
+#define MAPALLOCATOR_HPP_
 
 #include "region.hpp"
 
 #include "lua/lua.hpp"
 
-class BlankGenerator {
+class BlankAllocator {
 public:
-	void Create(Region** const, int width, int height, int depth, int x, int y);
+	void Create(Region** const, int x, int y);
 	void Unload(Region* const);
 private:
 	//
 };
-/*
-class PerlinGenerator {
+
+class LuaAllocator {
 public:
-	void Create(Region** const, int width, int height, int depth, int x, int y);
-	void Unload(Region* const);
-private:
-	//
-};
-*/
-class LuaGenerator {
-public:
-	void Create(Region** const, int width, int height, int depth, int x, int y);
+	void Create(Region** const, int x, int y);
 	void Unload(Region* const);
 
 	lua_State* SetLuaState(lua_State* L) { return state = L; }
