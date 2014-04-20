@@ -78,7 +78,7 @@ void LobbyMenu::FrameStart() {
 
 void LobbyMenu::Update(double delta) {
 	//suck in all waiting packets
-	NetworkPacket packet;
+	SerialPacket packet;
 	while(network.Receive()) {
 		deserialize(&packet, network.GetInData());
 		packet.meta.srcAddress = network.GetInPacket()->address;
@@ -126,11 +126,11 @@ void LobbyMenu::MouseButtonDown(SDL_MouseButtonEvent const& button) {
 void LobbyMenu::MouseButtonUp(SDL_MouseButtonEvent const& button) {
 	if (search.MouseButtonUp(button) == Button::State::HOVER) {
 		//the vars
-		NetworkPacket packet;
+		SerialPacket packet;
 		char buffer[PACKET_BUFFER_SIZE];
 
 		//broadcast to the network, or a specific server
-		packet.meta.type = NetworkPacket::Type::BROADCAST_REQUEST;
+		packet.meta.type = SerialPacket::Type::BROADCAST_REQUEST;
 		serialize(&packet, buffer);
 		network.Send(config["server.host"].c_str(), config.Int("server.port"), buffer, PACKET_BUFFER_SIZE);
 
@@ -141,11 +141,11 @@ void LobbyMenu::MouseButtonUp(SDL_MouseButtonEvent const& button) {
 
 	else if (join.MouseButtonUp(button) == Button::State::HOVER && selection != nullptr) {
 		//the vars
-		NetworkPacket packet;
+		SerialPacket packet;
 		char buffer[PACKET_BUFFER_SIZE];
 
 		//join the selected server
-		packet.meta.type = NetworkPacket::Type::JOIN_REQUEST;
+		packet.meta.type = SerialPacket::Type::JOIN_REQUEST;
 		serialize(&packet, buffer);
 		network.Send(&selection->address, buffer, PACKET_BUFFER_SIZE);
 		selection = nullptr;
@@ -181,16 +181,16 @@ void LobbyMenu::KeyUp(SDL_KeyboardEvent const& key) {
 	//
 }
 
-void LobbyMenu::HandlePacket(NetworkPacket packet) {
+void LobbyMenu::HandlePacket(SerialPacket packet) {
 		switch(packet.meta.type) {
-		case NetworkPacket::Type::BROADCAST_RESPONSE: {
+		case SerialPacket::Type::BROADCAST_RESPONSE: {
 			ServerInformation server;
 			server.name = packet.serverInfo.name;
 			server.address = packet.meta.srcAddress;
 			serverInfo.push_back(server);
 		}
 		break;
-		case NetworkPacket::Type::JOIN_RESPONSE:
+		case SerialPacket::Type::JOIN_RESPONSE:
 			clientIndex = packet.clientInfo.index;
 			network.Bind(&packet.meta.srcAddress, Channels::SERVER);
 			SetNextScene(SceneList::INWORLD);
@@ -198,7 +198,7 @@ void LobbyMenu::HandlePacket(NetworkPacket packet) {
 
 		//handle errors
 		default:
-			throw(std::runtime_error("Unknown NetworkPacket::Type encountered"));
+			throw(std::runtime_error("Unknown SerialPacket::Type encountered"));
 		break;
 	}
 }

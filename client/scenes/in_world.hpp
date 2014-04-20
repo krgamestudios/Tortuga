@@ -29,7 +29,7 @@
 
 //networking
 #include "udp_network_utility.hpp"
-#include "network_packet.hpp"
+#include "serial_packet.hpp"
 #include "serial.hpp"
 
 //graphics
@@ -72,12 +72,12 @@ protected:
 	void KeyUp(SDL_KeyboardEvent const&);
 
 	//Network handlers
-	void HandlePacket(NetworkPacket);
-	void HandleDisconnect(NetworkPacket);
-	void HandlePlayerNew(NetworkPacket);
-	void HandlePlayerDelete(NetworkPacket);
-	void HandlePlayerUpdate(NetworkPacket);
-	void HandleRegionContent(NetworkPacket);
+	void HandlePacket(SerialPacket);
+	void HandleDisconnect(SerialPacket);
+	void HandlePlayerNew(SerialPacket);
+	void HandlePlayerDelete(SerialPacket);
+	void HandlePlayerUpdate(SerialPacket);
+	void HandleRegionContent(SerialPacket);
 
 	//Server control
 	void SendState();

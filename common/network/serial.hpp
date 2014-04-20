@@ -22,7 +22,7 @@
 #ifndef SERIAL_HPP_
 #define SERIAL_HPP_
 
-#include "network_packet.hpp"
+#include "serial_packet.hpp"
 
 /* TODO: Keep the PACKET_BUFFER_SIZE up to date
  * NOTE: REGION_CONTENT is currently the largest type of packet
@@ -30,9 +30,9 @@
  *  map format: sizeof(int) * 2
  *  metadata: sizeof(metadata)
 */
-#define PACKET_BUFFER_SIZE REGION_WIDTH * REGION_HEIGHT * REGION_DEPTH * sizeof(Region::type_t) + sizeof(int) * 2 + sizeof(NetworkPacket::Metadata)
+#define PACKET_BUFFER_SIZE REGION_WIDTH * REGION_HEIGHT * REGION_DEPTH * sizeof(Region::type_t) + sizeof(int) * 2 + sizeof(SerialPacket::Metadata)
 
-void serialize(NetworkPacket* const, void*);
-void deserialize(NetworkPacket* const, void*);
+void serialize(SerialPacket* const, void*);
+void deserialize(SerialPacket* const, void*);
 
 #endif

@@ -21,6 +21,8 @@
 */
 #include "client_application.hpp"
 
+#include "serial.hpp"
+
 #include <stdexcept>
 #include <chrono>
 

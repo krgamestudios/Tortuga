@@ -26,11 +26,11 @@
 #include "base_scene.hpp"
 
 #include "config_utility.hpp"
-#include "network_packet.hpp"
 #include "udp_network_utility.hpp"
 
 class ClientApplication {
 private:
+	//TODO: I don't want singletons
 	ClientApplication();
 	~ClientApplication();
 	static ClientApplication instance;

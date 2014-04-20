@@ -28,6 +28,7 @@
 
 class EditorApplication {
 private:
+	//TODO: I don't want singletons
 	EditorApplication();
 	~EditorApplication();
 	static EditorApplication instance;
