@@ -109,10 +109,7 @@ public:
 		for (std::list<Region*>::iterator it = regionList.begin(); it != regionList.end(); /* EMPTY */) {
 			if ((*it)->GetX() == x && (*it)->GetY() == y) {
 				allocator.Unload(*it);
-				regionList.erase(it);
-
-				//reset the loop, because of reasons
-				it = regionList.begin();
+				it = regionList.erase(it);
 				continue;
 			}
 			++it;

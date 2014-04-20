@@ -86,7 +86,6 @@ protected:
 	void RequestRegion(int x, int y);
 
 	//utilities
-	int CheckBufferDistance(Region* const);
 	void UpdateMap();
 
 	//globals

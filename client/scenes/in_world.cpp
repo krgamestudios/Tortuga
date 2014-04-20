@@ -404,76 +404,34 @@ void InWorld::RequestRegion(int x, int y) {
 //Utilities
 //-------------------------
 
-int InWorld::CheckBufferDistance(Region* const region) {
-	/* TODO: Remove InWorld::CheckBufferDistance(), and replace it with a simpler system
-	 * DOCUMENTATION
-	 * This algorithm is extremely complex and involed, but initial tests show
-	 * that it gives the right answers. The purpose is to determine how far off screen
-	 * a certain region is, so that it can be unloaded when necessary.
-	 * 
-	 * If the region is actually onscreen, then there's no reason to run the rest, so
-	 * the algorithm corrects for the camera's location, before checking the bounds of
-	 * the screen.
-	 * 
-	 * The next part is tricky. If X or Y is negative, then it is divided by the
-	 * graphical size of the regions, resulting in a usable integer, representing how
-	 * far from the screen it is in "region units". If, however, X or Y is larger than
-	 * 0, than first, the size of the screen is subtracted from that variable, before
-	 * it is then divided by the graphical size of a region. Finally, to compensate for
-	 * the off by one error, 1 is added at the end.
-	 *
-	 * Since only the magnitude of the distance in either direction is needed, this
-	 * method returns the largest absolute value of X or Y.
-	 * 
-	 * The final result of this algorithm is an integer representing how far, rounded
-	 * up, a certain region is from the screen's edges in any direction, measured in
-	 * "region units". This algorithm may be flawed, in which case, I recommend simply
-	 * replacing it with a boolean check, to see if the region's distance from the player
-	 * is larger than a certain value. This algorithm lacks the advantages I initially
-	 * expected, so that may be beneficial at some point.
-	*/
-
-	//locations relative to the camera
-	int x = region->GetX() - camera.x;
-	int y = region->GetY() - camera.y;
-
-	//if the region is visible, return -1
-	if (x >= -REGION_WIDTH * tileSheet.GetTileW() && x < camera.width &&
-		y >= -REGION_HEIGHT * tileSheet.GetTileH() && y < camera.height) {
-		return -1;
-	}
-
-	//prune the screen's area from the algorithm; get the pseudo-indexes
-	if (x < 0) x /= (REGION_WIDTH * tileSheet.GetTileW());
-	if (y < 0) y /= (REGION_HEIGHT * tileSheet.GetTileH());
-	if (x > 0) x = (x - camera.width) / (REGION_WIDTH * tileSheet.GetTileW()) + 1;
-	if (y > 0) y = (y - camera.height) / (REGION_HEIGHT * tileSheet.GetTileH()) + 1;
-
-	//return the pseudo-index with the greatest magnitude
-	return std::max(abs(x), abs(y));
-}
-
-//TODO: Revise InWorld::UpdateMap() after InWorld::CheckBufferDistance()
+//TODO: convert this into a more generic function?; using parameters for the bounds
 void InWorld::UpdateMap() {
+	//these represent the zone of regions that the client needs loaded, including the mandatory buffers (+1/-1)
+	int xStart = snapToBase(REGION_WIDTH, camera.x/tileSheet.GetTileW()) - REGION_WIDTH;
+	int xEnd = snapToBase(REGION_WIDTH, (camera.x+camera.width)/tileSheet.GetTileW()) + REGION_WIDTH;
+
+	int yStart = snapToBase(REGION_HEIGHT, camera.y/tileSheet.GetTileH()) - REGION_HEIGHT;
+	int yEnd = snapToBase(REGION_HEIGHT, (camera.y+camera.height)/tileSheet.GetTileH()) + REGION_HEIGHT;
+
 	//prune distant regions
 	for (auto it = regionPager.GetContainer()->begin(); it != regionPager.GetContainer()->end(); /* EMPTY */) {
-		if (CheckBufferDistance(*it) > 2) {
-			regionPager.UnloadRegion((*it)->GetX(), (*it)->GetY());
+		//check if the region is outside off this area
+		if ((*it)->GetX() < xStart || (*it)->GetX() > xEnd || (*it)->GetY() < yStart || (*it)->GetY() > yEnd) {
 
-			//reset
-			it = regionPager.GetContainer()->begin();
+			//clunky, but the alternative was time consuming
+			int tmpX = (*it)->GetX();
+			int tmpY = (*it)->GetY();
+			++it;
+
+			regionPager.UnloadRegion(tmpX, tmpY);
 			continue;
 		}
 		++it;
 	}
 
-	//TODO: make the region units official?
-	int regionUnitX = REGION_WIDTH * tileSheet.GetTileW();
-	int regionUnitY = REGION_HEIGHT * tileSheet.GetTileH();
-
-	//request empty regions, including buffers (-1 & +1 region unit)
-	for (int i = snapToBase(regionUnitX, camera.x - regionUnitX); i <= snapToBase(regionUnitX, camera.x + camera.width + regionUnitX); i += regionUnitX) {
-		for (int j = snapToBase(regionUnitY, camera.y - regionUnitY); j <= snapToBase(regionUnitY, camera.y + camera.height + regionUnitY); j += regionUnitY) {
+	//request empty regions within this zone
+	for (int i = xStart; i <= xEnd; i += REGION_WIDTH) {
+		for (int j = yStart; j <= yEnd; j += REGION_HEIGHT) {
 			if (!regionPager.FindRegion(i, j)) {
 				RequestRegion(i, j);
 			}
