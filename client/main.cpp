@@ -26,12 +26,13 @@
 
 using namespace std;
 
-int main(int, char**) {
+int main(int argc, char** argv) {
 	cout << "Beginning client" << endl;
 	try {
-		ClientApplication::GetInstance()->Init();
-		ClientApplication::GetInstance()->Proc();
-		ClientApplication::GetInstance()->Quit();
+		ClientApplication app;
+		app.Init(argc, argv);
+		app.Proc();
+		app.Quit();
 	}
 	catch(exception& e) {
 		cerr << "Fatal exception thrown: " << e.what() << endl;

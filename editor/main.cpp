@@ -26,12 +26,13 @@
 
 using namespace std;
 
-int main(int, char**) {
+int main(int argc, char** argv) {
 	cout << "Beginning editor" << endl;
 	try {
-		EditorApplication::GetInstance()->Init();
-		EditorApplication::GetInstance()->Proc();
-		EditorApplication::GetInstance()->Quit();
+		EditorApplication app;
+		app.Init(argc, argv);
+		app.Proc();
+		app.Quit();
 	}
 	catch(exception& e) {
 		cerr << "Fatal exception thrown: " << e.what() << endl;

@@ -29,16 +29,11 @@
 #include "udp_network_utility.hpp"
 
 class ClientApplication {
-private:
-	//TODO: I don't want singletons
-	ClientApplication();
-	~ClientApplication();
-	static ClientApplication instance;
-
 public:
-	static ClientApplication* GetInstance() { return &instance; }
+	ClientApplication() = default;
+	~ClientApplication() = default;
 
-	void Init();
+	void Init(int argc, char** argv);
 	void Proc();
 	void Quit();
 

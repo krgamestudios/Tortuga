@@ -57,7 +57,7 @@ public:
 	~ServerApplication() = default;
 
 	void Init(int argc, char** argv);
-	void Loop();
+	void Proc();
 	void Quit();
 
 private:

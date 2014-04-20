@@ -27,16 +27,11 @@
 #include "config_utility.hpp"
 
 class EditorApplication {
-private:
-	//TODO: I don't want singletons
-	EditorApplication();
-	~EditorApplication();
-	static EditorApplication instance;
-
 public:
-	static EditorApplication* GetInstance() { return &instance; }
+	EditorApplication() = default;
+	~EditorApplication() = default;
 
-	void Init();
+	void Init(int argc, char** argv);
 	void Proc();
 	void Quit();
 

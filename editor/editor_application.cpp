@@ -25,12 +25,6 @@
 #include <chrono>
 
 //-------------------------
-//Static declarations
-//-------------------------
-
-EditorApplication EditorApplication::instance;
-
-//-------------------------
 //Scene headers
 //-------------------------
 
@@ -42,15 +36,7 @@ EditorApplication EditorApplication::instance;
 //Public access members
 //-------------------------
 
-EditorApplication::EditorApplication() {
-	//
-}
-
-EditorApplication::~EditorApplication() {
-	//
-}
-
-void EditorApplication::Init() {
+void EditorApplication::Init(int argc, char** argv) {
 	config.Load("rsc\\config.cfg");
 	if (SDL_Init(SDL_INIT_VIDEO))
 		throw(std::runtime_error("Failed to initialize SDL"));

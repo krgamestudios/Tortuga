@@ -27,12 +27,6 @@
 #include <chrono>
 
 //-------------------------
-//Static declarations
-//-------------------------
-
-ClientApplication ClientApplication::instance;
-
-//-------------------------
 //Scene headers
 //-------------------------
 
@@ -48,15 +42,7 @@ ClientApplication ClientApplication::instance;
 //Public access members
 //-------------------------
 
-ClientApplication::ClientApplication() {
-	//
-}
-
-ClientApplication::~ClientApplication() {
-	//
-}
-
-void ClientApplication::Init() {
+void ClientApplication::Init(int argc, char** argv) {
 	//load the prerequisites
 	config.Load("rsc\\config.cfg");
 

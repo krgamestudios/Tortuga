@@ -97,7 +97,7 @@ void ServerApplication::Init(int argc, char** argv) {
 	//
 }
 
-void ServerApplication::Loop() {
+void ServerApplication::Proc() {
 	SerialPacket packet;
 	while(running) {
 		//suck in the waiting packets & process them
