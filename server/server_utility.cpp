@@ -21,10 +21,14 @@
 */
 #include "server_utility.hpp"
 
+#include "utility.hpp"
+
+#include <stdexcept>
 #include <fstream>
+#include <cstdlib>
 
-
-int runSQLScript(sqlite3* db, std::string fname) {
+int runSQLScript(sqlite3* db, std::string fname, int (*callback)(void*,int,char**,char**), void* argPtr) {
+	//load the file into a string
 	std::ifstream is(fname);
 	if (!is.is_open()) {
 		return -1;
@@ -32,9 +36,15 @@ int runSQLScript(sqlite3* db, std::string fname) {
 	std::string script;
 	getline(is, script, '\0');
 	is.close();
-	//NOTE: flesh out this error if needed
-	if (sqlite3_exec(db, script.c_str(), nullptr, nullptr, nullptr) != SQLITE_OK) {
-		return -2;
+
+	//run the SQL loaded from the file
+	char* errmsg = nullptr;
+	int ret = sqlite3_exec(db, script.c_str(), callback, argPtr, &errmsg);
+	if (ret != SQLITE_OK) {
+		//handle any errors received from the SQL
+		std::runtime_error e(std::string() + "SQL Script Error " + to_string_custom(ret) + ": " + errmsg);
+		free(errmsg);
+		throw(e);
 	}
-	return 0;
+	return ret;
 }

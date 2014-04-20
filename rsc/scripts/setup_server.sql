@@ -1,11 +1,13 @@
+--TODO: The SQL startup script needs revising
+
 -------------------------
 --Server
 -------------------------
 
 CREATE TABLE IF NOT EXISTS UserAccounts (
-	userAccountID INTEGER PRIMARY KEY AUTOINCREMENT,
-	username varchar(30) UNIQUE,
-	password varchar(30),
+	uid INTEGER PRIMARY KEY AUTOINCREMENT,
+	username varchar(100) UNIQUE,
+	password varchar(100), --NOTE: DO NOT DO THIS!!
 	blacklisted BIT DEFAULT 0,
 	whitelisted BIT DEFAULT 1
 );
@@ -14,31 +16,30 @@ CREATE TABLE IF NOT EXISTS UserAccounts (
 --Items
 -------------------------
 
-CREATE TABLE IF NOT EXISTS GlobalItemList (
-	globalItemListID INTEGER PRIMARY KEY AUTOINCREMENT,
-	itemName varchar(30) UNIQUE,
-	itemImage varchar(30),
-	type varchar(15), --{'mundane', 'consumable', 'equipment'}
-	maxStackSize INTEGER, --{1-max; 0 for non-stackable}
-	maxUniqueCopies INTEGER --{1-max; 0 for unlimited}
-);
-
 CREATE TABLE IF NOT EXISTS MundaneItems (
-	mundaneItemID INTEGER PRIMARY KEY AUTOINCREMENT,
-	globalItemListID INTEGER REFERENCES GlobalItemList(globalItemListID)
-	--holds whatever
+	--metadata
+	uid INTEGER PRIMARY KEY AUTOINCREMENT,
+	itemID INTEGER,
+	stackSize INTEGER DEFAULT 0,
+	owner INTEGER REFERENCES PlayerCharacters(uid)
 );
 
 CREATE TABLE IF NOT EXISTS Consumables (
-	consumableID INTEGER PRIMARY KEY AUTOINCREMENT,
-	globalItemListID INTEGER REFERENCES GlobalItemList(globalItemListID)
+	--metadata
+	uid INTEGER PRIMARY KEY AUTOINCREMENT,
+	itemID INTEGER,
+	stackSize INTEGER DEFAULT 0,
+	owner INTEGER REFERENCES PlayerCharacters(uid)
 	--holds all consumable items info (food, potions, etc.)
 );
 
 CREATE TABLE IF NOT EXISTS Equipment (
-	equipmentID INTEGER PRIMARY KEY AUTOINCREMENT,
-	globalItemListID INTEGER REFERENCES GlobalItemList(globalItemListID)
+	--metadata
+	uid INTEGER PRIMARY KEY AUTOINCREMENT,
+	itemID INTEGER,
+	owner INTEGER REFERENCES PlayerCharacters(uid)
 	--hold all equipment info
+	--stat mods, special effects, etc.
 );
 
 -------------------------
@@ -46,28 +47,36 @@ CREATE TABLE IF NOT EXISTS Equipment (
 -------------------------
 
 CREATE TABLE IF NOT EXISTS PlayerCharacters (
-	playerCharacterID INTEGER PRIMARY KEY AUTOINCREMENT,
-	name varchar(30) UNIQUE,
+	uid INTEGER PRIMARY KEY AUTOINCREMENT,
 
-	--stats
-	currentLevel		INTEGER DEFAULT 0,
-	currentExperience	INTEGER DEFAULT 0,
-	maxHealth			INTEGER DEFAULT 0,
-	maxMana				INTEGER DEFAULT 0,
-	currentHealth		INTEGER DEFAULT 0,
-	currentMana			INTEGER DEFAULT 0,
-	attack				INTEGER DEFAULT 0,
-	defence				INTEGER DEFAULT 0,
-	--etc.
+	--metadata
+	handle varchar(100) UNIQUE,
+	avatar varchar(100),
+	birth timestamp NOT NULL DEFAULT (datetime()),
+
+	--position
+	mapIndex		INTEGER DEFAULT 0,
+	positionX		INTEGER DEFAULT 0,
+	positionY		INTEGER DEFAULT 0,
+
+	--statistics
+	level			INTEGER DEFAULT 0,
+	exp				INTEGER DEFAULT 0,
+	maxHP			INTEGER DEFAULT 0,
+	health			INTEGER DEFAULT 0,
+	maxMP			INTEGER DEFAULT 0,
+	mana			INTEGER DEFAULT 0,
+	attack			INTEGER DEFAULT 0,
+	defence			INTEGER DEFAULT 0,
+	intelligence	INTEGER DEFAULT 0,
+	resistance		INTEGER DEFAULT 0,
+	accuracy		REAL DEFAULT 0.0,
+	evasion			REAL DEFAULT 0.0,
+	luck			REAL DEFAULT 0.0,
 
 	--equipment
-	weapon INTEGER REFERENCES Equipment(equipmentID),
-	helmet INTEGER REFERENCES Equipment(equipmentID),
-	armour INTEGER REFERENCES Equipment(equipmentID)
+	weapon INTEGER REFERENCES Equipment(uid),
+	helmet INTEGER REFERENCES Equipment(uid),
+	armour INTEGER REFERENCES Equipment(uid)
 	--etc.
-);
-
-CREATE TABLE IF NOT EXISTS PlayerInventoryItems (
-	characterID INTEGER REFERENCES PlayerCharacters(characterID),
-	globalItemListID INTEGER REFERENCES GlobalItemList(globalItemListID)
 );

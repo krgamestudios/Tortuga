@@ -26,6 +26,6 @@
 
 #include <string>
 
-int runSQLScript(sqlite3* db, std::string fname);
+int runSQLScript(sqlite3* db, std::string fname, int (*callback)(void*,int,char**,char**) = nullptr, void* argPtr = nullptr);
 
 #endif
