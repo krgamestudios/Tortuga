@@ -79,8 +79,12 @@ union SerialPacket {
 		Metadata meta;
 		//TODO: version info
 		char name[PACKET_STRING_SIZE];
-		//TODO: player count
-		//TODO: map format
+		int playerCount;
+
+		//map format
+		int regionWidth;
+		int regionHeight;
+		int regionDepth;
 	}serverInfo;
 
 	//information about the client

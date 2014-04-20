@@ -176,10 +176,16 @@ void ServerApplication::HandlePacket(SerialPacket packet) {
 void ServerApplication::HandleBroadcastRequest(SerialPacket packet) {
 	//send back the server's metadata
 	packet.meta.type = SerialPacket::Type::BROADCAST_RESPONSE;
+
+	//pack the data
 	//TODO: version info
 	snprintf(packet.serverInfo.name, PACKET_STRING_SIZE, "%s", config["server.name"].c_str());
-	//TODO: player count
-	//TODO: map format
+	packet.serverInfo.playerCount = playerMap.size();
+	packet.serverInfo.regionWidth = REGION_WIDTH;
+	packet.serverInfo.regionHeight = REGION_HEIGHT;
+	packet.serverInfo.regionDepth = REGION_DEPTH;
+
+	//send the data
 	char buffer[PACKET_BUFFER_SIZE];
 	serialize(&packet, buffer);
 	network.Send(&packet.meta.srcAddress, buffer, PACKET_BUFFER_SIZE);

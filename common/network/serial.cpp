@@ -36,7 +36,20 @@ void serializeType(SerialPacket* packet, char* buffer) {
 void serializeServer(SerialPacket* packet, char* buffer) {
 	memcpy(buffer, &packet->meta.type, sizeof(SerialPacket::Type));
 	buffer += sizeof(SerialPacket::Type);
+
+	//server info
+	//Note: version info serialization goes here
 	memcpy(buffer, packet->serverInfo.name, PACKET_STRING_SIZE);
+	buffer += PACKET_STRING_SIZE;
+	memcpy(buffer, &packet->serverInfo.playerCount, sizeof(int));
+	buffer += sizeof(int);
+
+	//map format
+	memcpy(buffer, &packet->serverInfo.regionWidth, sizeof(int));
+	buffer += sizeof(int);
+	memcpy(buffer, &packet->serverInfo.regionHeight, sizeof(int));
+	buffer += sizeof(int);
+	memcpy(buffer, &packet->serverInfo.regionDepth, sizeof(int));
 }
 
 void serializeClient(SerialPacket* packet, char* buffer) {
@@ -114,7 +127,20 @@ void deserializeType(SerialPacket* packet, char* buffer) {
 void deserializeServer(SerialPacket* packet, char* buffer) {
 	memcpy(&packet->meta.type, buffer, sizeof(SerialPacket::Type));
 	buffer += sizeof(SerialPacket::Type);
+
+	//server info
+	//Note: version info deserialization goes here
 	memcpy(packet->serverInfo.name, buffer, PACKET_STRING_SIZE);
+	buffer += PACKET_STRING_SIZE;
+	memcpy(&packet->serverInfo.playerCount, buffer, sizeof(int));
+	buffer += sizeof(int);
+
+	//map format
+	memcpy(&packet->serverInfo.regionWidth, buffer, sizeof(int));
+	buffer += sizeof(int);
+	memcpy(&packet->serverInfo.regionHeight, buffer, sizeof(int));
+	buffer += sizeof(int);
+	memcpy(&packet->serverInfo.regionDepth, buffer, sizeof(int));
 }
 
 void deserializeClient(SerialPacket* packet, char* buffer) {
