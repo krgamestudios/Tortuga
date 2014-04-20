@@ -99,8 +99,7 @@ union SerialPacket {
 		Metadata meta;
 		int clientIndex;
 		int playerIndex;
-		//TODO: should probably move these into the client info
-		//TODO: these might actually do better during the login system
+		//TODO: should move handle/avatar into clientInfo; these might actually do better during the login system
 		char handle[PACKET_STRING_SIZE];
 		char avatar[PACKET_STRING_SIZE];
 		Vector2 position;

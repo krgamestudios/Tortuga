@@ -155,6 +155,7 @@ void LobbyMenu::MouseButtonUp(SDL_MouseButtonEvent const& button) {
 	}
 
 	else if (join.MouseButtonUp(button) == Button::State::HOVER && selection != nullptr && selection->compatible) {
+		//TODO: The player login information should be collected by the lobby screen
 		//the vars
 		SerialPacket packet;
 		char buffer[PACKET_BUFFER_SIZE];

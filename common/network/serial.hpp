@@ -24,7 +24,7 @@
 
 #include "serial_packet.hpp"
 
-/* TODO: Keep the PACKET_BUFFER_SIZE up to date
+/* NOTE: Keep the PACKET_BUFFER_SIZE up to date
  * NOTE: REGION_CONTENT is currently the largest type of packet
  *  map content: REGION_WIDTH * REGION_HEIGHT * REGION_DEPTH * sizoeof(region::type_t)
  *  map format: sizeof(int) * 2

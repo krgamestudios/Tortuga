@@ -110,7 +110,7 @@ void ServerApplication::Proc() {
 			HandlePacket(packet);
 		}
 		//give the computer a break
-		//TODO: remove this?
+		//TODO: remove this delay?
 		SDL_Delay(10);
 	}
 }
@@ -252,7 +252,7 @@ void ServerApplication::HandleSynchronize(SerialPacket packet) {
 	SerialPacket newPacket;
 	char buffer[PACKET_BUFFER_SIZE];
 
-	//TODO: map?
+	//TODO: syncronize the map?
 
 	//players
 	newPacket.meta.type = SerialPacket::Type::PLAYER_UPDATE;
@@ -314,12 +314,14 @@ void ServerApplication::HandlePlayerNew(SerialPacket packet) {
 	PlayerEntry::uidCounter++;
 }
 
+//TODO: differentiate between delete and unload
 void ServerApplication::HandlePlayerDelete(SerialPacket packet) {
-	//TODO: remove this?
 	//TODO: authenticate who is deleting this player
 	if (playerMap.find(packet.playerInfo.playerIndex) == playerMap.end()) {
 		throw(std::runtime_error("Cannot delete a non-existant player"));
 	}
+
+	//TODO: remove the deleted player from the database?
 
 	//prep the delete packet
 	SerialPacket delPacket;
