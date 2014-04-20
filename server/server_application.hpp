@@ -33,7 +33,7 @@
 #include "region_pager.hpp"
 
 //networking
-#include "network_packet.hpp"
+#include "serial_packet.hpp"
 #include "udp_network_utility.hpp"
 #include "serial.hpp"
 
@@ -57,25 +57,25 @@ public:
 	~ServerApplication() = default;
 
 	void Init(int argc, char** argv);
-	void Loop();
+	void Proc();
 	void Quit();
 
 private:
-	void HandlePacket(NetworkPacket);
+	void HandlePacket(SerialPacket);
 
 	//high cohesion utility functions
-	void HandleBroadcastRequest(NetworkPacket);
-	void HandleJoinRequest(NetworkPacket);
-	void HandleDisconnect(NetworkPacket);
-	void HandleSynchronize(NetworkPacket);
-	void HandleShutdown(NetworkPacket);
-	void HandlePlayerNew(NetworkPacket);
-	void HandlePlayerDelete(NetworkPacket);
-	void HandlePlayerUpdate(NetworkPacket);
-	void HandleRegionRequest(NetworkPacket);
+	void HandleBroadcastRequest(SerialPacket);
+	void HandleJoinRequest(SerialPacket);
+	void HandleDisconnect(SerialPacket);
+	void HandleSynchronize(SerialPacket);
+	void HandleShutdown(SerialPacket);
+	void HandlePlayerNew(SerialPacket);
+	void HandlePlayerDelete(SerialPacket);
+	void HandlePlayerUpdate(SerialPacket);
+	void HandleRegionRequest(SerialPacket);
 
 	//TODO: a function that sends to players in a certain proximity
-	void PumpPacket(NetworkPacket);
+	void PumpPacket(SerialPacket);
 
 	//APIs
 	UDPNetworkUtility network;

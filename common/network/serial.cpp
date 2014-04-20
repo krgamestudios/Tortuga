@@ -29,25 +29,25 @@
 //internal serialization functions
 //-------------------------
 
-void serializeType(NetworkPacket* packet, char* buffer) {
-	memcpy(buffer, &packet->meta.type, sizeof(NetworkPacket::Type));
+void serializeType(SerialPacket* packet, char* buffer) {
+	memcpy(buffer, &packet->meta.type, sizeof(SerialPacket::Type));
 }
 
-void serializeServer(NetworkPacket* packet, char* buffer) {
-	memcpy(buffer, &packet->meta.type, sizeof(NetworkPacket::Type));
-	buffer += sizeof(NetworkPacket::Type);
+void serializeServer(SerialPacket* packet, char* buffer) {
+	memcpy(buffer, &packet->meta.type, sizeof(SerialPacket::Type));
+	buffer += sizeof(SerialPacket::Type);
 	memcpy(buffer, packet->serverInfo.name, PACKET_STRING_SIZE);
 }
 
-void serializeClient(NetworkPacket* packet, char* buffer) {
-	memcpy(buffer, &packet->meta.type, sizeof(NetworkPacket::Type));
-	buffer += sizeof(NetworkPacket::Type);
+void serializeClient(SerialPacket* packet, char* buffer) {
+	memcpy(buffer, &packet->meta.type, sizeof(SerialPacket::Type));
+	buffer += sizeof(SerialPacket::Type);
 	memcpy(buffer, &packet->clientInfo.index, sizeof(int));
 }
 
-void serializePlayer(NetworkPacket* packet, char* buffer) {
-	memcpy(buffer, &packet->meta.type, sizeof(NetworkPacket::Type));
-	buffer += sizeof(NetworkPacket::Type);
+void serializePlayer(SerialPacket* packet, char* buffer) {
+	memcpy(buffer, &packet->meta.type, sizeof(SerialPacket::Type));
+	buffer += sizeof(SerialPacket::Type);
 
 	//indexes
 	memcpy(buffer, &packet->playerInfo.clientIndex, sizeof(int));
@@ -71,9 +71,9 @@ void serializePlayer(NetworkPacket* packet, char* buffer) {
 	memcpy(buffer, &packet->playerInfo.motion.y, sizeof(double));
 }
 
-void serializeRegionFormat(NetworkPacket* packet, char* buffer) {
-	memcpy(buffer, &packet->meta.type, sizeof(NetworkPacket::Type));
-	buffer += sizeof(NetworkPacket::Type);
+void serializeRegionFormat(SerialPacket* packet, char* buffer) {
+	memcpy(buffer, &packet->meta.type, sizeof(SerialPacket::Type));
+	buffer += sizeof(SerialPacket::Type);
 
 	//x & y
 	memcpy(buffer, &packet->regionInfo.x, sizeof(int));
@@ -81,10 +81,10 @@ void serializeRegionFormat(NetworkPacket* packet, char* buffer) {
 	memcpy(buffer, &packet->regionInfo.y, sizeof(int));
 }
 
-void serializeRegionContent(NetworkPacket* packet, char* buffer) {
+void serializeRegionContent(SerialPacket* packet, char* buffer) {
 	//format
-	memcpy(buffer, &packet->meta.type, sizeof(NetworkPacket::Type));
-	buffer += sizeof(NetworkPacket::Type);
+	memcpy(buffer, &packet->meta.type, sizeof(SerialPacket::Type));
+	buffer += sizeof(SerialPacket::Type);
 
 	//x & y
 	*reinterpret_cast<int*>(buffer) = packet->regionInfo.region->GetX();
@@ -107,25 +107,25 @@ void serializeRegionContent(NetworkPacket* packet, char* buffer) {
 //internal deserialization functions
 //-------------------------
 
-void deserializeType(NetworkPacket* packet, char* buffer) {
-	memcpy(&packet->meta.type, buffer, sizeof(NetworkPacket::Type));
+void deserializeType(SerialPacket* packet, char* buffer) {
+	memcpy(&packet->meta.type, buffer, sizeof(SerialPacket::Type));
 }
 
-void deserializeServer(NetworkPacket* packet, char* buffer) {
-	memcpy(&packet->meta.type, buffer, sizeof(NetworkPacket::Type));
-	buffer += sizeof(NetworkPacket::Type);
+void deserializeServer(SerialPacket* packet, char* buffer) {
+	memcpy(&packet->meta.type, buffer, sizeof(SerialPacket::Type));
+	buffer += sizeof(SerialPacket::Type);
 	memcpy(packet->serverInfo.name, buffer, PACKET_STRING_SIZE);
 }
 
-void deserializeClient(NetworkPacket* packet, char* buffer) {
-	memcpy(&packet->meta.type, buffer, sizeof(NetworkPacket::Type));
-	buffer += sizeof(NetworkPacket::Type);
+void deserializeClient(SerialPacket* packet, char* buffer) {
+	memcpy(&packet->meta.type, buffer, sizeof(SerialPacket::Type));
+	buffer += sizeof(SerialPacket::Type);
 	memcpy(&packet->clientInfo.index, buffer, sizeof(int));
 }
 
-void deserializePlayer(NetworkPacket* packet, char* buffer) {
-	memcpy(&packet->meta.type, buffer, sizeof(NetworkPacket::Type));
-	buffer += sizeof(NetworkPacket::Type);
+void deserializePlayer(SerialPacket* packet, char* buffer) {
+	memcpy(&packet->meta.type, buffer, sizeof(SerialPacket::Type));
+	buffer += sizeof(SerialPacket::Type);
 
 	//indexes
 	memcpy(&packet->playerInfo.clientIndex, buffer, sizeof(int));
@@ -149,9 +149,9 @@ void deserializePlayer(NetworkPacket* packet, char* buffer) {
 	memcpy(&packet->playerInfo.motion.y, buffer, sizeof(double));
 }
 
-void deserializeRegionFormat(NetworkPacket* packet, char* buffer) {
-	memcpy(&packet->meta.type, buffer, sizeof(NetworkPacket::Type));
-	buffer += sizeof(NetworkPacket::Type);
+void deserializeRegionFormat(SerialPacket* packet, char* buffer) {
+	memcpy(&packet->meta.type, buffer, sizeof(SerialPacket::Type));
+	buffer += sizeof(SerialPacket::Type);
 
 	//x & y
 	memcpy(&packet->regionInfo.x, buffer, sizeof(int));
@@ -159,9 +159,9 @@ void deserializeRegionFormat(NetworkPacket* packet, char* buffer) {
 	memcpy(&packet->regionInfo.y, buffer, sizeof(int));
 }
 
-void deserializeRegionContent(NetworkPacket* packet, char* buffer) {
-	memcpy(&packet->meta.type, buffer, sizeof(NetworkPacket::Type));
-	buffer += sizeof(NetworkPacket::Type);
+void deserializeRegionContent(SerialPacket* packet, char* buffer) {
+	memcpy(&packet->meta.type, buffer, sizeof(SerialPacket::Type));
+	buffer += sizeof(SerialPacket::Type);
 
 	//x & y
 	memcpy(&packet->regionInfo.x, buffer, sizeof(int));
@@ -190,87 +190,87 @@ void deserializeRegionContent(NetworkPacket* packet, char* buffer) {
 //the interface functions
 //-------------------------
 
-void serialize(NetworkPacket* packet, void* buffer) {
+void serialize(SerialPacket* packet, void* buffer) {
 	switch(packet->meta.type) {
 		//No extra data
-		case NetworkPacket::Type::NONE:
-		case NetworkPacket::Type::PING:
-		case NetworkPacket::Type::PONG:
-		case NetworkPacket::Type::BROADCAST_REQUEST:
-		case NetworkPacket::Type::JOIN_REQUEST:
-		case NetworkPacket::Type::SYNCHRONIZE:
+		case SerialPacket::Type::NONE:
+		case SerialPacket::Type::PING:
+		case SerialPacket::Type::PONG:
+		case SerialPacket::Type::BROADCAST_REQUEST:
+		case SerialPacket::Type::JOIN_REQUEST:
+		case SerialPacket::Type::SYNCHRONIZE:
 			serializeType(packet, reinterpret_cast<char*>(buffer));
 		break;
 
 		//Server info
-		case NetworkPacket::Type::BROADCAST_RESPONSE:
+		case SerialPacket::Type::BROADCAST_RESPONSE:
 			serializeServer(packet, reinterpret_cast<char*>(buffer));
 		break;
 
 		//Client info
-		case NetworkPacket::Type::JOIN_RESPONSE:
-		case NetworkPacket::Type::DISCONNECT:
-		case NetworkPacket::Type::SHUTDOWN:
+		case SerialPacket::Type::JOIN_RESPONSE:
+		case SerialPacket::Type::DISCONNECT:
+		case SerialPacket::Type::SHUTDOWN:
 			serializeClient(packet, reinterpret_cast<char*>(buffer));
 		break;
 
 		//Player info
-		case NetworkPacket::Type::PLAYER_NEW:
-		case NetworkPacket::Type::PLAYER_DELETE:
-		case NetworkPacket::Type::PLAYER_UPDATE:
+		case SerialPacket::Type::PLAYER_NEW:
+		case SerialPacket::Type::PLAYER_DELETE:
+		case SerialPacket::Type::PLAYER_UPDATE:
 			serializePlayer(packet, reinterpret_cast<char*>(buffer));
 		break;
 
 		//region info
-		case NetworkPacket::Type::REGION_REQUEST:
+		case SerialPacket::Type::REGION_REQUEST:
 			serializeRegionFormat(packet, reinterpret_cast<char*>(buffer));
 		break;
 
-		case NetworkPacket::Type::REGION_CONTENT:
+		case SerialPacket::Type::REGION_CONTENT:
 			serializeRegionContent(packet, reinterpret_cast<char*>(buffer));
 		break;
 	}
 }
 
-void deserialize(NetworkPacket* packet, void* buffer) {
+void deserialize(SerialPacket* packet, void* buffer) {
 	//find the type, so that you can actually deserialize the packet!
 	deserializeType(packet, reinterpret_cast<char*>(buffer));
 	switch(packet->meta.type) {
 		//No extra data
-		case NetworkPacket::Type::NONE:
-		case NetworkPacket::Type::PING:
-		case NetworkPacket::Type::PONG:
-		case NetworkPacket::Type::BROADCAST_REQUEST:
-		case NetworkPacket::Type::JOIN_REQUEST:
-		case NetworkPacket::Type::SYNCHRONIZE:
+		case SerialPacket::Type::NONE:
+		case SerialPacket::Type::PING:
+		case SerialPacket::Type::PONG:
+		case SerialPacket::Type::BROADCAST_REQUEST:
+		case SerialPacket::Type::JOIN_REQUEST:
+		case SerialPacket::Type::SYNCHRONIZE:
 			//NOTHING
 		break;
 
 		//Server info
-		case NetworkPacket::Type::BROADCAST_RESPONSE:
+		case SerialPacket::Type::BROADCAST_RESPONSE:
 			deserializeServer(packet, reinterpret_cast<char*>(buffer));
 		break;
 
 		//Client info
-		case NetworkPacket::Type::JOIN_RESPONSE:
-		case NetworkPacket::Type::DISCONNECT:
-		case NetworkPacket::Type::SHUTDOWN:
+		case SerialPacket::Type::JOIN_RESPONSE:
+		case SerialPacket::Type::DISCONNECT:
+		case SerialPacket::Type::SHUTDOWN:
 			deserializeClient(packet, reinterpret_cast<char*>(buffer));
 		break;
 
 		//Player info
-		case NetworkPacket::Type::PLAYER_NEW:
-		case NetworkPacket::Type::PLAYER_DELETE:
-		case NetworkPacket::Type::PLAYER_UPDATE:
+		case SerialPacket::Type::PLAYER_NEW:
+		case SerialPacket::Type::PLAYER_DELETE:
+		case SerialPacket::Type::PLAYER_UPDATE:
 			deserializePlayer(packet, reinterpret_cast<char*>(buffer));
 		break;
 
 		//region info
-		case NetworkPacket::Type::REGION_REQUEST:
+		case SerialPacket::Type::REGION_REQUEST:
 			deserializeRegionFormat(packet, reinterpret_cast<char*>(buffer));
 		break;
 
-		case NetworkPacket::Type::REGION_CONTENT:
+		case SerialPacket::Type::REGION_CONTENT:
 			deserializeRegionContent(packet, reinterpret_cast<char*>(buffer));
 		break;
 	}

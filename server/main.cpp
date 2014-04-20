@@ -33,7 +33,7 @@ int main(int argc, char** argv) {
 	try {
 		ServerApplication app;
 		app.Init(argc, argv);
-		app.Loop();
+		app.Proc();
 		app.Quit();
 	}
 	catch(exception& e) {

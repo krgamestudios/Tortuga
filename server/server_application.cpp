@@ -87,7 +87,7 @@ void ServerApplication::Init(int argc, char** argv) {
 	regionPager.GetFormat()->SetSaveDir("save/mapname/");
 
 	std::cout << "Initialized the map system" << std::endl;
-	std::cout << "\tsizeof(NetworkPacket): " << sizeof(NetworkPacket) << std::endl;
+	std::cout << "\tsizeof(SerialPacket): " << sizeof(SerialPacket) << std::endl;
 	std::cout << "\tPACKET_BUFFER_SIZE: " << PACKET_BUFFER_SIZE << std::endl;
 
 	//finalize the startup
@@ -97,8 +97,8 @@ void ServerApplication::Init(int argc, char** argv) {
 	//
 }
 
-void ServerApplication::Loop() {
-	NetworkPacket packet;
+void ServerApplication::Proc() {
+	SerialPacket packet;
 	while(running) {
 		//suck in the waiting packets & process them
 		while(network.Receive()) {
@@ -133,38 +133,38 @@ void ServerApplication::Quit() {
 //Define the uber switch
 //-------------------------
 
-void ServerApplication::HandlePacket(NetworkPacket packet) {
+void ServerApplication::HandlePacket(SerialPacket packet) {
 	switch(packet.meta.type) {
-		case NetworkPacket::Type::BROADCAST_REQUEST:
+		case SerialPacket::Type::BROADCAST_REQUEST:
 			HandleBroadcastRequest(packet);
 		break;
-		case NetworkPacket::Type::JOIN_REQUEST:
+		case SerialPacket::Type::JOIN_REQUEST:
 			HandleJoinRequest(packet);
 		break;
-		case NetworkPacket::Type::DISCONNECT:
+		case SerialPacket::Type::DISCONNECT:
 			HandleDisconnect(packet);
 		break;
-		case NetworkPacket::Type::SYNCHRONIZE:
+		case SerialPacket::Type::SYNCHRONIZE:
 			HandleSynchronize(packet);
 		break;
-		case NetworkPacket::Type::SHUTDOWN:
+		case SerialPacket::Type::SHUTDOWN:
 			HandleShutdown(packet);
 		break;
-		case NetworkPacket::Type::PLAYER_NEW:
+		case SerialPacket::Type::PLAYER_NEW:
 			HandlePlayerNew(packet);
 		break;
-		case NetworkPacket::Type::PLAYER_DELETE:
+		case SerialPacket::Type::PLAYER_DELETE:
 			HandlePlayerDelete(packet);
 		break;
-		case NetworkPacket::Type::PLAYER_UPDATE:
+		case SerialPacket::Type::PLAYER_UPDATE:
 			HandlePlayerUpdate(packet);
 		break;
-		case NetworkPacket::Type::REGION_REQUEST:
+		case SerialPacket::Type::REGION_REQUEST:
 			HandleRegionRequest(packet);
 		break;
 		//handle errors
 		default:
-			throw(std::runtime_error("Unknown NetworkPacket::Type encountered"));
+			throw(std::runtime_error("Unknown SerialPacket::Type encountered"));
 		break;
 	}
 }
@@ -173,9 +173,9 @@ void ServerApplication::HandlePacket(NetworkPacket packet) {
 //Handle various network input
 //-------------------------
 
-void ServerApplication::HandleBroadcastRequest(NetworkPacket packet) {
+void ServerApplication::HandleBroadcastRequest(SerialPacket packet) {
 	//send back the server's metadata
-	packet.meta.type = NetworkPacket::Type::BROADCAST_RESPONSE;
+	packet.meta.type = SerialPacket::Type::BROADCAST_RESPONSE;
 	//TODO: version info
 	snprintf(packet.serverInfo.name, PACKET_STRING_SIZE, "%s", config["server.name"].c_str());
 	//TODO: player count
@@ -185,7 +185,7 @@ void ServerApplication::HandleBroadcastRequest(NetworkPacket packet) {
 	network.Send(&packet.meta.srcAddress, buffer, PACKET_BUFFER_SIZE);
 }
 
-void ServerApplication::HandleJoinRequest(NetworkPacket packet) {
+void ServerApplication::HandleJoinRequest(SerialPacket packet) {
 	//register the new client
 	ClientEntry newClient;
 	newClient.address = packet.meta.srcAddress;
@@ -193,7 +193,7 @@ void ServerApplication::HandleJoinRequest(NetworkPacket packet) {
 
 	//send the client their index
 	char buffer[PACKET_BUFFER_SIZE];
-	packet.meta.type = NetworkPacket::Type::JOIN_RESPONSE;
+	packet.meta.type = SerialPacket::Type::JOIN_RESPONSE;
 	packet.clientInfo.index = ClientEntry::uidCounter;
 	serialize(&packet, buffer);
 
@@ -205,7 +205,7 @@ void ServerApplication::HandleJoinRequest(NetworkPacket packet) {
 	std::cout << "Connect, total: " << clientMap.size() << std::endl;
 }
 
-void ServerApplication::HandleDisconnect(NetworkPacket packet) {
+void ServerApplication::HandleDisconnect(SerialPacket packet) {
 	//TODO: authenticate who is disconnecting/kicking
 
 	//disconnect the specified client
@@ -215,8 +215,8 @@ void ServerApplication::HandleDisconnect(NetworkPacket packet) {
 	clientMap.erase(packet.clientInfo.index);
 
 	//prep the delete packet
-	NetworkPacket delPacket;
-	delPacket.meta.type = NetworkPacket::Type::PLAYER_DELETE;
+	SerialPacket delPacket;
+	delPacket.meta.type = SerialPacket::Type::PLAYER_DELETE;
 
 	//TODO: can this use DeletePlayer() instead?
 	//delete server and client side players
@@ -239,17 +239,17 @@ void ServerApplication::HandleDisconnect(NetworkPacket packet) {
 	std::cout << "Disconnect, total: " << clientMap.size() << std::endl;
 }
 
-void ServerApplication::HandleSynchronize(NetworkPacket packet) {
+void ServerApplication::HandleSynchronize(SerialPacket packet) {
 	//TODO: compensate for large distances
 
 	//send all the server's data to this client
-	NetworkPacket newPacket;
+	SerialPacket newPacket;
 	char buffer[PACKET_BUFFER_SIZE];
 
 	//TODO: map?
 
 	//players
-	newPacket.meta.type = NetworkPacket::Type::PLAYER_UPDATE;
+	newPacket.meta.type = SerialPacket::Type::PLAYER_UPDATE;
 	for (auto& it : playerMap) {
 		//TODO: update this for the expanded PlayerEntry structure
 		newPacket.playerInfo.playerIndex = it.first;
@@ -262,19 +262,19 @@ void ServerApplication::HandleSynchronize(NetworkPacket packet) {
 	}
 }
 
-void ServerApplication::HandleShutdown(NetworkPacket packet) {
+void ServerApplication::HandleShutdown(SerialPacket packet) {
 	//end the server
 	running = false;
 
 	//disconnect all clients
-	packet.meta.type = NetworkPacket::Type::DISCONNECT;
+	packet.meta.type = SerialPacket::Type::DISCONNECT;
 	PumpPacket(packet);
 
 	//finished this routine
 	std::cout << "Shutdown signal accepted" << std::endl;
 }
 
-void ServerApplication::HandlePlayerNew(NetworkPacket packet) {
+void ServerApplication::HandlePlayerNew(SerialPacket packet) {
 	//register the new PlayerEntry
 	//NOTE: assigning each field one-by-one so adding or moving a field doesn't break this code
 	PlayerEntry newPlayer;
@@ -308,7 +308,7 @@ void ServerApplication::HandlePlayerNew(NetworkPacket packet) {
 	PlayerEntry::uidCounter++;
 }
 
-void ServerApplication::HandlePlayerDelete(NetworkPacket packet) {
+void ServerApplication::HandlePlayerDelete(SerialPacket packet) {
 	//TODO: remove this?
 	//TODO: authenticate who is deleting this player
 	if (playerMap.find(packet.playerInfo.playerIndex) == playerMap.end()) {
@@ -316,8 +316,8 @@ void ServerApplication::HandlePlayerDelete(NetworkPacket packet) {
 	}
 
 	//prep the delete packet
-	NetworkPacket delPacket;
-	delPacket.meta.type = NetworkPacket::Type::PLAYER_DELETE;
+	SerialPacket delPacket;
+	delPacket.meta.type = SerialPacket::Type::PLAYER_DELETE;
 
 	//delete the specified playerEntry
 	erase_if(playerMap, [&](std::pair<unsigned int, PlayerEntry> it) -> bool {
@@ -335,7 +335,7 @@ void ServerApplication::HandlePlayerDelete(NetworkPacket packet) {
 	});
 }
 
-void ServerApplication::HandlePlayerUpdate(NetworkPacket packet) {
+void ServerApplication::HandlePlayerUpdate(SerialPacket packet) {
 	if (playerMap.find(packet.playerInfo.playerIndex) == playerMap.end()) {
 		throw(std::runtime_error("Cannot update a non-existant player"));
 	}
@@ -347,15 +347,15 @@ void ServerApplication::HandlePlayerUpdate(NetworkPacket packet) {
 	PumpPacket(packet);
 }
 
-void ServerApplication::HandleRegionRequest(NetworkPacket packet) {
+void ServerApplication::HandleRegionRequest(SerialPacket packet) {
 	char buffer[PACKET_BUFFER_SIZE];
-	packet.meta.type = NetworkPacket::Type::REGION_CONTENT;
+	packet.meta.type = SerialPacket::Type::REGION_CONTENT;
 	packet.regionInfo.region = regionPager.GetRegion(packet.regionInfo.x, packet.regionInfo.y);
 	serialize(&packet, buffer);
 	network.Send(&packet.meta.srcAddress, buffer, PACKET_BUFFER_SIZE);
 }
 
-void ServerApplication::PumpPacket(NetworkPacket packet) {
+void ServerApplication::PumpPacket(SerialPacket packet) {
 	//I don't really like this, but it'll do for now
 	char buffer[PACKET_BUFFER_SIZE];
 	serialize(&packet, buffer);

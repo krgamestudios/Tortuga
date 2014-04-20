@@ -19,8 +19,8 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef NETWORKPACKET_HPP_
-#define NETWORKPACKET_HPP_
+#ifndef SERIALPACKET_HPP_
+#define SERIALPACKET_HPP_
 
 #include "vector2.hpp"
 #include "region.hpp"
@@ -31,8 +31,7 @@
 
 #pragma pack(push, 0)
 
-//TODO: rename to serial packet
-union NetworkPacket {
+union SerialPacket {
 	//types of packets
 	enum class Type {
 		//default: there is something wrong
@@ -112,7 +111,7 @@ union NetworkPacket {
 	}regionInfo;
 
 	//defaults
-	NetworkPacket() {
+	SerialPacket() {
 		meta.type = Type::NONE;
 		meta.srcAddress = {0,0};
 	}

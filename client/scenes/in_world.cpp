@@ -63,8 +63,8 @@ InWorld::InWorld(ConfigUtility* const argConfig, UDPNetworkUtility* const argNet
 
 	//create the server-side player object
 	//TODO: the login system needs an overhaul
-	NetworkPacket packet;
-	packet.meta.type = NetworkPacket::Type::PLAYER_NEW;
+	SerialPacket packet;
+	packet.meta.type = SerialPacket::Type::PLAYER_NEW;
 	packet.playerInfo.clientIndex = clientIndex;
 	snprintf(packet.playerInfo.handle, PACKET_STRING_SIZE, "%s", config["player.handle"].c_str());
 	snprintf(packet.playerInfo.avatar, PACKET_STRING_SIZE, "%s", config["player.avatar"].c_str());
@@ -77,7 +77,7 @@ InWorld::InWorld(ConfigUtility* const argConfig, UDPNetworkUtility* const argNet
 	network.Send(Channels::SERVER, buffer, PACKET_BUFFER_SIZE);
 
 	//request a sync
-	packet.meta.type = NetworkPacket::Type::SYNCHRONIZE;
+	packet.meta.type = SerialPacket::Type::SYNCHRONIZE;
 	serialize(&packet, buffer);
 	network.Send(Channels::SERVER, buffer, PACKET_BUFFER_SIZE);
 
@@ -98,7 +98,7 @@ void InWorld::FrameStart() {
 }
 
 void InWorld::Update(double delta) {
-	NetworkPacket packet;
+	SerialPacket packet;
 
 	//suck in all waiting packets
 	while(network.Receive()) {
@@ -257,37 +257,37 @@ void InWorld::KeyUp(SDL_KeyboardEvent const& key) {
 //Network handlers
 //-------------------------
 
-void InWorld::HandlePacket(NetworkPacket packet) {
+void InWorld::HandlePacket(SerialPacket packet) {
 	switch(packet.meta.type) {
-		case NetworkPacket::Type::DISCONNECT:
+		case SerialPacket::Type::DISCONNECT:
 			HandleDisconnect(packet);
 		break;
-		case NetworkPacket::Type::PLAYER_NEW:
+		case SerialPacket::Type::PLAYER_NEW:
 			HandlePlayerNew(packet);
 		break;
-		case NetworkPacket::Type::PLAYER_DELETE:
+		case SerialPacket::Type::PLAYER_DELETE:
 			HandlePlayerDelete(packet);
 		break;
-		case NetworkPacket::Type::PLAYER_UPDATE:
+		case SerialPacket::Type::PLAYER_UPDATE:
 			HandlePlayerUpdate(packet);
 		break;
-		case NetworkPacket::Type::REGION_CONTENT:
+		case SerialPacket::Type::REGION_CONTENT:
 			HandleRegionContent(packet);
 		break;
 		//handle errors
 		default:
-			throw(std::runtime_error("Unknown NetworkPacket::Type encountered"));
+			throw(std::runtime_error("Unknown SerialPacket::Type encountered"));
 		break;
 	}
 }
 
-void InWorld::HandleDisconnect(NetworkPacket packet) {
+void InWorld::HandleDisconnect(SerialPacket packet) {
 	network.Unbind(Channels::SERVER);
 	clientIndex = -1;
 	SetNextScene(SceneList::MAINMENU);
 }
 
-void InWorld::HandlePlayerNew(NetworkPacket packet) {
+void InWorld::HandlePlayerNew(SerialPacket packet) {
 	if (playerCharacters.find(packet.playerInfo.playerIndex) != playerCharacters.end()) {
 		throw(std::runtime_error("Cannot create duplicate players"));
 	}
@@ -310,7 +310,7 @@ void InWorld::HandlePlayerNew(NetworkPacket packet) {
 	}
 }
 
-void InWorld::HandlePlayerDelete(NetworkPacket packet) {
+void InWorld::HandlePlayerDelete(SerialPacket packet) {
 	if (playerCharacters.find(packet.playerInfo.playerIndex) == playerCharacters.end()) {
 		throw(std::runtime_error("Cannot delete non-existant players"));
 	}
@@ -324,7 +324,7 @@ void InWorld::HandlePlayerDelete(NetworkPacket packet) {
 	}
 }
 
-void InWorld::HandlePlayerUpdate(NetworkPacket packet) {
+void InWorld::HandlePlayerUpdate(SerialPacket packet) {
 	if (playerCharacters.find(packet.playerInfo.playerIndex) == playerCharacters.end()) {
 		HandlePlayerNew(packet);
 		return;
@@ -338,7 +338,7 @@ void InWorld::HandlePlayerUpdate(NetworkPacket packet) {
 	playerCharacters[packet.playerInfo.playerIndex].ResetDirection();
 }
 
-void InWorld::HandleRegionContent(NetworkPacket packet) {
+void InWorld::HandleRegionContent(SerialPacket packet) {
 	//replace existing regions
 	if (regionPager.FindRegion(packet.regionInfo.x, packet.regionInfo.y)) {
 		regionPager.UnloadRegion(packet.regionInfo.x, packet.regionInfo.y);
@@ -352,11 +352,11 @@ void InWorld::HandleRegionContent(NetworkPacket packet) {
 //-------------------------
 
 void InWorld::SendState() {
-	NetworkPacket packet;
+	SerialPacket packet;
 	char buffer[PACKET_BUFFER_SIZE];
 
 	//pack the packet
-	packet.meta.type = NetworkPacket::Type::PLAYER_UPDATE;
+	packet.meta.type = SerialPacket::Type::PLAYER_UPDATE;
 	packet.playerInfo.clientIndex = clientIndex;
 	packet.playerInfo.playerIndex = playerIndex;
 	packet.playerInfo.position = localCharacter->GetPosition();
@@ -367,33 +367,33 @@ void InWorld::SendState() {
 }
 
 void InWorld::RequestDisconnect() {
-	NetworkPacket packet;
+	SerialPacket packet;
 	char buffer[PACKET_BUFFER_SIZE];
 
 	//send a disconnect request
-	packet.meta.type = NetworkPacket::Type::DISCONNECT;
+	packet.meta.type = SerialPacket::Type::DISCONNECT;
 	packet.clientInfo.index = clientIndex;
 	serialize(&packet, buffer);
 	network.Send(Channels::SERVER, buffer, PACKET_BUFFER_SIZE);
 }
 
 void InWorld::RequestShutDown() {
-	NetworkPacket packet;
+	SerialPacket packet;
 	char buffer[PACKET_BUFFER_SIZE];
 
 	//send a shutdown request
-	packet.meta.type = NetworkPacket::Type::SHUTDOWN;
+	packet.meta.type = SerialPacket::Type::SHUTDOWN;
 	packet.clientInfo.index = clientIndex;
 	serialize(&packet, buffer);
 	network.Send(Channels::SERVER, buffer, PACKET_BUFFER_SIZE);
 }
 
 void InWorld::RequestRegion(int x, int y) {
-	NetworkPacket packet;
+	SerialPacket packet;
 	char buffer[PACKET_BUFFER_SIZE];
 
 	//pack the region's data
-	packet.meta.type = NetworkPacket::Type::REGION_REQUEST;
+	packet.meta.type = SerialPacket::Type::REGION_REQUEST;
 	packet.regionInfo.x = x;
 	packet.regionInfo.y = y;
 	serialize(&packet, buffer);

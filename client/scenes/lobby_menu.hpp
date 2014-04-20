@@ -30,7 +30,7 @@
 
 #include "config_utility.hpp"
 #include "udp_network_utility.hpp"
-#include "network_packet.hpp"
+#include "serial_packet.hpp"
 #include "serial.hpp"
 
 #include <vector>
@@ -55,7 +55,7 @@ protected:
 	void KeyDown(SDL_KeyboardEvent const&);
 	void KeyUp(SDL_KeyboardEvent const&);
 
-	void HandlePacket(NetworkPacket);
+	void HandlePacket(SerialPacket);
 
 	//global
 	ConfigUtility& config;
