@@ -46,7 +46,7 @@ public:
 	virtual Region* SaveRegion(int x, int y) = 0;
 	virtual Region* CreateRegion(int x, int y) = 0;
 	virtual void UnloadRegion(int x, int y) = 0;
-	//TODO: delete?
+	//TODO: delete existing regions
 
 	//accessors & mutators
 	std::list<Region*>* GetContainer() { return &regionList; }
@@ -109,10 +109,7 @@ public:
 		for (std::list<Region*>::iterator it = regionList.begin(); it != regionList.end(); /* EMPTY */) {
 			if ((*it)->GetX() == x && (*it)->GetY() == y) {
 				allocator.Unload(*it);
-				regionList.erase(it);
-
-				//reset the loop, because of reasons
-				it = regionList.begin();
+				it = regionList.erase(it);
 				continue;
 			}
 			++it;

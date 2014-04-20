@@ -25,6 +25,7 @@
 #include "vector2.hpp"
 #include "sprite_sheet.hpp"
 
+//TODO: correct the PlayerCharacter class and it's movement system
 class PlayerCharacter {
 public:
 	enum class Direction {

@@ -22,17 +22,24 @@
 #ifndef LOBBYMENU_HPP_
 #define LOBBYMENU_HPP_
 
-#include "base_scene.hpp"
-
+//graphics & utilities
 #include "image.hpp"
 #include "raster_font.hpp"
 #include "button.hpp"
-
 #include "config_utility.hpp"
+
+//map
+#include "region.hpp"
+
+//network
 #include "udp_network_utility.hpp"
 #include "serial_packet.hpp"
 #include "serial.hpp"
 
+//client
+#include "base_scene.hpp"
+
+//STL
 #include <vector>
 
 class LobbyMenu : public BaseScene {
@@ -71,8 +78,11 @@ protected:
 
 	//server list
 	struct ServerInformation {
-		std::string name;
 		IPaddress address;
+		//TODO: version info
+		std::string name;
+		int playerCount;
+		bool compatible;
 	};
 
 	std::vector<ServerInformation> serverInfo;

@@ -22,6 +22,7 @@
 #include "lobby_menu.hpp"
 
 #include "channels.hpp"
+#include "utility.hpp"
 
 #include <stdexcept>
 
@@ -91,9 +92,13 @@ void LobbyMenu::FrameEnd() {
 }
 
 void LobbyMenu::Render(SDL_Surface* const screen) {
+	//TODO: I need a proper UI system for the entire client and the editor
+	//UI
 	search.DrawTo(screen);
 	join.DrawTo(screen);
 	back.DrawTo(screen);
+
+	//TODO: draw headers for the server list
 	for (int i = 0; i < serverInfo.size(); i++) {
 		//draw the selected server's highlight
 		if (selection == &serverInfo[i]) {
@@ -104,6 +109,16 @@ void LobbyMenu::Render(SDL_Surface* const screen) {
 
 		//draw the server name
 		font.DrawStringTo(serverInfo[i].name, screen, listBox.x, listBox.y + i*listBox.h);
+
+		//draw the player count
+		font.DrawStringTo(to_string_custom(serverInfo[i].playerCount), screen, listBox.x + listBox.w, listBox.y + i*listBox.h);
+
+		//compatible?
+		if (!serverInfo[i].compatible) {
+			font.DrawStringTo("?", screen, listBox.x - font.GetCharW(), listBox.y + i*listBox.h);
+		}
+
+		//TODO: ping?
 	}
 }
 
@@ -139,7 +154,8 @@ void LobbyMenu::MouseButtonUp(SDL_MouseButtonEvent const& button) {
 		selection = nullptr;
 	}
 
-	else if (join.MouseButtonUp(button) == Button::State::HOVER && selection != nullptr) {
+	else if (join.MouseButtonUp(button) == Button::State::HOVER && selection != nullptr && selection->compatible) {
+		//TODO: The player login information should be collected by the lobby screen
 		//the vars
 		SerialPacket packet;
 		char buffer[PACKET_BUFFER_SIZE];
@@ -184,9 +200,18 @@ void LobbyMenu::KeyUp(SDL_KeyboardEvent const& key) {
 void LobbyMenu::HandlePacket(SerialPacket packet) {
 		switch(packet.meta.type) {
 		case SerialPacket::Type::BROADCAST_RESPONSE: {
+			//extract the data
 			ServerInformation server;
-			server.name = packet.serverInfo.name;
 			server.address = packet.meta.srcAddress;
+			server.name = packet.serverInfo.name;
+			server.playerCount = packet.serverInfo.playerCount;
+
+			//NOTE: Check compatibility here
+			server.compatible = packet.serverInfo.regionWidth == REGION_WIDTH &&
+				packet.serverInfo.regionHeight == REGION_HEIGHT &&
+				packet.serverInfo.regionDepth == REGION_DEPTH;
+
+			//push
 			serverInfo.push_back(server);
 		}
 		break;

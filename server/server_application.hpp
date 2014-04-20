@@ -74,7 +74,7 @@ private:
 	void HandlePlayerUpdate(SerialPacket);
 	void HandleRegionRequest(SerialPacket);
 
-	//TODO: a function that sends to players in a certain proximity
+	//TODO: a function that only sends to players in a certain proximity
 	void PumpPacket(SerialPacket);
 
 	//APIs

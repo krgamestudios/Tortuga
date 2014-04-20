@@ -53,8 +53,8 @@ void TileSheet::DrawRegionTo(SDL_Surface* const dest, Region* const region, int 
 				image.SetClipX((tile-1) % XCount * image.GetClipW());
 				image.SetClipY((tile-1) / XCount * image.GetClipH());
 				image.DrawTo(dest,
-					region->GetX() + i * image.GetClipW() - camX,
-					region->GetY() + j * image.GetClipH() - camY);
+					(region->GetX() + i) * image.GetClipW() - camX,
+					(region->GetY() + j) * image.GetClipH() - camY);
 			}
 		}
 	}
