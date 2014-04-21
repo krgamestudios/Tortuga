@@ -1,0 +1,25 @@
+Please note that due to modificatons, the indicated line may be incorrect.
+
+## TODO
+player_character.hpp:28  correct the PlayerCharacter class and it's movement system
+in_world.cpp:65  the login system needs an overhaul
+in_world.cpp:405  convert this into a more generic function?; using parameters for the bounds
+lobby_menu.cpp:95  I need a proper UI system for the entire client and the editor
+lobby_menu.cpp:101  draw headers for the server list
+lobby_menu.cpp:158  The player login information should be collected by the lobby screen
+region_pager.hpp:49  delete existing regions
+serial_packet.hpp:93  login credentials
+serial_packet.hpp:104  should move handle/avatar into clientInfo; these might actually do better during the login system
+server_application.cpp:86  config parameter
+server_application.cpp:214  authenticate who is disconnecting/kicking
+server_application.cpp:226  can this use DeletePlayer() instead?
+server_application.cpp:248  compensate for large distances
+server_application.cpp:257  update this for the expanded PlayerEntry structure
+server_application.cpp:296  Add the statistic creation code here
+server_application.cpp:313  differentiate between delete and unload
+server_application.cpp:315  authenticate who is deleting this player
+server_application.cpp:320  remove the deleted player from the database?
+server_application.cpp:347  the server needs it's own movement system too
+server_application.hpp:77  a function that only sends to players in a certain proximity
+server_application.hpp:90  I need to handle multiple map objects
+server_application.hpp:91  Unload regions that are distant from any players
