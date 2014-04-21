@@ -1,3 +1,5 @@
+--NOTE: I don't actually remember what this is
+
 function CalcExp(base, mod, level)
 	return math.floor(base * mod ^ level)
 end

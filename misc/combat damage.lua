@@ -1,3 +1,5 @@
+--NOTE: This is the outline for the final combat system
+
 --enumeration
 hitType = { MISS = 1, HIT = 2, CRITICAL = 3 }
 attackType = { PHYSICAL = 1, MAGICAL = 2 }
