@@ -66,6 +66,8 @@ union SerialPacket {
 		//map data
 		REGION_REQUEST = 13,
 		REGION_CONTENT = 14,
+
+		//TODO: combat packets
 	};
 
 	//metadata on the packet itself

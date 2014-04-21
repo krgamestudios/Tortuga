@@ -88,6 +88,7 @@ private:
 
 	//maps
 	//TODO: I need to handle multiple map objects
+	//TODO: Unload regions that are distant from any players
 	RegionPager<LuaAllocator, LuaFormat> regionPager;
 
 	//misc

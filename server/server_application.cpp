@@ -110,7 +110,6 @@ void ServerApplication::Proc() {
 			HandlePacket(packet);
 		}
 		//give the computer a break
-		//TODO: remove this delay?
 		SDL_Delay(10);
 	}
 }
@@ -178,7 +177,6 @@ void ServerApplication::HandleBroadcastRequest(SerialPacket packet) {
 	packet.meta.type = SerialPacket::Type::BROADCAST_RESPONSE;
 
 	//pack the data
-	//TODO: version info
 	snprintf(packet.serverInfo.name, PACKET_STRING_SIZE, "%s", config["server.name"].c_str());
 	packet.serverInfo.playerCount = playerMap.size();
 	packet.serverInfo.regionWidth = REGION_WIDTH;
@@ -252,8 +250,6 @@ void ServerApplication::HandleSynchronize(SerialPacket packet) {
 	SerialPacket newPacket;
 	char buffer[PACKET_BUFFER_SIZE];
 
-	//TODO: syncronize the map?
-
 	//players
 	newPacket.meta.type = SerialPacket::Type::PLAYER_UPDATE;
 	for (auto& it : playerMap) {
@@ -296,8 +292,7 @@ void ServerApplication::HandlePlayerNew(SerialPacket packet) {
 	newPlayer.motion = {0,0};
 	newPlayer.bbox = {0, 0, 0, 0};
 
-	//stats
-	//TODO
+	//TODO: Add the statistic creation code here
 
 	//push this player
 	playerMap[PlayerEntry::uidCounter] = newPlayer;
@@ -364,7 +359,7 @@ void ServerApplication::HandleRegionRequest(SerialPacket packet) {
 }
 
 void ServerApplication::PumpPacket(SerialPacket packet) {
-	//I don't really like this, but it'll do for now
+	//NOTE: I don't really like this, but it'll do for now
 	char buffer[PACKET_BUFFER_SIZE];
 	serialize(&packet, buffer);
 	for (auto& it : clientMap) {

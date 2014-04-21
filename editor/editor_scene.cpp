@@ -87,21 +87,7 @@ void EditorScene::FrameEnd() {
 
 void EditorScene::Render(SDL_Surface* const screen) {
 	tsheet.DrawRegionTo(screen, pager.GetRegion(0, 0), camera.x, camera.y);
-/*	//debug
-	for (int i = 0; i < pager.GetRegionWidth()*2; i++) {
-		for (int j = 0; j < pager.GetRegionHeight()*2; j++) {
-			for (int k = 0; k < pager.GetRegionDepth(); k++) {
-				//TODO: skip the out-of-bounds regions
-				tsheet.DrawTo(
-					screen,
-					i*tsheet.GetTileW()-camera.x,
-					j*tsheet.GetTileH()-camera.y,
-					pager.GetTile(i,j,k)
-				);
-			}
-		}
-	}
-*/
+
 	//draw a big bar across the top (hackish)
 	buttonImage.SetClipY(0);
 	for (int i = 0; i < screen->w; i += buttonImage.GetClipW()) {
