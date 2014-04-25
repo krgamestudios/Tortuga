@@ -30,10 +30,11 @@
 //Public access members
 //-------------------------
 
-LobbyMenu::LobbyMenu(ConfigUtility* const argConfig, UDPNetworkUtility* const argNetwork, int* const argClientIndex):
+LobbyMenu::LobbyMenu(ConfigUtility* const argConfig, UDPNetworkUtility* const argNetwork, int* const argClientIndex, int* const argPlayerIndex):
 	config(*argConfig),
 	network(*argNetwork),
-	clientIndex(*argClientIndex)
+	clientIndex(*argClientIndex),
+	playerIndex(*argPlayerIndex)
 {
 	//setup the utility objects
 	image.LoadSurface(config["dir.interface"] + "button_menu.bmp");
@@ -155,13 +156,17 @@ void LobbyMenu::MouseButtonUp(SDL_MouseButtonEvent const& button) {
 	}
 
 	else if (join.MouseButtonUp(button) == Button::State::HOVER && selection != nullptr && selection->compatible) {
-		//TODO: The player login information should be collected by the lobby screen
 		//the vars
 		SerialPacket packet;
 		char buffer[PACKET_BUFFER_SIZE];
 
-		//join the selected server
+		//pack the packet
 		packet.meta.type = SerialPacket::Type::JOIN_REQUEST;
+		strncpy(packet.clientInfo.player, config["client.player"].c_str(), PACKET_STRING_SIZE);
+		strncpy(packet.clientInfo.handle, config["client.handle"].c_str(), PACKET_STRING_SIZE);
+		strncpy(packet.clientInfo.avatar, config["client.avatar"].c_str(), PACKET_STRING_SIZE);
+
+		//join the selected server
 		serialize(&packet, buffer);
 		network.Send(&selection->address, buffer, PACKET_BUFFER_SIZE);
 		selection = nullptr;
@@ -203,20 +208,20 @@ void LobbyMenu::HandlePacket(SerialPacket packet) {
 			//extract the data
 			ServerInformation server;
 			server.address = packet.meta.srcAddress;
+			server.networkVersion = packet.serverInfo.networkVersion;
 			server.name = packet.serverInfo.name;
 			server.playerCount = packet.serverInfo.playerCount;
 
 			//NOTE: Check compatibility here
-			server.compatible = packet.serverInfo.regionWidth == REGION_WIDTH &&
-				packet.serverInfo.regionHeight == REGION_HEIGHT &&
-				packet.serverInfo.regionDepth == REGION_DEPTH;
+			server.compatible = server.networkVersion == NETWORK_VERSION;
 
 			//push
 			serverInfo.push_back(server);
 		}
 		break;
 		case SerialPacket::Type::JOIN_RESPONSE:
-			clientIndex = packet.clientInfo.index;
+			clientIndex = packet.clientInfo.clientIndex;
+			playerIndex = packet.clientInfo.playerIndex;
 			network.Bind(&packet.meta.srcAddress, Channels::SERVER);
 			SetNextScene(SceneList::INWORLD);
 		break;

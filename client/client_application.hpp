@@ -44,9 +44,11 @@ private:
 
 	BaseScene* activeScene = nullptr;
 
+	//shared parameters
 	ConfigUtility config;
 	UDPNetworkUtility network;
-	int clientIndex = -1; //replace with a struct?
+	int clientIndex = -1;
+	int playerIndex = -1;
 };
 
 #endif

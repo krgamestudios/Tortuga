@@ -97,6 +97,10 @@ void serializePlayer(SerialPacket* packet, char* buffer) {
 	SERIALIZE(buffer, &packet->playerInfo.clientIndex, sizeof(int));
 	SERIALIZE(buffer, &packet->playerInfo.playerIndex, sizeof(int));
 
+	//texts
+	SERIALIZE(buffer, packet->clientInfo.handle, PACKET_STRING_SIZE);
+	SERIALIZE(buffer, packet->clientInfo.avatar, PACKET_STRING_SIZE);
+
 	//vectors
 	SERIALIZE(buffer, &packet->playerInfo.position.x, sizeof(double));
 	SERIALIZE(buffer, &packet->playerInfo.position.y, sizeof(double));
@@ -175,6 +179,10 @@ void deserializePlayer(SerialPacket* packet, char* buffer) {
 	//indexes
 	DESERIALIZE(buffer, &packet->playerInfo.clientIndex, sizeof(int));
 	DESERIALIZE(buffer, &packet->playerInfo.playerIndex, sizeof(int));
+
+	//texts
+	DESERIALIZE(buffer, packet->clientInfo.handle, PACKET_STRING_SIZE);
+	DESERIALIZE(buffer, packet->clientInfo.avatar, PACKET_STRING_SIZE);
 
 	//vectors
 	DESERIALIZE(buffer, &packet->playerInfo.position.x, sizeof(double));

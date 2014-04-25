@@ -52,7 +52,7 @@
 class InWorld : public BaseScene {
 public:
 	//Public access members
-	InWorld(ConfigUtility* const, UDPNetworkUtility* const, int* const);
+	InWorld(ConfigUtility* const, UDPNetworkUtility* const, int* const, int* const);
 	~InWorld();
 
 protected:
@@ -80,19 +80,19 @@ protected:
 	void HandleRegionContent(SerialPacket);
 
 	//Server control
-	void SendState();
+	void SendPlayerUpdate();
 	void RequestDisconnect();
 	void RequestShutDown();
-	void RequestRegion(int x, int y);
+	void RequestRegion(int mapIndex, int x, int y);
 
 	//utilities
 	void UpdateMap();
 
-	//globals
+	//shared parameters
 	ConfigUtility& config;
-	FrameRate fps;
 	UDPNetworkUtility& network;
 	int& clientIndex;
+	int& playerIndex;
 
 	//graphics
 	Image buttonImage;
@@ -111,11 +111,11 @@ protected:
 		int width = 0, height = 0;
 		int marginX = 0, marginY = 0;
 	} camera;
+	FrameRate fps;
 
 	//game
 	std::map<int, PlayerCharacter> playerCharacters;
 	PlayerCharacter* localCharacter = nullptr;
-	int playerIndex = -1;
 };
 
 #endif

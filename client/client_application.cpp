@@ -119,10 +119,10 @@ void ClientApplication::LoadScene(SceneList sceneIndex) {
 			activeScene = new OptionsMenu(&config);
 		break;
 		case SceneList::LOBBYMENU:
-			activeScene = new LobbyMenu(&config, &network, &clientIndex);
+			activeScene = new LobbyMenu(&config, &network, &clientIndex, &playerIndex);
 		break;
 		case SceneList::INWORLD:
-			activeScene = new InWorld(&config, &network, &clientIndex);
+			activeScene = new InWorld(&config, &network, &clientIndex, &playerIndex);
 		break;
 		case SceneList::INCOMBAT:
 			activeScene = new InCombat();

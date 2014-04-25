@@ -49,7 +49,7 @@ protected:
 	void KeyDown(SDL_KeyboardEvent const&);
 	void KeyUp(SDL_KeyboardEvent const&);
 
-	//globals
+	//shared parameters
 	ConfigUtility& config;
 
 	//members
