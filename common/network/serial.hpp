@@ -27,10 +27,10 @@
 /* NOTE: Keep the PACKET_BUFFER_SIZE up to date
  * NOTE: REGION_CONTENT is currently the largest type of packet
  *  map content: REGION_WIDTH * REGION_HEIGHT * REGION_DEPTH * sizoeof(region::type_t)
- *  map format: sizeof(int) * 2
+ *  map format: sizeof(int) * 3
  *  metadata: sizeof(metadata)
 */
-#define PACKET_BUFFER_SIZE REGION_WIDTH * REGION_HEIGHT * REGION_DEPTH * sizeof(Region::type_t) + sizeof(int) * 2 + sizeof(SerialPacket::Metadata)
+#define PACKET_BUFFER_SIZE REGION_WIDTH * REGION_HEIGHT * REGION_DEPTH * sizeof(Region::type_t) + sizeof(int) * 3 + sizeof(SerialPacket::Metadata)
 
 void serialize(SerialPacket* const, void*);
 void deserialize(SerialPacket* const, void*);
