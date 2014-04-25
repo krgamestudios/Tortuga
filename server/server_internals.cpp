@@ -107,6 +107,8 @@ void ServerApplication::Proc() {
 			//we need to go deeper
 			HandlePacket(packet);
 		}
+		//update the internals
+		//TODO: update the internals i.e. player positions
 		//give the computer a break
 		SDL_Delay(10);
 	}

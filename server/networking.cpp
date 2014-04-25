@@ -29,13 +29,13 @@
 //-------------------------
 
 void ServerApplication::HandleBroadcastRequest(SerialPacket packet) {
-	//pack the data
+	//pack the server's data
 	packet.meta.type = SerialPacket::Type::BROADCAST_RESPONSE;
 	packet.serverInfo.networkVersion = NETWORK_VERSION;
 	snprintf(packet.serverInfo.name, PACKET_STRING_SIZE, "%s", config["server.name"].c_str());
 	packet.serverInfo.playerCount = playerMap.size();
 
-	//send the data
+	//bounce this packet
 	char buffer[PACKET_BUFFER_SIZE];
 	serialize(&packet, buffer);
 	network.Send(&packet.meta.srcAddress, buffer, PACKET_BUFFER_SIZE);
@@ -47,55 +47,30 @@ void ServerApplication::HandleJoinRequest(SerialPacket packet) {
 	newClient.address = packet.meta.srcAddress;
 	clientMap[ClientEntry::uidCounter] = newClient;
 
-	//create the new player
-	//TODO: make the player
+	//register the new player
+	PlayerEntry newPlayer;
+	newPlayer.clientIndex = ClientEntry::uidCounter;
+	newPlayer.player = packet.clientInfo.player;
+	newPlayer.handle = packet.clientInfo.handle;
+	newPlayer.avatar = packet.clientInfo.avatar;
+	playerMap[PlayerEntry::uidCounter] = newPlayer;
 
 	//send the client their info
 	packet.meta.type = SerialPacket::Type::JOIN_RESPONSE;
-	packet.clientInfo.index = ClientEntry::uidCounter;
+	packet.clientInfo.clientIndex = ClientEntry::uidCounter;
+	packet.clientInfo.playerIndex = PlayerEntry::uidCounter;
 
 	//bounce this packet
 	char buffer[PACKET_BUFFER_SIZE];
 	serialize(&packet, buffer);
 	network.Send(&newClient.address, buffer, PACKET_BUFFER_SIZE);
 
+	//TODO: finish the player's initialization
+
 	//finished this routine
 	ClientEntry::uidCounter++;
+	PlayerEntry::uidCounter++;
 	std::cout << "Connect, total: " << clientMap.size() << std::endl;
-}
-
-void ServerApplication::HandleDisconnect(SerialPacket packet) {
-	//TODO: authenticate who is disconnecting/kicking
-
-	//disconnect the specified client
-	char buffer[PACKET_BUFFER_SIZE];
-	serialize(&packet, buffer);
-	network.Send(&clientMap[packet.clientInfo.index].address, buffer, PACKET_BUFFER_SIZE);
-	clientMap.erase(packet.clientInfo.index);
-
-	//prep the delete packet
-	SerialPacket delPacket;
-	delPacket.meta.type = SerialPacket::Type::PLAYER_DELETE;
-
-	//TODO: can this use DeletePlayer() instead?
-	//delete server and client side players
-	erase_if(playerMap, [&](std::pair<int, PlayerEntry> it) -> bool {
-		//find the internal players to delete
-		if (it.second.clientIndex == packet.clientInfo.index) {
-			//send the delete player command to all clients
-			delPacket.playerInfo.playerIndex = it.first;
-			PumpPacket(delPacket);
-
-			//delete this player object
-			return true;
-		}
-
-		//don't delete this player object
-		return false;
-	});
-
-	//finished this routine
-	std::cout << "Disconnect, total: " << clientMap.size() << std::endl;
 }
 
 void ServerApplication::HandleSynchronize(SerialPacket packet) {
@@ -115,82 +90,57 @@ void ServerApplication::HandleSynchronize(SerialPacket packet) {
 		newPacket.playerInfo.position = it.second.position;
 		newPacket.playerInfo.motion = it.second.motion;
 		serialize(&newPacket, buffer);
-		network.Send(&clientMap[packet.clientInfo.index].address, buffer, PACKET_BUFFER_SIZE);
+		network.Send(&clientMap[packet.clientInfo.clientIndex].address, buffer, PACKET_BUFFER_SIZE);
 	}
 }
 
-void ServerApplication::HandleShutdown(SerialPacket packet) {
-	//end the server
-	running = false;
+void ServerApplication::HandleDisconnect(SerialPacket packet) {
+	//TODO: authenticate who is disconnecting/kicking
+	//TODO: define the difference between unloading and deletng a player
 
-	//disconnect all clients
-	packet.meta.type = SerialPacket::Type::DISCONNECT;
-	PumpPacket(packet);
-
-	//finished this routine
-	std::cout << "Shutdown signal accepted" << std::endl;
-}
-
-void ServerApplication::HandlePlayerNew(SerialPacket packet) {
-	//register the new PlayerEntry
-	//NOTE: assigning each field one-by-one so adding or moving a field doesn't break this code
-	PlayerEntry newPlayer;
-
-	//metadata
-	newPlayer.clientIndex = packet.playerInfo.clientIndex;
-	newPlayer.handle = packet.playerInfo.handle;
-	newPlayer.avatar = packet.playerInfo.avatar;
-
-	//position
-	newPlayer.mapIndex = 0;
-	newPlayer.position = {0,0};
-	newPlayer.motion = {0,0};
-	newPlayer.bbox = {0, 0, 0, 0};
-
-	//TODO: Add the statistic creation code here
-
-	//push this player
-	playerMap[PlayerEntry::uidCounter] = newPlayer;
-
-	//send the client their info
-	packet.playerInfo.playerIndex = PlayerEntry::uidCounter;
-	packet.playerInfo.position = newPlayer.position;
-	packet.playerInfo.motion = newPlayer.motion;
-
-	//actually send to everyone
-	PumpPacket(packet);
-
-	//finish this routine
-	PlayerEntry::uidCounter++;
-}
-
-//TODO: differentiate between delete and unload
-void ServerApplication::HandlePlayerDelete(SerialPacket packet) {
-	//TODO: authenticate who is deleting this player
-	if (playerMap.find(packet.playerInfo.playerIndex) == playerMap.end()) {
-		throw(std::runtime_error("Cannot delete a non-existant player"));
-	}
-
-	//TODO: remove the deleted player from the database?
+	//disconnect the specified client
+	char buffer[PACKET_BUFFER_SIZE];
+	serialize(&packet, buffer);
+	network.Send(&clientMap[packet.clientInfo.clientIndex].address, buffer, PACKET_BUFFER_SIZE);
+	clientMap.erase(packet.clientInfo.clientIndex);
 
 	//prep the delete packet
 	SerialPacket delPacket;
 	delPacket.meta.type = SerialPacket::Type::PLAYER_DELETE;
 
-	//delete the specified playerEntry
+	//delete server and client side players
 	erase_if(playerMap, [&](std::pair<int, PlayerEntry> it) -> bool {
-		//find the specified PlayerEntry
-		if (it.first == packet.playerInfo.playerIndex) {
-			//send to all
+		//find the internal players to delete
+		if (it.second.clientIndex == packet.clientInfo.clientIndex) {
+			//send the delete player command to all clients
 			delPacket.playerInfo.playerIndex = it.first;
 			PumpPacket(delPacket);
 
-			//delete this player
+			//delete this player object
 			return true;
 		}
-		//skip this player
+
+		//don't delete this player object
 		return false;
 	});
+
+	//finished this routine
+	std::cout << "Disconnect, total: " << clientMap.size() << std::endl;
+}
+
+void ServerApplication::HandleShutdown(SerialPacket packet) {
+	//TODO: authenticate who is shitting the server down
+
+	//end the server
+	running = false;
+
+	//disconnect all clients
+	packet.meta.type = SerialPacket::Type::DISCONNECT;
+	packet.clientInfo.clientIndex = -1;
+	PumpPacket(packet);
+
+	//finished this routine
+	std::cout << "Shutdown signal accepted" << std::endl;
 }
 
 void ServerApplication::HandlePlayerUpdate(SerialPacket packet) {
@@ -206,9 +156,11 @@ void ServerApplication::HandlePlayerUpdate(SerialPacket packet) {
 }
 
 void ServerApplication::HandleRegionRequest(SerialPacket packet) {
-	char buffer[PACKET_BUFFER_SIZE];
 	packet.meta.type = SerialPacket::Type::REGION_CONTENT;
 	packet.regionInfo.region = regionPager.GetRegion(packet.regionInfo.x, packet.regionInfo.y);
+
+	//send the content
+	char buffer[PACKET_BUFFER_SIZE];
 	serialize(&packet, buffer);
 	network.Send(&packet.meta.srcAddress, buffer, PACKET_BUFFER_SIZE);
 }
