@@ -110,6 +110,7 @@ union SerialPacket {
 		int playerIndex;
 		char handle[PACKET_STRING_SIZE];
 		char avatar[PACKET_STRING_SIZE];
+		int mapIndex;
 		Vector2 position;
 		Vector2 motion;
 	}playerInfo;

@@ -287,7 +287,8 @@ void InWorld::HandleRegionContent(SerialPacket packet) {
 
 void InWorld::HandlePlayerUpdate(SerialPacket packet) {
 	if (playerCharacters.find(packet.playerInfo.playerIndex) == playerCharacters.end()) {
-		throw(std::runtime_error("Cannot update nen-existant players"));
+		HandlePlayerNew(packet);
+		return;
 	}
 
 	//update only if the message didn't originate from here

@@ -87,6 +87,7 @@ void ServerApplication::HandleSynchronize(SerialPacket packet) {
 		newPacket.playerInfo.playerIndex = it.first;
 		snprintf(newPacket.playerInfo.handle, PACKET_STRING_SIZE, "%s", it.second.handle.c_str());
 		snprintf(newPacket.playerInfo.avatar, PACKET_STRING_SIZE, "%s", it.second.avatar.c_str());
+		newPacket.playerInfo.mapIndex = it.second.mapIndex;
 		newPacket.playerInfo.position = it.second.position;
 		newPacket.playerInfo.motion = it.second.motion;
 		serialize(&newPacket, buffer);
