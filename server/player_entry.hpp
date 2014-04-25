@@ -31,6 +31,7 @@
 struct PlayerEntry {
 	//metadata
 	int clientIndex;
+	std::string player;
 	std::string handle;
 	std::string avatar;
 
@@ -56,7 +57,7 @@ struct PlayerEntry {
 	float luck;
 
 	//uid
-	static unsigned int uidCounter;
+	static int uidCounter;
 };
 
 #endif
