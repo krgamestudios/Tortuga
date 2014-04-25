@@ -21,167 +21,19 @@
 */
 #include "server_application.hpp"
 
-#include "utility.hpp"
-
 #include <stdexcept>
 #include <iostream>
-#include <string>
-
-//-------------------------
-//Define the public members
-//-------------------------
-
-void ServerApplication::Init(int argc, char** argv) {
-	//NOTE: I might need to rearrange the init process so that lua & SQL can interact with the map system as needed.
-	std::cout << "Beginning startup" << std::endl;
-
-	//initial setup
-	ClientEntry::uidCounter = 0;
-	PlayerEntry::uidCounter = 0;
-	config.Load("rsc\\config.cfg");
-
-	//Init SDL
-	if (SDL_Init(0)) {
-		throw(std::runtime_error("Failed to initialize SDL"));
-	}
-	std::cout << "Initialized SDL" << std::endl;
-
-	//Init SDL_net
-	if (SDLNet_Init()) {
-		throw(std::runtime_error("Failed to initialize SDL_net"));
-	}
-	network.Open(config.Int("server.port"), PACKET_BUFFER_SIZE);
-	std::cout << "Initialized SDL_net" << std::endl;
-
-	//Init SQL
-	int ret = sqlite3_open_v2(config["server.dbname"].c_str(), &database, SQLITE_OPEN_READWRITE|SQLITE_OPEN_CREATE, nullptr);
-	if (ret != SQLITE_OK || !database) {
-		throw(std::runtime_error(std::string() + "Failed to initialize SQL: " + sqlite3_errmsg(database) ));
-	}
-	std::cout << "Initialized SQL" << std::endl;
-
-	//setup the database
-	if (runSQLScript(database, config["dir.scripts"] + "setup_server.sql")) {
-		throw(std::runtime_error("Failed to initialize SQL's setup script"));
-	}
-	std::cout << "Initialized SQL's setup script" << std::endl;
-
-	//lua
-	luaState = luaL_newstate();
-	if (!luaState) {
-		throw(std::runtime_error("Failed to initialize lua"));
-	}
-	luaL_openlibs(luaState);
-	std::cout << "Initialized lua" << std::endl;
-
-	//run the startup script
-	if (luaL_dofile(luaState, (config["dir.scripts"] + "setup_server.lua").c_str())) {
-		throw(std::runtime_error(std::string() + "Failed to initialize lua's setup script: " + lua_tostring(luaState, -1) ));
-	}
-	std::cout << "Initialized lua's setup script" << std::endl;
-
-	//setup the map object
-	regionPager.GetAllocator()->SetLuaState(luaState);
-	regionPager.GetFormat()->SetLuaState(luaState);
-	//TODO: config parameter
-	regionPager.GetFormat()->SetSaveDir("save/mapname/");
-
-	std::cout << "Initialized the map system" << std::endl;
-	std::cout << "\tsizeof(SerialPacket): " << sizeof(SerialPacket) << std::endl;
-	std::cout << "\tPACKET_BUFFER_SIZE: " << PACKET_BUFFER_SIZE << std::endl;
-
-	//finalize the startup
-	std::cout << "Startup completed successfully" << std::endl;
-
-	//debugging
-	//
-}
-
-void ServerApplication::Proc() {
-	SerialPacket packet;
-	while(running) {
-		//suck in the waiting packets & process them
-		while(network.Receive()) {
-			//get the packet
-			deserialize(&packet, network.GetInData());
-			//cache the source address
-			packet.meta.srcAddress = network.GetInPacket()->address;
-			//we need to go deeper
-			HandlePacket(packet);
-		}
-		//give the computer a break
-		SDL_Delay(10);
-	}
-}
-
-void ServerApplication::Quit() {
-	std::cout << "Shutting down" << std::endl;
-	//empty the members
-	regionPager.UnloadAll();
-
-	//APIs
-	lua_close(luaState);
-	sqlite3_close_v2(database);
-	network.Close();
-	SDLNet_Quit();
-	SDL_Quit();
-	std::cout << "Shutdown finished" << std::endl;
-}
-
-//-------------------------
-//Define the uber switch
-//-------------------------
-
-void ServerApplication::HandlePacket(SerialPacket packet) {
-	switch(packet.meta.type) {
-		case SerialPacket::Type::BROADCAST_REQUEST:
-			HandleBroadcastRequest(packet);
-		break;
-		case SerialPacket::Type::JOIN_REQUEST:
-			HandleJoinRequest(packet);
-		break;
-		case SerialPacket::Type::DISCONNECT:
-			HandleDisconnect(packet);
-		break;
-		case SerialPacket::Type::SYNCHRONIZE:
-			HandleSynchronize(packet);
-		break;
-		case SerialPacket::Type::SHUTDOWN:
-			HandleShutdown(packet);
-		break;
-		case SerialPacket::Type::PLAYER_NEW:
-			HandlePlayerNew(packet);
-		break;
-		case SerialPacket::Type::PLAYER_DELETE:
-			HandlePlayerDelete(packet);
-		break;
-		case SerialPacket::Type::PLAYER_UPDATE:
-			HandlePlayerUpdate(packet);
-		break;
-		case SerialPacket::Type::REGION_REQUEST:
-			HandleRegionRequest(packet);
-		break;
-		//handle errors
-		default:
-			throw(std::runtime_error("Unknown SerialPacket::Type encountered"));
-		break;
-	}
-}
 
 //-------------------------
 //Handle various network input
 //-------------------------
 
 void ServerApplication::HandleBroadcastRequest(SerialPacket packet) {
-	//send back the server's metadata
-	packet.meta.type = SerialPacket::Type::BROADCAST_RESPONSE;
-
 	//pack the data
+	packet.meta.type = SerialPacket::Type::BROADCAST_RESPONSE;
+	packet.serverInfo.networkVersion = NETWORK_VERSION;
 	snprintf(packet.serverInfo.name, PACKET_STRING_SIZE, "%s", config["server.name"].c_str());
 	packet.serverInfo.playerCount = playerMap.size();
-	packet.serverInfo.regionWidth = REGION_WIDTH;
-	packet.serverInfo.regionHeight = REGION_HEIGHT;
-	packet.serverInfo.regionDepth = REGION_DEPTH;
 
 	//send the data
 	char buffer[PACKET_BUFFER_SIZE];
@@ -195,13 +47,16 @@ void ServerApplication::HandleJoinRequest(SerialPacket packet) {
 	newClient.address = packet.meta.srcAddress;
 	clientMap[ClientEntry::uidCounter] = newClient;
 
-	//send the client their index
-	char buffer[PACKET_BUFFER_SIZE];
+	//create the new player
+	//TODO: make the player
+
+	//send the client their info
 	packet.meta.type = SerialPacket::Type::JOIN_RESPONSE;
 	packet.clientInfo.index = ClientEntry::uidCounter;
-	serialize(&packet, buffer);
 
 	//bounce this packet
+	char buffer[PACKET_BUFFER_SIZE];
+	serialize(&packet, buffer);
 	network.Send(&newClient.address, buffer, PACKET_BUFFER_SIZE);
 
 	//finished this routine
@@ -224,7 +79,7 @@ void ServerApplication::HandleDisconnect(SerialPacket packet) {
 
 	//TODO: can this use DeletePlayer() instead?
 	//delete server and client side players
-	erase_if(playerMap, [&](std::pair<unsigned int, PlayerEntry> it) -> bool {
+	erase_if(playerMap, [&](std::pair<int, PlayerEntry> it) -> bool {
 		//find the internal players to delete
 		if (it.second.clientIndex == packet.clientInfo.index) {
 			//send the delete player command to all clients
@@ -323,7 +178,7 @@ void ServerApplication::HandlePlayerDelete(SerialPacket packet) {
 	delPacket.meta.type = SerialPacket::Type::PLAYER_DELETE;
 
 	//delete the specified playerEntry
-	erase_if(playerMap, [&](std::pair<unsigned int, PlayerEntry> it) -> bool {
+	erase_if(playerMap, [&](std::pair<int, PlayerEntry> it) -> bool {
 		//find the specified PlayerEntry
 		if (it.first == packet.playerInfo.playerIndex) {
 			//send to all

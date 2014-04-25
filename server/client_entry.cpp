@@ -21,4 +21,4 @@
 */
 #include "client_entry.hpp"
 
-unsigned int ClientEntry::uidCounter;
+int ClientEntry::uidCounter = 0;

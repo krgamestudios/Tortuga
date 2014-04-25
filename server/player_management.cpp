@@ -1,4 +1,4 @@
-/* Copyright: (c) Kayne Ruse 2014
+/* Copyright: (c) Kayne Ruse 2013, 2014
  * 
  * This software is provided 'as-is', without any express or implied
  * warranty. In no event will the authors be held liable for any damages
@@ -19,6 +19,28 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#include "player_entry.hpp"
+#include "server_application.hpp"
 
-int PlayerEntry::uidCounter = 0;
+//-------------------------
+//player management
+//-------------------------
+
+void ServerApplication::LoadPlayer() {
+	//
+}
+
+void ServerApplication::UnloadPlayer() {
+	//
+}
+
+void ServerApplication::CreatePlayer() {
+	//
+}
+
+void ServerApplication::DeletePlayer() {
+	//
+}
+
+void ServerApplication::SavePlayer() {
+	//
+}

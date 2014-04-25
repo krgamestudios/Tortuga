@@ -26,7 +26,7 @@
 
 struct ClientEntry {
 	IPaddress address;
-	static unsigned int uidCounter;
+	static int uidCounter;
 };
 
 #endif
