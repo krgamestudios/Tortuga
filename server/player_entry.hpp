@@ -36,25 +36,25 @@ struct PlayerEntry {
 	std::string avatar;
 
 	//world position
-	int mapIndex;
-	Vector2 position;
-	Vector2 motion;
-	BBox bbox;
+	int mapIndex = 0;
+	Vector2 position = {0.0,0.0};
+	Vector2 motion = {0.0,0.0};
+	BBox bbox = {0,0,0,0};
 
 	//statistics
-	int level;
-	int exp;
-	int maxHP;
-	int health;
-	int maxMP;
-	int mana;
-	int attack;
-	int defence;
-	int intelligence;
-	int resistance;
-	float accuracy;
-	float evasion;
-	float luck;
+	int level = 0;
+	int exp = 0;
+	int maxHP = 0;
+	int health = 0;
+	int maxMP = 0;
+	int mana = 0;
+	int attack = 0;
+	int defence = 0;
+	int intelligence = 0;
+	int resistance = 0;
+	float accuracy = 0.0;
+	float evasion = 0.0;
+	float luck = 0.0;
 
 	//uid
 	static int uidCounter;

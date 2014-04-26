@@ -25,7 +25,7 @@
 #include "SDL/SDL_net.h"
 
 struct ClientEntry {
-	IPaddress address;
+	IPaddress address = {0,0};
 	static int uidCounter;
 };
 
