@@ -74,12 +74,8 @@ private:
 	//TODO: a function that only sends to players in a certain proximity
 	void PumpPacket(SerialPacket);
 
-	//player management
-	void LoadPlayer();
-	void UnloadPlayer();
-	void CreatePlayer();
-	void DeletePlayer();
-	void SavePlayer();
+	//TODO: manage the database
+	//TODO: combat systems
 
 	//APIs
 	UDPNetworkUtility network;

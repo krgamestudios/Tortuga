@@ -47,6 +47,7 @@ void ServerApplication::HandleJoinRequest(SerialPacket packet) {
 	newClient.address = packet.meta.srcAddress;
 	clientMap[ClientEntry::uidCounter] = newClient;
 
+	//TODO: move this into the player management code
 	//register the new player
 	PlayerEntry newPlayer;
 	newPlayer.clientIndex = ClientEntry::uidCounter;
@@ -65,7 +66,7 @@ void ServerApplication::HandleJoinRequest(SerialPacket packet) {
 	serialize(&packet, buffer);
 	network.Send(&newClient.address, buffer, PACKET_BUFFER_SIZE);
 
-	//TODO: finish the player's initialization
+	//BUG: the new player object is not being sent to existing clients
 
 	//finished this routine
 	ClientEntry::uidCounter++;
@@ -130,7 +131,7 @@ void ServerApplication::HandleDisconnect(SerialPacket packet) {
 }
 
 void ServerApplication::HandleShutdown(SerialPacket packet) {
-	//TODO: authenticate who is shitting the server down
+	//TODO: authenticate who is shutting the server down
 
 	//end the server
 	running = false;
@@ -145,6 +146,7 @@ void ServerApplication::HandleShutdown(SerialPacket packet) {
 }
 
 void ServerApplication::HandlePlayerUpdate(SerialPacket packet) {
+	//TODO: this should be moved elsewhere
 	if (playerMap.find(packet.playerInfo.playerIndex) == playerMap.end()) {
 		throw(std::runtime_error("Cannot update a non-existant player"));
 	}
@@ -157,6 +159,7 @@ void ServerApplication::HandlePlayerUpdate(SerialPacket packet) {
 }
 
 void ServerApplication::HandleRegionRequest(SerialPacket packet) {
+	//TODO: this should be moved elsewhere
 	packet.meta.type = SerialPacket::Type::REGION_CONTENT;
 	packet.regionInfo.region = regionPager.GetRegion(packet.regionInfo.x, packet.regionInfo.y);
 

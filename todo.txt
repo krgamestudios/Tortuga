@@ -1,5 +1,8 @@
 Please note that due to modificatons, the indicated line may be incorrect.
 
+## BUG
+1. server_connections.cpp:68  the new player object is not being sent to existing clients
+
 ## TODO
 server_application.hpp:74  a function that only sends to players in a certain proximity
 server_application.hpp:94  I need to handle multiple map objects
@@ -28,6 +31,3 @@ bbox.hpp:29  This is supposed to interact with the vector
 region_pager.hpp:49  delete existing regions
 serial_packet.hpp:71  combat packets
 setup_server.sql:1  The SQL startup script needs revising
-
-Move PlayerEntry into a proper class
-Move ClientEntry into a proper class
