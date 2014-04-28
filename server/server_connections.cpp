@@ -42,19 +42,17 @@ void ServerApplication::HandleBroadcastRequest(SerialPacket packet) {
 }
 
 void ServerApplication::HandleJoinRequest(SerialPacket packet) {
-	//register the new client
+	//create the new client
 	ClientEntry newClient;
 	newClient.address = packet.meta.srcAddress;
-	clientMap[ClientEntry::uidCounter] = newClient;
 
 	//TODO: move this into the player management code
-	//register the new player
+	//create the new player
 	PlayerEntry newPlayer;
 	newPlayer.clientIndex = ClientEntry::uidCounter;
 	newPlayer.player = packet.clientInfo.player;
 	newPlayer.handle = packet.clientInfo.handle;
 	newPlayer.avatar = packet.clientInfo.avatar;
-	playerMap[PlayerEntry::uidCounter] = newPlayer;
 
 	//send the client their info
 	packet.meta.type = SerialPacket::Type::JOIN_RESPONSE;
@@ -66,9 +64,18 @@ void ServerApplication::HandleJoinRequest(SerialPacket packet) {
 	serialize(&packet, buffer);
 	network.Send(&newClient.address, buffer, PACKET_BUFFER_SIZE);
 
-	//BUG: the new player object is not being sent to existing clients
+	//send the new player to all clients
+	packet.meta.type = SerialPacket::Type::PLAYER_NEW;
+	packet.playerInfo.playerIndex = PlayerEntry::uidCounter;
+	strncpy(packet.playerInfo.handle, newPlayer.handle.c_str(), PACKET_STRING_SIZE);
+	strncpy(packet.playerInfo.avatar, newPlayer.avatar.c_str(), PACKET_STRING_SIZE);
+	packet.playerInfo.position = newPlayer.position;
+	packet.playerInfo.motion = newPlayer.motion;
+	PumpPacket(packet);
 
 	//finished this routine
+	clientMap[ClientEntry::uidCounter] = newClient;
+	playerMap[PlayerEntry::uidCounter] = newPlayer;
 	ClientEntry::uidCounter++;
 	PlayerEntry::uidCounter++;
 	std::cout << "Connect, total: " << clientMap.size() << std::endl;

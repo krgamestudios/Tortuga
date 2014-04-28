@@ -1,8 +1,5 @@
 Please note that due to modificatons, the indicated line may be incorrect.
 
-## BUG
-1. server_connections.cpp:68  the new player object is not being sent to existing clients
-
 ## TODO
 server_application.hpp:74  a function that only sends to players in a certain proximity
 server_application.hpp:94  I need to handle multiple map objects
