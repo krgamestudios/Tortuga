@@ -23,7 +23,6 @@
 #define SERVERAPPLICATION_HPP_
 
 //server specific stuff
-#include "server_utility.hpp"
 #include "client_entry.hpp"
 #include "player_entry.hpp"
 
@@ -63,19 +62,20 @@ public:
 private:
 	void HandlePacket(SerialPacket);
 
-	//high cohesion utility functions
+	//handle incoming traffic
 	void HandleBroadcastRequest(SerialPacket);
 	void HandleJoinRequest(SerialPacket);
-	void HandleDisconnect(SerialPacket);
 	void HandleSynchronize(SerialPacket);
+	void HandleDisconnect(SerialPacket);
 	void HandleShutdown(SerialPacket);
-	void HandlePlayerNew(SerialPacket);
-	void HandlePlayerDelete(SerialPacket);
 	void HandlePlayerUpdate(SerialPacket);
 	void HandleRegionRequest(SerialPacket);
 
 	//TODO: a function that only sends to players in a certain proximity
 	void PumpPacket(SerialPacket);
+
+	//TODO: manage the database
+	//TODO: combat systems
 
 	//APIs
 	UDPNetworkUtility network;
@@ -83,8 +83,8 @@ private:
 	lua_State* luaState = nullptr;
 
 	//server tables
-	std::map<unsigned int, ClientEntry> clientMap;
-	std::map<unsigned int, PlayerEntry> playerMap;
+	std::map<int, ClientEntry> clientMap;
+	std::map<int, PlayerEntry> playerMap;
 
 	//maps
 	//TODO: I need to handle multiple map objects

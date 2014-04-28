@@ -28,9 +28,6 @@
 #include "button.hpp"
 #include "config_utility.hpp"
 
-//map
-#include "region.hpp"
-
 //network
 #include "udp_network_utility.hpp"
 #include "serial_packet.hpp"
@@ -45,7 +42,7 @@
 class LobbyMenu : public BaseScene {
 public:
 	//Public access members
-	LobbyMenu(ConfigUtility* const, UDPNetworkUtility* const, int* const);
+	LobbyMenu(ConfigUtility* const, UDPNetworkUtility* const, int* const, int* const);
 	~LobbyMenu();
 
 protected:
@@ -64,10 +61,11 @@ protected:
 
 	void HandlePacket(SerialPacket);
 
-	//global
+	//shared parameters
 	ConfigUtility& config;
 	UDPNetworkUtility& network;
 	int& clientIndex;
+	int& playerIndex;
 
 	//members
 	Image image;
@@ -79,7 +77,7 @@ protected:
 	//server list
 	struct ServerInformation {
 		IPaddress address;
-		//TODO: version info
+		int networkVersion;
 		std::string name;
 		int playerCount;
 		bool compatible;

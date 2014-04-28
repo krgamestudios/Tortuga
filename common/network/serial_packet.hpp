@@ -27,6 +27,7 @@
 
 #include "SDL/SDL_net.h"
 
+#define NETWORK_VERSION 20140428
 #define PACKET_STRING_SIZE 100
 
 #pragma pack(push, 0)
@@ -49,23 +50,23 @@ union SerialPacket {
 		JOIN_REQUEST = 5,
 		JOIN_RESPONSE = 6,
 
-		//disconnect from the server
-		DISCONNECT = 7,
-
 		//mass update
-		SYNCHRONIZE = 8,
+		SYNCHRONIZE = 7,
+
+		//disconnect from the server
+		DISCONNECT = 8,
 
 		//shut down the server
 		SHUTDOWN = 9,
 
-		//Player movement, etc.
-		PLAYER_NEW = 10,
-		PLAYER_DELETE = 11,
-		PLAYER_UPDATE = 12,
-
 		//map data
-		REGION_REQUEST = 13,
-		REGION_CONTENT = 14,
+		REGION_REQUEST = 10,
+		REGION_CONTENT = 11,
+
+		//Player movement, etc.
+		PLAYER_NEW = 12,
+		PLAYER_DELETE = 13,
+		PLAYER_UPDATE = 14,
 
 		//TODO: combat packets
 	};
@@ -79,41 +80,40 @@ union SerialPacket {
 	//information about the server
 	struct ServerInformation {
 		Metadata meta;
-		//TODO: version info
+		int networkVersion;
 		char name[PACKET_STRING_SIZE];
 		int playerCount;
-
-		//map format
-		int regionWidth;
-		int regionHeight;
-		int regionDepth;
 	}serverInfo;
 
 	//information about the client
-	//TODO: login credentials
 	struct ClientInformation {
 		Metadata meta;
-		int index;
+		int clientIndex;
+		int playerIndex;
+		char player[PACKET_STRING_SIZE];
+		char handle[PACKET_STRING_SIZE];
+		char avatar[PACKET_STRING_SIZE];
 	}clientInfo;
+
+	//map data
+	struct RegionInformation {
+		Metadata meta;
+		int mapIndex;
+		int x, y;
+		Region* region;
+	}regionInfo;
 
 	//information about a player
 	struct PlayerInformation {
 		Metadata meta;
 		int clientIndex;
 		int playerIndex;
-		//TODO: should move handle/avatar into clientInfo; these might actually do better during the login system
 		char handle[PACKET_STRING_SIZE];
 		char avatar[PACKET_STRING_SIZE];
+		int mapIndex;
 		Vector2 position;
 		Vector2 motion;
 	}playerInfo;
-
-	//map data
-	struct RegionInformation {
-		Metadata meta;
-		int x, y;
-		Region* region;
-	}regionInfo;
 
 	//defaults
 	SerialPacket() {

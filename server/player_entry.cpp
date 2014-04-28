@@ -21,4 +21,4 @@
 */
 #include "player_entry.hpp"
 
-unsigned int PlayerEntry::uidCounter;
+int PlayerEntry::uidCounter = 0;

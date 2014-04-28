@@ -40,7 +40,7 @@ protected:
 	void Update(double delta);
 	void Render(SDL_Surface* const);
 
-	//globals
+	//shared parameters
 	ConfigUtility& config;
 
 	//members

@@ -31,10 +31,11 @@
 //Public access members
 //-------------------------
 
-InWorld::InWorld(ConfigUtility* const argConfig, UDPNetworkUtility* const argNetwork, int* const argClientIndex):
+InWorld::InWorld(ConfigUtility* const argConfig, UDPNetworkUtility* const argNetwork, int* const argClientIndex, int* const argPlayerIndex):
 	config(*argConfig),
 	network(*argNetwork),
-	clientIndex(*argClientIndex)
+	clientIndex(*argClientIndex),
+	playerIndex(*argPlayerIndex)
 {
 	//setup the utility objects
 	buttonImage.LoadSurface(config["dir.interface"] + "button_menu.bmp");
@@ -61,23 +62,12 @@ InWorld::InWorld(ConfigUtility* const argConfig, UDPNetworkUtility* const argNet
 	//TODO: add the tilesheet to the map system?
 	tileSheet.Load(config["dir.tilesets"] + "terrain.bmp", 12, 15);
 
-	//create the server-side player object
-	//TODO: the login system needs an overhaul
-	SerialPacket packet;
-	packet.meta.type = SerialPacket::Type::PLAYER_NEW;
-	packet.playerInfo.clientIndex = clientIndex;
-	snprintf(packet.playerInfo.handle, PACKET_STRING_SIZE, "%s", config["player.handle"].c_str());
-	snprintf(packet.playerInfo.avatar, PACKET_STRING_SIZE, "%s", config["player.avatar"].c_str());
-	packet.playerInfo.position = {0,0};
-	packet.playerInfo.motion = {0,0};
-
-	//send it
-	char buffer[PACKET_BUFFER_SIZE];
-	serialize(&packet, buffer);
-	network.Send(Channels::SERVER, buffer, PACKET_BUFFER_SIZE);
-
 	//request a sync
+	SerialPacket packet;
+	char buffer[PACKET_STRING_SIZE];
 	packet.meta.type = SerialPacket::Type::SYNCHRONIZE;
+	packet.clientInfo.clientIndex = clientIndex;
+	packet.clientInfo.playerIndex = playerIndex;
 	serialize(&packet, buffer);
 	network.Send(Channels::SERVER, buffer, PACKET_BUFFER_SIZE);
 
@@ -190,28 +180,28 @@ void InWorld::KeyDown(SDL_KeyboardEvent const& key) {
 		case SDLK_LEFT:
 			if (localCharacter) {
 				localCharacter->AdjustDirection(PlayerCharacter::Direction::WEST);
-				SendState();
+				SendPlayerUpdate();
 			}
 		break;
 
 		case SDLK_RIGHT:
 			if (localCharacter) {
 				localCharacter->AdjustDirection(PlayerCharacter::Direction::EAST);
-				SendState();
+				SendPlayerUpdate();
 			}
 		break;
 
 		case SDLK_UP:
 			if (localCharacter) {
 				localCharacter->AdjustDirection(PlayerCharacter::Direction::NORTH);
-				SendState();
+				SendPlayerUpdate();
 			}
 		break;
 
 		case SDLK_DOWN:
 			if (localCharacter) {
 				localCharacter->AdjustDirection(PlayerCharacter::Direction::SOUTH);
-				SendState();
+				SendPlayerUpdate();
 			}
 		break;
 	}
@@ -223,28 +213,28 @@ void InWorld::KeyUp(SDL_KeyboardEvent const& key) {
 		case SDLK_LEFT:
 			if (localCharacter) {
 				localCharacter->AdjustDirection(PlayerCharacter::Direction::EAST);
-				SendState();
+				SendPlayerUpdate();
 			}
 		break;
 
 		case SDLK_RIGHT:
 			if (localCharacter) {
 				localCharacter->AdjustDirection(PlayerCharacter::Direction::WEST);
-				SendState();
+				SendPlayerUpdate();
 			}
 		break;
 
 		case SDLK_UP:
 			if (localCharacter) {
 				localCharacter->AdjustDirection(PlayerCharacter::Direction::SOUTH);
-				SendState();
+				SendPlayerUpdate();
 			}
 		break;
 
 		case SDLK_DOWN:
 			if (localCharacter) {
 				localCharacter->AdjustDirection(PlayerCharacter::Direction::NORTH);
-				SendState();
+				SendPlayerUpdate();
 			}
 		break;
 	}
@@ -259,17 +249,17 @@ void InWorld::HandlePacket(SerialPacket packet) {
 		case SerialPacket::Type::DISCONNECT:
 			HandleDisconnect(packet);
 		break;
+		case SerialPacket::Type::REGION_CONTENT:
+			HandleRegionContent(packet);
+		break;
+		case SerialPacket::Type::PLAYER_UPDATE:
+			HandlePlayerUpdate(packet);
+		break;
 		case SerialPacket::Type::PLAYER_NEW:
 			HandlePlayerNew(packet);
 		break;
 		case SerialPacket::Type::PLAYER_DELETE:
 			HandlePlayerDelete(packet);
-		break;
-		case SerialPacket::Type::PLAYER_UPDATE:
-			HandlePlayerUpdate(packet);
-		break;
-		case SerialPacket::Type::REGION_CONTENT:
-			HandleRegionContent(packet);
 		break;
 		//handle errors
 		default:
@@ -281,7 +271,32 @@ void InWorld::HandlePacket(SerialPacket packet) {
 void InWorld::HandleDisconnect(SerialPacket packet) {
 	network.Unbind(Channels::SERVER);
 	clientIndex = -1;
+	playerIndex = -1;
 	SetNextScene(SceneList::MAINMENU);
+}
+
+void InWorld::HandleRegionContent(SerialPacket packet) {
+	//replace existing regions
+	//TODO: account for map index
+	if (regionPager.FindRegion(packet.regionInfo.x, packet.regionInfo.y)) {
+		regionPager.UnloadRegion(packet.regionInfo.x, packet.regionInfo.y);
+	}
+	regionPager.PushRegion(packet.regionInfo.region);
+	packet.regionInfo.region = nullptr;
+}
+
+void InWorld::HandlePlayerUpdate(SerialPacket packet) {
+	if (playerCharacters.find(packet.playerInfo.playerIndex) == playerCharacters.end()) {
+		HandlePlayerNew(packet);
+		return;
+	}
+
+	//update only if the message didn't originate from here
+	if (packet.playerInfo.clientIndex != clientIndex) {
+		playerCharacters[packet.playerInfo.playerIndex].SetPosition(packet.playerInfo.position);
+		playerCharacters[packet.playerInfo.playerIndex].SetMotion(packet.playerInfo.motion);
+	}
+	playerCharacters[packet.playerInfo.playerIndex].ResetDirection();
 }
 
 void InWorld::HandlePlayerNew(SerialPacket packet) {
@@ -289,15 +304,16 @@ void InWorld::HandlePlayerNew(SerialPacket packet) {
 		throw(std::runtime_error("Cannot create duplicate players"));
 	}
 
+	//TODO: set the handle
 	playerCharacters[packet.playerInfo.playerIndex].GetSprite()->LoadSurface(config["dir.sprites"] + packet.playerInfo.avatar, 4, 4);
 	playerCharacters[packet.playerInfo.playerIndex].SetPosition(packet.playerInfo.position);
 	playerCharacters[packet.playerInfo.playerIndex].SetMotion(packet.playerInfo.motion);
 	playerCharacters[packet.playerInfo.playerIndex].ResetDirection();
 
 	//catch this client's player object
-	if (packet.playerInfo.clientIndex == clientIndex && !localCharacter) {
-		playerIndex = packet.playerInfo.playerIndex;
+	if (packet.playerInfo.playerIndex == playerIndex && !localCharacter) {
 		localCharacter = &playerCharacters[playerIndex];
+
 		//setup the camera
 		camera.width = GetScreen()->w;
 		camera.height = GetScreen()->h;
@@ -315,40 +331,17 @@ void InWorld::HandlePlayerDelete(SerialPacket packet) {
 	playerCharacters.erase(packet.playerInfo.playerIndex);
 
 	//catch this client's player object
-	if (packet.playerInfo.clientIndex == clientIndex) {
+	if (packet.playerInfo.playerIndex == playerIndex) {
 		playerIndex = -1;
 		localCharacter = nullptr;
 	}
-}
-
-void InWorld::HandlePlayerUpdate(SerialPacket packet) {
-	if (playerCharacters.find(packet.playerInfo.playerIndex) == playerCharacters.end()) {
-		HandlePlayerNew(packet);
-		return;
-	}
-
-	//update only if the message didn't originate from here
-	if (packet.playerInfo.clientIndex != clientIndex) {
-		playerCharacters[packet.playerInfo.playerIndex].SetPosition(packet.playerInfo.position);
-		playerCharacters[packet.playerInfo.playerIndex].SetMotion(packet.playerInfo.motion);
-	}
-	playerCharacters[packet.playerInfo.playerIndex].ResetDirection();
-}
-
-void InWorld::HandleRegionContent(SerialPacket packet) {
-	//replace existing regions
-	if (regionPager.FindRegion(packet.regionInfo.x, packet.regionInfo.y)) {
-		regionPager.UnloadRegion(packet.regionInfo.x, packet.regionInfo.y);
-	}
-	regionPager.PushRegion(packet.regionInfo.region);
-	packet.regionInfo.region = nullptr;
 }
 
 //-------------------------
 //Server control
 //-------------------------
 
-void InWorld::SendState() {
+void InWorld::SendPlayerUpdate() {
 	SerialPacket packet;
 	char buffer[PACKET_BUFFER_SIZE];
 
@@ -369,7 +362,7 @@ void InWorld::RequestDisconnect() {
 
 	//send a disconnect request
 	packet.meta.type = SerialPacket::Type::DISCONNECT;
-	packet.clientInfo.index = clientIndex;
+	packet.clientInfo.clientIndex = clientIndex;
 	serialize(&packet, buffer);
 	network.Send(Channels::SERVER, buffer, PACKET_BUFFER_SIZE);
 }
@@ -380,17 +373,18 @@ void InWorld::RequestShutDown() {
 
 	//send a shutdown request
 	packet.meta.type = SerialPacket::Type::SHUTDOWN;
-	packet.clientInfo.index = clientIndex;
+	packet.clientInfo.clientIndex = clientIndex;
 	serialize(&packet, buffer);
 	network.Send(Channels::SERVER, buffer, PACKET_BUFFER_SIZE);
 }
 
-void InWorld::RequestRegion(int x, int y) {
+void InWorld::RequestRegion(int mapIndex, int x, int y) {
 	SerialPacket packet;
 	char buffer[PACKET_BUFFER_SIZE];
 
 	//pack the region's data
 	packet.meta.type = SerialPacket::Type::REGION_REQUEST;
+	packet.regionInfo.mapIndex = mapIndex;
 	packet.regionInfo.x = x;
 	packet.regionInfo.y = y;
 	serialize(&packet, buffer);
@@ -430,7 +424,7 @@ void InWorld::UpdateMap() {
 	for (int i = xStart; i <= xEnd; i += REGION_WIDTH) {
 		for (int j = yStart; j <= yEnd; j += REGION_HEIGHT) {
 			if (!regionPager.FindRegion(i, j)) {
-				RequestRegion(i, j);
+				RequestRegion(0, i, j);
 			}
 		}
 	}
