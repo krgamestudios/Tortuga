@@ -1,0 +1,30 @@
+I need to keep the documentation up to date. Namey, the GDD is getting out of date.
+
+--Naming conventions--
+
+I need to define the differences between several different terms i.e. naming conventions.
+I may also need to rewrite some variable names.
+
+* User: This is the individual who is playing the game
+* Player: A synonym for a user
+* Character: This is the actual player character in the game
+* Username: This is the name of the player; ususally kept private
+* Handle: This is the name of a character
+* Avatar: This is the name of the sprite used by a character
+
+--ServerApplication's methods--
+
+These interact with the database file, making the server a persistent system.
+
+* CreateUserAccount
+* LoadUserAccount
+* SaveUserAccount
+* UnloadUserAccount
+* DeleteUserAccount
+
+* CreateCharacter
+* LoadCharacter
+* SaveCharacter
+* UnloadCharacter
+* DeleteCharacter
+

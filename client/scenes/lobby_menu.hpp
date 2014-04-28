@@ -65,7 +65,7 @@ protected:
 	ConfigUtility& config;
 	UDPNetworkUtility& network;
 	int& clientIndex;
-	int& playerIndex;
+	int& characterIndex;
 
 	//members
 	Image image;

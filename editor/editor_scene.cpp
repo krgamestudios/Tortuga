@@ -170,29 +170,29 @@ void EditorScene::HandleMenuOption(int entry, int drop) {
 		case 0: //File
 			switch(drop) {
 				case 0:
-					//TODO: NEW
+					//NEW
 				break;
 				case 1:
-					//TODO: OPEN
+					//OPEN
 				break;
 				case 2:
-					//TODO: SAVE
+					//SAVE
 				break;
 				case 3:
-					//TODO: CLOSE
+					//CLOSE
 				break;
 			}
 		break;
 		case 1: //Edit
 			switch(drop) {
 				case 0:
-					//TODO: SET TILE
+					//SET TILE
 				break;
 				case 1:
-					//TODO: SET BRUSH
+					//SET BRUSH
 				break;
 				case 2:
-					//TODO: SCRIPT
+					//SCRIPT
 				break;
 			}
 		break;

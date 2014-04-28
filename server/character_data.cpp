@@ -19,14 +19,6 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef CLIENTENTRY_HPP_
-#define CLIENTENTRY_HPP_
+#include "character_data.hpp"
 
-#include "SDL/SDL_net.h"
-
-struct ClientEntry {
-	IPaddress address = {0,0};
-	static int uidCounter;
-};
-
-#endif
+int CharacterData::uidCounter = 0;

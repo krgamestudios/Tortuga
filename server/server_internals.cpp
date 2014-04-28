@@ -154,8 +154,8 @@ void ServerApplication::HandlePacket(SerialPacket packet) {
 		case SerialPacket::Type::SHUTDOWN:
 			HandleShutdown(packet);
 		break;
-		case SerialPacket::Type::PLAYER_UPDATE:
-			HandlePlayerUpdate(packet);
+		case SerialPacket::Type::CHARACTER_UPDATE:
+			HandleCharacterUpdate(packet);
 		break;
 		case SerialPacket::Type::REGION_REQUEST:
 			HandleRegionRequest(packet);

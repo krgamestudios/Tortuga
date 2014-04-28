@@ -48,7 +48,7 @@ private:
 	ConfigUtility config;
 	UDPNetworkUtility network;
 	int clientIndex = -1;
-	int playerIndex = -1;
+	int characterIndex = -1;
 };
 
 #endif

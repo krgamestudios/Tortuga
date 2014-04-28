@@ -30,11 +30,11 @@
 //Public access members
 //-------------------------
 
-LobbyMenu::LobbyMenu(ConfigUtility* const argConfig, UDPNetworkUtility* const argNetwork, int* const argClientIndex, int* const argPlayerIndex):
+LobbyMenu::LobbyMenu(ConfigUtility* const argConfig, UDPNetworkUtility* const argNetwork, int* const argClientIndex, int* const argCharacterIndex):
 	config(*argConfig),
 	network(*argNetwork),
 	clientIndex(*argClientIndex),
-	playerIndex(*argPlayerIndex)
+	characterIndex(*argCharacterIndex)
 {
 	//setup the utility objects
 	image.LoadSurface(config["dir.interface"] + "button_menu.bmp");
@@ -119,7 +119,7 @@ void LobbyMenu::Render(SDL_Surface* const screen) {
 			font.DrawStringTo("?", screen, listBox.x - font.GetCharW(), listBox.y + i*listBox.h);
 		}
 
-		//TODO: ping?
+		//ping?
 	}
 }
 
@@ -162,7 +162,7 @@ void LobbyMenu::MouseButtonUp(SDL_MouseButtonEvent const& button) {
 
 		//pack the packet
 		packet.meta.type = SerialPacket::Type::JOIN_REQUEST;
-		strncpy(packet.clientInfo.player, config["client.player"].c_str(), PACKET_STRING_SIZE);
+		strncpy(packet.clientInfo.username, config["client.username"].c_str(), PACKET_STRING_SIZE);
 		strncpy(packet.clientInfo.handle, config["client.handle"].c_str(), PACKET_STRING_SIZE);
 		strncpy(packet.clientInfo.avatar, config["client.avatar"].c_str(), PACKET_STRING_SIZE);
 
@@ -221,7 +221,7 @@ void LobbyMenu::HandlePacket(SerialPacket packet) {
 		break;
 		case SerialPacket::Type::JOIN_RESPONSE:
 			clientIndex = packet.clientInfo.clientIndex;
-			playerIndex = packet.clientInfo.playerIndex;
+			characterIndex = packet.clientInfo.characterIndex;
 			network.Bind(&packet.meta.srcAddress, Channels::SERVER);
 			SetNextScene(SceneList::INWORLD);
 		break;

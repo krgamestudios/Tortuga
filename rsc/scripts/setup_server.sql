@@ -1,5 +1,3 @@
---TODO: The SQL startup script needs revising
-
 -------------------------
 --Server
 -------------------------
@@ -7,7 +5,8 @@
 CREATE TABLE IF NOT EXISTS UserAccounts (
 	uid INTEGER PRIMARY KEY AUTOINCREMENT,
 	username varchar(100) UNIQUE,
-	password varchar(100), --NOTE: DO NOT DO THIS!!
+	--TODO: server-client security
+--	password varchar(100),
 	blacklisted BIT DEFAULT 0,
 	whitelisted BIT DEFAULT 1
 );
@@ -50,6 +49,7 @@ CREATE TABLE IF NOT EXISTS PlayerCharacters (
 	uid INTEGER PRIMARY KEY AUTOINCREMENT,
 
 	--metadata
+	owner INTEGER REFERENCES UserAccounts(uid),
 	handle varchar(100) UNIQUE,
 	avatar varchar(100),
 	birth timestamp NOT NULL DEFAULT (datetime()),
