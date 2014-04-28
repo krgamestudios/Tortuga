@@ -1,0 +1,1922 @@
+diff --git a/client/client_application.cpp b/client/client_application.cpp
+index ecddb97..b71140f 100644
+--- a/client/client_application.cpp
++++ b/client/client_application.cpp
+@@ -119,10 +119,10 @@ void ClientApplication::LoadScene(SceneList sceneIndex) {
+ 			activeScene = new OptionsMenu(&config);
+ 		break;
+ 		case SceneList::LOBBYMENU:
+-			activeScene = new LobbyMenu(&config, &network, &clientIndex);
++			activeScene = new LobbyMenu(&config, &network, &clientIndex, &playerIndex);
+ 		break;
+ 		case SceneList::INWORLD:
+-			activeScene = new InWorld(&config, &network, &clientIndex);
++			activeScene = new InWorld(&config, &network, &clientIndex, &playerIndex);
+ 		break;
+ 		case SceneList::INCOMBAT:
+ 			activeScene = new InCombat();
+diff --git a/client/client_application.hpp b/client/client_application.hpp
+index d4b22f5..40e00b0 100644
+--- a/client/client_application.hpp
++++ b/client/client_application.hpp
+@@ -44,9 +44,11 @@ private:
+ 
+ 	BaseScene* activeScene = nullptr;
+ 
++	//shared parameters
+ 	ConfigUtility config;
+ 	UDPNetworkUtility network;
+-	int clientIndex = -1; //replace with a struct?
++	int clientIndex = -1;
++	int playerIndex = -1;
+ };
+ 
+ #endif
+diff --git a/client/scenes/in_world.cpp b/client/scenes/in_world.cpp
+index 37c533f..7e3805d 100644
+--- a/client/scenes/in_world.cpp
++++ b/client/scenes/in_world.cpp
+@@ -31,10 +31,11 @@
+ //Public access members
+ //-------------------------
+ 
+-InWorld::InWorld(ConfigUtility* const argConfig, UDPNetworkUtility* const argNetwork, int* const argClientIndex):
++InWorld::InWorld(ConfigUtility* const argConfig, UDPNetworkUtility* const argNetwork, int* const argClientIndex, int* const argPlayerIndex):
+ 	config(*argConfig),
+ 	network(*argNetwork),
+-	clientIndex(*argClientIndex)
++	clientIndex(*argClientIndex),
++	playerIndex(*argPlayerIndex)
+ {
+ 	//setup the utility objects
+ 	buttonImage.LoadSurface(config["dir.interface"] + "button_menu.bmp");
+@@ -61,23 +62,12 @@ InWorld::InWorld(ConfigUtility* const argConfig, UDPNetworkUtility* const argNet
+ 	//TODO: add the tilesheet to the map system?
+ 	tileSheet.Load(config["dir.tilesets"] + "terrain.bmp", 12, 15);
+ 
+-	//create the server-side player object
+-	//TODO: the login system needs an overhaul
+-	SerialPacket packet;
+-	packet.meta.type = SerialPacket::Type::PLAYER_NEW;
+-	packet.playerInfo.clientIndex = clientIndex;
+-	snprintf(packet.playerInfo.handle, PACKET_STRING_SIZE, "%s", config["player.handle"].c_str());
+-	snprintf(packet.playerInfo.avatar, PACKET_STRING_SIZE, "%s", config["player.avatar"].c_str());
+-	packet.playerInfo.position = {0,0};
+-	packet.playerInfo.motion = {0,0};
+-
+-	//send it
+-	char buffer[PACKET_BUFFER_SIZE];
+-	serialize(&packet, buffer);
+-	network.Send(Channels::SERVER, buffer, PACKET_BUFFER_SIZE);
+-
+ 	//request a sync
++	SerialPacket packet;
++	char buffer[PACKET_STRING_SIZE];
+ 	packet.meta.type = SerialPacket::Type::SYNCHRONIZE;
++	packet.clientInfo.clientIndex = clientIndex;
++	packet.clientInfo.playerIndex = playerIndex;
+ 	serialize(&packet, buffer);
+ 	network.Send(Channels::SERVER, buffer, PACKET_BUFFER_SIZE);
+ 
+@@ -190,28 +180,28 @@ void InWorld::KeyDown(SDL_KeyboardEvent const& key) {
+ 		case SDLK_LEFT:
+ 			if (localCharacter) {
+ 				localCharacter->AdjustDirection(PlayerCharacter::Direction::WEST);
+-				SendState();
++				SendPlayerUpdate();
+ 			}
+ 		break;
+ 
+ 		case SDLK_RIGHT:
+ 			if (localCharacter) {
+ 				localCharacter->AdjustDirection(PlayerCharacter::Direction::EAST);
+-				SendState();
++				SendPlayerUpdate();
+ 			}
+ 		break;
+ 
+ 		case SDLK_UP:
+ 			if (localCharacter) {
+ 				localCharacter->AdjustDirection(PlayerCharacter::Direction::NORTH);
+-				SendState();
++				SendPlayerUpdate();
+ 			}
+ 		break;
+ 
+ 		case SDLK_DOWN:
+ 			if (localCharacter) {
+ 				localCharacter->AdjustDirection(PlayerCharacter::Direction::SOUTH);
+-				SendState();
++				SendPlayerUpdate();
+ 			}
+ 		break;
+ 	}
+@@ -223,28 +213,28 @@ void InWorld::KeyUp(SDL_KeyboardEvent const& key) {
+ 		case SDLK_LEFT:
+ 			if (localCharacter) {
+ 				localCharacter->AdjustDirection(PlayerCharacter::Direction::EAST);
+-				SendState();
++				SendPlayerUpdate();
+ 			}
+ 		break;
+ 
+ 		case SDLK_RIGHT:
+ 			if (localCharacter) {
+ 				localCharacter->AdjustDirection(PlayerCharacter::Direction::WEST);
+-				SendState();
++				SendPlayerUpdate();
+ 			}
+ 		break;
+ 
+ 		case SDLK_UP:
+ 			if (localCharacter) {
+ 				localCharacter->AdjustDirection(PlayerCharacter::Direction::SOUTH);
+-				SendState();
++				SendPlayerUpdate();
+ 			}
+ 		break;
+ 
+ 		case SDLK_DOWN:
+ 			if (localCharacter) {
+ 				localCharacter->AdjustDirection(PlayerCharacter::Direction::NORTH);
+-				SendState();
++				SendPlayerUpdate();
+ 			}
+ 		break;
+ 	}
+@@ -259,18 +249,18 @@ void InWorld::HandlePacket(SerialPacket packet) {
+ 		case SerialPacket::Type::DISCONNECT:
+ 			HandleDisconnect(packet);
+ 		break;
++		case SerialPacket::Type::REGION_CONTENT:
++			HandleRegionContent(packet);
++		break;
++		case SerialPacket::Type::PLAYER_UPDATE:
++			HandlePlayerUpdate(packet);
++		break;
+ 		case SerialPacket::Type::PLAYER_NEW:
+ 			HandlePlayerNew(packet);
+ 		break;
+ 		case SerialPacket::Type::PLAYER_DELETE:
+ 			HandlePlayerDelete(packet);
+ 		break;
+-		case SerialPacket::Type::PLAYER_UPDATE:
+-			HandlePlayerUpdate(packet);
+-		break;
+-		case SerialPacket::Type::REGION_CONTENT:
+-			HandleRegionContent(packet);
+-		break;
+ 		//handle errors
+ 		default:
+ 			throw(std::runtime_error("Unknown SerialPacket::Type encountered"));
+@@ -281,23 +271,49 @@ void InWorld::HandlePacket(SerialPacket packet) {
+ void InWorld::HandleDisconnect(SerialPacket packet) {
+ 	network.Unbind(Channels::SERVER);
+ 	clientIndex = -1;
++	playerIndex = -1;
+ 	SetNextScene(SceneList::MAINMENU);
+ }
+ 
++void InWorld::HandleRegionContent(SerialPacket packet) {
++	//replace existing regions
++	//TODO: account for map index
++	if (regionPager.FindRegion(packet.regionInfo.x, packet.regionInfo.y)) {
++		regionPager.UnloadRegion(packet.regionInfo.x, packet.regionInfo.y);
++	}
++	regionPager.PushRegion(packet.regionInfo.region);
++	packet.regionInfo.region = nullptr;
++}
++
++void InWorld::HandlePlayerUpdate(SerialPacket packet) {
++	if (playerCharacters.find(packet.playerInfo.playerIndex) == playerCharacters.end()) {
++		HandlePlayerNew(packet);
++		return;
++	}
++
++	//update only if the message didn't originate from here
++	if (packet.playerInfo.clientIndex != clientIndex) {
++		playerCharacters[packet.playerInfo.playerIndex].SetPosition(packet.playerInfo.position);
++		playerCharacters[packet.playerInfo.playerIndex].SetMotion(packet.playerInfo.motion);
++	}
++	playerCharacters[packet.playerInfo.playerIndex].ResetDirection();
++}
++
+ void InWorld::HandlePlayerNew(SerialPacket packet) {
+ 	if (playerCharacters.find(packet.playerInfo.playerIndex) != playerCharacters.end()) {
+ 		throw(std::runtime_error("Cannot create duplicate players"));
+ 	}
+ 
++	//TODO: set the handle
+ 	playerCharacters[packet.playerInfo.playerIndex].GetSprite()->LoadSurface(config["dir.sprites"] + packet.playerInfo.avatar, 4, 4);
+ 	playerCharacters[packet.playerInfo.playerIndex].SetPosition(packet.playerInfo.position);
+ 	playerCharacters[packet.playerInfo.playerIndex].SetMotion(packet.playerInfo.motion);
+ 	playerCharacters[packet.playerInfo.playerIndex].ResetDirection();
+ 
+ 	//catch this client's player object
+-	if (packet.playerInfo.clientIndex == clientIndex && !localCharacter) {
+-		playerIndex = packet.playerInfo.playerIndex;
++	if (packet.playerInfo.playerIndex == playerIndex && !localCharacter) {
+ 		localCharacter = &playerCharacters[playerIndex];
++
+ 		//setup the camera
+ 		camera.width = GetScreen()->w;
+ 		camera.height = GetScreen()->h;
+@@ -315,40 +331,17 @@ void InWorld::HandlePlayerDelete(SerialPacket packet) {
+ 	playerCharacters.erase(packet.playerInfo.playerIndex);
+ 
+ 	//catch this client's player object
+-	if (packet.playerInfo.clientIndex == clientIndex) {
++	if (packet.playerInfo.playerIndex == playerIndex) {
+ 		playerIndex = -1;
+ 		localCharacter = nullptr;
+ 	}
+ }
+ 
+-void InWorld::HandlePlayerUpdate(SerialPacket packet) {
+-	if (playerCharacters.find(packet.playerInfo.playerIndex) == playerCharacters.end()) {
+-		HandlePlayerNew(packet);
+-		return;
+-	}
+-
+-	//update only if the message didn't originate from here
+-	if (packet.playerInfo.clientIndex != clientIndex) {
+-		playerCharacters[packet.playerInfo.playerIndex].SetPosition(packet.playerInfo.position);
+-		playerCharacters[packet.playerInfo.playerIndex].SetMotion(packet.playerInfo.motion);
+-	}
+-	playerCharacters[packet.playerInfo.playerIndex].ResetDirection();
+-}
+-
+-void InWorld::HandleRegionContent(SerialPacket packet) {
+-	//replace existing regions
+-	if (regionPager.FindRegion(packet.regionInfo.x, packet.regionInfo.y)) {
+-		regionPager.UnloadRegion(packet.regionInfo.x, packet.regionInfo.y);
+-	}
+-	regionPager.PushRegion(packet.regionInfo.region);
+-	packet.regionInfo.region = nullptr;
+-}
+-
+ //-------------------------
+ //Server control
+ //-------------------------
+ 
+-void InWorld::SendState() {
++void InWorld::SendPlayerUpdate() {
+ 	SerialPacket packet;
+ 	char buffer[PACKET_BUFFER_SIZE];
+ 
+@@ -369,7 +362,7 @@ void InWorld::RequestDisconnect() {
+ 
+ 	//send a disconnect request
+ 	packet.meta.type = SerialPacket::Type::DISCONNECT;
+-	packet.clientInfo.index = clientIndex;
++	packet.clientInfo.clientIndex = clientIndex;
+ 	serialize(&packet, buffer);
+ 	network.Send(Channels::SERVER, buffer, PACKET_BUFFER_SIZE);
+ }
+@@ -380,17 +373,18 @@ void InWorld::RequestShutDown() {
+ 
+ 	//send a shutdown request
+ 	packet.meta.type = SerialPacket::Type::SHUTDOWN;
+-	packet.clientInfo.index = clientIndex;
++	packet.clientInfo.clientIndex = clientIndex;
+ 	serialize(&packet, buffer);
+ 	network.Send(Channels::SERVER, buffer, PACKET_BUFFER_SIZE);
+ }
+ 
+-void InWorld::RequestRegion(int x, int y) {
++void InWorld::RequestRegion(int mapIndex, int x, int y) {
+ 	SerialPacket packet;
+ 	char buffer[PACKET_BUFFER_SIZE];
+ 
+ 	//pack the region's data
+ 	packet.meta.type = SerialPacket::Type::REGION_REQUEST;
++	packet.regionInfo.mapIndex = mapIndex;
+ 	packet.regionInfo.x = x;
+ 	packet.regionInfo.y = y;
+ 	serialize(&packet, buffer);
+@@ -430,7 +424,7 @@ void InWorld::UpdateMap() {
+ 	for (int i = xStart; i <= xEnd; i += REGION_WIDTH) {
+ 		for (int j = yStart; j <= yEnd; j += REGION_HEIGHT) {
+ 			if (!regionPager.FindRegion(i, j)) {
+-				RequestRegion(i, j);
++				RequestRegion(0, i, j);
+ 			}
+ 		}
+ 	}
+diff --git a/client/scenes/in_world.hpp b/client/scenes/in_world.hpp
+index bb0cc5c..00dcfa2 100644
+--- a/client/scenes/in_world.hpp
++++ b/client/scenes/in_world.hpp
+@@ -52,7 +52,7 @@
+ class InWorld : public BaseScene {
+ public:
+ 	//Public access members
+-	InWorld(ConfigUtility* const, UDPNetworkUtility* const, int* const);
++	InWorld(ConfigUtility* const, UDPNetworkUtility* const, int* const, int* const);
+ 	~InWorld();
+ 
+ protected:
+@@ -80,19 +80,19 @@ protected:
+ 	void HandleRegionContent(SerialPacket);
+ 
+ 	//Server control
+-	void SendState();
++	void SendPlayerUpdate();
+ 	void RequestDisconnect();
+ 	void RequestShutDown();
+-	void RequestRegion(int x, int y);
++	void RequestRegion(int mapIndex, int x, int y);
+ 
+ 	//utilities
+ 	void UpdateMap();
+ 
+-	//globals
++	//shared parameters
+ 	ConfigUtility& config;
+-	FrameRate fps;
+ 	UDPNetworkUtility& network;
+ 	int& clientIndex;
++	int& playerIndex;
+ 
+ 	//graphics
+ 	Image buttonImage;
+@@ -111,11 +111,11 @@ protected:
+ 		int width = 0, height = 0;
+ 		int marginX = 0, marginY = 0;
+ 	} camera;
++	FrameRate fps;
+ 
+ 	//game
+ 	std::map<int, PlayerCharacter> playerCharacters;
+ 	PlayerCharacter* localCharacter = nullptr;
+-	int playerIndex = -1;
+ };
+ 
+ #endif
+diff --git a/client/scenes/lobby_menu.cpp b/client/scenes/lobby_menu.cpp
+index 1000af4..d6900da 100644
+--- a/client/scenes/lobby_menu.cpp
++++ b/client/scenes/lobby_menu.cpp
+@@ -30,10 +30,11 @@
+ //Public access members
+ //-------------------------
+ 
+-LobbyMenu::LobbyMenu(ConfigUtility* const argConfig, UDPNetworkUtility* const argNetwork, int* const argClientIndex):
++LobbyMenu::LobbyMenu(ConfigUtility* const argConfig, UDPNetworkUtility* const argNetwork, int* const argClientIndex, int* const argPlayerIndex):
+ 	config(*argConfig),
+ 	network(*argNetwork),
+-	clientIndex(*argClientIndex)
++	clientIndex(*argClientIndex),
++	playerIndex(*argPlayerIndex)
+ {
+ 	//setup the utility objects
+ 	image.LoadSurface(config["dir.interface"] + "button_menu.bmp");
+@@ -155,13 +156,17 @@ void LobbyMenu::MouseButtonUp(SDL_MouseButtonEvent const& button) {
+ 	}
+ 
+ 	else if (join.MouseButtonUp(button) == Button::State::HOVER && selection != nullptr && selection->compatible) {
+-		//TODO: The player login information should be collected by the lobby screen
+ 		//the vars
+ 		SerialPacket packet;
+ 		char buffer[PACKET_BUFFER_SIZE];
+ 
+-		//join the selected server
++		//pack the packet
+ 		packet.meta.type = SerialPacket::Type::JOIN_REQUEST;
++		strncpy(packet.clientInfo.player, config["client.player"].c_str(), PACKET_STRING_SIZE);
++		strncpy(packet.clientInfo.handle, config["client.handle"].c_str(), PACKET_STRING_SIZE);
++		strncpy(packet.clientInfo.avatar, config["client.avatar"].c_str(), PACKET_STRING_SIZE);
++
++		//join the selected server
+ 		serialize(&packet, buffer);
+ 		network.Send(&selection->address, buffer, PACKET_BUFFER_SIZE);
+ 		selection = nullptr;
+@@ -203,20 +208,20 @@ void LobbyMenu::HandlePacket(SerialPacket packet) {
+ 			//extract the data
+ 			ServerInformation server;
+ 			server.address = packet.meta.srcAddress;
++			server.networkVersion = packet.serverInfo.networkVersion;
+ 			server.name = packet.serverInfo.name;
+ 			server.playerCount = packet.serverInfo.playerCount;
+ 
+ 			//NOTE: Check compatibility here
+-			server.compatible = packet.serverInfo.regionWidth == REGION_WIDTH &&
+-				packet.serverInfo.regionHeight == REGION_HEIGHT &&
+-				packet.serverInfo.regionDepth == REGION_DEPTH;
++			server.compatible = server.networkVersion == NETWORK_VERSION;
+ 
+ 			//push
+ 			serverInfo.push_back(server);
+ 		}
+ 		break;
+ 		case SerialPacket::Type::JOIN_RESPONSE:
+-			clientIndex = packet.clientInfo.index;
++			clientIndex = packet.clientInfo.clientIndex;
++			playerIndex = packet.clientInfo.playerIndex;
+ 			network.Bind(&packet.meta.srcAddress, Channels::SERVER);
+ 			SetNextScene(SceneList::INWORLD);
+ 		break;
+diff --git a/client/scenes/lobby_menu.hpp b/client/scenes/lobby_menu.hpp
+index 53808bb..4273400 100644
+--- a/client/scenes/lobby_menu.hpp
++++ b/client/scenes/lobby_menu.hpp
+@@ -28,9 +28,6 @@
+ #include "button.hpp"
+ #include "config_utility.hpp"
+ 
+-//map
+-#include "region.hpp"
+-
+ //network
+ #include "udp_network_utility.hpp"
+ #include "serial_packet.hpp"
+@@ -45,7 +42,7 @@
+ class LobbyMenu : public BaseScene {
+ public:
+ 	//Public access members
+-	LobbyMenu(ConfigUtility* const, UDPNetworkUtility* const, int* const);
++	LobbyMenu(ConfigUtility* const, UDPNetworkUtility* const, int* const, int* const);
+ 	~LobbyMenu();
+ 
+ protected:
+@@ -64,10 +61,11 @@ protected:
+ 
+ 	void HandlePacket(SerialPacket);
+ 
+-	//global
++	//shared parameters
+ 	ConfigUtility& config;
+ 	UDPNetworkUtility& network;
+ 	int& clientIndex;
++	int& playerIndex;
+ 
+ 	//members
+ 	Image image;
+@@ -79,7 +77,7 @@ protected:
+ 	//server list
+ 	struct ServerInformation {
+ 		IPaddress address;
+-		//TODO: version info
++		int networkVersion;
+ 		std::string name;
+ 		int playerCount;
+ 		bool compatible;
+diff --git a/client/scenes/main_menu.hpp b/client/scenes/main_menu.hpp
+index 5aba53d..9c06a0d 100644
+--- a/client/scenes/main_menu.hpp
++++ b/client/scenes/main_menu.hpp
+@@ -49,7 +49,7 @@ protected:
+ 	void KeyDown(SDL_KeyboardEvent const&);
+ 	void KeyUp(SDL_KeyboardEvent const&);
+ 
+-	//globals
++	//shared parameters
+ 	ConfigUtility& config;
+ 
+ 	//members
+diff --git a/client/scenes/options_menu.hpp b/client/scenes/options_menu.hpp
+index 6e99965..bc05e1f 100644
+--- a/client/scenes/options_menu.hpp
++++ b/client/scenes/options_menu.hpp
+@@ -49,7 +49,7 @@ protected:
+ 	void KeyDown(SDL_KeyboardEvent const&);
+ 	void KeyUp(SDL_KeyboardEvent const&);
+ 
+-	//globals
++	//shared parameters
+ 	ConfigUtility& config;
+ 
+ 	//members
+diff --git a/client/scenes/splash_screen.hpp b/client/scenes/splash_screen.hpp
+index f332cbe..f24a1c6 100644
+--- a/client/scenes/splash_screen.hpp
++++ b/client/scenes/splash_screen.hpp
+@@ -40,7 +40,7 @@ protected:
+ 	void Update(double delta);
+ 	void Render(SDL_Surface* const);
+ 
+-	//globals
++	//shared parameters
+ 	ConfigUtility& config;
+ 
+ 	//members
+diff --git a/common/network/serial.cpp b/common/network/serial.cpp
+index ee88937..6f2f069 100644
+--- a/common/network/serial.cpp
++++ b/common/network/serial.cpp
+@@ -26,84 +26,58 @@
+ #include <cstring>
+ 
+ //-------------------------
++//Convenience Macros
++//-------------------------
++
++#define SERIALIZE(buffer, data, size) memcpy(buffer, data, size); buffer += size;
++#define DESERIALIZE(buffer, data, size) memcpy(data, buffer, size); buffer += size;
++
++//-------------------------
+ //internal serialization functions
+ //-------------------------
+ 
+ void serializeType(SerialPacket* packet, char* buffer) {
+-	memcpy(buffer, &packet->meta.type, sizeof(SerialPacket::Type));
++	SERIALIZE(buffer, &packet->meta.type, sizeof(SerialPacket::Type));
+ }
+ 
+ void serializeServer(SerialPacket* packet, char* buffer) {
+-	memcpy(buffer, &packet->meta.type, sizeof(SerialPacket::Type));
+-	buffer += sizeof(SerialPacket::Type);
++	SERIALIZE(buffer, &packet->meta.type, sizeof(SerialPacket::Type));
+ 
+ 	//server info
+-	//Note: version info serialization goes here
+-	memcpy(buffer, packet->serverInfo.name, PACKET_STRING_SIZE);
+-	buffer += PACKET_STRING_SIZE;
+-	memcpy(buffer, &packet->serverInfo.playerCount, sizeof(int));
+-	buffer += sizeof(int);
+-
+-	//map format
+-	memcpy(buffer, &packet->serverInfo.regionWidth, sizeof(int));
+-	buffer += sizeof(int);
+-	memcpy(buffer, &packet->serverInfo.regionHeight, sizeof(int));
+-	buffer += sizeof(int);
+-	memcpy(buffer, &packet->serverInfo.regionDepth, sizeof(int));
++	SERIALIZE(buffer, &packet->serverInfo.networkVersion, sizeof(int));
++	SERIALIZE(buffer, packet->serverInfo.name, PACKET_STRING_SIZE);
++	SERIALIZE(buffer, &packet->serverInfo.playerCount, sizeof(int));
+ }
+ 
+ void serializeClient(SerialPacket* packet, char* buffer) {
+-	memcpy(buffer, &packet->meta.type, sizeof(SerialPacket::Type));
+-	buffer += sizeof(SerialPacket::Type);
+-	memcpy(buffer, &packet->clientInfo.index, sizeof(int));
+-}
+-
+-void serializePlayer(SerialPacket* packet, char* buffer) {
+-	memcpy(buffer, &packet->meta.type, sizeof(SerialPacket::Type));
+-	buffer += sizeof(SerialPacket::Type);
++	SERIALIZE(buffer, &packet->meta.type, sizeof(SerialPacket::Type));
+ 
+ 	//indexes
+-	memcpy(buffer, &packet->playerInfo.clientIndex, sizeof(int));
+-	buffer += sizeof(int);
+-	memcpy(buffer, &packet->playerInfo.playerIndex, sizeof(int));
+-	buffer += sizeof(int);
+-
+-	//text
+-	memcpy(buffer, packet->playerInfo.handle, PACKET_STRING_SIZE);
+-	buffer += PACKET_STRING_SIZE;
+-	memcpy(buffer, packet->playerInfo.avatar, PACKET_STRING_SIZE);
+-	buffer += PACKET_STRING_SIZE;
++	SERIALIZE(buffer, &packet->clientInfo.clientIndex, sizeof(int));
++	SERIALIZE(buffer, &packet->clientInfo.playerIndex, sizeof(int));
+ 
+-	//vectors
+-	memcpy(buffer, &packet->playerInfo.position.x, sizeof(double));
+-	buffer += sizeof(double);
+-	memcpy(buffer, &packet->playerInfo.position.y, sizeof(double));
+-	buffer += sizeof(double);
+-	memcpy(buffer, &packet->playerInfo.motion.x, sizeof(double));
+-	buffer += sizeof(double);
+-	memcpy(buffer, &packet->playerInfo.motion.y, sizeof(double));
++	//texts
++	SERIALIZE(buffer, packet->clientInfo.player, PACKET_STRING_SIZE);
++	SERIALIZE(buffer, packet->clientInfo.handle, PACKET_STRING_SIZE);
++	SERIALIZE(buffer, packet->clientInfo.avatar, PACKET_STRING_SIZE);
+ }
+ 
+ void serializeRegionFormat(SerialPacket* packet, char* buffer) {
+-	memcpy(buffer, &packet->meta.type, sizeof(SerialPacket::Type));
+-	buffer += sizeof(SerialPacket::Type);
++	SERIALIZE(buffer, &packet->meta.type, sizeof(SerialPacket::Type));
+ 
+-	//x & y
+-	memcpy(buffer, &packet->regionInfo.x, sizeof(int));
+-	buffer += sizeof(int);
+-	memcpy(buffer, &packet->regionInfo.y, sizeof(int));
++	//format
++	SERIALIZE(buffer, &packet->regionInfo.mapIndex, sizeof(int));
++	SERIALIZE(buffer, &packet->regionInfo.x, sizeof(int));
++	SERIALIZE(buffer, &packet->regionInfo.y, sizeof(int));
+ }
+ 
+ void serializeRegionContent(SerialPacket* packet, char* buffer) {
+-	//format
+-	memcpy(buffer, &packet->meta.type, sizeof(SerialPacket::Type));
+-	buffer += sizeof(SerialPacket::Type);
++	SERIALIZE(buffer, &packet->meta.type, sizeof(SerialPacket::Type));
+ 
+-	//x & y
+-	*reinterpret_cast<int*>(buffer) = packet->regionInfo.region->GetX();
+-	buffer += sizeof(int);
+-	*reinterpret_cast<int*>(buffer) = packet->regionInfo.region->GetY();
+-	buffer += sizeof(int);
++	//format
++	SERIALIZE(buffer, &packet->regionInfo.mapIndex, sizeof(int));
++	SERIALIZE(buffer, &packet->regionInfo.x, sizeof(int));
++	SERIALIZE(buffer, &packet->regionInfo.y, sizeof(int));
+ 
+ 	//content
+ 	for (register int i = 0; i < REGION_WIDTH; i++) {
+@@ -116,92 +90,79 @@ void serializeRegionContent(SerialPacket* packet, char* buffer) {
+ 	}
+ }
+ 
++void serializePlayer(SerialPacket* packet, char* buffer) {
++	SERIALIZE(buffer, &packet->meta.type, sizeof(SerialPacket::Type));
++
++	//indexes
++	SERIALIZE(buffer, &packet->playerInfo.clientIndex, sizeof(int));
++	SERIALIZE(buffer, &packet->playerInfo.playerIndex, sizeof(int));
++
++	//texts
++	SERIALIZE(buffer, packet->clientInfo.handle, PACKET_STRING_SIZE);
++	SERIALIZE(buffer, packet->clientInfo.avatar, PACKET_STRING_SIZE);
++
++	//vectors
++	SERIALIZE(buffer, &packet->playerInfo.position.x, sizeof(double));
++	SERIALIZE(buffer, &packet->playerInfo.position.y, sizeof(double));
++	SERIALIZE(buffer, &packet->playerInfo.motion.x, sizeof(double));
++	SERIALIZE(buffer, &packet->playerInfo.motion.y, sizeof(double));
++}
++
+ //-------------------------
+ //internal deserialization functions
+ //-------------------------
+ 
+ void deserializeType(SerialPacket* packet, char* buffer) {
+-	memcpy(&packet->meta.type, buffer, sizeof(SerialPacket::Type));
++	DESERIALIZE(buffer, &packet->meta.type, sizeof(SerialPacket::Type));
+ }
+ 
+ void deserializeServer(SerialPacket* packet, char* buffer) {
+-	memcpy(&packet->meta.type, buffer, sizeof(SerialPacket::Type));
+-	buffer += sizeof(SerialPacket::Type);
++	DESERIALIZE(buffer, &packet->meta.type, sizeof(SerialPacket::Type));
+ 
+ 	//server info
+-	//Note: version info deserialization goes here
+-	memcpy(packet->serverInfo.name, buffer, PACKET_STRING_SIZE);
+-	buffer += PACKET_STRING_SIZE;
+-	memcpy(&packet->serverInfo.playerCount, buffer, sizeof(int));
+-	buffer += sizeof(int);
+-
+-	//map format
+-	memcpy(&packet->serverInfo.regionWidth, buffer, sizeof(int));
+-	buffer += sizeof(int);
+-	memcpy(&packet->serverInfo.regionHeight, buffer, sizeof(int));
+-	buffer += sizeof(int);
+-	memcpy(&packet->serverInfo.regionDepth, buffer, sizeof(int));
++	DESERIALIZE(buffer, &packet->serverInfo.networkVersion, sizeof(int));
++	DESERIALIZE(buffer, packet->serverInfo.name, PACKET_STRING_SIZE);
++	DESERIALIZE(buffer, &packet->serverInfo.playerCount, sizeof(int));
+ }
+ 
+ void deserializeClient(SerialPacket* packet, char* buffer) {
+-	memcpy(&packet->meta.type, buffer, sizeof(SerialPacket::Type));
+-	buffer += sizeof(SerialPacket::Type);
+-	memcpy(&packet->clientInfo.index, buffer, sizeof(int));
+-}
+-
+-void deserializePlayer(SerialPacket* packet, char* buffer) {
+-	memcpy(&packet->meta.type, buffer, sizeof(SerialPacket::Type));
+-	buffer += sizeof(SerialPacket::Type);
++	DESERIALIZE(buffer, &packet->meta.type, sizeof(SerialPacket::Type));
+ 
+ 	//indexes
+-	memcpy(&packet->playerInfo.clientIndex, buffer, sizeof(int));
+-	buffer += sizeof(int);
+-	memcpy(&packet->playerInfo.playerIndex, buffer, sizeof(int));
+-	buffer += sizeof(int);
+-
+-	//text
+-	memcpy(packet->playerInfo.handle, buffer, PACKET_STRING_SIZE);
+-	buffer += PACKET_STRING_SIZE;
+-	memcpy(packet->playerInfo.avatar, buffer, PACKET_STRING_SIZE);
+-	buffer += PACKET_STRING_SIZE;
++	DESERIALIZE(buffer, &packet->clientInfo.clientIndex, sizeof(int));
++	DESERIALIZE(buffer, &packet->clientInfo.playerIndex, sizeof(int));
+ 
+-	//vectors
+-	memcpy(&packet->playerInfo.position.x, buffer, sizeof(double));
+-	buffer += sizeof(double);
+-	memcpy(&packet->playerInfo.position.y, buffer, sizeof(double));
+-	buffer += sizeof(double);
+-	memcpy(&packet->playerInfo.motion.x, buffer, sizeof(double));
+-	buffer += sizeof(double);
+-	memcpy(&packet->playerInfo.motion.y, buffer, sizeof(double));
++	//texts
++	DESERIALIZE(buffer, packet->clientInfo.player, PACKET_STRING_SIZE);
++	DESERIALIZE(buffer, packet->clientInfo.handle, PACKET_STRING_SIZE);
++	DESERIALIZE(buffer, packet->clientInfo.avatar, PACKET_STRING_SIZE);
+ }
+ 
+ void deserializeRegionFormat(SerialPacket* packet, char* buffer) {
+-	memcpy(&packet->meta.type, buffer, sizeof(SerialPacket::Type));
+-	buffer += sizeof(SerialPacket::Type);
++	DESERIALIZE(buffer, &packet->meta.type, sizeof(SerialPacket::Type));
+ 
+-	//x & y
+-	memcpy(&packet->regionInfo.x, buffer, sizeof(int));
+-	buffer += sizeof(int);
+-	memcpy(&packet->regionInfo.y, buffer, sizeof(int));
++	//format
++	DESERIALIZE(buffer, &packet->regionInfo.mapIndex, sizeof(int));
++	DESERIALIZE(buffer, &packet->regionInfo.x, sizeof(int));
++	DESERIALIZE(buffer, &packet->regionInfo.y, sizeof(int));
+ }
+ 
+ void deserializeRegionContent(SerialPacket* packet, char* buffer) {
+-	memcpy(&packet->meta.type, buffer, sizeof(SerialPacket::Type));
+-	buffer += sizeof(SerialPacket::Type);
++	DESERIALIZE(buffer, &packet->meta.type, sizeof(SerialPacket::Type));
+ 
+-	//x & y
+-	memcpy(&packet->regionInfo.x, buffer, sizeof(int));
+-	buffer += sizeof(int);
+-	memcpy(&packet->regionInfo.y, buffer, sizeof(int));
+-	buffer += sizeof(int);
++	//format
++	DESERIALIZE(buffer, &packet->regionInfo.mapIndex, sizeof(int));
++	DESERIALIZE(buffer, &packet->regionInfo.x, sizeof(int));
++	DESERIALIZE(buffer, &packet->regionInfo.y, sizeof(int));
+ 
+-	//content
++	//an object to work on
+ 	BlankAllocator().Create(
+ 		&packet->regionInfo.region,
+ 		packet->regionInfo.x,
+ 		packet->regionInfo.y
+ 	);
+ 
++	//content
+ 	for (register int i = 0; i < REGION_WIDTH; i++) {
+ 		for (register int j = 0; j < REGION_HEIGHT; j++) {
+ 			for (register int k = 0; k < REGION_DEPTH; k++) {
+@@ -212,6 +173,24 @@ void deserializeRegionContent(SerialPacket* packet, char* buffer) {
+ 	}
+ }
+ 
++void deserializePlayer(SerialPacket* packet, char* buffer) {
++	DESERIALIZE(buffer, &packet->meta.type, sizeof(SerialPacket::Type));
++
++	//indexes
++	DESERIALIZE(buffer, &packet->playerInfo.clientIndex, sizeof(int));
++	DESERIALIZE(buffer, &packet->playerInfo.playerIndex, sizeof(int));
++
++	//texts
++	DESERIALIZE(buffer, packet->clientInfo.handle, PACKET_STRING_SIZE);
++	DESERIALIZE(buffer, packet->clientInfo.avatar, PACKET_STRING_SIZE);
++
++	//vectors
++	DESERIALIZE(buffer, &packet->playerInfo.position.x, sizeof(double));
++	DESERIALIZE(buffer, &packet->playerInfo.position.y, sizeof(double));
++	DESERIALIZE(buffer, &packet->playerInfo.motion.x, sizeof(double));
++	DESERIALIZE(buffer, &packet->playerInfo.motion.y, sizeof(double));
++}
++
+ //-------------------------
+ //the interface functions
+ //-------------------------
+@@ -223,8 +202,6 @@ void serialize(SerialPacket* packet, void* buffer) {
+ 		case SerialPacket::Type::PING:
+ 		case SerialPacket::Type::PONG:
+ 		case SerialPacket::Type::BROADCAST_REQUEST:
+-		case SerialPacket::Type::JOIN_REQUEST:
+-		case SerialPacket::Type::SYNCHRONIZE:
+ 			serializeType(packet, reinterpret_cast<char*>(buffer));
+ 		break;
+ 
+@@ -234,19 +211,14 @@ void serialize(SerialPacket* packet, void* buffer) {
+ 		break;
+ 
+ 		//Client info
++		case SerialPacket::Type::JOIN_REQUEST:
+ 		case SerialPacket::Type::JOIN_RESPONSE:
++		case SerialPacket::Type::SYNCHRONIZE:
+ 		case SerialPacket::Type::DISCONNECT:
+ 		case SerialPacket::Type::SHUTDOWN:
+ 			serializeClient(packet, reinterpret_cast<char*>(buffer));
+ 		break;
+ 
+-		//Player info
+-		case SerialPacket::Type::PLAYER_NEW:
+-		case SerialPacket::Type::PLAYER_DELETE:
+-		case SerialPacket::Type::PLAYER_UPDATE:
+-			serializePlayer(packet, reinterpret_cast<char*>(buffer));
+-		break;
+-
+ 		//region info
+ 		case SerialPacket::Type::REGION_REQUEST:
+ 			serializeRegionFormat(packet, reinterpret_cast<char*>(buffer));
+@@ -255,6 +227,13 @@ void serialize(SerialPacket* packet, void* buffer) {
+ 		case SerialPacket::Type::REGION_CONTENT:
+ 			serializeRegionContent(packet, reinterpret_cast<char*>(buffer));
+ 		break;
++
++		//Player info
++		case SerialPacket::Type::PLAYER_NEW:
++		case SerialPacket::Type::PLAYER_DELETE:
++		case SerialPacket::Type::PLAYER_UPDATE:
++			serializePlayer(packet, reinterpret_cast<char*>(buffer));
++		break;
+ 	}
+ }
+ 
+@@ -267,8 +246,6 @@ void deserialize(SerialPacket* packet, void* buffer) {
+ 		case SerialPacket::Type::PING:
+ 		case SerialPacket::Type::PONG:
+ 		case SerialPacket::Type::BROADCAST_REQUEST:
+-		case SerialPacket::Type::JOIN_REQUEST:
+-		case SerialPacket::Type::SYNCHRONIZE:
+ 			//NOTHING
+ 		break;
+ 
+@@ -278,19 +255,14 @@ void deserialize(SerialPacket* packet, void* buffer) {
+ 		break;
+ 
+ 		//Client info
++		case SerialPacket::Type::JOIN_REQUEST:
+ 		case SerialPacket::Type::JOIN_RESPONSE:
++		case SerialPacket::Type::SYNCHRONIZE:
+ 		case SerialPacket::Type::DISCONNECT:
+ 		case SerialPacket::Type::SHUTDOWN:
+ 			deserializeClient(packet, reinterpret_cast<char*>(buffer));
+ 		break;
+ 
+-		//Player info
+-		case SerialPacket::Type::PLAYER_NEW:
+-		case SerialPacket::Type::PLAYER_DELETE:
+-		case SerialPacket::Type::PLAYER_UPDATE:
+-			deserializePlayer(packet, reinterpret_cast<char*>(buffer));
+-		break;
+-
+ 		//region info
+ 		case SerialPacket::Type::REGION_REQUEST:
+ 			deserializeRegionFormat(packet, reinterpret_cast<char*>(buffer));
+@@ -299,5 +271,12 @@ void deserialize(SerialPacket* packet, void* buffer) {
+ 		case SerialPacket::Type::REGION_CONTENT:
+ 			deserializeRegionContent(packet, reinterpret_cast<char*>(buffer));
+ 		break;
++
++		//Player info
++		case SerialPacket::Type::PLAYER_NEW:
++		case SerialPacket::Type::PLAYER_DELETE:
++		case SerialPacket::Type::PLAYER_UPDATE:
++			deserializePlayer(packet, reinterpret_cast<char*>(buffer));
++		break;
+ 	}
+ }
+\ No newline at end of file
+diff --git a/common/network/serial.hpp b/common/network/serial.hpp
+index b532bb8..609b1f3 100644
+--- a/common/network/serial.hpp
++++ b/common/network/serial.hpp
+@@ -27,10 +27,10 @@
+ /* NOTE: Keep the PACKET_BUFFER_SIZE up to date
+  * NOTE: REGION_CONTENT is currently the largest type of packet
+  *  map content: REGION_WIDTH * REGION_HEIGHT * REGION_DEPTH * sizoeof(region::type_t)
+- *  map format: sizeof(int) * 2
++ *  map format: sizeof(int) * 3
+  *  metadata: sizeof(metadata)
+ */
+-#define PACKET_BUFFER_SIZE REGION_WIDTH * REGION_HEIGHT * REGION_DEPTH * sizeof(Region::type_t) + sizeof(int) * 2 + sizeof(SerialPacket::Metadata)
++#define PACKET_BUFFER_SIZE REGION_WIDTH * REGION_HEIGHT * REGION_DEPTH * sizeof(Region::type_t) + sizeof(int) * 3 + sizeof(SerialPacket::Metadata)
+ 
+ void serialize(SerialPacket* const, void*);
+ void deserialize(SerialPacket* const, void*);
+diff --git a/common/network/serial_packet.hpp b/common/network/serial_packet.hpp
+index 86c9b2a..12574f7 100644
+--- a/common/network/serial_packet.hpp
++++ b/common/network/serial_packet.hpp
+@@ -27,6 +27,7 @@
+ 
+ #include "SDL/SDL_net.h"
+ 
++#define NETWORK_VERSION 20140426
+ #define PACKET_STRING_SIZE 100
+ 
+ #pragma pack(push, 0)
+@@ -49,23 +50,23 @@ union SerialPacket {
+ 		JOIN_REQUEST = 5,
+ 		JOIN_RESPONSE = 6,
+ 
+-		//disconnect from the server
+-		DISCONNECT = 7,
+-
+ 		//mass update
+-		SYNCHRONIZE = 8,
++		SYNCHRONIZE = 7,
++
++		//disconnect from the server
++		DISCONNECT = 8,
+ 
+ 		//shut down the server
+ 		SHUTDOWN = 9,
+ 
+-		//Player movement, etc.
+-		PLAYER_NEW = 10,
+-		PLAYER_DELETE = 11,
+-		PLAYER_UPDATE = 12,
+-
+ 		//map data
+-		REGION_REQUEST = 13,
+-		REGION_CONTENT = 14,
++		REGION_REQUEST = 10,
++		REGION_CONTENT = 11,
++
++		//Player movement, etc.
++		PLAYER_NEW = 12,
++		PLAYER_DELETE = 13,
++		PLAYER_UPDATE = 14,
+ 
+ 		//TODO: combat packets
+ 	};
+@@ -79,42 +80,41 @@ union SerialPacket {
+ 	//information about the server
+ 	struct ServerInformation {
+ 		Metadata meta;
+-		//TODO: version info
++		int networkVersion;
+ 		char name[PACKET_STRING_SIZE];
+ 		int playerCount;
+-
+-		//map format
+-		int regionWidth;
+-		int regionHeight;
+-		int regionDepth;
+ 	}serverInfo;
+ 
+ 	//information about the client
+-	//TODO: login credentials
+ 	struct ClientInformation {
+ 		Metadata meta;
+-		int index;
++		int clientIndex;
++		int playerIndex;
++		char player[PACKET_STRING_SIZE];
++		char handle[PACKET_STRING_SIZE];
++		char avatar[PACKET_STRING_SIZE];
+ 	}clientInfo;
+ 
++	//map data
++	struct RegionInformation {
++		Metadata meta;
++		int mapIndex;
++		int x, y;
++		Region* region;
++	}regionInfo;
++
+ 	//information about a player
+ 	struct PlayerInformation {
+ 		Metadata meta;
+ 		int clientIndex;
+ 		int playerIndex;
+-		//TODO: should move handle/avatar into clientInfo; these might actually do better during the login system
+ 		char handle[PACKET_STRING_SIZE];
+ 		char avatar[PACKET_STRING_SIZE];
++		int mapIndex;
+ 		Vector2 position;
+ 		Vector2 motion;
+ 	}playerInfo;
+ 
+-	//map data
+-	struct RegionInformation {
+-		Metadata meta;
+-		int x, y;
+-		Region* region;
+-	}regionInfo;
+-
+ 	//defaults
+ 	SerialPacket() {
+ 		meta.type = Type::NONE;
+diff --git a/rsc/config.cfg b/rsc/config.cfg
+index 0b5fec0..37fbd5e 100644
+--- a/rsc/config.cfg
++++ b/rsc/config.cfg
+@@ -23,7 +23,8 @@ map.pager.height = 20
+ map.pager.depth = 3
+ 
+ #player options
+-player.handle = username
+-player.avatar = elliot2.bmp
++client.player = Kayne Ruse
++client.handle = Ratstail91
++client.avatar = elliot2.bmp
+ 
+ #debugging
+diff --git a/server/client_entry.cpp b/server/client_entry.cpp
+index 7708423..88e2ab9 100644
+--- a/server/client_entry.cpp
++++ b/server/client_entry.cpp
+@@ -21,4 +21,4 @@
+ */
+ #include "client_entry.hpp"
+ 
+-unsigned int ClientEntry::uidCounter;
++int ClientEntry::uidCounter = 0;
+diff --git a/server/client_entry.hpp b/server/client_entry.hpp
+index 42225b8..6e6b6a3 100644
+--- a/server/client_entry.hpp
++++ b/server/client_entry.hpp
+@@ -25,8 +25,8 @@
+ #include "SDL/SDL_net.h"
+ 
+ struct ClientEntry {
+-	IPaddress address;
+-	static unsigned int uidCounter;
++	IPaddress address = {0,0};
++	static int uidCounter;
+ };
+ 
+ #endif
+diff --git a/server/player_entry.cpp b/server/player_entry.cpp
+index 11cfdfc..3eb8777 100644
+--- a/server/player_entry.cpp
++++ b/server/player_entry.cpp
+@@ -21,4 +21,4 @@
+ */
+ #include "player_entry.hpp"
+ 
+-unsigned int PlayerEntry::uidCounter;
++int PlayerEntry::uidCounter = 0;
+diff --git a/server/player_entry.hpp b/server/player_entry.hpp
+index 17dca99..a55c603 100644
+--- a/server/player_entry.hpp
++++ b/server/player_entry.hpp
+@@ -31,32 +31,33 @@
+ struct PlayerEntry {
+ 	//metadata
+ 	int clientIndex;
++	std::string player;
+ 	std::string handle;
+ 	std::string avatar;
+ 
+ 	//world position
+-	int mapIndex;
+-	Vector2 position;
+-	Vector2 motion;
+-	BBox bbox;
++	int mapIndex = 0;
++	Vector2 position = {0.0,0.0};
++	Vector2 motion = {0.0,0.0};
++	BBox bbox = {0,0,0,0};
+ 
+ 	//statistics
+-	int level;
+-	int exp;
+-	int maxHP;
+-	int health;
+-	int maxMP;
+-	int mana;
+-	int attack;
+-	int defence;
+-	int intelligence;
+-	int resistance;
+-	float accuracy;
+-	float evasion;
+-	float luck;
++	int level = 0;
++	int exp = 0;
++	int maxHP = 0;
++	int health = 0;
++	int maxMP = 0;
++	int mana = 0;
++	int attack = 0;
++	int defence = 0;
++	int intelligence = 0;
++	int resistance = 0;
++	float accuracy = 0.0;
++	float evasion = 0.0;
++	float luck = 0.0;
+ 
+ 	//uid
+-	static unsigned int uidCounter;
++	static int uidCounter;
+ };
+ 
+ #endif
+diff --git a/server/server_application.cpp b/server/server_application.cpp
+deleted file mode 100644
+index 1a96d5b..0000000
+--- a/server/server_application.cpp
++++ /dev/null
+@@ -1,368 +0,0 @@
+-/* Copyright: (c) Kayne Ruse 2013, 2014
+- * 
+- * This software is provided 'as-is', without any express or implied
+- * warranty. In no event will the authors be held liable for any damages
+- * arising from the use of this software.
+- * 
+- * Permission is granted to anyone to use this software for any purpose,
+- * including commercial applications, and to alter it and redistribute it
+- * freely, subject to the following restrictions:
+- * 
+- * 1. The origin of this software must not be misrepresented; you must not
+- * claim that you wrote the original software. If you use this software
+- * in a product, an acknowledgment in the product documentation would be
+- * appreciated but is not required.
+- * 
+- * 2. Altered source versions must be plainly marked as such, and must not be
+- * misrepresented as being the original software.
+- * 
+- * 3. This notice may not be removed or altered from any source
+- * distribution.
+-*/
+-#include "server_application.hpp"
+-
+-#include "utility.hpp"
+-
+-#include <stdexcept>
+-#include <iostream>
+-#include <string>
+-
+-//-------------------------
+-//Define the public members
+-//-------------------------
+-
+-void ServerApplication::Init(int argc, char** argv) {
+-	//NOTE: I might need to rearrange the init process so that lua & SQL can interact with the map system as needed.
+-	std::cout << "Beginning startup" << std::endl;
+-
+-	//initial setup
+-	ClientEntry::uidCounter = 0;
+-	PlayerEntry::uidCounter = 0;
+-	config.Load("rsc\\config.cfg");
+-
+-	//Init SDL
+-	if (SDL_Init(0)) {
+-		throw(std::runtime_error("Failed to initialize SDL"));
+-	}
+-	std::cout << "Initialized SDL" << std::endl;
+-
+-	//Init SDL_net
+-	if (SDLNet_Init()) {
+-		throw(std::runtime_error("Failed to initialize SDL_net"));
+-	}
+-	network.Open(config.Int("server.port"), PACKET_BUFFER_SIZE);
+-	std::cout << "Initialized SDL_net" << std::endl;
+-
+-	//Init SQL
+-	int ret = sqlite3_open_v2(config["server.dbname"].c_str(), &database, SQLITE_OPEN_READWRITE|SQLITE_OPEN_CREATE, nullptr);
+-	if (ret != SQLITE_OK || !database) {
+-		throw(std::runtime_error(std::string() + "Failed to initialize SQL: " + sqlite3_errmsg(database) ));
+-	}
+-	std::cout << "Initialized SQL" << std::endl;
+-
+-	//setup the database
+-	if (runSQLScript(database, config["dir.scripts"] + "setup_server.sql")) {
+-		throw(std::runtime_error("Failed to initialize SQL's setup script"));
+-	}
+-	std::cout << "Initialized SQL's setup script" << std::endl;
+-
+-	//lua
+-	luaState = luaL_newstate();
+-	if (!luaState) {
+-		throw(std::runtime_error("Failed to initialize lua"));
+-	}
+-	luaL_openlibs(luaState);
+-	std::cout << "Initialized lua" << std::endl;
+-
+-	//run the startup script
+-	if (luaL_dofile(luaState, (config["dir.scripts"] + "setup_server.lua").c_str())) {
+-		throw(std::runtime_error(std::string() + "Failed to initialize lua's setup script: " + lua_tostring(luaState, -1) ));
+-	}
+-	std::cout << "Initialized lua's setup script" << std::endl;
+-
+-	//setup the map object
+-	regionPager.GetAllocator()->SetLuaState(luaState);
+-	regionPager.GetFormat()->SetLuaState(luaState);
+-	//TODO: config parameter
+-	regionPager.GetFormat()->SetSaveDir("save/mapname/");
+-
+-	std::cout << "Initialized the map system" << std::endl;
+-	std::cout << "\tsizeof(SerialPacket): " << sizeof(SerialPacket) << std::endl;
+-	std::cout << "\tPACKET_BUFFER_SIZE: " << PACKET_BUFFER_SIZE << std::endl;
+-
+-	//finalize the startup
+-	std::cout << "Startup completed successfully" << std::endl;
+-
+-	//debugging
+-	//
+-}
+-
+-void ServerApplication::Proc() {
+-	SerialPacket packet;
+-	while(running) {
+-		//suck in the waiting packets & process them
+-		while(network.Receive()) {
+-			//get the packet
+-			deserialize(&packet, network.GetInData());
+-			//cache the source address
+-			packet.meta.srcAddress = network.GetInPacket()->address;
+-			//we need to go deeper
+-			HandlePacket(packet);
+-		}
+-		//give the computer a break
+-		SDL_Delay(10);
+-	}
+-}
+-
+-void ServerApplication::Quit() {
+-	std::cout << "Shutting down" << std::endl;
+-	//empty the members
+-	regionPager.UnloadAll();
+-
+-	//APIs
+-	lua_close(luaState);
+-	sqlite3_close_v2(database);
+-	network.Close();
+-	SDLNet_Quit();
+-	SDL_Quit();
+-	std::cout << "Shutdown finished" << std::endl;
+-}
+-
+-//-------------------------
+-//Define the uber switch
+-//-------------------------
+-
+-void ServerApplication::HandlePacket(SerialPacket packet) {
+-	switch(packet.meta.type) {
+-		case SerialPacket::Type::BROADCAST_REQUEST:
+-			HandleBroadcastRequest(packet);
+-		break;
+-		case SerialPacket::Type::JOIN_REQUEST:
+-			HandleJoinRequest(packet);
+-		break;
+-		case SerialPacket::Type::DISCONNECT:
+-			HandleDisconnect(packet);
+-		break;
+-		case SerialPacket::Type::SYNCHRONIZE:
+-			HandleSynchronize(packet);
+-		break;
+-		case SerialPacket::Type::SHUTDOWN:
+-			HandleShutdown(packet);
+-		break;
+-		case SerialPacket::Type::PLAYER_NEW:
+-			HandlePlayerNew(packet);
+-		break;
+-		case SerialPacket::Type::PLAYER_DELETE:
+-			HandlePlayerDelete(packet);
+-		break;
+-		case SerialPacket::Type::PLAYER_UPDATE:
+-			HandlePlayerUpdate(packet);
+-		break;
+-		case SerialPacket::Type::REGION_REQUEST:
+-			HandleRegionRequest(packet);
+-		break;
+-		//handle errors
+-		default:
+-			throw(std::runtime_error("Unknown SerialPacket::Type encountered"));
+-		break;
+-	}
+-}
+-
+-//-------------------------
+-//Handle various network input
+-//-------------------------
+-
+-void ServerApplication::HandleBroadcastRequest(SerialPacket packet) {
+-	//send back the server's metadata
+-	packet.meta.type = SerialPacket::Type::BROADCAST_RESPONSE;
+-
+-	//pack the data
+-	snprintf(packet.serverInfo.name, PACKET_STRING_SIZE, "%s", config["server.name"].c_str());
+-	packet.serverInfo.playerCount = playerMap.size();
+-	packet.serverInfo.regionWidth = REGION_WIDTH;
+-	packet.serverInfo.regionHeight = REGION_HEIGHT;
+-	packet.serverInfo.regionDepth = REGION_DEPTH;
+-
+-	//send the data
+-	char buffer[PACKET_BUFFER_SIZE];
+-	serialize(&packet, buffer);
+-	network.Send(&packet.meta.srcAddress, buffer, PACKET_BUFFER_SIZE);
+-}
+-
+-void ServerApplication::HandleJoinRequest(SerialPacket packet) {
+-	//register the new client
+-	ClientEntry newClient;
+-	newClient.address = packet.meta.srcAddress;
+-	clientMap[ClientEntry::uidCounter] = newClient;
+-
+-	//send the client their index
+-	char buffer[PACKET_BUFFER_SIZE];
+-	packet.meta.type = SerialPacket::Type::JOIN_RESPONSE;
+-	packet.clientInfo.index = ClientEntry::uidCounter;
+-	serialize(&packet, buffer);
+-
+-	//bounce this packet
+-	network.Send(&newClient.address, buffer, PACKET_BUFFER_SIZE);
+-
+-	//finished this routine
+-	ClientEntry::uidCounter++;
+-	std::cout << "Connect, total: " << clientMap.size() << std::endl;
+-}
+-
+-void ServerApplication::HandleDisconnect(SerialPacket packet) {
+-	//TODO: authenticate who is disconnecting/kicking
+-
+-	//disconnect the specified client
+-	char buffer[PACKET_BUFFER_SIZE];
+-	serialize(&packet, buffer);
+-	network.Send(&clientMap[packet.clientInfo.index].address, buffer, PACKET_BUFFER_SIZE);
+-	clientMap.erase(packet.clientInfo.index);
+-
+-	//prep the delete packet
+-	SerialPacket delPacket;
+-	delPacket.meta.type = SerialPacket::Type::PLAYER_DELETE;
+-
+-	//TODO: can this use DeletePlayer() instead?
+-	//delete server and client side players
+-	erase_if(playerMap, [&](std::pair<unsigned int, PlayerEntry> it) -> bool {
+-		//find the internal players to delete
+-		if (it.second.clientIndex == packet.clientInfo.index) {
+-			//send the delete player command to all clients
+-			delPacket.playerInfo.playerIndex = it.first;
+-			PumpPacket(delPacket);
+-
+-			//delete this player object
+-			return true;
+-		}
+-
+-		//don't delete this player object
+-		return false;
+-	});
+-
+-	//finished this routine
+-	std::cout << "Disconnect, total: " << clientMap.size() << std::endl;
+-}
+-
+-void ServerApplication::HandleSynchronize(SerialPacket packet) {
+-	//TODO: compensate for large distances
+-
+-	//send all the server's data to this client
+-	SerialPacket newPacket;
+-	char buffer[PACKET_BUFFER_SIZE];
+-
+-	//players
+-	newPacket.meta.type = SerialPacket::Type::PLAYER_UPDATE;
+-	for (auto& it : playerMap) {
+-		//TODO: update this for the expanded PlayerEntry structure
+-		newPacket.playerInfo.playerIndex = it.first;
+-		snprintf(newPacket.playerInfo.handle, PACKET_STRING_SIZE, "%s", it.second.handle.c_str());
+-		snprintf(newPacket.playerInfo.avatar, PACKET_STRING_SIZE, "%s", it.second.avatar.c_str());
+-		newPacket.playerInfo.position = it.second.position;
+-		newPacket.playerInfo.motion = it.second.motion;
+-		serialize(&newPacket, buffer);
+-		network.Send(&clientMap[packet.clientInfo.index].address, buffer, PACKET_BUFFER_SIZE);
+-	}
+-}
+-
+-void ServerApplication::HandleShutdown(SerialPacket packet) {
+-	//end the server
+-	running = false;
+-
+-	//disconnect all clients
+-	packet.meta.type = SerialPacket::Type::DISCONNECT;
+-	PumpPacket(packet);
+-
+-	//finished this routine
+-	std::cout << "Shutdown signal accepted" << std::endl;
+-}
+-
+-void ServerApplication::HandlePlayerNew(SerialPacket packet) {
+-	//register the new PlayerEntry
+-	//NOTE: assigning each field one-by-one so adding or moving a field doesn't break this code
+-	PlayerEntry newPlayer;
+-
+-	//metadata
+-	newPlayer.clientIndex = packet.playerInfo.clientIndex;
+-	newPlayer.handle = packet.playerInfo.handle;
+-	newPlayer.avatar = packet.playerInfo.avatar;
+-
+-	//position
+-	newPlayer.mapIndex = 0;
+-	newPlayer.position = {0,0};
+-	newPlayer.motion = {0,0};
+-	newPlayer.bbox = {0, 0, 0, 0};
+-
+-	//TODO: Add the statistic creation code here
+-
+-	//push this player
+-	playerMap[PlayerEntry::uidCounter] = newPlayer;
+-
+-	//send the client their info
+-	packet.playerInfo.playerIndex = PlayerEntry::uidCounter;
+-	packet.playerInfo.position = newPlayer.position;
+-	packet.playerInfo.motion = newPlayer.motion;
+-
+-	//actually send to everyone
+-	PumpPacket(packet);
+-
+-	//finish this routine
+-	PlayerEntry::uidCounter++;
+-}
+-
+-//TODO: differentiate between delete and unload
+-void ServerApplication::HandlePlayerDelete(SerialPacket packet) {
+-	//TODO: authenticate who is deleting this player
+-	if (playerMap.find(packet.playerInfo.playerIndex) == playerMap.end()) {
+-		throw(std::runtime_error("Cannot delete a non-existant player"));
+-	}
+-
+-	//TODO: remove the deleted player from the database?
+-
+-	//prep the delete packet
+-	SerialPacket delPacket;
+-	delPacket.meta.type = SerialPacket::Type::PLAYER_DELETE;
+-
+-	//delete the specified playerEntry
+-	erase_if(playerMap, [&](std::pair<unsigned int, PlayerEntry> it) -> bool {
+-		//find the specified PlayerEntry
+-		if (it.first == packet.playerInfo.playerIndex) {
+-			//send to all
+-			delPacket.playerInfo.playerIndex = it.first;
+-			PumpPacket(delPacket);
+-
+-			//delete this player
+-			return true;
+-		}
+-		//skip this player
+-		return false;
+-	});
+-}
+-
+-void ServerApplication::HandlePlayerUpdate(SerialPacket packet) {
+-	if (playerMap.find(packet.playerInfo.playerIndex) == playerMap.end()) {
+-		throw(std::runtime_error("Cannot update a non-existant player"));
+-	}
+-
+-	//TODO: the server needs it's own movement system too
+-	playerMap[packet.playerInfo.playerIndex].position = packet.playerInfo.position;
+-	playerMap[packet.playerInfo.playerIndex].motion = packet.playerInfo.motion;
+-
+-	PumpPacket(packet);
+-}
+-
+-void ServerApplication::HandleRegionRequest(SerialPacket packet) {
+-	char buffer[PACKET_BUFFER_SIZE];
+-	packet.meta.type = SerialPacket::Type::REGION_CONTENT;
+-	packet.regionInfo.region = regionPager.GetRegion(packet.regionInfo.x, packet.regionInfo.y);
+-	serialize(&packet, buffer);
+-	network.Send(&packet.meta.srcAddress, buffer, PACKET_BUFFER_SIZE);
+-}
+-
+-void ServerApplication::PumpPacket(SerialPacket packet) {
+-	//NOTE: I don't really like this, but it'll do for now
+-	char buffer[PACKET_BUFFER_SIZE];
+-	serialize(&packet, buffer);
+-	for (auto& it : clientMap) {
+-		network.Send(&it.second.address, buffer, PACKET_BUFFER_SIZE);
+-	}
+-}
+diff --git a/server/server_application.hpp b/server/server_application.hpp
+index 2da5de1..cd6d4ac 100644
+--- a/server/server_application.hpp
++++ b/server/server_application.hpp
+@@ -23,7 +23,6 @@
+ #define SERVERAPPLICATION_HPP_
+ 
+ //server specific stuff
+-#include "server_utility.hpp"
+ #include "client_entry.hpp"
+ #include "player_entry.hpp"
+ 
+@@ -63,28 +62,29 @@ public:
+ private:
+ 	void HandlePacket(SerialPacket);
+ 
+-	//high cohesion utility functions
++	//handle incoming traffic
+ 	void HandleBroadcastRequest(SerialPacket);
+ 	void HandleJoinRequest(SerialPacket);
+-	void HandleDisconnect(SerialPacket);
+ 	void HandleSynchronize(SerialPacket);
++	void HandleDisconnect(SerialPacket);
+ 	void HandleShutdown(SerialPacket);
+-	void HandlePlayerNew(SerialPacket);
+-	void HandlePlayerDelete(SerialPacket);
+ 	void HandlePlayerUpdate(SerialPacket);
+ 	void HandleRegionRequest(SerialPacket);
+ 
+ 	//TODO: a function that only sends to players in a certain proximity
+ 	void PumpPacket(SerialPacket);
+ 
++	//TODO: manage the database
++	//TODO: combat systems
++
+ 	//APIs
+ 	UDPNetworkUtility network;
+ 	sqlite3* database = nullptr;
+ 	lua_State* luaState = nullptr;
+ 
+ 	//server tables
+-	std::map<unsigned int, ClientEntry> clientMap;
+-	std::map<unsigned int, PlayerEntry> playerMap;
++	std::map<int, ClientEntry> clientMap;
++	std::map<int, PlayerEntry> playerMap;
+ 
+ 	//maps
+ 	//TODO: I need to handle multiple map objects
+diff --git a/server/server_connections.cpp b/server/server_connections.cpp
+new file mode 100644
+index 0000000..2f35566
+--- /dev/null
++++ b/server/server_connections.cpp
+@@ -0,0 +1,186 @@
++/* Copyright: (c) Kayne Ruse 2013, 2014
++ * 
++ * This software is provided 'as-is', without any express or implied
++ * warranty. In no event will the authors be held liable for any damages
++ * arising from the use of this software.
++ * 
++ * Permission is granted to anyone to use this software for any purpose,
++ * including commercial applications, and to alter it and redistribute it
++ * freely, subject to the following restrictions:
++ * 
++ * 1. The origin of this software must not be misrepresented; you must not
++ * claim that you wrote the original software. If you use this software
++ * in a product, an acknowledgment in the product documentation would be
++ * appreciated but is not required.
++ * 
++ * 2. Altered source versions must be plainly marked as such, and must not be
++ * misrepresented as being the original software.
++ * 
++ * 3. This notice may not be removed or altered from any source
++ * distribution.
++*/
++#include "server_application.hpp"
++
++#include <stdexcept>
++#include <iostream>
++
++//-------------------------
++//Handle various network input
++//-------------------------
++
++void ServerApplication::HandleBroadcastRequest(SerialPacket packet) {
++	//pack the server's data
++	packet.meta.type = SerialPacket::Type::BROADCAST_RESPONSE;
++	packet.serverInfo.networkVersion = NETWORK_VERSION;
++	snprintf(packet.serverInfo.name, PACKET_STRING_SIZE, "%s", config["server.name"].c_str());
++	packet.serverInfo.playerCount = playerMap.size();
++
++	//bounce this packet
++	char buffer[PACKET_BUFFER_SIZE];
++	serialize(&packet, buffer);
++	network.Send(&packet.meta.srcAddress, buffer, PACKET_BUFFER_SIZE);
++}
++
++void ServerApplication::HandleJoinRequest(SerialPacket packet) {
++	//create the new client
++	ClientEntry newClient;
++	newClient.address = packet.meta.srcAddress;
++
++	//TODO: move this into the player management code
++	//create the new player
++	PlayerEntry newPlayer;
++	newPlayer.clientIndex = ClientEntry::uidCounter;
++	newPlayer.player = packet.clientInfo.player;
++	newPlayer.handle = packet.clientInfo.handle;
++	newPlayer.avatar = packet.clientInfo.avatar;
++
++	//send the client their info
++	packet.meta.type = SerialPacket::Type::JOIN_RESPONSE;
++	packet.clientInfo.clientIndex = ClientEntry::uidCounter;
++	packet.clientInfo.playerIndex = PlayerEntry::uidCounter;
++
++	//bounce this packet
++	char buffer[PACKET_BUFFER_SIZE];
++	serialize(&packet, buffer);
++	network.Send(&newClient.address, buffer, PACKET_BUFFER_SIZE);
++
++	//send the new player to all clients
++	packet.meta.type = SerialPacket::Type::PLAYER_NEW;
++	packet.playerInfo.playerIndex = PlayerEntry::uidCounter;
++	strncpy(packet.playerInfo.handle, newPlayer.handle.c_str(), PACKET_STRING_SIZE);
++	strncpy(packet.playerInfo.avatar, newPlayer.avatar.c_str(), PACKET_STRING_SIZE);
++	packet.playerInfo.position = newPlayer.position;
++	packet.playerInfo.motion = newPlayer.motion;
++	PumpPacket(packet);
++
++	//finished this routine
++	clientMap[ClientEntry::uidCounter] = newClient;
++	playerMap[PlayerEntry::uidCounter] = newPlayer;
++	ClientEntry::uidCounter++;
++	PlayerEntry::uidCounter++;
++	std::cout << "Connect, total: " << clientMap.size() << std::endl;
++}
++
++void ServerApplication::HandleSynchronize(SerialPacket packet) {
++	//TODO: compensate for large distances
++
++	//send all the server's data to this client
++	SerialPacket newPacket;
++	char buffer[PACKET_BUFFER_SIZE];
++
++	//players
++	newPacket.meta.type = SerialPacket::Type::PLAYER_UPDATE;
++	for (auto& it : playerMap) {
++		//TODO: update this for the expanded PlayerEntry structure
++		newPacket.playerInfo.playerIndex = it.first;
++		snprintf(newPacket.playerInfo.handle, PACKET_STRING_SIZE, "%s", it.second.handle.c_str());
++		snprintf(newPacket.playerInfo.avatar, PACKET_STRING_SIZE, "%s", it.second.avatar.c_str());
++		newPacket.playerInfo.mapIndex = it.second.mapIndex;
++		newPacket.playerInfo.position = it.second.position;
++		newPacket.playerInfo.motion = it.second.motion;
++		serialize(&newPacket, buffer);
++		network.Send(&clientMap[packet.clientInfo.clientIndex].address, buffer, PACKET_BUFFER_SIZE);
++	}
++}
++
++void ServerApplication::HandleDisconnect(SerialPacket packet) {
++	//TODO: authenticate who is disconnecting/kicking
++	//TODO: define the difference between unloading and deletng a player
++
++	//disconnect the specified client
++	char buffer[PACKET_BUFFER_SIZE];
++	serialize(&packet, buffer);
++	network.Send(&clientMap[packet.clientInfo.clientIndex].address, buffer, PACKET_BUFFER_SIZE);
++	clientMap.erase(packet.clientInfo.clientIndex);
++
++	//prep the delete packet
++	SerialPacket delPacket;
++	delPacket.meta.type = SerialPacket::Type::PLAYER_DELETE;
++
++	//delete server and client side players
++	erase_if(playerMap, [&](std::pair<int, PlayerEntry> it) -> bool {
++		//find the internal players to delete
++		if (it.second.clientIndex == packet.clientInfo.clientIndex) {
++			//send the delete player command to all clients
++			delPacket.playerInfo.playerIndex = it.first;
++			PumpPacket(delPacket);
++
++			//delete this player object
++			return true;
++		}
++
++		//don't delete this player object
++		return false;
++	});
++
++	//finished this routine
++	std::cout << "Disconnect, total: " << clientMap.size() << std::endl;
++}
++
++void ServerApplication::HandleShutdown(SerialPacket packet) {
++	//TODO: authenticate who is shutting the server down
++
++	//end the server
++	running = false;
++
++	//disconnect all clients
++	packet.meta.type = SerialPacket::Type::DISCONNECT;
++	packet.clientInfo.clientIndex = -1;
++	PumpPacket(packet);
++
++	//finished this routine
++	std::cout << "Shutdown signal accepted" << std::endl;
++}
++
++void ServerApplication::HandlePlayerUpdate(SerialPacket packet) {
++	//TODO: this should be moved elsewhere
++	if (playerMap.find(packet.playerInfo.playerIndex) == playerMap.end()) {
++		throw(std::runtime_error("Cannot update a non-existant player"));
++	}
++
++	//TODO: the server needs it's own movement system too
++	playerMap[packet.playerInfo.playerIndex].position = packet.playerInfo.position;
++	playerMap[packet.playerInfo.playerIndex].motion = packet.playerInfo.motion;
++
++	PumpPacket(packet);
++}
++
++void ServerApplication::HandleRegionRequest(SerialPacket packet) {
++	//TODO: this should be moved elsewhere
++	packet.meta.type = SerialPacket::Type::REGION_CONTENT;
++	packet.regionInfo.region = regionPager.GetRegion(packet.regionInfo.x, packet.regionInfo.y);
++
++	//send the content
++	char buffer[PACKET_BUFFER_SIZE];
++	serialize(&packet, buffer);
++	network.Send(&packet.meta.srcAddress, buffer, PACKET_BUFFER_SIZE);
++}
++
++void ServerApplication::PumpPacket(SerialPacket packet) {
++	//NOTE: I don't really like this, but it'll do for now
++	char buffer[PACKET_BUFFER_SIZE];
++	serialize(&packet, buffer);
++	for (auto& it : clientMap) {
++		network.Send(&it.second.address, buffer, PACKET_BUFFER_SIZE);
++	}
++}
+diff --git a/server/server_internals.cpp b/server/server_internals.cpp
+new file mode 100644
+index 0000000..e1a9cb9
+--- /dev/null
++++ b/server/server_internals.cpp
+@@ -0,0 +1,168 @@
++/* Copyright: (c) Kayne Ruse 2014
++ * 
++ * This software is provided 'as-is', without any express or implied
++ * warranty. In no event will the authors be held liable for any damages
++ * arising from the use of this software.
++ * 
++ * Permission is granted to anyone to use this software for any purpose,
++ * including commercial applications, and to alter it and redistribute it
++ * freely, subject to the following restrictions:
++ * 
++ * 1. The origin of this software must not be misrepresented; you must not
++ * claim that you wrote the original software. If you use this software
++ * in a product, an acknowledgment in the product documentation would be
++ * appreciated but is not required.
++ * 
++ * 2. Altered source versions must be plainly marked as such, and must not be
++ * misrepresented as being the original software.
++ * 
++ * 3. This notice may not be removed or altered from any source
++ * distribution.
++*/
++#include "server_application.hpp"
++
++#include "server_utility.hpp"
++
++#include <stdexcept>
++#include <iostream>
++#include <string>
++
++//-------------------------
++//Define the public members
++//-------------------------
++
++void ServerApplication::Init(int argc, char** argv) {
++	//NOTE: I might need to rearrange the init process so that lua & SQL can interact with the map system as needed.
++	std::cout << "Beginning startup" << std::endl;
++
++	//initial setup
++	config.Load("rsc\\config.cfg");
++
++	//Init SDL
++	if (SDL_Init(0)) {
++		throw(std::runtime_error("Failed to initialize SDL"));
++	}
++	std::cout << "Initialized SDL" << std::endl;
++
++	//Init SDL_net
++	if (SDLNet_Init()) {
++		throw(std::runtime_error("Failed to initialize SDL_net"));
++	}
++	network.Open(config.Int("server.port"), PACKET_BUFFER_SIZE);
++	std::cout << "Initialized SDL_net" << std::endl;
++
++	//Init SQL
++	int ret = sqlite3_open_v2(config["server.dbname"].c_str(), &database, SQLITE_OPEN_READWRITE|SQLITE_OPEN_CREATE, nullptr);
++	if (ret != SQLITE_OK || !database) {
++		throw(std::runtime_error(std::string() + "Failed to initialize SQL: " + sqlite3_errmsg(database) ));
++	}
++	std::cout << "Initialized SQL" << std::endl;
++
++	//setup the database
++	if (runSQLScript(database, config["dir.scripts"] + "setup_server.sql")) {
++		throw(std::runtime_error("Failed to initialize SQL's setup script"));
++	}
++	std::cout << "Initialized SQL's setup script" << std::endl;
++
++	//lua
++	luaState = luaL_newstate();
++	if (!luaState) {
++		throw(std::runtime_error("Failed to initialize lua"));
++	}
++	luaL_openlibs(luaState);
++	std::cout << "Initialized lua" << std::endl;
++
++	//run the startup script
++	if (luaL_dofile(luaState, (config["dir.scripts"] + "setup_server.lua").c_str())) {
++		throw(std::runtime_error(std::string() + "Failed to initialize lua's setup script: " + lua_tostring(luaState, -1) ));
++	}
++	std::cout << "Initialized lua's setup script" << std::endl;
++
++	//setup the map object
++	regionPager.GetAllocator()->SetLuaState(luaState);
++	regionPager.GetFormat()->SetLuaState(luaState);
++	//TODO: config parameter
++	regionPager.GetFormat()->SetSaveDir("save/mapname/");
++
++	std::cout << "Initialized the map system" << std::endl;
++	std::cout << "\tsizeof(SerialPacket): " << sizeof(SerialPacket) << std::endl;
++	std::cout << "\tPACKET_BUFFER_SIZE: " << PACKET_BUFFER_SIZE << std::endl;
++
++	//finalize the startup
++	std::cout << "Startup completed successfully" << std::endl;
++
++	//debugging
++	//
++}
++
++void ServerApplication::Proc() {
++	SerialPacket packet;
++	while(running) {
++		//suck in the waiting packets & process them
++		while(network.Receive()) {
++			//get the packet
++			deserialize(&packet, network.GetInData());
++			//cache the source address
++			packet.meta.srcAddress = network.GetInPacket()->address;
++			//we need to go deeper
++			HandlePacket(packet);
++		}
++		//update the internals
++		//TODO: update the internals i.e. player positions
++		//give the computer a break
++		SDL_Delay(10);
++	}
++}
++
++void ServerApplication::Quit() {
++	std::cout << "Shutting down" << std::endl;
++
++	//save the server state
++	//TODO: save the existing players
++
++	//empty the members
++	regionPager.UnloadAll();
++
++	//APIs
++	lua_close(luaState);
++	sqlite3_close_v2(database);
++	network.Close();
++	SDLNet_Quit();
++	SDL_Quit();
++
++	std::cout << "Shutdown finished" << std::endl;
++}
++
++//-------------------------
++//Define the uber switch
++//-------------------------
++
++void ServerApplication::HandlePacket(SerialPacket packet) {
++	switch(packet.meta.type) {
++		case SerialPacket::Type::BROADCAST_REQUEST:
++			HandleBroadcastRequest(packet);
++		break;
++		case SerialPacket::Type::JOIN_REQUEST:
++			HandleJoinRequest(packet);
++		break;
++		case SerialPacket::Type::SYNCHRONIZE:
++			HandleSynchronize(packet);
++		break;
++		case SerialPacket::Type::DISCONNECT:
++			HandleDisconnect(packet);
++		break;
++		case SerialPacket::Type::SHUTDOWN:
++			HandleShutdown(packet);
++		break;
++		case SerialPacket::Type::PLAYER_UPDATE:
++			HandlePlayerUpdate(packet);
++		break;
++		case SerialPacket::Type::REGION_REQUEST:
++			HandleRegionRequest(packet);
++		break;
++		//handle errors
++		default:
++			throw(std::runtime_error("Unknown SerialPacket::Type encountered"));
++		break;
++	}
++}
+diff --git a/todo.txt b/todo.txt
+new file mode 100644
+index 0000000..8f42fcd
+--- /dev/null
++++ b/todo.txt
+@@ -0,0 +1,30 @@
++Please note that due to modificatons, the indicated line may be incorrect.
++
++## TODO
++server_application.hpp:74  a function that only sends to players in a certain proximity
++server_application.hpp:94  I need to handle multiple map objects
++server_application.hpp:95  Unload regions that are distant from any players
++server_internals.cpp:84  config parameter
++server_internals.cpp:111  update the internals i.e. player positions
++server_internals.cpp:121  save the existing players
++server_networking.cpp:68  finish the player's initialization
++server_networking.cpp:77  compensate for large distances
++server_networking.cpp:86  update this for the expanded PlayerEntry structure
++server_networking.cpp:99  authenticate who is disconnecting/kicking
++server_networking.cpp:100  define the difference between unloading and deletng a player
++server_networking.cpp:133  authenticate who is shitting the server down
++server_networking.cpp:152  the server needs it's own movement system too
++player_character.hpp:28  correct the PlayerCharacter class and it's movement system
++in_world.cpp:62  add the tilesheet to the map system?
++in_world.cpp:104  sort the players and entities by Y position
++in_world.cpp:280  account for map index
++in_world.cpp:307  set the handle
++in_world.cpp:398  convert this into a more generic function?; using parameters for the bounds
++in_world.hpp:108  Fix the camera
++lobby_menu.cpp:96  I need a proper UI system for the entire client and the editor
++lobby_menu.cpp:102  draw headers for the server list
++lobby_menu.cpp:122  ping?
++bbox.hpp:29  This is supposed to interact with the vector
++region_pager.hpp:49  delete existing regions
++serial_packet.hpp:71  combat packets
++setup_server.sql:1  The SQL startup script needs revising
