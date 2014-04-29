@@ -63,10 +63,10 @@ union SerialPacket {
 		REGION_REQUEST = 10,
 		REGION_CONTENT = 11,
 
-		//Player movement, etc.
-		PLAYER_NEW = 12,
-		PLAYER_DELETE = 13,
-		PLAYER_UPDATE = 14,
+		//Character movement, etc.
+		CHARACTER_NEW = 12,
+		CHARACTER_DELETE = 13,
+		CHARACTER_UPDATE = 14,
 
 		//TODO: combat packets
 	};
@@ -89,8 +89,8 @@ union SerialPacket {
 	struct ClientInformation {
 		Metadata meta;
 		int clientIndex;
-		int playerIndex;
-		char player[PACKET_STRING_SIZE];
+		int characterIndex;
+		char username[PACKET_STRING_SIZE];
 		char handle[PACKET_STRING_SIZE];
 		char avatar[PACKET_STRING_SIZE];
 	}clientInfo;
@@ -103,17 +103,17 @@ union SerialPacket {
 		Region* region;
 	}regionInfo;
 
-	//information about a player
-	struct PlayerInformation {
+	//information about a character
+	struct CharacterInformation {
 		Metadata meta;
 		int clientIndex;
-		int playerIndex;
+		int characterIndex;
 		char handle[PACKET_STRING_SIZE];
 		char avatar[PACKET_STRING_SIZE];
 		int mapIndex;
 		Vector2 position;
 		Vector2 motion;
-	}playerInfo;
+	}characterInfo;
 
 	//defaults
 	SerialPacket() {

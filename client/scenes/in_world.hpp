@@ -74,9 +74,9 @@ protected:
 	//Network handlers
 	void HandlePacket(SerialPacket);
 	void HandleDisconnect(SerialPacket);
-	void HandlePlayerNew(SerialPacket);
-	void HandlePlayerDelete(SerialPacket);
-	void HandlePlayerUpdate(SerialPacket);
+	void HandleCharacterNew(SerialPacket);
+	void HandleCharacterDelete(SerialPacket);
+	void HandleCharacterUpdate(SerialPacket);
 	void HandleRegionContent(SerialPacket);
 
 	//Server control
@@ -92,7 +92,7 @@ protected:
 	ConfigUtility& config;
 	UDPNetworkUtility& network;
 	int& clientIndex;
-	int& playerIndex;
+	int& characterIndex;
 
 	//graphics
 	Image buttonImage;

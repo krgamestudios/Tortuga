@@ -31,11 +31,11 @@
 //Public access members
 //-------------------------
 
-InWorld::InWorld(ConfigUtility* const argConfig, UDPNetworkUtility* const argNetwork, int* const argClientIndex, int* const argPlayerIndex):
+InWorld::InWorld(ConfigUtility* const argConfig, UDPNetworkUtility* const argNetwork, int* const argClientIndex, int* const argCharacterIndex):
 	config(*argConfig),
 	network(*argNetwork),
 	clientIndex(*argClientIndex),
-	playerIndex(*argPlayerIndex)
+	characterIndex(*argCharacterIndex)
 {
 	//setup the utility objects
 	buttonImage.LoadSurface(config["dir.interface"] + "button_menu.bmp");
@@ -67,7 +67,7 @@ InWorld::InWorld(ConfigUtility* const argConfig, UDPNetworkUtility* const argNet
 	char buffer[PACKET_STRING_SIZE];
 	packet.meta.type = SerialPacket::Type::SYNCHRONIZE;
 	packet.clientInfo.clientIndex = clientIndex;
-	packet.clientInfo.playerIndex = playerIndex;
+	packet.clientInfo.characterIndex = characterIndex;
 	serialize(&packet, buffer);
 	network.Send(Channels::SERVER, buffer, PACKET_BUFFER_SIZE);
 
@@ -252,14 +252,14 @@ void InWorld::HandlePacket(SerialPacket packet) {
 		case SerialPacket::Type::REGION_CONTENT:
 			HandleRegionContent(packet);
 		break;
-		case SerialPacket::Type::PLAYER_UPDATE:
-			HandlePlayerUpdate(packet);
+		case SerialPacket::Type::CHARACTER_UPDATE:
+			HandleCharacterUpdate(packet);
 		break;
-		case SerialPacket::Type::PLAYER_NEW:
-			HandlePlayerNew(packet);
+		case SerialPacket::Type::CHARACTER_NEW:
+			HandleCharacterNew(packet);
 		break;
-		case SerialPacket::Type::PLAYER_DELETE:
-			HandlePlayerDelete(packet);
+		case SerialPacket::Type::CHARACTER_DELETE:
+			HandleCharacterDelete(packet);
 		break;
 		//handle errors
 		default:
@@ -271,7 +271,7 @@ void InWorld::HandlePacket(SerialPacket packet) {
 void InWorld::HandleDisconnect(SerialPacket packet) {
 	network.Unbind(Channels::SERVER);
 	clientIndex = -1;
-	playerIndex = -1;
+	characterIndex = -1;
 	SetNextScene(SceneList::MAINMENU);
 }
 
@@ -285,34 +285,34 @@ void InWorld::HandleRegionContent(SerialPacket packet) {
 	packet.regionInfo.region = nullptr;
 }
 
-void InWorld::HandlePlayerUpdate(SerialPacket packet) {
-	if (playerCharacters.find(packet.playerInfo.playerIndex) == playerCharacters.end()) {
-		HandlePlayerNew(packet);
+void InWorld::HandleCharacterUpdate(SerialPacket packet) {
+	if (playerCharacters.find(packet.characterInfo.characterIndex) == playerCharacters.end()) {
+		HandleCharacterNew(packet);
 		return;
 	}
 
 	//update only if the message didn't originate from here
-	if (packet.playerInfo.clientIndex != clientIndex) {
-		playerCharacters[packet.playerInfo.playerIndex].SetPosition(packet.playerInfo.position);
-		playerCharacters[packet.playerInfo.playerIndex].SetMotion(packet.playerInfo.motion);
+	if (packet.characterInfo.clientIndex != clientIndex) {
+		playerCharacters[packet.characterInfo.characterIndex].SetPosition(packet.characterInfo.position);
+		playerCharacters[packet.characterInfo.characterIndex].SetMotion(packet.characterInfo.motion);
 	}
-	playerCharacters[packet.playerInfo.playerIndex].ResetDirection();
+	playerCharacters[packet.characterInfo.characterIndex].ResetDirection();
 }
 
-void InWorld::HandlePlayerNew(SerialPacket packet) {
-	if (playerCharacters.find(packet.playerInfo.playerIndex) != playerCharacters.end()) {
-		throw(std::runtime_error("Cannot create duplicate players"));
+void InWorld::HandleCharacterNew(SerialPacket packet) {
+	if (playerCharacters.find(packet.characterInfo.characterIndex) != playerCharacters.end()) {
+		throw(std::runtime_error("Cannot create duplicate characters"));
 	}
 
-	//TODO: set the handle
-	playerCharacters[packet.playerInfo.playerIndex].GetSprite()->LoadSurface(config["dir.sprites"] + packet.playerInfo.avatar, 4, 4);
-	playerCharacters[packet.playerInfo.playerIndex].SetPosition(packet.playerInfo.position);
-	playerCharacters[packet.playerInfo.playerIndex].SetMotion(packet.playerInfo.motion);
-	playerCharacters[packet.playerInfo.playerIndex].ResetDirection();
+	//TODO: set the player's handle
+	playerCharacters[packet.characterInfo.characterIndex].GetSprite()->LoadSurface(config["dir.sprites"] + packet.characterInfo.avatar, 4, 4);
+	playerCharacters[packet.characterInfo.characterIndex].SetPosition(packet.characterInfo.position);
+	playerCharacters[packet.characterInfo.characterIndex].SetMotion(packet.characterInfo.motion);
+	playerCharacters[packet.characterInfo.characterIndex].ResetDirection();
 
 	//catch this client's player object
-	if (packet.playerInfo.playerIndex == playerIndex && !localCharacter) {
-		localCharacter = &playerCharacters[playerIndex];
+	if (packet.characterInfo.characterIndex == characterIndex && !localCharacter) {
+		localCharacter = &playerCharacters[characterIndex];
 
 		//setup the camera
 		camera.width = GetScreen()->w;
@@ -323,16 +323,16 @@ void InWorld::HandlePlayerNew(SerialPacket packet) {
 	}
 }
 
-void InWorld::HandlePlayerDelete(SerialPacket packet) {
-	if (playerCharacters.find(packet.playerInfo.playerIndex) == playerCharacters.end()) {
-		throw(std::runtime_error("Cannot delete non-existant players"));
+void InWorld::HandleCharacterDelete(SerialPacket packet) {
+	if (playerCharacters.find(packet.characterInfo.characterIndex) == playerCharacters.end()) {
+		throw(std::runtime_error("Cannot delete non-existant characters"));
 	}
 
-	playerCharacters.erase(packet.playerInfo.playerIndex);
+	playerCharacters.erase(packet.characterInfo.characterIndex);
 
 	//catch this client's player object
-	if (packet.playerInfo.playerIndex == playerIndex) {
-		playerIndex = -1;
+	if (packet.characterInfo.characterIndex == characterIndex) {
+		characterIndex = -1;
 		localCharacter = nullptr;
 	}
 }
@@ -346,11 +346,11 @@ void InWorld::SendPlayerUpdate() {
 	char buffer[PACKET_BUFFER_SIZE];
 
 	//pack the packet
-	packet.meta.type = SerialPacket::Type::PLAYER_UPDATE;
-	packet.playerInfo.clientIndex = clientIndex;
-	packet.playerInfo.playerIndex = playerIndex;
-	packet.playerInfo.position = localCharacter->GetPosition();
-	packet.playerInfo.motion = localCharacter->GetMotion();
+	packet.meta.type = SerialPacket::Type::CHARACTER_UPDATE;
+	packet.characterInfo.clientIndex = clientIndex;
+	packet.characterInfo.characterIndex = characterIndex;
+	packet.characterInfo.position = localCharacter->GetPosition();
+	packet.characterInfo.motion = localCharacter->GetMotion();
 
 	serialize(&packet, buffer);
 	network.Send(Channels::SERVER, buffer, PACKET_BUFFER_SIZE);

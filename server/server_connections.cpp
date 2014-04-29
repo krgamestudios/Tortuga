@@ -33,7 +33,7 @@ void ServerApplication::HandleBroadcastRequest(SerialPacket packet) {
 	packet.meta.type = SerialPacket::Type::BROADCAST_RESPONSE;
 	packet.serverInfo.networkVersion = NETWORK_VERSION;
 	snprintf(packet.serverInfo.name, PACKET_STRING_SIZE, "%s", config["server.name"].c_str());
-	packet.serverInfo.playerCount = playerMap.size();
+	packet.serverInfo.playerCount = characterMap.size();
 
 	//bounce this packet
 	char buffer[PACKET_BUFFER_SIZE];
@@ -43,41 +43,41 @@ void ServerApplication::HandleBroadcastRequest(SerialPacket packet) {
 
 void ServerApplication::HandleJoinRequest(SerialPacket packet) {
 	//create the new client
-	ClientEntry newClient;
+	ClientData newClient;
 	newClient.address = packet.meta.srcAddress;
 
-	//TODO: move this into the player management code
-	//create the new player
-	PlayerEntry newPlayer;
-	newPlayer.clientIndex = ClientEntry::uidCounter;
-	newPlayer.player = packet.clientInfo.player;
-	newPlayer.handle = packet.clientInfo.handle;
-	newPlayer.avatar = packet.clientInfo.avatar;
+	//TODO: move this into the character management code
+	//create the new character
+	CharacterData newCharacter;
+	newCharacter.clientIndex = ClientData::uidCounter;
+	newCharacter.username = packet.clientInfo.username;
+	newCharacter.handle = packet.clientInfo.handle;
+	newCharacter.avatar = packet.clientInfo.avatar;
 
 	//send the client their info
 	packet.meta.type = SerialPacket::Type::JOIN_RESPONSE;
-	packet.clientInfo.clientIndex = ClientEntry::uidCounter;
-	packet.clientInfo.playerIndex = PlayerEntry::uidCounter;
+	packet.clientInfo.clientIndex = ClientData::uidCounter;
+	packet.clientInfo.characterIndex = CharacterData::uidCounter;
 
 	//bounce this packet
 	char buffer[PACKET_BUFFER_SIZE];
 	serialize(&packet, buffer);
 	network.Send(&newClient.address, buffer, PACKET_BUFFER_SIZE);
 
-	//send the new player to all clients
-	packet.meta.type = SerialPacket::Type::PLAYER_NEW;
-	packet.playerInfo.playerIndex = PlayerEntry::uidCounter;
-	strncpy(packet.playerInfo.handle, newPlayer.handle.c_str(), PACKET_STRING_SIZE);
-	strncpy(packet.playerInfo.avatar, newPlayer.avatar.c_str(), PACKET_STRING_SIZE);
-	packet.playerInfo.position = newPlayer.position;
-	packet.playerInfo.motion = newPlayer.motion;
+	//send the new character to all clients
+	packet.meta.type = SerialPacket::Type::CHARACTER_NEW;
+	packet.characterInfo.characterIndex = CharacterData::uidCounter;
+	strncpy(packet.characterInfo.handle, newCharacter.handle.c_str(), PACKET_STRING_SIZE);
+	strncpy(packet.characterInfo.avatar, newCharacter.avatar.c_str(), PACKET_STRING_SIZE);
+	packet.characterInfo.position = newCharacter.position;
+	packet.characterInfo.motion = newCharacter.motion;
 	PumpPacket(packet);
 
 	//finished this routine
-	clientMap[ClientEntry::uidCounter] = newClient;
-	playerMap[PlayerEntry::uidCounter] = newPlayer;
-	ClientEntry::uidCounter++;
-	PlayerEntry::uidCounter++;
+	clientMap[ClientData::uidCounter] = newClient;
+	characterMap[CharacterData::uidCounter] = newCharacter;
+	ClientData::uidCounter++;
+	CharacterData::uidCounter++;
 	std::cout << "Connect, total: " << clientMap.size() << std::endl;
 }
 
@@ -88,16 +88,16 @@ void ServerApplication::HandleSynchronize(SerialPacket packet) {
 	SerialPacket newPacket;
 	char buffer[PACKET_BUFFER_SIZE];
 
-	//players
-	newPacket.meta.type = SerialPacket::Type::PLAYER_UPDATE;
-	for (auto& it : playerMap) {
-		//TODO: update this for the expanded PlayerEntry structure
-		newPacket.playerInfo.playerIndex = it.first;
-		snprintf(newPacket.playerInfo.handle, PACKET_STRING_SIZE, "%s", it.second.handle.c_str());
-		snprintf(newPacket.playerInfo.avatar, PACKET_STRING_SIZE, "%s", it.second.avatar.c_str());
-		newPacket.playerInfo.mapIndex = it.second.mapIndex;
-		newPacket.playerInfo.position = it.second.position;
-		newPacket.playerInfo.motion = it.second.motion;
+	//characters
+	newPacket.meta.type = SerialPacket::Type::CHARACTER_UPDATE;
+	for (auto& it : characterMap) {
+		//TODO: update this for the expanded CharacterData structure
+		newPacket.characterInfo.characterIndex = it.first;
+		snprintf(newPacket.characterInfo.handle, PACKET_STRING_SIZE, "%s", it.second.handle.c_str());
+		snprintf(newPacket.characterInfo.avatar, PACKET_STRING_SIZE, "%s", it.second.avatar.c_str());
+		newPacket.characterInfo.mapIndex = it.second.mapIndex;
+		newPacket.characterInfo.position = it.second.position;
+		newPacket.characterInfo.motion = it.second.motion;
 		serialize(&newPacket, buffer);
 		network.Send(&clientMap[packet.clientInfo.clientIndex].address, buffer, PACKET_BUFFER_SIZE);
 	}
@@ -105,7 +105,7 @@ void ServerApplication::HandleSynchronize(SerialPacket packet) {
 
 void ServerApplication::HandleDisconnect(SerialPacket packet) {
 	//TODO: authenticate who is disconnecting/kicking
-	//TODO: define the difference between unloading and deletng a player
+	//TODO: define the difference between unloading and deletng a character
 
 	//disconnect the specified client
 	char buffer[PACKET_BUFFER_SIZE];
@@ -115,21 +115,21 @@ void ServerApplication::HandleDisconnect(SerialPacket packet) {
 
 	//prep the delete packet
 	SerialPacket delPacket;
-	delPacket.meta.type = SerialPacket::Type::PLAYER_DELETE;
+	delPacket.meta.type = SerialPacket::Type::CHARACTER_DELETE;
 
-	//delete server and client side players
-	erase_if(playerMap, [&](std::pair<int, PlayerEntry> it) -> bool {
-		//find the internal players to delete
+	//delete server and client side characters
+	erase_if(characterMap, [&](std::pair<int, CharacterData> it) -> bool {
+		//find the internal characters to delete
 		if (it.second.clientIndex == packet.clientInfo.clientIndex) {
-			//send the delete player command to all clients
-			delPacket.playerInfo.playerIndex = it.first;
+			//send the delete characters command to all clients
+			delPacket.characterInfo.characterIndex = it.first;
 			PumpPacket(delPacket);
 
-			//delete this player object
+			//delete this characters object
 			return true;
 		}
 
-		//don't delete this player object
+		//don't delete this characters object
 		return false;
 	});
 
@@ -152,15 +152,15 @@ void ServerApplication::HandleShutdown(SerialPacket packet) {
 	std::cout << "Shutdown signal accepted" << std::endl;
 }
 
-void ServerApplication::HandlePlayerUpdate(SerialPacket packet) {
+void ServerApplication::HandleCharacterUpdate(SerialPacket packet) {
 	//TODO: this should be moved elsewhere
-	if (playerMap.find(packet.playerInfo.playerIndex) == playerMap.end()) {
-		throw(std::runtime_error("Cannot update a non-existant player"));
+	if (characterMap.find(packet.characterInfo.characterIndex) == characterMap.end()) {
+		throw(std::runtime_error("Cannot update a non-existant character"));
 	}
 
 	//TODO: the server needs it's own movement system too
-	playerMap[packet.playerInfo.playerIndex].position = packet.playerInfo.position;
-	playerMap[packet.playerInfo.playerIndex].motion = packet.playerInfo.motion;
+	characterMap[packet.characterInfo.characterIndex].position = packet.characterInfo.position;
+	characterMap[packet.characterInfo.characterIndex].motion = packet.characterInfo.motion;
 
 	PumpPacket(packet);
 }

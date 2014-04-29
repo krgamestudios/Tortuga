@@ -19,44 +19,13 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef PLAYERENTRY_HPP_
-#define PLAYERENTRY_HPP_
+#ifndef CLIENTDATA_HPP_
+#define CLIENTDATA_HPP_
 
-//POD members
-#include "bbox.hpp"
-#include "vector2.hpp"
+#include "SDL/SDL_net.h"
 
-#include <string>
-
-struct PlayerEntry {
-	//metadata
-	int clientIndex;
-	std::string player;
-	std::string handle;
-	std::string avatar;
-
-	//world position
-	int mapIndex = 0;
-	Vector2 position = {0.0,0.0};
-	Vector2 motion = {0.0,0.0};
-	BBox bbox = {0,0,0,0};
-
-	//statistics
-	int level = 0;
-	int exp = 0;
-	int maxHP = 0;
-	int health = 0;
-	int maxMP = 0;
-	int mana = 0;
-	int attack = 0;
-	int defence = 0;
-	int intelligence = 0;
-	int resistance = 0;
-	float accuracy = 0.0;
-	float evasion = 0.0;
-	float luck = 0.0;
-
-	//uid
+struct ClientData {
+	IPaddress address = {0,0};
 	static int uidCounter;
 };
 

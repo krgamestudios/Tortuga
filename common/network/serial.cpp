@@ -54,10 +54,10 @@ void serializeClient(SerialPacket* packet, char* buffer) {
 
 	//indexes
 	SERIALIZE(buffer, &packet->clientInfo.clientIndex, sizeof(int));
-	SERIALIZE(buffer, &packet->clientInfo.playerIndex, sizeof(int));
+	SERIALIZE(buffer, &packet->clientInfo.characterIndex, sizeof(int));
 
 	//texts
-	SERIALIZE(buffer, packet->clientInfo.player, PACKET_STRING_SIZE);
+	SERIALIZE(buffer, packet->clientInfo.username, PACKET_STRING_SIZE);
 	SERIALIZE(buffer, packet->clientInfo.handle, PACKET_STRING_SIZE);
 	SERIALIZE(buffer, packet->clientInfo.avatar, PACKET_STRING_SIZE);
 }
@@ -90,22 +90,22 @@ void serializeRegionContent(SerialPacket* packet, char* buffer) {
 	}
 }
 
-void serializePlayer(SerialPacket* packet, char* buffer) {
+void serializeCharacter(SerialPacket* packet, char* buffer) {
 	SERIALIZE(buffer, &packet->meta.type, sizeof(SerialPacket::Type));
 
 	//indexes
-	SERIALIZE(buffer, &packet->playerInfo.clientIndex, sizeof(int));
-	SERIALIZE(buffer, &packet->playerInfo.playerIndex, sizeof(int));
+	SERIALIZE(buffer, &packet->characterInfo.clientIndex, sizeof(int));
+	SERIALIZE(buffer, &packet->characterInfo.characterIndex, sizeof(int));
 
 	//texts
 	SERIALIZE(buffer, packet->clientInfo.handle, PACKET_STRING_SIZE);
 	SERIALIZE(buffer, packet->clientInfo.avatar, PACKET_STRING_SIZE);
 
 	//vectors
-	SERIALIZE(buffer, &packet->playerInfo.position.x, sizeof(double));
-	SERIALIZE(buffer, &packet->playerInfo.position.y, sizeof(double));
-	SERIALIZE(buffer, &packet->playerInfo.motion.x, sizeof(double));
-	SERIALIZE(buffer, &packet->playerInfo.motion.y, sizeof(double));
+	SERIALIZE(buffer, &packet->characterInfo.position.x, sizeof(double));
+	SERIALIZE(buffer, &packet->characterInfo.position.y, sizeof(double));
+	SERIALIZE(buffer, &packet->characterInfo.motion.x, sizeof(double));
+	SERIALIZE(buffer, &packet->characterInfo.motion.y, sizeof(double));
 }
 
 //-------------------------
@@ -130,10 +130,10 @@ void deserializeClient(SerialPacket* packet, char* buffer) {
 
 	//indexes
 	DESERIALIZE(buffer, &packet->clientInfo.clientIndex, sizeof(int));
-	DESERIALIZE(buffer, &packet->clientInfo.playerIndex, sizeof(int));
+	DESERIALIZE(buffer, &packet->clientInfo.characterIndex, sizeof(int));
 
 	//texts
-	DESERIALIZE(buffer, packet->clientInfo.player, PACKET_STRING_SIZE);
+	DESERIALIZE(buffer, packet->clientInfo.username, PACKET_STRING_SIZE);
 	DESERIALIZE(buffer, packet->clientInfo.handle, PACKET_STRING_SIZE);
 	DESERIALIZE(buffer, packet->clientInfo.avatar, PACKET_STRING_SIZE);
 }
@@ -173,22 +173,22 @@ void deserializeRegionContent(SerialPacket* packet, char* buffer) {
 	}
 }
 
-void deserializePlayer(SerialPacket* packet, char* buffer) {
+void deserializeCharacter(SerialPacket* packet, char* buffer) {
 	DESERIALIZE(buffer, &packet->meta.type, sizeof(SerialPacket::Type));
 
 	//indexes
-	DESERIALIZE(buffer, &packet->playerInfo.clientIndex, sizeof(int));
-	DESERIALIZE(buffer, &packet->playerInfo.playerIndex, sizeof(int));
+	DESERIALIZE(buffer, &packet->characterInfo.clientIndex, sizeof(int));
+	DESERIALIZE(buffer, &packet->characterInfo.characterIndex, sizeof(int));
 
 	//texts
 	DESERIALIZE(buffer, packet->clientInfo.handle, PACKET_STRING_SIZE);
 	DESERIALIZE(buffer, packet->clientInfo.avatar, PACKET_STRING_SIZE);
 
 	//vectors
-	DESERIALIZE(buffer, &packet->playerInfo.position.x, sizeof(double));
-	DESERIALIZE(buffer, &packet->playerInfo.position.y, sizeof(double));
-	DESERIALIZE(buffer, &packet->playerInfo.motion.x, sizeof(double));
-	DESERIALIZE(buffer, &packet->playerInfo.motion.y, sizeof(double));
+	DESERIALIZE(buffer, &packet->characterInfo.position.x, sizeof(double));
+	DESERIALIZE(buffer, &packet->characterInfo.position.y, sizeof(double));
+	DESERIALIZE(buffer, &packet->characterInfo.motion.x, sizeof(double));
+	DESERIALIZE(buffer, &packet->characterInfo.motion.y, sizeof(double));
 }
 
 //-------------------------
@@ -228,11 +228,11 @@ void serialize(SerialPacket* packet, void* buffer) {
 			serializeRegionContent(packet, reinterpret_cast<char*>(buffer));
 		break;
 
-		//Player info
-		case SerialPacket::Type::PLAYER_NEW:
-		case SerialPacket::Type::PLAYER_DELETE:
-		case SerialPacket::Type::PLAYER_UPDATE:
-			serializePlayer(packet, reinterpret_cast<char*>(buffer));
+		//Character info
+		case SerialPacket::Type::CHARACTER_NEW:
+		case SerialPacket::Type::CHARACTER_DELETE:
+		case SerialPacket::Type::CHARACTER_UPDATE:
+			serializeCharacter(packet, reinterpret_cast<char*>(buffer));
 		break;
 	}
 }
@@ -272,11 +272,11 @@ void deserialize(SerialPacket* packet, void* buffer) {
 			deserializeRegionContent(packet, reinterpret_cast<char*>(buffer));
 		break;
 
-		//Player info
-		case SerialPacket::Type::PLAYER_NEW:
-		case SerialPacket::Type::PLAYER_DELETE:
-		case SerialPacket::Type::PLAYER_UPDATE:
-			deserializePlayer(packet, reinterpret_cast<char*>(buffer));
+		//Character info
+		case SerialPacket::Type::CHARACTER_NEW:
+		case SerialPacket::Type::CHARACTER_DELETE:
+		case SerialPacket::Type::CHARACTER_UPDATE:
+			deserializeCharacter(packet, reinterpret_cast<char*>(buffer));
 		break;
 	}
 }

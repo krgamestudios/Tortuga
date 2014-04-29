@@ -19,6 +19,6 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#include "client_entry.hpp"
+#include "client_data.hpp"
 
-int ClientEntry::uidCounter = 0;
+int ClientData::uidCounter = 0;

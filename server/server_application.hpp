@@ -23,8 +23,8 @@
 #define SERVERAPPLICATION_HPP_
 
 //server specific stuff
-#include "client_entry.hpp"
-#include "player_entry.hpp"
+#include "client_data.hpp"
+#include "character_data.hpp"
 
 //maps
 #include "map_allocator.hpp"
@@ -68,10 +68,10 @@ private:
 	void HandleSynchronize(SerialPacket);
 	void HandleDisconnect(SerialPacket);
 	void HandleShutdown(SerialPacket);
-	void HandlePlayerUpdate(SerialPacket);
+	void HandleCharacterUpdate(SerialPacket);
 	void HandleRegionRequest(SerialPacket);
 
-	//TODO: a function that only sends to players in a certain proximity
+	//TODO: a function that only sends to characters in a certain proximity
 	void PumpPacket(SerialPacket);
 
 	//TODO: manage the database
@@ -83,12 +83,12 @@ private:
 	lua_State* luaState = nullptr;
 
 	//server tables
-	std::map<int, ClientEntry> clientMap;
-	std::map<int, PlayerEntry> playerMap;
+	std::map<int, ClientData> clientMap;
+	std::map<int, CharacterData> characterMap;
 
 	//maps
 	//TODO: I need to handle multiple map objects
-	//TODO: Unload regions that are distant from any players
+	//TODO: Unload regions that are distant from any characters
 	RegionPager<LuaAllocator, LuaFormat> regionPager;
 
 	//misc
