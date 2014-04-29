@@ -36,8 +36,8 @@ void LuaAllocator::Create(Region** const ptr, int x, int y) {
 	(*ptr) = new Region(x, y);
 
 	//API hook
-	lua_getglobal(state, "Region");
-	lua_getfield(state, -1, "Create");
+	lua_getglobal(state, "map");
+	lua_getfield(state, -1, "create");
 	lua_pushlightuserdata(state, *ptr);
 	if (lua_pcall(state, 1, 0, 0) != LUA_OK) {
 		throw(std::runtime_error(std::string() + "Lua error: " + lua_tostring(state, -1) ));
@@ -47,8 +47,8 @@ void LuaAllocator::Create(Region** const ptr, int x, int y) {
 
 void LuaAllocator::Unload(Region* const ptr) {
 	//API hook
-	lua_getglobal(state, "Region");
-	lua_getfield(state, -1, "Unload");
+	lua_getglobal(state, "map");
+	lua_getfield(state, -1, "unload");
 	lua_pushlightuserdata(state, ptr);
 	if (lua_pcall(state, 1, 0, 0) != LUA_OK) {
 		throw(std::runtime_error(std::string() + "Lua error: " + lua_tostring(state, -1) ));

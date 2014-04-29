@@ -20,7 +20,7 @@
 #define LUA_LIB
 
 #include "lua/lua.hpp"
-#include "region_api.hpp"
+#include "map_api.hpp"
 
 
 /*
@@ -41,7 +41,7 @@ static const luaL_Reg loadedlibs[] = {
   {LUA_DBLIBNAME, luaopen_debug},
 
   /* custom libs */
-  {LUA_REGIONLIBNAME, luaopen_regionapi},
+  {LUA_MAPLIBNAME, luaopen_mapapi},
 
   {NULL, NULL}
 };

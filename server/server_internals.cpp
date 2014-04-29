@@ -38,6 +38,10 @@ void ServerApplication::Init(int argc, char** argv) {
 	//initial setup
 	config.Load("rsc\\config.cfg");
 
+	//-------------------------
+	//Initialize the APIs
+	//-------------------------
+
 	//Init SDL
 	if (SDL_Init(0)) {
 		throw(std::runtime_error("Failed to initialize SDL"));
@@ -58,13 +62,7 @@ void ServerApplication::Init(int argc, char** argv) {
 	}
 	std::cout << "Initialized SQL" << std::endl;
 
-	//setup the database
-	if (runSQLScript(database, config["dir.scripts"] + "setup_server.sql")) {
-		throw(std::runtime_error("Failed to initialize SQL's setup script"));
-	}
-	std::cout << "Initialized SQL's setup script" << std::endl;
-
-	//lua
+	//Init lua
 	luaState = luaL_newstate();
 	if (!luaState) {
 		throw(std::runtime_error("Failed to initialize lua"));
@@ -72,19 +70,41 @@ void ServerApplication::Init(int argc, char** argv) {
 	luaL_openlibs(luaState);
 	std::cout << "Initialized lua" << std::endl;
 
-	//run the startup script
-	if (luaL_dofile(luaState, (config["dir.scripts"] + "setup_server.lua").c_str())) {
-		throw(std::runtime_error(std::string() + "Failed to initialize lua's setup script: " + lua_tostring(luaState, -1) ));
-	}
-	std::cout << "Initialized lua's setup script" << std::endl;
+	//-------------------------
+	//Setup the objects
+	//-------------------------
 
 	//setup the map object
 	regionPager.GetAllocator()->SetLuaState(luaState);
 	regionPager.GetFormat()->SetLuaState(luaState);
 	//TODO: config parameter
 	regionPager.GetFormat()->SetSaveDir("save/mapname/");
+	std::cout << "Prepared the map system" << std::endl;
 
-	std::cout << "Initialized the map system" << std::endl;
+	//push the pager onto the lua registry
+	lua_pushstring(luaState, "pager");
+	lua_pushlightuserdata(luaState, reinterpret_cast<void*>(&regionPager));
+	lua_settable(luaState, LUA_REGISTRYINDEX);
+	std::cout << "Registered the map system in lua" << std::endl;
+
+	//-------------------------
+	//Run the startup scripts
+	//-------------------------
+
+	//setup the database
+	if (runSQLScript(database, config["dir.scripts"] + "setup_server.sql")) {
+		throw(std::runtime_error("Failed to initialize SQL's setup script"));
+	}
+	std::cout << "Completed SQL's setup script" << std::endl;
+
+	//run lua's startup script
+	if (luaL_dofile(luaState, (config["dir.scripts"] + "setup_server.lua").c_str())) {
+		throw(std::runtime_error(std::string() + "Failed to initialize lua's setup script: " + lua_tostring(luaState, -1) ));
+	}
+	std::cout << "Completed lua's setup script" << std::endl;
+
+	//debug output
+	std::cout << "Internal sizes:" << std::endl;
 	std::cout << "\tsizeof(SerialPacket): " << sizeof(SerialPacket) << std::endl;
 	std::cout << "\tPACKET_BUFFER_SIZE: " << PACKET_BUFFER_SIZE << std::endl;
 

@@ -19,12 +19,12 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef REGIONAPI_HPP_
-#define REGIONAPI_HPP_
+#ifndef MAPAPI_HPP_
+#define MAPAPI_HPP_
 
 #include "lua/lua.hpp"
 
-#define LUA_REGIONLIBNAME "Region"
-LUAMOD_API int luaopen_regionapi(lua_State* L);
+#define LUA_MAPLIBNAME "map"
+LUAMOD_API int luaopen_mapapi(lua_State* L);
 
 #endif

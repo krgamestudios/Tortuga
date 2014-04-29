@@ -39,8 +39,8 @@ void LuaFormat::Load(Region** const ptr, int x, int y) {
 	}
 
 	//API hook
-	lua_getglobal(state, "Region");
-	lua_getfield(state, -1, "Load");
+	lua_getglobal(state, "map");
+	lua_getfield(state, -1, "load");
 	lua_pushlightuserdata(state, *ptr);
 	lua_pushstring(state, saveDir.c_str());
 	if (lua_pcall(state, 2, 1, 0) != LUA_OK) {
@@ -55,8 +55,8 @@ void LuaFormat::Load(Region** const ptr, int x, int y) {
 
 void LuaFormat::Save(Region* const ptr) {
 	//API hook
-	lua_getglobal(state, "Region");
-	lua_getfield(state, -1, "Save");
+	lua_getglobal(state, "map");
+	lua_getfield(state, -1, "save");
 	lua_pushlightuserdata(state, ptr);
 	lua_pushstring(state, saveDir.c_str());
 	if (lua_pcall(state, 2, 0, 0) != LUA_OK) {
