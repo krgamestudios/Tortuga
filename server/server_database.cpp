@@ -31,7 +31,7 @@
 //-------------------------
 
 static const char* CREATE_USER_ACCOUNT = "INSERT INTO UserAccounts (username) VALUES (?);";
-static const char* LOAD_USER_ACCOUNT = "SELECT uid, username, blacklisted, whitelisted FROM UserAccounts WHERE username = ?;";
+static const char* LOAD_USER_ACCOUNT = "SELECT * FROM UserAccounts WHERE username = ?;";
 
 //-------------------------
 //Define the methods
