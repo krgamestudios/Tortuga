@@ -15,7 +15,6 @@ all: $(OUTDIR)
 	$(MAKE) -C common
 	$(MAKE) -C server
 	$(MAKE) -C client
-	$(MAKE) -C editor
 
 $(OUTDIR):
 	mkdir $(OUTDIR)
