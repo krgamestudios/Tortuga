@@ -25,8 +25,3 @@ end
 function map.save(region, dir)
 	--
 end
-
---debugging
-print("DEBUG: Initial tile value: ", map.gettile(0, 0, 0))
-map.settile(0, 0, 0, 86)
-map.settile(10, 10, 1, 156)
