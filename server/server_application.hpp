@@ -24,7 +24,9 @@
 
 //server specific stuff
 #include "client_data.hpp"
+#include "account_data.hpp"
 #include "character_data.hpp"
+#include "combat_instance.hpp"
 
 //maps
 #include "map_allocator.hpp"
@@ -75,6 +77,12 @@ private:
 	void PumpPacket(SerialPacket);
 
 	//TODO: manage the database
+	int CreateUserAccount(std::string username, int clientIndex);
+	int LoadUserAccount(std::string username, int clientIndex);
+	void SaveUserAccount(std::string username);
+	void UnloadUserAccount(std::string username);
+	void DeleteUserAccount(std::string username);
+
 	//TODO: combat systems
 
 	//APIs
@@ -84,7 +92,9 @@ private:
 
 	//server tables
 	std::map<int, ClientData> clientMap;
+	std::map<int, AccountData> accountMap;
 	std::map<int, CharacterData> characterMap;
+	std::map<int, CombatInstance> CombatMap;
 
 	//maps
 	//TODO: I need to handle multiple map objects

@@ -19,6 +19,12 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#include "client_data.hpp"
+#ifndef COMBATINSTANCE_HPP_
+#define COMBATINSTANCE_HPP_
 
-int ClientData::uidCounter = 0;
+struct CombatInstance {
+	//uid
+	static int uidCounter;
+};
+
+#endif

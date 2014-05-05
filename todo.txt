@@ -28,3 +28,10 @@ These interact with the database file, making the server a persistent system.
 * UnloadCharacter
 * DeleteCharacter
 
+--Battle System--
+
+CombatPortal:
+	x, y
+	list<Character>
+	list<Monster>
+	//...
