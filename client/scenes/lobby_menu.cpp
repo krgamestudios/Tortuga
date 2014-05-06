@@ -230,7 +230,7 @@ void LobbyMenu::HandlePacket(SerialPacket packet) {
 
 		//handle errors
 		default:
-			throw(std::runtime_error("Unknown SerialPacket::Type encountered"));
+			throw(std::runtime_error(std::string() + "Unknown SerialPacket::Type encountered in LobbyMenu: " + to_string_custom(int(packet.meta.type))));
 		break;
 	}
 }

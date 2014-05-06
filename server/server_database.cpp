@@ -38,7 +38,7 @@ static const char* DELETE_USER_ACCOUNT = "DELETE FROM UserAccounts WHERE uid = ?
 //Define the methods
 //-------------------------
 
-int ServerApplication::CreateUserAccount(std::string username, int clientIndex) {
+int ServerApplication::CreateUserAccount(std::string username, int clientIndex, int characterIndex) {
 	//create this user account, failing if it exists, leave this account in memory
 	sqlite3_stmt* statement = nullptr;
 
@@ -62,10 +62,10 @@ int ServerApplication::CreateUserAccount(std::string username, int clientIndex) 
 	sqlite3_finalize(statement);
 
 	//load this account into memory
-	return LoadUserAccount(username, clientIndex);
+	return LoadUserAccount(username, clientIndex, characterIndex);
 }
 
-int ServerApplication::LoadUserAccount(std::string username, int clientIndex) {
+int ServerApplication::LoadUserAccount(std::string username, int clientIndex, int characterIndex) {
 	//load this user account, failing if it is in memory, creating it if it doesn't exist
 	sqlite3_stmt* statement = nullptr;
 
@@ -99,6 +99,7 @@ int ServerApplication::LoadUserAccount(std::string username, int clientIndex) {
 		newAccount.blackListed = sqlite3_column_int(statement, 2);
 		newAccount.whiteListed = sqlite3_column_int(statement, 3);
 		newAccount.clientIndex = clientIndex;
+		newAccount.characterIndex = characterIndex;
 
 		//finish the routine
 		sqlite3_finalize(statement);
@@ -109,7 +110,7 @@ int ServerApplication::LoadUserAccount(std::string username, int clientIndex) {
 
 	if (ret == SQLITE_DONE) {
 		//create the non-existant account instead
-		return CreateUserAccount(username, clientIndex);
+		return CreateUserAccount(username, clientIndex, characterIndex);
 	}
 
 	throw(std::runtime_error(std::string() + "Unknown SQL error in LoadUserAccount: " + sqlite3_errmsg(database) ));

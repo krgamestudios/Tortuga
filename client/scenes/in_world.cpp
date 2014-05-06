@@ -63,6 +63,7 @@ InWorld::InWorld(ConfigUtility* const argConfig, UDPNetworkUtility* const argNet
 	//TODO: add the tilesheet to the map system?
 	tileSheet.Load(config["dir.tilesets"] + "terrain.bmp", 12, 15);
 
+	//TODO: move this into it's own function
 	//request a sync
 	SerialPacket packet;
 	char buffer[PACKET_STRING_SIZE];
@@ -265,7 +266,7 @@ void InWorld::HandlePacket(SerialPacket packet) {
 		break;
 		//handle errors
 		default:
-			throw(std::runtime_error("Unknown SerialPacket::Type encountered"));
+			throw(std::runtime_error(std::string() + "Unknown SerialPacket::Type encountered in InWorld: " + to_string_custom(int(packet.meta.type))));
 		break;
 	}
 }
@@ -326,6 +327,7 @@ void InWorld::HandleCharacterNew(SerialPacket packet) {
 }
 
 void InWorld::HandleCharacterDelete(SerialPacket packet) {
+	//TODO: authenticate
 	if (playerCharacters.find(packet.characterInfo.characterIndex) == playerCharacters.end()) {
 		throw(std::runtime_error("Cannot delete non-existant characters"));
 	}

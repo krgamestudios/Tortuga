@@ -30,7 +30,6 @@
 
 struct CharacterData {
 	//metadata
-	int clientIndex;
 	std::string handle;
 	std::string avatar;
 
