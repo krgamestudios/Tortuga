@@ -24,7 +24,6 @@
 #include "sqlite3/sqlite3.h"
 
 #include <stdexcept>
-#include <iostream>
 
 //-------------------------
 //Define the queries
@@ -38,7 +37,6 @@ static const char* LOAD_USER_ACCOUNT = "SELECT * FROM UserAccounts WHERE usernam
 //-------------------------
 
 int ServerApplication::CreateUserAccount(std::string username, int clientIndex) {
-	std::cout << "Calling CreateUserAccount(" << username << ")\n";
 	//create this user account, failing if it exists, leave this account in memory
 	sqlite3_stmt* statement = nullptr;
 
@@ -54,7 +52,7 @@ int ServerApplication::CreateUserAccount(std::string username, int clientIndex) 
 
 	//execute
 	if (sqlite3_step(statement) != SQLITE_DONE) {
-		//if this returns something, than this account exists
+		//if this fails, than this account exists
 		sqlite3_finalize(statement);
 		return -1;
 	}
@@ -66,8 +64,7 @@ int ServerApplication::CreateUserAccount(std::string username, int clientIndex) 
 }
 
 int ServerApplication::LoadUserAccount(std::string username, int clientIndex) {
-	std::cout << "Calling LoadUserAccount(" << username << ")\n";
-	//load this user account, creating it if it doesn't exist
+	//load this user account, failing if it is in memory, creating it if it doesn't exist
 	sqlite3_stmt* statement = nullptr;
 
 	//prep
@@ -85,18 +82,30 @@ int ServerApplication::LoadUserAccount(std::string username, int clientIndex) {
 
 	//process the result
 	if (ret == SQLITE_ROW) {
-		std::cout << "ret = ROW\n";
-		//extract the data into memory
+		//get the index
 		int uid = sqlite3_column_int(statement, 0);
-		accountMap[uid].username = reinterpret_cast<const char*>(sqlite3_column_text(statement, 1));
-		accountMap[uid].blackListed = sqlite3_column_int(statement, 2);
-		accountMap[uid].whiteListed = sqlite3_column_int(statement, 3);
-		accountMap[uid].clientIndex = clientIndex;
+
+		//check to see if this account is already loaded
+		if (accountMap.find(uid) != accountMap.end()) {
+			sqlite3_finalize(statement);
+			return -1;
+		}
+
+		//extract the data into memory
+		AccountData& newAccount = accountMap[uid];
+		newAccount.username = reinterpret_cast<const char*>(sqlite3_column_text(statement, 1));
+		newAccount.blackListed = sqlite3_column_int(statement, 2);
+		newAccount.whiteListed = sqlite3_column_int(statement, 3);
+		newAccount.clientIndex = clientIndex;
+
+		//finish the routine
+		sqlite3_finalize(statement);
 		return uid;
 	}
 
+	sqlite3_finalize(statement);
+
 	if (ret == SQLITE_DONE) {
-		std::cout << "ret = DONE\n";
 		//create the non-existant account instead
 		return CreateUserAccount(username, clientIndex);
 	}
