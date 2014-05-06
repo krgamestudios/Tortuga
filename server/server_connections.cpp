@@ -46,11 +46,17 @@ void ServerApplication::HandleJoinRequest(SerialPacket packet) {
 	ClientData newClient;
 	newClient.address = packet.meta.srcAddress;
 
+	//load the user account
+	int uid = LoadUserAccount(packet.clientInfo.username, ClientData::uidCounter);
+	if (uid < 0) {
+		std::cerr << "Error: Account already loaded: " << uid << std::endl;
+		return;
+	}
+
 	//TODO: move this into the character management code
 	//create the new character
 	CharacterData newCharacter;
 	newCharacter.clientIndex = ClientData::uidCounter;
-	newCharacter.username = packet.clientInfo.username;
 	newCharacter.handle = packet.clientInfo.handle;
 	newCharacter.avatar = packet.clientInfo.avatar;
 
@@ -112,6 +118,15 @@ void ServerApplication::HandleDisconnect(SerialPacket packet) {
 	serialize(&packet, buffer);
 	network.Send(&clientMap[packet.clientInfo.clientIndex].address, buffer, PACKET_BUFFER_SIZE);
 	clientMap.erase(packet.clientInfo.clientIndex);
+
+	//unload the client's account
+	//TODO: change clientIndex to accountIndex for player ID
+	for (auto it : accountMap) {
+		if (it.second.clientIndex == packet.clientInfo.clientIndex) {
+			UnloadUserAccount(it.first);
+			break;
+		}
+	}
 
 	//prep the delete packet
 	SerialPacket delPacket;

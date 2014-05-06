@@ -24,7 +24,9 @@
 
 //server specific stuff
 #include "client_data.hpp"
+#include "account_data.hpp"
 #include "character_data.hpp"
+#include "combat_instance.hpp"
 
 //maps
 #include "map_allocator.hpp"
@@ -74,7 +76,15 @@ private:
 	//TODO: a function that only sends to characters in a certain proximity
 	void PumpPacket(SerialPacket);
 
-	//TODO: manage the database
+	//Account management
+	int CreateUserAccount(std::string username, int clientIndex);
+	int LoadUserAccount(std::string username, int clientIndex);
+	int SaveUserAccount(int uid);
+	void UnloadUserAccount(int uid);
+	void DeleteUserAccount(int uid);
+
+	//TODO: character management
+
 	//TODO: combat systems
 
 	//APIs
@@ -84,7 +94,9 @@ private:
 
 	//server tables
 	std::map<int, ClientData> clientMap;
+	std::map<int, AccountData> accountMap;
 	std::map<int, CharacterData> characterMap;
+	std::map<int, CombatInstance> combatMap;
 
 	//maps
 	//TODO: I need to handle multiple map objects

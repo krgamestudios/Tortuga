@@ -19,6 +19,18 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#include "character_data.hpp"
+#ifndef ACCOUNTDATA_HPP_
+#define ACCOUNTDATA_HPP_
 
-int CharacterData::uidCounter = 0;
+#include <string>
+
+struct AccountData {
+	std::string username;
+	//password
+	bool blackListed = false;
+	bool whiteListed = true;
+
+	int clientIndex;
+};
+
+#endif
