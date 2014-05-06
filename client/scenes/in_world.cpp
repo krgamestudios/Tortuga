@@ -31,10 +31,11 @@
 //Public access members
 //-------------------------
 
-InWorld::InWorld(ConfigUtility* const argConfig, UDPNetworkUtility* const argNetwork, int* const argClientIndex, int* const argCharacterIndex):
+InWorld::InWorld(ConfigUtility* const argConfig, UDPNetworkUtility* const argNetwork, int* const argClientIndex, int* const argAccountIndex, int* const argCharacterIndex):
 	config(*argConfig),
 	network(*argNetwork),
 	clientIndex(*argClientIndex),
+	accountIndex(*argAccountIndex),
 	characterIndex(*argCharacterIndex)
 {
 	//setup the utility objects
@@ -67,6 +68,7 @@ InWorld::InWorld(ConfigUtility* const argConfig, UDPNetworkUtility* const argNet
 	char buffer[PACKET_STRING_SIZE];
 	packet.meta.type = SerialPacket::Type::SYNCHRONIZE;
 	packet.clientInfo.clientIndex = clientIndex;
+	packet.clientInfo.accountIndex = accountIndex;
 	packet.clientInfo.characterIndex = characterIndex;
 	serialize(&packet, buffer);
 	network.Send(Channels::SERVER, buffer, PACKET_BUFFER_SIZE);
@@ -271,6 +273,7 @@ void InWorld::HandlePacket(SerialPacket packet) {
 void InWorld::HandleDisconnect(SerialPacket packet) {
 	network.Unbind(Channels::SERVER);
 	clientIndex = -1;
+	accountIndex = -1;
 	characterIndex = -1;
 	SetNextScene(SceneList::MAINMENU);
 }
@@ -347,6 +350,7 @@ void InWorld::SendPlayerUpdate() {
 	//pack the packet
 	packet.meta.type = SerialPacket::Type::CHARACTER_UPDATE;
 	packet.characterInfo.clientIndex = clientIndex;
+	packet.characterInfo.accountIndex = accountIndex;
 	packet.characterInfo.characterIndex = characterIndex;
 	packet.characterInfo.position = localCharacter->GetPosition();
 	packet.characterInfo.motion = localCharacter->GetMotion();
@@ -361,7 +365,7 @@ void InWorld::RequestDisconnect() {
 
 	//send a disconnect request
 	packet.meta.type = SerialPacket::Type::DISCONNECT;
-	packet.clientInfo.clientIndex = clientIndex;
+	packet.clientInfo.accountIndex = accountIndex;
 	serialize(&packet, buffer);
 	network.Send(Channels::SERVER, buffer, PACKET_BUFFER_SIZE);
 }
@@ -372,7 +376,7 @@ void InWorld::RequestShutDown() {
 
 	//send a shutdown request
 	packet.meta.type = SerialPacket::Type::SHUTDOWN;
-	packet.clientInfo.clientIndex = clientIndex;
+	packet.clientInfo.accountIndex = accountIndex;
 	serialize(&packet, buffer);
 	network.Send(Channels::SERVER, buffer, PACKET_BUFFER_SIZE);
 }

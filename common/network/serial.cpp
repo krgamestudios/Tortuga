@@ -54,6 +54,7 @@ void serializeClient(SerialPacket* packet, char* buffer) {
 
 	//indexes
 	SERIALIZE(buffer, &packet->clientInfo.clientIndex, sizeof(int));
+	SERIALIZE(buffer, &packet->clientInfo.accountIndex, sizeof(int));
 	SERIALIZE(buffer, &packet->clientInfo.characterIndex, sizeof(int));
 
 	//texts
@@ -95,6 +96,7 @@ void serializeCharacter(SerialPacket* packet, char* buffer) {
 
 	//indexes
 	SERIALIZE(buffer, &packet->characterInfo.clientIndex, sizeof(int));
+	SERIALIZE(buffer, &packet->characterInfo.accountIndex, sizeof(int));
 	SERIALIZE(buffer, &packet->characterInfo.characterIndex, sizeof(int));
 
 	//texts
@@ -130,6 +132,7 @@ void deserializeClient(SerialPacket* packet, char* buffer) {
 
 	//indexes
 	DESERIALIZE(buffer, &packet->clientInfo.clientIndex, sizeof(int));
+	DESERIALIZE(buffer, &packet->clientInfo.accountIndex, sizeof(int));
 	DESERIALIZE(buffer, &packet->clientInfo.characterIndex, sizeof(int));
 
 	//texts
@@ -178,6 +181,7 @@ void deserializeCharacter(SerialPacket* packet, char* buffer) {
 
 	//indexes
 	DESERIALIZE(buffer, &packet->characterInfo.clientIndex, sizeof(int));
+	DESERIALIZE(buffer, &packet->characterInfo.accountIndex, sizeof(int));
 	DESERIALIZE(buffer, &packet->characterInfo.characterIndex, sizeof(int));
 
 	//texts

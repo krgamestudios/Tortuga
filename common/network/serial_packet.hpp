@@ -27,7 +27,7 @@
 
 #include "SDL/SDL_net.h"
 
-#define NETWORK_VERSION 20140428
+#define NETWORK_VERSION 20140506
 #define PACKET_STRING_SIZE 100
 
 #pragma pack(push, 0)
@@ -88,8 +88,8 @@ union SerialPacket {
 	//information about the client
 	struct ClientInformation {
 		Metadata meta;
-		//TODO: change clientIndex to accountIndex for player ID
 		int clientIndex;
+		int accountIndex;
 		int characterIndex;
 		char username[PACKET_STRING_SIZE];
 		char handle[PACKET_STRING_SIZE];
@@ -108,6 +108,7 @@ union SerialPacket {
 	struct CharacterInformation {
 		Metadata meta;
 		int clientIndex;
+		int accountIndex;
 		int characterIndex;
 		char handle[PACKET_STRING_SIZE];
 		char avatar[PACKET_STRING_SIZE];
