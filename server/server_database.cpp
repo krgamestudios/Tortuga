@@ -32,6 +32,7 @@
 static const char* CREATE_USER_ACCOUNT = "INSERT INTO UserAccounts (username) VALUES (?);";
 static const char* LOAD_USER_ACCOUNT = "SELECT * FROM UserAccounts WHERE username = ?;";
 static const char* SAVE_USER_ACCOUNT = "INSERT OR REPLACE INTO UserAccounts VALUES (?, ?, ?, ?);";
+static const char* DELETE_USER_ACCOUNT = "DELETE FROM UserAccounts WHERE uid = ?;";
 
 //-------------------------
 //Define the methods
@@ -158,10 +159,32 @@ int ServerApplication::SaveUserAccount(int uid) {
 
 void ServerApplication::UnloadUserAccount(int uid) {
 	//save this user account, and then unload it
-	//TODO
+	SaveUserAccount(uid);
+	accountMap.erase(uid);
 }
 
 void ServerApplication::DeleteUserAccount(int uid) {
 	//delete a user account from the database, and remove it from memory
-	//TODO
+	sqlite3_stmt* statement = nullptr;
+
+	//prep
+	if (sqlite3_prepare_v2(database, DELETE_USER_ACCOUNT, -1, &statement, nullptr) != SQLITE_OK) {
+		throw( std::runtime_error(std::string() + "Failed to prepare an SQL statement: " + sqlite3_errmsg(database)) );
+	}
+
+	//parameter
+	if (sqlite3_bind_int(statement, 1, uid) != SQLITE_OK) {
+		throw( std::runtime_error(std::string() + "Failed to replace a prepared statement's parameter: " + sqlite3_errmsg(database)) );
+	}
+
+	//execute
+	if (sqlite3_step(statement) != SQLITE_DONE) {
+		//if this fails, than something went horribly wrong
+		sqlite3_finalize(statement);
+		throw( std::runtime_error(std::string() + "Unknown SQL error when deleting an account: " + sqlite3_errmsg(database)) );
+	}
+
+	//finish the routine
+	sqlite3_finalize(statement);
+	accountMap.erase(uid);
 }

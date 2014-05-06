@@ -122,6 +122,15 @@ void ServerApplication::HandleDisconnect(SerialPacket packet) {
 	network.Send(&clientMap[packet.clientInfo.clientIndex].address, buffer, PACKET_BUFFER_SIZE);
 	clientMap.erase(packet.clientInfo.clientIndex);
 
+	//unload the client's account
+	//TODO: change clientIndex to accountIndex for player ID
+	for (auto it : accountMap) {
+		if (it.second.clientIndex == packet.clientInfo.clientIndex) {
+			UnloadUserAccount(it.first);
+			break;
+		}
+	}
+
 	//prep the delete packet
 	SerialPacket delPacket;
 	delPacket.meta.type = SerialPacket::Type::CHARACTER_DELETE;
