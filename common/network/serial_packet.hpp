@@ -88,6 +88,7 @@ union SerialPacket {
 	//information about the client
 	struct ClientInformation {
 		Metadata meta;
+		//TODO: change clientIndex to accountIndex for player ID
 		int clientIndex;
 		int characterIndex;
 		char username[PACKET_STRING_SIZE];

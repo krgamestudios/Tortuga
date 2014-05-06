@@ -1,4 +1,5 @@
 I need to keep the documentation up to date. Namey, the GDD is getting out of date.
+change clientIndex to accountIndex for player ID
 
 --Naming conventions--
 

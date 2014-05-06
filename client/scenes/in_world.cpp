@@ -277,7 +277,6 @@ void InWorld::HandleDisconnect(SerialPacket packet) {
 
 void InWorld::HandleRegionContent(SerialPacket packet) {
 	//replace existing regions
-	//TODO: account for map index
 	if (regionPager.FindRegion(packet.regionInfo.x, packet.regionInfo.y)) {
 		regionPager.UnloadRegion(packet.regionInfo.x, packet.regionInfo.y);
 	}
