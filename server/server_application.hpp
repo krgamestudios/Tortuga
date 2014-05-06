@@ -79,9 +79,9 @@ private:
 	//TODO: manage the database
 	int CreateUserAccount(std::string username, int clientIndex);
 	int LoadUserAccount(std::string username, int clientIndex);
-	void SaveUserAccount(std::string username);
-	void UnloadUserAccount(std::string username);
-	void DeleteUserAccount(std::string username);
+	int SaveUserAccount(int uid);
+	void UnloadUserAccount(int uid);
+	void DeleteUserAccount(int uid);
 
 	//TODO: combat systems
 

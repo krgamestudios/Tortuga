@@ -31,6 +31,7 @@
 
 static const char* CREATE_USER_ACCOUNT = "INSERT INTO UserAccounts (username) VALUES (?);";
 static const char* LOAD_USER_ACCOUNT = "SELECT * FROM UserAccounts WHERE username = ?;";
+static const char* SAVE_USER_ACCOUNT = "INSERT OR REPLACE INTO UserAccounts VALUES (?, ?, ?, ?);";
 
 //-------------------------
 //Define the methods
@@ -113,17 +114,54 @@ int ServerApplication::LoadUserAccount(std::string username, int clientIndex) {
 	throw(std::runtime_error(std::string() + "Unknown SQL error in LoadUserAccount: " + sqlite3_errmsg(database) ));
 }
 
-void ServerApplication::SaveUserAccount(std::string username) {
-	//save this user account, replacing it if it exists
-	//TODO
+int ServerApplication::SaveUserAccount(int uid) {
+	//save this user account from memory, replacing it if it exists in the database
+	//DOCS: To use this method, change the in-memory copy, and then call this function using that object's UID.
+
+	//this method fails if this account is not loaded
+	if (accountMap.find(uid) == accountMap.end()) {
+		return -1;
+	}
+
+	AccountData& account = accountMap[uid];
+	sqlite3_stmt* statement = nullptr;
+
+	//prep
+	if (sqlite3_prepare_v2(database, SAVE_USER_ACCOUNT, -1, &statement, nullptr) != SQLITE_OK) {
+		throw( std::runtime_error(std::string() + "Failed to prepare an SQL statement: " + sqlite3_errmsg(database)) );
+	}
+
+	//parameters
+	bool ret = false;
+	ret |= sqlite3_bind_int(statement, 1, uid) != SQLITE_OK;
+	ret |= sqlite3_bind_text(statement, 2, account.username.c_str(), account.username.size() + 1, SQLITE_STATIC) != SQLITE_OK;
+	ret |= sqlite3_bind_int(statement, 3, account.blackListed) != SQLITE_OK;
+	ret |= sqlite3_bind_int(statement, 4, account.whiteListed) != SQLITE_OK;
+
+	//check for binding errors
+	if (ret) {
+		throw( std::runtime_error(std::string() + "Failed to replace a prepared statement's parameter: " + sqlite3_errmsg(database)) );
+	}
+
+	//execute
+	if (sqlite3_step(statement) != SQLITE_DONE) {
+		//if this fails, than something went horribly wrong
+		sqlite3_finalize(statement);
+		throw( std::runtime_error(std::string() + "Unknown SQL error when saving an account: " + sqlite3_errmsg(database)) );
+	}
+
+	sqlite3_finalize(statement);
+
+	//successful execution
+	return 0;
 }
 
-void ServerApplication::UnloadUserAccount(std::string username) {
+void ServerApplication::UnloadUserAccount(int uid) {
 	//save this user account, and then unload it
 	//TODO
 }
 
-void ServerApplication::DeleteUserAccount(std::string username) {
+void ServerApplication::DeleteUserAccount(int uid) {
 	//delete a user account from the database, and remove it from memory
 	//TODO
 }

@@ -47,11 +47,14 @@ void ServerApplication::HandleJoinRequest(SerialPacket packet) {
 	newClient.address = packet.meta.srcAddress;
 
 	//debug
-	std::cout << "Function Return: " << LoadUserAccount(packet.clientInfo.username, ClientData::uidCounter) << std::endl;
-
-	for (auto& it : accountMap) {
-		std::cout << "Account(" << it.first << "): " << it.second.username << std::endl;
+	int uid = LoadUserAccount(packet.clientInfo.username, ClientData::uidCounter);
+	if (uid < 0) {
+		std::cerr << "Error: Account already loaded: " << uid << std::endl;
+		return;
 	}
+	accountMap[uid].blackListed = true;
+	accountMap[uid].whiteListed = false;
+	SaveUserAccount(uid);
 
 	//TODO: move this into the character management code
 	//create the new character
