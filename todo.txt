@@ -1,5 +1,4 @@
-I need to keep the documentation up to date. Namey, the GDD is getting out of date.
-change clientIndex to accountIndex for player ID
+I need to keep the documentation up to date. Namely, the GDD is getting out of date.
 
 --Naming conventions--
 
