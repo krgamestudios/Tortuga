@@ -30,10 +30,11 @@
 //Public access members
 //-------------------------
 
-LobbyMenu::LobbyMenu(ConfigUtility* const argConfig, UDPNetworkUtility* const argNetwork, int* const argClientIndex, int* const argCharacterIndex):
+LobbyMenu::LobbyMenu(ConfigUtility* const argConfig, UDPNetworkUtility* const argNetwork, int* const argClientIndex, int* const argAccountIndex, int* const argCharacterIndex):
 	config(*argConfig),
 	network(*argNetwork),
 	clientIndex(*argClientIndex),
+	accountIndex(*argAccountIndex),
 	characterIndex(*argCharacterIndex)
 {
 	//setup the utility objects
@@ -221,6 +222,7 @@ void LobbyMenu::HandlePacket(SerialPacket packet) {
 		break;
 		case SerialPacket::Type::JOIN_RESPONSE:
 			clientIndex = packet.clientInfo.clientIndex;
+			accountIndex = packet.clientInfo.accountIndex;
 			characterIndex = packet.clientInfo.characterIndex;
 			network.Bind(&packet.meta.srcAddress, Channels::SERVER);
 			SetNextScene(SceneList::INWORLD);
@@ -228,7 +230,7 @@ void LobbyMenu::HandlePacket(SerialPacket packet) {
 
 		//handle errors
 		default:
-			throw(std::runtime_error("Unknown SerialPacket::Type encountered"));
+			throw(std::runtime_error(std::string() + "Unknown SerialPacket::Type encountered in LobbyMenu: " + to_string_custom(int(packet.meta.type))));
 		break;
 	}
 }

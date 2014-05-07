@@ -42,27 +42,28 @@ void ServerApplication::HandleBroadcastRequest(SerialPacket packet) {
 }
 
 void ServerApplication::HandleJoinRequest(SerialPacket packet) {
+	//load the user account
+	int accountIndex = LoadUserAccount(packet.clientInfo.username, ClientData::uidCounter, CharacterData::uidCounter);
+	if (accountIndex < 0) {
+		//TODO: send rejection packet
+		std::cerr << "Error: Account already loaded: " << accountIndex << std::endl;
+		return;
+	}
+
 	//create the new client
 	ClientData newClient;
 	newClient.address = packet.meta.srcAddress;
 
-	//load the user account
-	int uid = LoadUserAccount(packet.clientInfo.username, ClientData::uidCounter);
-	if (uid < 0) {
-		std::cerr << "Error: Account already loaded: " << uid << std::endl;
-		return;
-	}
-
 	//TODO: move this into the character management code
 	//create the new character
 	CharacterData newCharacter;
-	newCharacter.clientIndex = ClientData::uidCounter;
 	newCharacter.handle = packet.clientInfo.handle;
 	newCharacter.avatar = packet.clientInfo.avatar;
 
 	//send the client their info
 	packet.meta.type = SerialPacket::Type::JOIN_RESPONSE;
 	packet.clientInfo.clientIndex = ClientData::uidCounter;
+	packet.clientInfo.accountIndex = accountIndex;
 	packet.clientInfo.characterIndex = CharacterData::uidCounter;
 
 	//bounce this packet
@@ -79,11 +80,10 @@ void ServerApplication::HandleJoinRequest(SerialPacket packet) {
 	packet.characterInfo.motion = newCharacter.motion;
 	PumpPacket(packet);
 
+	//TODO: don't send anything to a certain client until they send the OK (the sync packet? or ignore client side?)
 	//finished this routine
-	clientMap[ClientData::uidCounter] = newClient;
-	characterMap[CharacterData::uidCounter] = newCharacter;
-	ClientData::uidCounter++;
-	CharacterData::uidCounter++;
+	clientMap[ClientData::uidCounter++] = newClient;
+	characterMap[CharacterData::uidCounter++] = newCharacter;
 	std::cout << "Connect, total: " << clientMap.size() << std::endl;
 }
 
@@ -113,43 +113,24 @@ void ServerApplication::HandleDisconnect(SerialPacket packet) {
 	//TODO: authenticate who is disconnecting/kicking
 	//TODO: define the difference between unloading and deletng a character
 
-	//disconnect the specified client
+	//forward to the specified client
 	char buffer[PACKET_BUFFER_SIZE];
 	serialize(&packet, buffer);
-	network.Send(&clientMap[packet.clientInfo.clientIndex].address, buffer, PACKET_BUFFER_SIZE);
-	clientMap.erase(packet.clientInfo.clientIndex);
+	network.Send(&clientMap[accountMap[packet.clientInfo.accountIndex].clientIndex].address, buffer, PACKET_BUFFER_SIZE);
 
-	//unload the client's account
-	//TODO: change clientIndex to accountIndex for player ID
-	for (auto it : accountMap) {
-		if (it.second.clientIndex == packet.clientInfo.clientIndex) {
-			UnloadUserAccount(it.first);
-			break;
-		}
-	}
-
-	//prep the delete packet
+	//delete the client side character
 	SerialPacket delPacket;
 	delPacket.meta.type = SerialPacket::Type::CHARACTER_DELETE;
+	delPacket.characterInfo.characterIndex = accountMap[packet.clientInfo.accountIndex].characterIndex;
+	PumpPacket(delPacket);
 
-	//delete server and client side characters
-	erase_if(characterMap, [&](std::pair<int, CharacterData> it) -> bool {
-		//find the internal characters to delete
-		if (it.second.clientIndex == packet.clientInfo.clientIndex) {
-			//send the delete characters command to all clients
-			delPacket.characterInfo.characterIndex = it.first;
-			PumpPacket(delPacket);
-
-			//delete this characters object
-			return true;
-		}
-
-		//don't delete this characters object
-		return false;
-	});
+	//erase the in-memory stuff
+	clientMap.erase(accountMap[packet.clientInfo.accountIndex].clientIndex);
+	characterMap.erase(accountMap[packet.clientInfo.accountIndex].characterIndex);
+	UnloadUserAccount(packet.clientInfo.accountIndex);
 
 	//finished this routine
-	std::cout << "Disconnect, total: " << clientMap.size() << std::endl;
+	std::cout << "Disconnect, total: " << accountMap.size() << std::endl;
 }
 
 void ServerApplication::HandleShutdown(SerialPacket packet) {
@@ -160,7 +141,6 @@ void ServerApplication::HandleShutdown(SerialPacket packet) {
 
 	//disconnect all clients
 	packet.meta.type = SerialPacket::Type::DISCONNECT;
-	packet.clientInfo.clientIndex = -1;
 	PumpPacket(packet);
 
 	//finished this routine

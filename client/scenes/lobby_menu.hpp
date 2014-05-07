@@ -42,7 +42,7 @@
 class LobbyMenu : public BaseScene {
 public:
 	//Public access members
-	LobbyMenu(ConfigUtility* const, UDPNetworkUtility* const, int* const, int* const);
+	LobbyMenu(ConfigUtility* const, UDPNetworkUtility* const, int* const, int* const, int* const);
 	~LobbyMenu();
 
 protected:
@@ -65,6 +65,7 @@ protected:
 	ConfigUtility& config;
 	UDPNetworkUtility& network;
 	int& clientIndex;
+	int& accountIndex;
 	int& characterIndex;
 
 	//members

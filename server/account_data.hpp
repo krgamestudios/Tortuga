@@ -26,11 +26,12 @@
 
 struct AccountData {
 	std::string username;
-	//password
+	//TODO: password
 	bool blackListed = false;
 	bool whiteListed = true;
 
 	int clientIndex;
+	int characterIndex;
 };
 
 #endif

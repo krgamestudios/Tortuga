@@ -31,10 +31,11 @@
 //Public access members
 //-------------------------
 
-InWorld::InWorld(ConfigUtility* const argConfig, UDPNetworkUtility* const argNetwork, int* const argClientIndex, int* const argCharacterIndex):
+InWorld::InWorld(ConfigUtility* const argConfig, UDPNetworkUtility* const argNetwork, int* const argClientIndex, int* const argAccountIndex, int* const argCharacterIndex):
 	config(*argConfig),
 	network(*argNetwork),
 	clientIndex(*argClientIndex),
+	accountIndex(*argAccountIndex),
 	characterIndex(*argCharacterIndex)
 {
 	//setup the utility objects
@@ -62,11 +63,13 @@ InWorld::InWorld(ConfigUtility* const argConfig, UDPNetworkUtility* const argNet
 	//TODO: add the tilesheet to the map system?
 	tileSheet.Load(config["dir.tilesets"] + "terrain.bmp", 12, 15);
 
+	//TODO: move this into it's own function
 	//request a sync
 	SerialPacket packet;
 	char buffer[PACKET_STRING_SIZE];
 	packet.meta.type = SerialPacket::Type::SYNCHRONIZE;
 	packet.clientInfo.clientIndex = clientIndex;
+	packet.clientInfo.accountIndex = accountIndex;
 	packet.clientInfo.characterIndex = characterIndex;
 	serialize(&packet, buffer);
 	network.Send(Channels::SERVER, buffer, PACKET_BUFFER_SIZE);
@@ -263,7 +266,7 @@ void InWorld::HandlePacket(SerialPacket packet) {
 		break;
 		//handle errors
 		default:
-			throw(std::runtime_error("Unknown SerialPacket::Type encountered"));
+			throw(std::runtime_error(std::string() + "Unknown SerialPacket::Type encountered in InWorld: " + to_string_custom(int(packet.meta.type))));
 		break;
 	}
 }
@@ -271,6 +274,7 @@ void InWorld::HandlePacket(SerialPacket packet) {
 void InWorld::HandleDisconnect(SerialPacket packet) {
 	network.Unbind(Channels::SERVER);
 	clientIndex = -1;
+	accountIndex = -1;
 	characterIndex = -1;
 	SetNextScene(SceneList::MAINMENU);
 }
@@ -323,6 +327,7 @@ void InWorld::HandleCharacterNew(SerialPacket packet) {
 }
 
 void InWorld::HandleCharacterDelete(SerialPacket packet) {
+	//TODO: authenticate
 	if (playerCharacters.find(packet.characterInfo.characterIndex) == playerCharacters.end()) {
 		throw(std::runtime_error("Cannot delete non-existant characters"));
 	}
@@ -347,6 +352,7 @@ void InWorld::SendPlayerUpdate() {
 	//pack the packet
 	packet.meta.type = SerialPacket::Type::CHARACTER_UPDATE;
 	packet.characterInfo.clientIndex = clientIndex;
+	packet.characterInfo.accountIndex = accountIndex;
 	packet.characterInfo.characterIndex = characterIndex;
 	packet.characterInfo.position = localCharacter->GetPosition();
 	packet.characterInfo.motion = localCharacter->GetMotion();
@@ -361,7 +367,7 @@ void InWorld::RequestDisconnect() {
 
 	//send a disconnect request
 	packet.meta.type = SerialPacket::Type::DISCONNECT;
-	packet.clientInfo.clientIndex = clientIndex;
+	packet.clientInfo.accountIndex = accountIndex;
 	serialize(&packet, buffer);
 	network.Send(Channels::SERVER, buffer, PACKET_BUFFER_SIZE);
 }
@@ -372,7 +378,7 @@ void InWorld::RequestShutDown() {
 
 	//send a shutdown request
 	packet.meta.type = SerialPacket::Type::SHUTDOWN;
-	packet.clientInfo.clientIndex = clientIndex;
+	packet.clientInfo.accountIndex = accountIndex;
 	serialize(&packet, buffer);
 	network.Send(Channels::SERVER, buffer, PACKET_BUFFER_SIZE);
 }

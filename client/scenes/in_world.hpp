@@ -52,7 +52,7 @@
 class InWorld : public BaseScene {
 public:
 	//Public access members
-	InWorld(ConfigUtility* const, UDPNetworkUtility* const, int* const, int* const);
+	InWorld(ConfigUtility* const, UDPNetworkUtility* const, int* const, int* const, int* const);
 	~InWorld();
 
 protected:
@@ -92,6 +92,7 @@ protected:
 	ConfigUtility& config;
 	UDPNetworkUtility& network;
 	int& clientIndex;
+	int& accountIndex;
 	int& characterIndex;
 
 	//graphics
