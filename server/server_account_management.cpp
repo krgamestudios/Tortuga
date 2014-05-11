@@ -162,6 +162,7 @@ void ServerApplication::UnloadUserAccount(int uid) {
 	//save this user account, and then unload it
 	SaveUserAccount(uid);
 	accountMap.erase(uid);
+	//TODO: unload this account's characters?
 }
 
 void ServerApplication::DeleteUserAccount(int uid) {

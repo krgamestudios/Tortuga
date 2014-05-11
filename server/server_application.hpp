@@ -87,9 +87,9 @@ private:
 	//TODO: character management
 	int CreateCharacter(int owner, std::string handle, std::string avatar);
 	int LoadCharacter(int owner, std::string handle, std::string avatar);
-	void SaveCharacter();
-	void UnloadCharacter();
-	void DeleteCharacter();
+	int SaveCharacter(int uid);
+	void UnloadCharacter(int uid);
+	void DeleteCharacter(int uid);
 
 	//TODO: combat systems
 

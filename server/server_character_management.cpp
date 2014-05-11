@@ -31,8 +31,8 @@
 
 static const char* CREATE_CHARACTER = "INSERT INTO PlayerCharacters (owner, handle, avatar) VALUES (?, ?, ?);";
 static const char* LOAD_CHARACTER = "SELECT * FROM PlayerCharacters WHERE handle = ?;";
-//static const char* SAVE_CHARACTER = ";";
-//static const char* DELETE_CHARACTER = ";";
+static const char* SAVE_CHARACTER = "INSERT OR REPLACE INTO PlayerCharacters (uid, owner, mapIndex, positionX, positionY) VALUES (?, ?, ?, ?, ?);";
+static const char* DELETE_CHARACTER = "DELETE FROM PlayerCharacters WHERE uid = ?;";
 
 //-------------------------
 //Define the methods
@@ -151,14 +151,78 @@ int ServerApplication::LoadCharacter(int owner, std::string handle, std::string 
 	throw(std::runtime_error(std::string() + "Unknown SQL error in LoadCharacter: " + sqlite3_errmsg(database) ));
 }
 
-void ServerApplication::SaveCharacter() {
-	//TODO: save this character
+int ServerApplication::SaveCharacter(int uid) {
+	//save this character from memory, replacing it if it exists in the database
+	//DOCS: To use this method, change the in-memory copy, and then call this function using that object's UID.
+
+	//this method fails if this character is not loaded
+	if (characterMap.find(uid) == characterMap.end()) {
+		return -1;
+	}
+
+	CharacterData& character = characterMap[uid];
+	sqlite3_stmt* statement = nullptr;
+
+	//prep
+	if (sqlite3_prepare_v2(database, SAVE_CHARACTER, -1, &statement, nullptr) != SQLITE_OK) {
+		throw( std::runtime_error(std::string() + "Failed to prepare an SQL statement: " + sqlite3_errmsg(database)) );
+	}
+
+	//parameters
+	bool ret = false;
+	ret |= sqlite3_bind_int(statement, 1, uid) != SQLITE_OK;
+	ret |= sqlite3_bind_int(statement, 2, character.owner) != SQLITE_OK;
+	ret |= sqlite3_bind_int(statement, 3, character.mapIndex) != SQLITE_OK;
+	ret |= sqlite3_bind_int(statement, 4, (int)character.position.x) != SQLITE_OK;
+	ret |= sqlite3_bind_int(statement, 5, (int)character.position.y) != SQLITE_OK;
+	//TODO: stats, etc.
+
+	//check for binding errors
+	if (ret) {
+		throw( std::runtime_error(std::string() + "Failed to replace a prepared statement's parameter: " + sqlite3_errmsg(database)) );
+	}
+
+	//execute
+	if (sqlite3_step(statement) != SQLITE_DONE) {
+		//if this fails, than something went horribly wrong
+		sqlite3_finalize(statement);
+		throw( std::runtime_error(std::string() + "Unknown SQL error when saving an account: " + sqlite3_errmsg(database)) );
+	}
+
+	sqlite3_finalize(statement);
+
+	//successful execution
+	return 0;
 }
 
-void ServerApplication::UnloadCharacter() {
-	//TODO: save this character, then unload it
+void ServerApplication::UnloadCharacter(int uid) {
+	//save this character, then unload it
+	SaveCharacter(uid);
+	characterMap.erase(uid);
 }
 
-void ServerApplication::DeleteCharacter() {
-	//TODO:  delete this character, then remove it from memory
+void ServerApplication::DeleteCharacter(int uid) {
+	//delete this character from the database, then remove it from memory
+	sqlite3_stmt* statement = nullptr;
+
+	//prep
+	if (sqlite3_prepare_v2(database, DELETE_CHARACTER, -1, &statement, nullptr) != SQLITE_OK) {
+		throw( std::runtime_error(std::string() + "Failed to prepare an SQL statement: " + sqlite3_errmsg(database)) );
+	}
+
+	//parameter
+	if (sqlite3_bind_int(statement, 1, uid) != SQLITE_OK) {
+		throw( std::runtime_error(std::string() + "Failed to replace a prepared statement's parameter: " + sqlite3_errmsg(database)) );
+	}
+
+	//execute
+	if (sqlite3_step(statement) != SQLITE_DONE) {
+		//if this fails, than something went horribly wrong
+		sqlite3_finalize(statement);
+		throw( std::runtime_error(std::string() + "Unknown SQL error when deleting an account: " + sqlite3_errmsg(database)) );
+	}
+
+	//finish the routine
+	sqlite3_finalize(statement);
+	characterMap.erase(uid);
 }
