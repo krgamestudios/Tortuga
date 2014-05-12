@@ -144,9 +144,16 @@ void ServerApplication::Quit() {
 	std::cout << "Shutting down" << std::endl;
 
 	//save the server state
-	//TODO: save the existing players
+	for (auto& it : accountMap) {
+		SaveUserAccount(it.first);
+	}
+	for (auto& it : characterMap) {
+		SaveCharacter(it.first);
+	}
 
 	//empty the members
+	accountMap.clear();
+	characterMap.clear();
 	regionPager.UnloadAll();
 
 	//APIs
