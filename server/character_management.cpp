@@ -31,7 +31,7 @@
 
 static const char* CREATE_CHARACTER = "INSERT INTO PlayerCharacters (owner, handle, avatar) VALUES (?, ?, ?);";
 static const char* LOAD_CHARACTER = "SELECT * FROM PlayerCharacters WHERE handle = ?;";
-static const char* SAVE_CHARACTER = "INSERT OR REPLACE INTO PlayerCharacters (uid, owner, mapIndex, positionX, positionY) VALUES (?, ?, ?, ?, ?);";
+static const char* SAVE_CHARACTER = "UPDATE OR FAIL PlayerCharacters SET mapIndex = ?2, positionX = ?3, positionY = ?4 WHERE uid = ?1;";
 static const char* DELETE_CHARACTER = "DELETE FROM PlayerCharacters WHERE uid = ?;";
 
 //-------------------------
@@ -172,10 +172,9 @@ int ServerApplication::SaveCharacter(int uid) {
 	//parameters
 	bool ret = false;
 	ret |= sqlite3_bind_int(statement, 1, uid) != SQLITE_OK;
-	ret |= sqlite3_bind_int(statement, 2, character.owner) != SQLITE_OK;
-	ret |= sqlite3_bind_int(statement, 3, character.mapIndex) != SQLITE_OK;
-	ret |= sqlite3_bind_int(statement, 4, (int)character.position.x) != SQLITE_OK;
-	ret |= sqlite3_bind_int(statement, 5, (int)character.position.y) != SQLITE_OK;
+	ret |= sqlite3_bind_int(statement, 2, character.mapIndex) != SQLITE_OK;
+	ret |= sqlite3_bind_int(statement, 3, (int)character.position.x) != SQLITE_OK;
+	ret |= sqlite3_bind_int(statement, 4, (int)character.position.y) != SQLITE_OK;
 	//TODO: stats, etc.
 
 	//check for binding errors
