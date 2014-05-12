@@ -30,6 +30,7 @@
 
 struct CharacterData {
 	//metadata
+	int owner;
 	std::string handle;
 	std::string avatar;
 
