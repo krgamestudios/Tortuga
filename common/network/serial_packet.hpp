@@ -27,7 +27,7 @@
 
 #include "SDL/SDL_net.h"
 
-#define NETWORK_VERSION 20140506
+#define NETWORK_VERSION 20140512
 #define PACKET_STRING_SIZE 100
 
 #pragma pack(push, 0)
@@ -41,6 +41,8 @@ union SerialPacket {
 		//not used
 		PING = 1,
 		PONG = 2,
+
+		//TODO: rejection message
 
 		//Searching for a server to join
 		BROADCAST_REQUEST = 3,

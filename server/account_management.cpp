@@ -186,6 +186,8 @@ void ServerApplication::DeleteUserAccount(int uid) {
 		throw( std::runtime_error(std::string() + "Unknown SQL error when deleting an account: " + sqlite3_errmsg(database)) );
 	}
 
+	//TODO: delete this account's characters?
+
 	//finish the routine
 	sqlite3_finalize(statement);
 	accountMap.erase(uid);

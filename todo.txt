@@ -1,4 +1,6 @@
-I need to keep the documentation up to date. Namely, the GDD is getting out of date.
+* I need to keep the documentation up to date. Namely, the GDD is getting out of date.
+* How many lookups is the map system using?
+* Add the serial packet to the network utility
 
 --Naming conventions--
 

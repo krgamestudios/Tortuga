@@ -26,7 +26,6 @@
 #include "client_data.hpp"
 #include "account_data.hpp"
 #include "character_data.hpp"
-#include "combat_instance.hpp"
 
 //maps
 #include "map_allocator.hpp"
@@ -102,7 +101,6 @@ private:
 	std::map<int, ClientData> clientMap;
 	std::map<int, AccountData> accountMap;
 	std::map<int, CharacterData> characterMap;
-	std::map<int, CombatInstance> combatMap;
 
 	//maps
 	//TODO: I need to handle multiple map objects

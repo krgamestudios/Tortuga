@@ -367,7 +367,9 @@ void InWorld::RequestDisconnect() {
 
 	//send a disconnect request
 	packet.meta.type = SerialPacket::Type::DISCONNECT;
+	packet.clientInfo.clientIndex = clientIndex;
 	packet.clientInfo.accountIndex = accountIndex;
+	packet.clientInfo.characterIndex = characterIndex;
 	serialize(&packet, buffer);
 	network.Send(Channels::SERVER, buffer, PACKET_BUFFER_SIZE);
 }
@@ -378,7 +380,9 @@ void InWorld::RequestShutDown() {
 
 	//send a shutdown request
 	packet.meta.type = SerialPacket::Type::SHUTDOWN;
+	packet.clientInfo.clientIndex = clientIndex;
 	packet.clientInfo.accountIndex = accountIndex;
+	packet.clientInfo.characterIndex = characterIndex;
 	serialize(&packet, buffer);
 	network.Send(Channels::SERVER, buffer, PACKET_BUFFER_SIZE);
 }

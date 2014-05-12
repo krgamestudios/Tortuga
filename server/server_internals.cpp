@@ -21,7 +21,7 @@
 */
 #include "server_application.hpp"
 
-#include "server_utility.hpp"
+#include "sql_utility.hpp"
 
 #include <stdexcept>
 #include <iostream>
@@ -33,7 +33,6 @@
 
 int ClientData::uidCounter = 0;
 int CharacterData::uidCounter = 0;
-int CombatInstance::uidCounter = 0;
 
 //-------------------------
 //Define the public members
