@@ -31,7 +31,7 @@
 
 static const char* CREATE_USER_ACCOUNT = "INSERT INTO UserAccounts (username) VALUES (?);";
 static const char* LOAD_USER_ACCOUNT = "SELECT * FROM UserAccounts WHERE username = ?;";
-static const char* SAVE_USER_ACCOUNT = "INSERT OR REPLACE INTO UserAccounts VALUES (?, ?, ?, ?);";
+static const char* SAVE_USER_ACCOUNT = "UPDATE OR FAIL UserAccounts SET blacklisted = ?2, whitelisted = ?3 WHERE uid = ?1;";
 static const char* DELETE_USER_ACCOUNT = "DELETE FROM UserAccounts WHERE uid = ?;";
 
 //-------------------------
@@ -135,9 +135,8 @@ int ServerApplication::SaveUserAccount(int uid) {
 	//parameters
 	bool ret = false;
 	ret |= sqlite3_bind_int(statement, 1, uid) != SQLITE_OK;
-	ret |= sqlite3_bind_text(statement, 2, account.username.c_str(), account.username.size() + 1, SQLITE_STATIC) != SQLITE_OK;
-	ret |= sqlite3_bind_int(statement, 3, account.blackListed) != SQLITE_OK;
-	ret |= sqlite3_bind_int(statement, 4, account.whiteListed) != SQLITE_OK;
+	ret |= sqlite3_bind_int(statement, 2, account.blackListed) != SQLITE_OK;
+	ret |= sqlite3_bind_int(statement, 3, account.whiteListed) != SQLITE_OK;
 
 	//check for binding errors
 	if (ret) {
