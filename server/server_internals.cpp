@@ -32,7 +32,6 @@
 //-------------------------
 
 int ClientData::uidCounter = 0;
-int CharacterData::uidCounter = 0;
 
 //-------------------------
 //Define the public members

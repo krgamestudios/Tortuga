@@ -54,9 +54,6 @@ struct CharacterData {
 	float accuracy = 0.0;
 	float evasion = 0.0;
 	float luck = 0.0;
-
-	//uid
-	static int uidCounter;
 };
 
 #endif

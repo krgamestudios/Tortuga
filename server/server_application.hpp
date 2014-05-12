@@ -77,8 +77,8 @@ private:
 	void PumpPacket(SerialPacket);
 
 	//Account management
-	int CreateUserAccount(std::string username, int clientIndex, int characterIndex);
-	int LoadUserAccount(std::string username, int clientIndex, int characterIndex);
+	int CreateUserAccount(std::string username, int clientIndex);
+	int LoadUserAccount(std::string username, int clientIndex);
 	int SaveUserAccount(int uid);
 	void UnloadUserAccount(int uid);
 	void DeleteUserAccount(int uid);

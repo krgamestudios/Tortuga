@@ -110,6 +110,7 @@ int ServerApplication::LoadCharacter(int owner, std::string handle, std::string 
 		CharacterData& newChar = characterMap[uid];
 
 		//metadata
+		newChar.owner = owner;
 		newChar.handle = reinterpret_cast<const char*>(sqlite3_column_text(statement, 2));
 		newChar.avatar = reinterpret_cast<const char*>(sqlite3_column_text(statement, 3));
 		//Don't cache the birth
