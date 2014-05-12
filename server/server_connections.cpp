@@ -113,21 +113,16 @@ void ServerApplication::HandleSynchronize(SerialPacket packet) {
 
 void ServerApplication::HandleDisconnect(SerialPacket packet) {
 	//TODO: authenticate who is disconnecting/kicking
-	//TODO: define the difference between unloading and deleting a character
 
 	//forward to the specified client
 	char buffer[PACKET_BUFFER_SIZE];
 	serialize(&packet, buffer);
 	network.Send(&clientMap[accountMap[packet.clientInfo.accountIndex].clientIndex].address, buffer, PACKET_BUFFER_SIZE);
 
-	//delete the server- and client-side character(s)
-	SerialPacket delPacket;
-	delPacket.meta.type = SerialPacket::Type::CHARACTER_DELETE;
-
+	//unload client and server-side characters
 	for (std::map<int, CharacterData>::iterator it = characterMap.begin(); it != characterMap.end(); /* EMPTY */ ) {
 		if (it->second.owner == packet.clientInfo.accountIndex) {
-			delPacket.characterInfo.characterIndex = it->first;
-			PumpPacket(delPacket);
+			PumpCharacterUnload(it->first);
 			SaveCharacter(it->first);
 			it = characterMap.erase(it); //efficient
 			continue;
@@ -190,4 +185,12 @@ void ServerApplication::PumpPacket(SerialPacket packet) {
 	for (auto& it : clientMap) {
 		network.Send(&it.second.address, buffer, PACKET_BUFFER_SIZE);
 	}
+}
+
+void ServerApplication::PumpCharacterUnload(int uid) {
+	//delete the client-side character(s)
+	SerialPacket delPacket;
+	delPacket.meta.type = SerialPacket::Type::CHARACTER_DELETE;
+	delPacket.characterInfo.characterIndex = uid;
+	PumpPacket(delPacket);
 }

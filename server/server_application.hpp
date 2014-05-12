@@ -75,6 +75,7 @@ private:
 
 	//TODO: a function that only sends to characters in a certain proximity
 	void PumpPacket(SerialPacket);
+	void PumpCharacterUnload(int uid);
 
 	//Account management
 	int CreateUserAccount(std::string username, int clientIndex);

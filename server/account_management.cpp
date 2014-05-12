@@ -159,13 +159,14 @@ int ServerApplication::SaveUserAccount(int uid) {
 
 void ServerApplication::UnloadUserAccount(int uid) {
 	//save this user account, and then unload it
+	//NOTE: the associated characters are unloaded externally
 	SaveUserAccount(uid);
 	accountMap.erase(uid);
-	//TODO: unload this account's characters?
 }
 
 void ServerApplication::DeleteUserAccount(int uid) {
 	//delete a user account from the database, and remove it from memory
+	//NOTE: the associated characters are unloaded externally
 	sqlite3_stmt* statement = nullptr;
 
 	//prep
@@ -184,8 +185,6 @@ void ServerApplication::DeleteUserAccount(int uid) {
 		sqlite3_finalize(statement);
 		throw( std::runtime_error(std::string() + "Unknown SQL error when deleting an account: " + sqlite3_errmsg(database)) );
 	}
-
-	//TODO: delete this account's characters?
 
 	//finish the routine
 	sqlite3_finalize(statement);
