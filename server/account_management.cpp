@@ -38,7 +38,7 @@ static const char* DELETE_USER_ACCOUNT = "DELETE FROM UserAccounts WHERE uid = ?
 //Define the methods
 //-------------------------
 
-int ServerApplication::CreateUserAccount(std::string username, int clientIndex, int characterIndex) {
+int ServerApplication::CreateUserAccount(std::string username, int clientIndex) {
 	//create this user account, failing if it exists, leave this account in memory
 	sqlite3_stmt* statement = nullptr;
 
@@ -62,10 +62,10 @@ int ServerApplication::CreateUserAccount(std::string username, int clientIndex, 
 	sqlite3_finalize(statement);
 
 	//load this account into memory
-	return LoadUserAccount(username, clientIndex, characterIndex);
+	return LoadUserAccount(username, clientIndex);
 }
 
-int ServerApplication::LoadUserAccount(std::string username, int clientIndex, int characterIndex) {
+int ServerApplication::LoadUserAccount(std::string username, int clientIndex) {
 	//load this user account, failing if it is in memory, creating it if it doesn't exist
 	sqlite3_stmt* statement = nullptr;
 
@@ -99,7 +99,6 @@ int ServerApplication::LoadUserAccount(std::string username, int clientIndex, in
 		newAccount.blackListed = sqlite3_column_int(statement, 2);
 		newAccount.whiteListed = sqlite3_column_int(statement, 3);
 		newAccount.clientIndex = clientIndex;
-		newAccount.characterIndex = characterIndex;
 
 		//finish the routine
 		sqlite3_finalize(statement);
@@ -110,7 +109,7 @@ int ServerApplication::LoadUserAccount(std::string username, int clientIndex, in
 
 	if (ret == SQLITE_DONE) {
 		//create the non-existant account instead
-		return CreateUserAccount(username, clientIndex, characterIndex);
+		return CreateUserAccount(username, clientIndex);
 	}
 
 	throw(std::runtime_error(std::string() + "Unknown SQL error in LoadUserAccount: " + sqlite3_errmsg(database) ));
@@ -160,13 +159,14 @@ int ServerApplication::SaveUserAccount(int uid) {
 
 void ServerApplication::UnloadUserAccount(int uid) {
 	//save this user account, and then unload it
+	//NOTE: the associated characters are unloaded externally
 	SaveUserAccount(uid);
 	accountMap.erase(uid);
-	//TODO: unload this account's characters?
 }
 
 void ServerApplication::DeleteUserAccount(int uid) {
 	//delete a user account from the database, and remove it from memory
+	//NOTE: the associated characters are unloaded externally
 	sqlite3_stmt* statement = nullptr;
 
 	//prep

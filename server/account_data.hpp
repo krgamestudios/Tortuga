@@ -31,7 +31,6 @@ struct AccountData {
 	bool whiteListed = true;
 
 	int clientIndex;
-	int characterIndex;
 };
 
 #endif

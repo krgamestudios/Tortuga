@@ -19,7 +19,7 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#include "server_utility.hpp"
+#include "sql_utility.hpp"
 
 #include "utility.hpp"
 

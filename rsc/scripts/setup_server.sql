@@ -9,6 +9,7 @@ CREATE TABLE IF NOT EXISTS UserAccounts (
 --	password varchar(100),
 	blacklisted BIT DEFAULT 0,
 	whitelisted BIT DEFAULT 1
+--	TODO: moderator
 );
 
 -------------------------

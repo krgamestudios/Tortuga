@@ -42,29 +42,32 @@ void ServerApplication::HandleBroadcastRequest(SerialPacket packet) {
 }
 
 void ServerApplication::HandleJoinRequest(SerialPacket packet) {
+	//create the new client
+	ClientData newClient;
+	newClient.address = packet.meta.srcAddress;
+
 	//load the user account
-	int accountIndex = LoadUserAccount(packet.clientInfo.username, ClientData::uidCounter, CharacterData::uidCounter);
+	int accountIndex = LoadUserAccount(packet.clientInfo.username, ClientData::uidCounter);
 	if (accountIndex < 0) {
 		//TODO: send rejection packet
 		std::cerr << "Error: Account already loaded: " << accountIndex << std::endl;
 		return;
 	}
 
-	//create the new client
-	ClientData newClient;
-	newClient.address = packet.meta.srcAddress;
-
-	//TODO: move this into the character management code
-	//create the new character
-	CharacterData newCharacter;
-	newCharacter.handle = packet.clientInfo.handle;
-	newCharacter.avatar = packet.clientInfo.avatar;
+	//load the new character
+	int characterIndex = LoadCharacter(accountIndex, packet.clientInfo.handle, packet.clientInfo.avatar);
+	if (characterIndex < 0) {
+		//TODO: send rejection packet
+		std::cerr << "Error: Character already loaded: " << characterIndex << std::endl;
+		UnloadUserAccount(accountIndex);
+		return;
+	}
 
 	//send the client their info
 	packet.meta.type = SerialPacket::Type::JOIN_RESPONSE;
 	packet.clientInfo.clientIndex = ClientData::uidCounter;
 	packet.clientInfo.accountIndex = accountIndex;
-	packet.clientInfo.characterIndex = CharacterData::uidCounter;
+	packet.clientInfo.characterIndex = characterIndex;
 
 	//bounce this packet
 	char buffer[PACKET_BUFFER_SIZE];
@@ -73,17 +76,16 @@ void ServerApplication::HandleJoinRequest(SerialPacket packet) {
 
 	//send the new character to all clients
 	packet.meta.type = SerialPacket::Type::CHARACTER_NEW;
-	packet.characterInfo.characterIndex = CharacterData::uidCounter;
-	strncpy(packet.characterInfo.handle, newCharacter.handle.c_str(), PACKET_STRING_SIZE);
-	strncpy(packet.characterInfo.avatar, newCharacter.avatar.c_str(), PACKET_STRING_SIZE);
-	packet.characterInfo.position = newCharacter.position;
-	packet.characterInfo.motion = newCharacter.motion;
+	packet.characterInfo.characterIndex = characterIndex;
+	strncpy(packet.characterInfo.handle, characterMap[characterIndex].handle.c_str(), PACKET_STRING_SIZE);
+	strncpy(packet.characterInfo.avatar, characterMap[characterIndex].avatar.c_str(), PACKET_STRING_SIZE);
+	packet.characterInfo.position = characterMap[characterIndex].position;
+	packet.characterInfo.motion = characterMap[characterIndex].motion;
 	PumpPacket(packet);
 
 	//TODO: don't send anything to a certain client until they send the OK (the sync packet? or ignore client side?)
 	//finished this routine
 	clientMap[ClientData::uidCounter++] = newClient;
-	characterMap[CharacterData::uidCounter++] = newCharacter;
 	std::cout << "Connect, total: " << clientMap.size() << std::endl;
 }
 
@@ -111,26 +113,31 @@ void ServerApplication::HandleSynchronize(SerialPacket packet) {
 
 void ServerApplication::HandleDisconnect(SerialPacket packet) {
 	//TODO: authenticate who is disconnecting/kicking
-	//TODO: define the difference between unloading and deletng a character
 
 	//forward to the specified client
 	char buffer[PACKET_BUFFER_SIZE];
 	serialize(&packet, buffer);
 	network.Send(&clientMap[accountMap[packet.clientInfo.accountIndex].clientIndex].address, buffer, PACKET_BUFFER_SIZE);
 
-	//delete the client side character
-	SerialPacket delPacket;
-	delPacket.meta.type = SerialPacket::Type::CHARACTER_DELETE;
-	delPacket.characterInfo.characterIndex = accountMap[packet.clientInfo.accountIndex].characterIndex;
-	PumpPacket(delPacket);
+	//unload client and server-side characters
+	for (std::map<int, CharacterData>::iterator it = characterMap.begin(); it != characterMap.end(); /* EMPTY */ ) {
+		if (it->second.owner == packet.clientInfo.accountIndex) {
+			PumpCharacterUnload(it->first);
+			SaveCharacter(it->first);
+			it = characterMap.erase(it); //efficient
+			continue;
+		}
+		else {
+			++it;
+		}
+	}
 
 	//erase the in-memory stuff
 	clientMap.erase(accountMap[packet.clientInfo.accountIndex].clientIndex);
-	characterMap.erase(accountMap[packet.clientInfo.accountIndex].characterIndex);
 	UnloadUserAccount(packet.clientInfo.accountIndex);
 
 	//finished this routine
-	std::cout << "Disconnect, total: " << accountMap.size() << std::endl;
+	std::cout << "Disconnect, total: " << clientMap.size() << std::endl;
 }
 
 void ServerApplication::HandleShutdown(SerialPacket packet) {
@@ -178,4 +185,12 @@ void ServerApplication::PumpPacket(SerialPacket packet) {
 	for (auto& it : clientMap) {
 		network.Send(&it.second.address, buffer, PACKET_BUFFER_SIZE);
 	}
+}
+
+void ServerApplication::PumpCharacterUnload(int uid) {
+	//delete the client-side character(s)
+	SerialPacket delPacket;
+	delPacket.meta.type = SerialPacket::Type::CHARACTER_DELETE;
+	delPacket.characterInfo.characterIndex = uid;
+	PumpPacket(delPacket);
 }
