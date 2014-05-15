@@ -51,6 +51,7 @@
 #include <string>
 
 //The main application class
+//TODO: modulate this god class
 class ServerApplication {
 public:
 	//standard functions

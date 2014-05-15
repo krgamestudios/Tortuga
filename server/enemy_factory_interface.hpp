@@ -19,43 +19,22 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef CHARACTERDATA_HPP_
-#define CHARACTERDATA_HPP_
+#ifndef ENEMYFACTORYINTERFACE_HPP_
+#define ENEMYFACTORYINTERFACE_HPP_
 
-//POD members
-#include "bbox.hpp"
-#include "vector2.hpp"
+#include "enemy_data.hpp"
 
-#include <string>
+#include <list>
 
-struct CharacterData {
-	//metadata
-	int owner;
-	std::string handle;
-	std::string avatar;
+//NOTE: Based on biome, world difficulty, etc.
+class EnemyFactoryInterface {
+public:
+	EnemyFactoryInterface() = default;
+	virtual ~EnemyFactoryInterface() = default;
 
-	//world position
-	int mapIndex = 0;
-	Vector2 position = {0.0,0.0};
-	Vector2 motion = {0.0,0.0};
-	BBox bbox = {0,0,0,0};
-
-	//statistics
-	int level = 0;
-	int exp = 0;
-	int maxHP = 0;
-	int health = 0;
-	int maxMP = 0;
-	int mana = 0;
-	int attack = 0;
-	int defence = 0;
-	int intelligence = 0;
-	int resistance = 0;
-	float accuracy = 0.0;
-	float evasion = 0.0;
-	float luck = 0.0;
-
-	//TODO: equipment and items
+	virtual void Generate(std::list<EnemyData>* container) = 0;
+private:
+	//TODO: hold the parameters here?
 };
 
 #endif

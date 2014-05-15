@@ -16,24 +16,25 @@ I may also need to rewrite some variable names.
 
 --ServerApplication's methods--
 
-These interact with the database file, making the server a persistent system.
-
-* CreateUserAccount
-* LoadUserAccount
-* SaveUserAccount
-* UnloadUserAccount
-* DeleteUserAccount
-
-* CreateCharacter
-* LoadCharacter
-* SaveCharacter
-* UnloadCharacter
-* DeleteCharacter
+//NOTE: I honestly don't know what I'm doing
+CreateCombatInstance(roomIndex)
+PushCharacterToCombat(charIndex, combatIndex)
+UpdateCombatInstances() //handles all combat
 
 --Battle System--
 
-CombatPortal:
-	x, y
-	list<Character>
-	list<Monster>
-	//...
+CharacterData:
+	--stats
+
+EnemyData
+	--stats
+
+CombatInstance
+	list<CharacterData*>
+	list<EnemyData>
+
+Room:
+	RegionPager pager
+	EnemyFactory enemyFactory --this takes information on the room's data early in the room's construction
+	list<CombatInstance>
+

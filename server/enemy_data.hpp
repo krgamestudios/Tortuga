@@ -19,26 +19,17 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef CHARACTERDATA_HPP_
-#define CHARACTERDATA_HPP_
-
-//POD members
-#include "bbox.hpp"
-#include "vector2.hpp"
+#ifndef ENEMYDATA_HPP_
+#define ENEMYDATA_HPP_
 
 #include <string>
 
-struct CharacterData {
+struct EnemyData {
 	//metadata
-	int owner;
 	std::string handle;
 	std::string avatar;
 
-	//world position
-	int mapIndex = 0;
-	Vector2 position = {0.0,0.0};
-	Vector2 motion = {0.0,0.0};
-	BBox bbox = {0,0,0,0};
+	//TODO: attached lua scripts
 
 	//statistics
 	int level = 0;
@@ -54,8 +45,6 @@ struct CharacterData {
 	float accuracy = 0.0;
 	float evasion = 0.0;
 	float luck = 0.0;
-
-	//TODO: equipment and items
 };
 
 #endif
