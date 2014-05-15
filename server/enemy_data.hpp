@@ -29,8 +29,6 @@ struct EnemyData {
 	std::string handle;
 	std::string avatar;
 
-	//TODO: attached lua scripts
-
 	//statistics
 	int level = 0;
 	int exp = 0;
@@ -45,6 +43,16 @@ struct EnemyData {
 	float accuracy = 0.0;
 	float evasion = 0.0;
 	float luck = 0.0;
+
+	//TODO: equipment
+	//TODO: items
+	//TODO: buffs
+	//TODO: debuffs
+
+	//active gameplay members
+	//NOTE: these are lost when unloaded
+	int tableIndex;
+	int atbGauge = 0;
 };
 
 #endif

@@ -28,6 +28,13 @@
 #include <list>
 
 struct CombatInstance {
+	//TODO: metadata
+
+	//world position
+	int mapIndex = 0;
+	Vector2 position = {0.0,0.0};
+	Vector2 motion = {0.0,0.0};
+
 	std::list<CharacterData*> characterList;
 	std::list<EnemyData> enemyList;
 

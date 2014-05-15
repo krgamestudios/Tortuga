@@ -38,9 +38,8 @@ struct CharacterData {
 	int mapIndex = 0;
 	Vector2 position = {0.0,0.0};
 	Vector2 motion = {0.0,0.0};
-	BBox bbox = {0,0,0,0};
 
-	//statistics
+	//base statistics
 	int level = 0;
 	int exp = 0;
 	int maxHP = 0;
@@ -55,7 +54,17 @@ struct CharacterData {
 	float evasion = 0.0;
 	float luck = 0.0;
 
-	//TODO: equipment and items
+	//TODO: equipment
+	//TODO: items
+	//TODO: buffs
+	//TODO: debuffs
+
+	//active gameplay members
+	//NOTE: these are lost when unloaded
+	BBox bbox = {0,0,0,0};
+	bool inCombat = false;
+	int atbGauge = 0;
+	//TODO: stored command
 };
 
 #endif
