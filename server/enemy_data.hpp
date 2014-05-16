@@ -40,6 +40,7 @@ struct EnemyData {
 	int defence = 0;
 	int intelligence = 0;
 	int resistance = 0;
+	int speed = 0;
 	float accuracy = 0.0;
 	float evasion = 0.0;
 	float luck = 0.0;

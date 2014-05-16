@@ -71,6 +71,7 @@ CREATE TABLE IF NOT EXISTS PlayerCharacters (
 	defence			INTEGER DEFAULT 0,
 	intelligence	INTEGER DEFAULT 0,
 	resistance		INTEGER DEFAULT 0,
+	speed			INTEGER DEFAULT 0,
 	accuracy		REAL DEFAULT 0.0,
 	evasion			REAL DEFAULT 0.0,
 	luck			REAL DEFAULT 0.0,
