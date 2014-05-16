@@ -22,23 +22,29 @@
 #ifndef COMBATINSTANCE_HPP_
 #define COMBATINSTACNE_HPP_
 
+#include "vector2.hpp"
+#include "bbox.hpp"
+
 #include "character_data.hpp"
 #include "enemy_data.hpp"
 
+#include <chrono>
 #include <list>
 
 struct CombatInstance {
-	//TODO: metadata
-
-	//world position
-	int mapIndex = 0;
-	Vector2 position = {0.0,0.0};
-	Vector2 motion = {0.0,0.0};
-
+	//combatants
 	std::list<CharacterData*> characterList;
 	std::list<EnemyData> enemyList;
 
-	//TODO: more?
+	//world interaction
+	int mapIndex = 0;
+	Vector2 position = {0.0,0.0};
+	BBox bbox = {0,0,0,0};
+
+	//time interval
+	std::chrono::time_point<std::chrono:steady_clock> lastTick;
+
+	void Update();
 };
 
 #endif
