@@ -26,6 +26,7 @@
 #include "client_data.hpp"
 #include "account_data.hpp"
 #include "character_data.hpp"
+#include "combat_data.hpp"
 
 //maps
 #include "map_allocator.hpp"
@@ -85,14 +86,19 @@ private:
 	void UnloadUserAccount(int uid);
 	void DeleteUserAccount(int uid);
 
-	//TODO: character management
+	//character management
 	int CreateCharacter(int owner, std::string handle, std::string avatar);
 	int LoadCharacter(int owner, std::string handle, std::string avatar);
 	int SaveCharacter(int uid);
 	void UnloadCharacter(int uid);
 	void DeleteCharacter(int uid);
 
-	//TODO: combat systems
+	//TODO: combat management
+	int CreateCombatInstance(int mapIndex, int x, int y);
+	void UnloadCombatInstance(int uid);
+	void UpdateCombat();
+	void PushCharacterToCombat();
+	void PopCharacterFromCombat();
 
 	//APIs
 	UDPNetworkUtility network;
@@ -103,6 +109,7 @@ private:
 	std::map<int, ClientData> clientMap;
 	std::map<int, AccountData> accountMap;
 	std::map<int, CharacterData> characterMap;
+	std::map<int, CombatData> combatMap;
 
 	//maps
 	//TODO: I need to handle multiple map objects

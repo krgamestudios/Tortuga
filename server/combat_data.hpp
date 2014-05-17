@@ -19,8 +19,8 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef COMBATINSTANCE_HPP_
-#define COMBATINSTACNE_HPP_
+#ifndef COMBATDATA_HPP_
+#define COMBATDATA_HPP_
 
 #include "vector2.hpp"
 #include "bbox.hpp"
@@ -31,7 +31,9 @@
 #include <chrono>
 #include <list>
 
-struct CombatInstance {
+struct CombatData {
+	typedef std::chrono::steady_clock Clock;
+
 	//combatants
 	std::list<CharacterData*> characterList;
 	std::list<EnemyData> enemyList;
@@ -42,9 +44,9 @@ struct CombatInstance {
 	BBox bbox = {0,0,0,0};
 
 	//time interval
-	std::chrono::time_point<std::chrono:steady_clock> lastTick;
+	Clock::time_point lastTick = Clock::now();
 
-	void Update();
+	static int uidCounter;
 };
 
 #endif

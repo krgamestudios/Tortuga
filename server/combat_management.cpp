@@ -21,4 +21,81 @@
 */
 #include "server_application.hpp"
 
-//TODO: method definitions
+#include "utility.hpp"
+
+int ServerApplication::CreateCombatInstance(int mapIndex, int x, int y) {
+	CombatData& combat = combatMap[CombatData::uidCounter];
+
+	combat.mapIndex = mapIndex;
+	combat.position.x = x;
+	combat.position.y = y;
+
+	//explicitly postfix
+	return CombatData::uidCounter++;
+}
+
+void ServerApplication::UnloadCombatInstance(int uid) {
+	for (auto& it : combatMap[uid].characterList) {
+		it->inCombat = false;
+	}
+	combatMap.erase(uid);
+}
+
+void ServerApplication::UpdateCombat() {
+	for (auto& combat : combatMap) {
+		//prune characters that have left
+		erase_if(combat.second.characterList, [](CharacterData* it) -> bool {
+			return !it->inCombat;
+		});
+
+		//TODO: prune dead enemies
+
+		//update the instance once per second
+		if (CombatData::Clock::now() - combat.second.lastTick > std::chrono::duration<int>(1)) {
+			//increase the ATB gauges
+			for (auto& it : combat.second.characterList) {
+				it->atbGauge += it->speed;
+			}
+			for (auto& it : combat.second.enemyList) {
+				it.atbGauge += it.speed;
+			}
+			combat.second.lastTick = CombatData::Clock::now();
+
+			//execute the combat commands
+			for (auto& it : combat.second.characterList) {
+				if (it->atbGauge >= 100 && /* TODO: Check that there is something stored... */ true ) {
+					it->atbGauge = 0;
+					//TODO: EXECUTE STORED COMMAND
+				}
+			}
+			for (auto& it : combat.second.enemyList) {
+				if (it.atbGauge >= 100) {
+					it.atbGauge = 0;
+					//TODO: EXECUTE AI SCRIPT
+				}
+			}
+		}
+	}
+
+	//Erase instances with no enemies left
+	erase_if(combatMap, [](std::pair<const int, CombatData>& combat) -> bool {
+		if (combat.second.enemyList.size() == 0) {
+			//kick the characters out
+			for (auto& it : combat.second.characterList) {
+				it->inCombat = false;
+			}
+			return true;
+		}
+		return false;
+	});
+
+	//TODO: reset instances with no players?
+}
+
+void ServerApplication::PushCharacterToCombat() {
+	//TODO
+}
+
+void ServerApplication::PopCharacterFromCombat() {
+	//TODO
+}
