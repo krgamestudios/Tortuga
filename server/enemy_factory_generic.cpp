@@ -22,13 +22,13 @@
 #include "enemy_factory_generic.hpp"
 
 EnemyFactoryGeneric::EnemyFactoryGeneric() : EnemyFactoryInterface() {
-	//
+	//EMPTY
 }
 
 EnemyFactoryGeneric::~EnemyFactoryGeneric() noexcept {
-	//
+	//EMPTY
 }
 
 void EnemyFactoryGeneric::Generate(std::list<EnemyData>* container) {
-	//TODO: fill out
+	//TODO: fill this out
 }

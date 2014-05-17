@@ -26,6 +26,15 @@
 
 #include <list>
 
+//TODO: move this elsewhere
+enum RoomType {
+	OVERWORLD,
+	RUINS,
+	TOWERS,
+	FORESTS,
+	CAVES,
+};
+
 //NOTE: Based on biome, world difficulty, etc.
 class EnemyFactoryInterface {
 public:
@@ -33,8 +42,15 @@ public:
 	virtual ~EnemyFactoryInterface() = default;
 
 	virtual void Generate(std::list<EnemyData>* container) = 0;
-private:
-	//TODO: hold the parameters here?
+
+	//control the difficulty of the room
+	RoomType SetType(RoomType t) { return type = t; }
+	int SetDifficulty(int d) { return difficulty = d; }
+	RoomType GetType() { return type; }
+	int GetDifficulty() { return difficulty; }
+protected:
+	RoomType type = RoomType::OVERWORLD;
+	int difficulty = 0;
 };
 
 #endif

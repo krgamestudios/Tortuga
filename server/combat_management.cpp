@@ -30,6 +30,8 @@ int ServerApplication::CreateCombatInstance(int mapIndex, int x, int y) {
 	combat.position.x = x;
 	combat.position.y = y;
 
+	enemyFactory.Generate(&combat.enemyList);
+
 	//explicitly postfix
 	return CombatData::uidCounter++;
 }
@@ -49,6 +51,10 @@ void ServerApplication::UpdateCombat() {
 		});
 
 		//TODO: prune dead enemies
+		//NOTE: This needs to invoke some sort of on death script
+//		erase_if(combat.second.enemyList, [](EnemyData* it) -> bool {
+//			return it.health <= 0;
+//		});
 
 		//update the instance once per second
 		if (CombatData::Clock::now() - combat.second.lastTick > std::chrono::duration<int>(1)) {
@@ -92,10 +98,35 @@ void ServerApplication::UpdateCombat() {
 	//TODO: reset instances with no players?
 }
 
-void ServerApplication::PushCharacterToCombat() {
-	//TODO
+int ServerApplication::PushCharacterToCombat(int characterIndex, int combatIndex) {
+	CombatData& combat = combatMap[combatIndex];
+	CharacterData& character = characterMap[characterIndex];
+
+	//prevent duplicate entries
+	for (auto& it : combat.characterList) {
+		if (it == &character) {
+			//skip out
+			return -1;
+		}
+	}
+
+	combat.characterList.push_back(&character);
+
+	return 0;
 }
 
-void ServerApplication::PopCharacterFromCombat() {
-	//TODO
+int ServerApplication::PopCharacterFromCombat(int characterIndex, int combatIndex) {
+	CombatData& combat = combatMap[combatIndex];
+	CharacterData& character = characterMap[characterIndex];
+
+	//derpy
+	//TODO: should the list point to the std::pair?
+	for (auto it = combat.characterList.begin(); it != combat.characterList.end(); it++) {
+		if (*it == &character) {
+			combat.characterList.erase(it);
+			return 0;
+		}
+	}
+
+	return -1;
 }

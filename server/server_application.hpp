@@ -27,6 +27,7 @@
 #include "account_data.hpp"
 #include "character_data.hpp"
 #include "combat_data.hpp"
+#include "enemy_factory_generic.hpp"
 
 //maps
 #include "map_allocator.hpp"
@@ -97,8 +98,8 @@ private:
 	int CreateCombatInstance(int mapIndex, int x, int y);
 	void UnloadCombatInstance(int uid);
 	void UpdateCombat();
-	void PushCharacterToCombat();
-	void PopCharacterFromCombat();
+	int PushCharacterToCombat(int characterIndex, int combatIndex);
+	int PopCharacterFromCombat(int characterIndex, int combatIndex);
 
 	//APIs
 	UDPNetworkUtility network;
@@ -115,6 +116,7 @@ private:
 	//TODO: I need to handle multiple map objects
 	//TODO: Unload regions that are distant from any characters
 	RegionPager<LuaAllocator, LuaFormat> regionPager;
+	EnemyFactoryGeneric enemyFactory;
 
 	//misc
 	bool running = true;

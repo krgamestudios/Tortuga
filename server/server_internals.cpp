@@ -136,6 +136,8 @@ void ServerApplication::Proc() {
 		}
 		//update the internals
 		//TODO: update the internals i.e. player positions
+
+		UpdateCombat();
 		//give the computer a break
 		SDL_Delay(10);
 	}
