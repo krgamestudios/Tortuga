@@ -1,43 +1,11 @@
 * I need to keep the documentation up to date. Namely, the GDD is getting out of date.
 * How many lookups is the map system using?
-* Add the serial packet to the network utility
+* Hook the serial packet to the network utility
 * I completely forgot about status ailments
-
---Naming conventions--
-
-I need to define the differences between several different terms i.e. naming conventions.
-I may also need to rewrite some variable names.
-
-* User: This is the individual who is playing the game
-* Player: A synonym for a user
-* Character: This is the actual player character in the game
-* Username: This is the name of the player; ususally kept private
-* Handle: This is the name of a character
-* Avatar: This is the name of the sprite used by a character
-
---ServerApplication's methods--
-
-//NOTE: I honestly don't know what I'm doing
-CreateCombatInstance(roomIndex)
-PushCharacterToCombat(charIndex, combatIndex)
-UpdateCombatInstances() //handles all combat
 
 --Battle System--
 
-CharacterData:
-	--stats
-
-EnemyData
-	--stats
-
-CombatInstance
-	list<CharacterData*>
-	list<EnemyData>
-
-Room:
-	RegionPager pager
-	EnemyFactory enemyFactory --this takes information on the room's data early in the room's construction
-	list<CombatInstance>
+TODO
 
 --Requirements--
 
@@ -55,31 +23,17 @@ On each game loop, the server should envoke each combat instance's update functi
 		after the commands are called, the ATB is reset to 0.
 	etc...
 
---Enemy Tables--
+--Enemy API--
 
-enemyTables: The global store of enemy tables. Only accessed by C++ code (unless you want to break something).
+enemyTables -- The global store of enemy tables. Only accessed by C++ code (unless you want to break something).
 
-table.logic: the AI logic. If null, simply attack
+enemy.new(parameters) -- return a new enemy object
+
+table.logic: the AI logic. If null, do nothing
 table.ref: reference to the enemy itself, for use by API functions, set by constructor?
 
+combat -- the combat API
+combat.new(mapIndex, x, y) -- return combat instance's index
+combat.pushenemy(c, enemy) -- return the enemy's position
+combat.popenemy(c, position) --
 
-
-
-
-
-
---NOTE: useful for copying tables
-function deepcopy(orig)
-    local orig_type = type(orig)
-    local copy
-    if orig_type == 'table' then
-        copy = {}
-        for orig_key, orig_value in next, orig, nil do
-            copy[deepcopy(orig_key)] = deepcopy(orig_value)
-        end
-        setmetatable(copy, deepcopy(getmetatable(orig)))
-    else -- number, string, boolean, etc
-        copy = orig
-    end
-    return copy
-end
