@@ -14,7 +14,7 @@ function MakeChar()
 	t.defence = 10
 	t.intelligence = 10
 	t.resistance = 10
-	t.accuracy = 0.1
+	t.accuracy = 0.9
 	t.evasion = 0.1
 	t.luck = 0.1
 	t.level = 1
@@ -23,7 +23,7 @@ end
 
 function CheckHit(A, D)
 	local RNG = math.random(100)
-	local hitRate = A.accuracy - A.accuracy * D.evasion
+	local hitRate = (A.accuracy - A.accuracy * D.evasion) * 100
 
 	if RNG <= hitRate * A.luck then
 		return hitType.CRITICAL
