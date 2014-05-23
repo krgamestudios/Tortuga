@@ -36,6 +36,8 @@ end
 
 function CalcDamage(A, D, t)
 --	if t == attackType.PHYSICAL then
+		--TODO: test min & max of the rng
+		--TODO: overall, this needs tweaking for balance
 		return math.max(1, ( A.attack*3 + A.attack*(math.random(A.luck*100)/10) ) - (D.defence + D.defence*D.evasion))
 --	end
 --	if t == attackType.MAGICAL then
