@@ -19,53 +19,38 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef CHARACTERDATA_HPP_
-#define CHARACTERDATA_HPP_
+#ifndef ENEMYFACTORYINTERFACE_HPP_
+#define ENEMYFACTORYINTERFACE_HPP_
 
-//POD members
-#include "bbox.hpp"
-#include "vector2.hpp"
+#include "enemy_data.hpp"
 
-#include <string>
+#include <list>
 
-struct CharacterData {
-	//metadata
-	int owner;
-	std::string handle;
-	std::string avatar;
+//TODO: move this elsewhere
+enum RoomType {
+	OVERWORLD,
+	RUINS,
+	TOWERS,
+	FORESTS,
+	CAVES,
+};
 
-	//world position
-	int mapIndex = 0;
-	Vector2 position = {0.0,0.0};
-	Vector2 motion = {0.0,0.0};
+//NOTE: Based on biome, world difficulty, etc.
+class EnemyFactoryInterface {
+public:
+	EnemyFactoryInterface() = default;
+	virtual ~EnemyFactoryInterface() = default;
 
-	//base statistics
-	int level = 0;
-	int exp = 0;
-	int maxHP = 0;
-	int health = 0;
-	int maxMP = 0;
-	int mana = 0;
-	int attack = 0;
-	int defence = 0;
-	int intelligence = 0;
-	int resistance = 0;
-	int speed = 0;
-	float accuracy = 0.0;
-	float evasion = 0.0;
-	float luck = 0.0;
+	virtual void Generate(std::list<EnemyData>* container) = 0;
 
-	//TODO: equipment
-	//TODO: items
-	//TODO: buffs
-	//TODO: debuffs
-
-	//active gameplay members
-	//NOTE: these are lost when unloaded
-	BBox bbox = {0,0,0,0};
-	bool inCombat = false;
-	int atbGauge = 0;
-	//TODO: stored command
+	//control the difficulty of the room
+	RoomType SetType(RoomType t) { return type = t; }
+	int SetDifficulty(int d) { return difficulty = d; }
+	RoomType GetType() { return type; }
+	int GetDifficulty() { return difficulty; }
+protected:
+	RoomType type;
+	int difficulty;
 };
 
 #endif

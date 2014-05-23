@@ -1,4 +1,8 @@
-print("Lua script check OK (./rsc)")
+print("Lua script check (./rsc)")
+
+-------------------------
+--Map API overrides
+-------------------------
 
 function map.create(region)
 	for i = 1, map.getregionwidth() do
@@ -16,12 +20,17 @@ function map.unload(region)
 	--
 end
 
---return true if file loaded, otherwise return false
 function map.load(region, dir)
-	--
+	--return true if file loaded, otherwise return false
 	return false
 end
 
 function map.save(region, dir)
 	--
 end
+
+-------------------------
+--Enemy API
+-------------------------
+
+--TODO

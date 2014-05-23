@@ -19,27 +19,17 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef CHARACTERDATA_HPP_
-#define CHARACTERDATA_HPP_
-
-//POD members
-#include "bbox.hpp"
-#include "vector2.hpp"
+#ifndef ENEMYDATA_HPP_
+#define ENEMYDATA_HPP_
 
 #include <string>
 
-struct CharacterData {
+struct EnemyData {
 	//metadata
-	int owner;
 	std::string handle;
 	std::string avatar;
 
-	//world position
-	int mapIndex = 0;
-	Vector2 position = {0.0,0.0};
-	Vector2 motion = {0.0,0.0};
-
-	//base statistics
+	//statistics
 	int level = 0;
 	int exp = 0;
 	int maxHP = 0;
@@ -62,10 +52,8 @@ struct CharacterData {
 
 	//active gameplay members
 	//NOTE: these are lost when unloaded
-	BBox bbox = {0,0,0,0};
-	bool inCombat = false;
+	int tableIndex;
 	int atbGauge = 0;
-	//TODO: stored command
 };
 
 #endif

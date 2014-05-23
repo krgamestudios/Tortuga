@@ -26,6 +26,8 @@
 #include "client_data.hpp"
 #include "account_data.hpp"
 #include "character_data.hpp"
+#include "combat_data.hpp"
+#include "enemy_factory_generic.hpp"
 
 //maps
 #include "map_allocator.hpp"
@@ -51,6 +53,7 @@
 #include <string>
 
 //The main application class
+//TODO: modulate this god class
 class ServerApplication {
 public:
 	//standard functions
@@ -84,14 +87,14 @@ private:
 	void UnloadUserAccount(int uid);
 	void DeleteUserAccount(int uid);
 
-	//TODO: character management
+	//character management
 	int CreateCharacter(int owner, std::string handle, std::string avatar);
 	int LoadCharacter(int owner, std::string handle, std::string avatar);
 	int SaveCharacter(int uid);
 	void UnloadCharacter(int uid);
 	void DeleteCharacter(int uid);
 
-	//TODO: combat systems
+	//TODO: combat management
 
 	//APIs
 	UDPNetworkUtility network;
@@ -102,11 +105,13 @@ private:
 	std::map<int, ClientData> clientMap;
 	std::map<int, AccountData> accountMap;
 	std::map<int, CharacterData> characterMap;
+	std::map<int, CombatData> combatMap;
 
 	//maps
 	//TODO: I need to handle multiple map objects
 	//TODO: Unload regions that are distant from any characters
 	RegionPager<LuaAllocator, LuaFormat> regionPager;
+	EnemyFactoryGeneric enemyFactory;
 
 	//misc
 	bool running = true;

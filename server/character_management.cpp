@@ -131,9 +131,10 @@ int ServerApplication::LoadCharacter(int owner, std::string handle, std::string 
 		newChar.defence = sqlite3_column_int(statement, 15);
 		newChar.intelligence = sqlite3_column_int(statement, 16);
 		newChar.resistance = sqlite3_column_int(statement, 17);
-		newChar.accuracy = sqlite3_column_double(statement, 18);
-		newChar.evasion = sqlite3_column_double(statement, 19);
-		newChar.luck = sqlite3_column_double(statement, 20);
+		newChar.speed = sqlite3_column_int(statement, 18);
+		newChar.accuracy = sqlite3_column_double(statement, 19);
+		newChar.evasion = sqlite3_column_double(statement, 20);
+		newChar.luck = sqlite3_column_double(statement, 21);
 
 		//TODO: equipment
 
