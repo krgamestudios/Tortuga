@@ -1,7 +1,7 @@
 #config
-INCLUDES+=. .. ../gameplay ../map ../utilities
+INCLUDES+=. ../gameplay ../map ../utilities
 LIBS+=
-CXXFLAGS+=-std=c++11 -DDEBUG $(addprefix -I,$(INCLUDES))
+CXXFLAGS+=-std=c++11 $(addprefix -I,$(INCLUDES))
 
 #source
 CXXSRC=$(wildcard *.cpp)

@@ -1,22 +1,4 @@
-#config
-INCLUDES+=. ..
-LIBS+=
-CXXFLAGS+=-std=c++11 -DDEBUG $(addprefix -I,$(INCLUDES))
-
-#source
-CXXSRC=$(wildcard *.cpp)
-
-#objects
-OBJDIR=obj
-OBJ+=$(addprefix $(OBJDIR)/,$(CXXSRC:.cpp=.o))
-
-#output
-OUTDIR=../..
-OUT=$(addprefix $(OUTDIR)/,libcommon.a)
-
-#targets
-all: $(OBJ) $(OUT)
-	ar -crs $(OUT) $(OBJ)
+all:
 	$(MAKE) -C gameplay
 	$(MAKE) -C graphics
 	$(MAKE) -C map
@@ -24,19 +6,6 @@ all: $(OBJ) $(OUT)
 	$(MAKE) -C script
 	$(MAKE) -C ui
 	$(MAKE) -C utilities
-
-$(OBJ): | $(OBJDIR)
-
-$(OUT): | $(OUTDIR)
-
-$(OBJDIR):
-	mkdir $(OBJDIR)
-
-$(OUTDIR):
-	mkdir $(OUTDIR)
-
-$(OBJDIR)/%.o: %.cpp
-	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
 clean:
 	$(RM) *.o *.a *.exe
