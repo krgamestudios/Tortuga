@@ -29,6 +29,7 @@
 //Define the queries
 //-------------------------
 
+//TODO: save and load the statistics
 static const char* CREATE_CHARACTER = "INSERT INTO PlayerCharacters (owner, handle, avatar) VALUES (?, ?, ?);";
 static const char* LOAD_CHARACTER = "SELECT * FROM PlayerCharacters WHERE handle = ?;";
 static const char* SAVE_CHARACTER = "UPDATE OR FAIL PlayerCharacters SET mapIndex = ?2, positionX = ?3, positionY = ?4 WHERE uid = ?1;";
@@ -38,6 +39,7 @@ static const char* DELETE_CHARACTER = "DELETE FROM PlayerCharacters WHERE uid = 
 //Define the methods
 //-------------------------
 
+//TODO: default stats as a parameter
 int ServerApplication::CreateCharacter(int owner, std::string handle, std::string avatar) {
 	//Create the character, failing if it exists
 	sqlite3_stmt* statement = nullptr;
@@ -121,20 +123,20 @@ int ServerApplication::LoadCharacter(int owner, std::string handle, std::string 
 		newChar.position.y = (double)sqlite3_column_int(statement, 7);
 
 		//statistics
-		newChar.level = sqlite3_column_int(statement, 8);
-		newChar.exp = sqlite3_column_int(statement, 9);
-		newChar.maxHP = sqlite3_column_int(statement, 10);
-		newChar.health = sqlite3_column_int(statement, 11);
-		newChar.maxMP = sqlite3_column_int(statement, 12);
-		newChar.mana = sqlite3_column_int(statement, 13);
-		newChar.attack = sqlite3_column_int(statement, 14);
-		newChar.defence = sqlite3_column_int(statement, 15);
-		newChar.intelligence = sqlite3_column_int(statement, 16);
-		newChar.resistance = sqlite3_column_int(statement, 17);
-		newChar.speed = sqlite3_column_int(statement, 18);
-		newChar.accuracy = sqlite3_column_double(statement, 19);
-		newChar.evasion = sqlite3_column_double(statement, 20);
-		newChar.luck = sqlite3_column_double(statement, 21);
+		newChar.stats.level = sqlite3_column_int(statement, 8);
+		newChar.stats.exp = sqlite3_column_int(statement, 9);
+		newChar.stats.maxHP = sqlite3_column_int(statement, 10);
+		newChar.stats.health = sqlite3_column_int(statement, 11);
+		newChar.stats.maxMP = sqlite3_column_int(statement, 12);
+		newChar.stats.mana = sqlite3_column_int(statement, 13);
+		newChar.stats.attack = sqlite3_column_int(statement, 14);
+		newChar.stats.defence = sqlite3_column_int(statement, 15);
+		newChar.stats.intelligence = sqlite3_column_int(statement, 16);
+		newChar.stats.resistance = sqlite3_column_int(statement, 17);
+		newChar.stats.speed = sqlite3_column_int(statement, 18);
+		newChar.stats.accuracy = sqlite3_column_double(statement, 19);
+		newChar.stats.evasion = sqlite3_column_double(statement, 20);
+		newChar.stats.luck = sqlite3_column_double(statement, 21);
 
 		//TODO: equipment
 

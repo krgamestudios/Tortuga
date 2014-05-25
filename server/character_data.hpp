@@ -25,6 +25,7 @@
 //POD members
 #include "bbox.hpp"
 #include "vector2.hpp"
+#include "statistics.hpp"
 
 #include <string>
 
@@ -40,20 +41,7 @@ struct CharacterData {
 	Vector2 motion = {0.0,0.0};
 
 	//base statistics
-	int level = 0;
-	int exp = 0;
-	int maxHP = 0;
-	int health = 0;
-	int maxMP = 0;
-	int mana = 0;
-	int attack = 0;
-	int defence = 0;
-	int intelligence = 0;
-	int resistance = 0;
-	int speed = 0;
-	float accuracy = 0.0;
-	float evasion = 0.0;
-	float luck = 0.0;
+	Statistics stats;
 
 	//TODO: equipment
 	//TODO: items

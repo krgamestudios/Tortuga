@@ -19,20 +19,24 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef SERIAL_HPP_
-#define SERIAL_HPP_
+#ifndef STATISTICS_HPP_
+#define STATISTICS_HPP_
 
-#include "serial_packet.hpp"
-
-/* NOTE: Keep the PACKET_BUFFER_SIZE up to date
- * NOTE: REGION_CONTENT is currently the largest type of packet
- *  map content: REGION_WIDTH * REGION_HEIGHT * REGION_DEPTH * sizoeof(region::type_t)
- *  map format: sizeof(int) * 3
- *  metadata: sizeof(SerialPacket::Type)
-*/
-#define PACKET_BUFFER_SIZE REGION_WIDTH * REGION_HEIGHT * REGION_DEPTH * sizeof(Region::type_t) + sizeof(int) * 3 + sizeof(SerialPacket::Type)
-
-void serialize(SerialPacket* const, void* dest);
-void deserialize(SerialPacket* const, void* src);
+struct Statistics {
+	int level = 0;
+	int exp = 0;
+	int maxHP = 0;
+	int health = 0;
+	int maxMP = 0;
+	int mana = 0;
+	int attack = 0;
+	int defence = 0;
+	int intelligence = 0;
+	int resistance = 0;
+	int speed = 0;
+	float accuracy = 0.0;
+	float evasion = 0.0;
+	float luck = 0.0;
+};
 
 #endif

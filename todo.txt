@@ -1,7 +1,10 @@
-* I need to keep the documentation up to date. Namely, the GDD is getting out of date.
-* How many lookups is the map system using?
-* Hook the serial packet to the network utility
-* I completely forgot about status ailments
+TODO: I need to keep the documentation up to date. Namely, the GDD is getting out of date.
+TODO: How many lookups is the map system using?
+TODO: Hook the serial packet to the network utility
+TODO: I completely forgot about status ailments
+TODO: Time delay for requesting region packets
+TODO: command line parameters overriding config.cfg settings
+TODO: inplementing SerialPacket in NetworkUtility
 
 --Battle System--
 

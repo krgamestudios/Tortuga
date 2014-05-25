@@ -22,6 +22,8 @@
 #ifndef ENEMYDATA_HPP_
 #define ENEMYDATA_HPP_
 
+#include "statistics.hpp"
+
 #include <string>
 
 struct EnemyData {
@@ -29,21 +31,8 @@ struct EnemyData {
 	std::string handle;
 	std::string avatar;
 
-	//statistics
-	int level = 0;
-	int exp = 0;
-	int maxHP = 0;
-	int health = 0;
-	int maxMP = 0;
-	int mana = 0;
-	int attack = 0;
-	int defence = 0;
-	int intelligence = 0;
-	int resistance = 0;
-	int speed = 0;
-	float accuracy = 0.0;
-	float evasion = 0.0;
-	float luck = 0.0;
+	//gameplay
+	Statistics stats;
 
 	//TODO: equipment
 	//TODO: items

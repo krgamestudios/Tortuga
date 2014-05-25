@@ -22,6 +22,7 @@
 #include "serial.hpp"
 
 #include "map_allocator.hpp"
+#include "statistics.hpp"
 
 #include <cstring>
 
@@ -59,6 +60,7 @@ void serializeClient(SerialPacket* packet, char* buffer) {
 
 	//texts
 	SERIALIZE(buffer, packet->clientInfo.username, PACKET_STRING_SIZE);
+	//TODO: password
 	SERIALIZE(buffer, packet->clientInfo.handle, PACKET_STRING_SIZE);
 	SERIALIZE(buffer, packet->clientInfo.avatar, PACKET_STRING_SIZE);
 }
@@ -91,6 +93,35 @@ void serializeRegionContent(SerialPacket* packet, char* buffer) {
 	}
 }
 
+void serializeCombat(SerialPacket* packet, char* buffer) {
+	SERIALIZE(buffer, &packet->meta.type, sizeof(SerialPacket::Type));
+
+	//integers
+	SERIALIZE(buffer, &packet->combatInfo.combatIndex, sizeof(int));
+	SERIALIZE(buffer, &packet->combatInfo.difficulty, sizeof(int));
+	//TODO: more comabat info
+}
+
+void serializeStatistics(Statistics* stats, char* buffer) {
+	//integers
+	SERIALIZE(buffer, &stats->level, sizeof(int));
+	SERIALIZE(buffer, &stats->exp, sizeof(int));
+	SERIALIZE(buffer, &stats->maxHP, sizeof(int));
+	SERIALIZE(buffer, &stats->health, sizeof(int));
+	SERIALIZE(buffer, &stats->maxMP, sizeof(int));
+	SERIALIZE(buffer, &stats->mana, sizeof(int));
+	SERIALIZE(buffer, &stats->attack, sizeof(int));
+	SERIALIZE(buffer, &stats->defence, sizeof(int));
+	SERIALIZE(buffer, &stats->intelligence, sizeof(int));
+	SERIALIZE(buffer, &stats->resistance, sizeof(int));
+	SERIALIZE(buffer, &stats->speed, sizeof(int));
+
+	//floats
+	SERIALIZE(buffer, &stats->accuracy, sizeof(float));
+	SERIALIZE(buffer, &stats->evasion, sizeof(float));
+	SERIALIZE(buffer, &stats->luck, sizeof(float));
+}
+
 void serializeCharacter(SerialPacket* packet, char* buffer) {
 	SERIALIZE(buffer, &packet->meta.type, sizeof(SerialPacket::Type));
 
@@ -108,6 +139,22 @@ void serializeCharacter(SerialPacket* packet, char* buffer) {
 	SERIALIZE(buffer, &packet->characterInfo.position.y, sizeof(double));
 	SERIALIZE(buffer, &packet->characterInfo.motion.x, sizeof(double));
 	SERIALIZE(buffer, &packet->characterInfo.motion.y, sizeof(double));
+
+	//stats structure
+	serializeStatistics(&packet->characterInfo.stats, buffer);
+	buffer += sizeof(Statistics);
+}
+
+void serializeEnemy(SerialPacket* packet, char* buffer) {
+	SERIALIZE(buffer, &packet->meta.type, sizeof(SerialPacket::Type));
+
+	//texts
+	SERIALIZE(buffer, packet->clientInfo.handle, PACKET_STRING_SIZE);
+	SERIALIZE(buffer, packet->clientInfo.avatar, PACKET_STRING_SIZE);
+
+	//stats structure
+	serializeStatistics(&packet->characterInfo.stats, buffer);
+	buffer += sizeof(Statistics);
 }
 
 //-------------------------
@@ -137,6 +184,7 @@ void deserializeClient(SerialPacket* packet, char* buffer) {
 
 	//texts
 	DESERIALIZE(buffer, packet->clientInfo.username, PACKET_STRING_SIZE);
+	//TODO: password
 	DESERIALIZE(buffer, packet->clientInfo.handle, PACKET_STRING_SIZE);
 	DESERIALIZE(buffer, packet->clientInfo.avatar, PACKET_STRING_SIZE);
 }
@@ -176,6 +224,37 @@ void deserializeRegionContent(SerialPacket* packet, char* buffer) {
 	}
 }
 
+
+void deserializeCombat(SerialPacket* packet, char* buffer) {
+	DESERIALIZE(buffer, &packet->meta.type, sizeof(SerialPacket::Type));
+
+	//integers
+	DESERIALIZE(buffer, &packet->combatInfo.combatIndex, sizeof(int));
+	DESERIALIZE(buffer, &packet->combatInfo.difficulty, sizeof(int));
+	//TODO: more comabat info
+}
+
+
+void deserializeStatistics(Statistics* stats, char* buffer) {
+	//integers
+	DESERIALIZE(buffer, &stats->level, sizeof(int));
+	DESERIALIZE(buffer, &stats->exp, sizeof(int));
+	DESERIALIZE(buffer, &stats->maxHP, sizeof(int));
+	DESERIALIZE(buffer, &stats->health, sizeof(int));
+	DESERIALIZE(buffer, &stats->maxMP, sizeof(int));
+	DESERIALIZE(buffer, &stats->mana, sizeof(int));
+	DESERIALIZE(buffer, &stats->attack, sizeof(int));
+	DESERIALIZE(buffer, &stats->defence, sizeof(int));
+	DESERIALIZE(buffer, &stats->intelligence, sizeof(int));
+	DESERIALIZE(buffer, &stats->resistance, sizeof(int));
+	DESERIALIZE(buffer, &stats->speed, sizeof(int));
+
+	//floats
+	DESERIALIZE(buffer, &stats->accuracy, sizeof(float));
+	DESERIALIZE(buffer, &stats->evasion, sizeof(float));
+	DESERIALIZE(buffer, &stats->luck, sizeof(float));
+}
+
 void deserializeCharacter(SerialPacket* packet, char* buffer) {
 	DESERIALIZE(buffer, &packet->meta.type, sizeof(SerialPacket::Type));
 
@@ -193,6 +272,22 @@ void deserializeCharacter(SerialPacket* packet, char* buffer) {
 	DESERIALIZE(buffer, &packet->characterInfo.position.y, sizeof(double));
 	DESERIALIZE(buffer, &packet->characterInfo.motion.x, sizeof(double));
 	DESERIALIZE(buffer, &packet->characterInfo.motion.y, sizeof(double));
+
+	//stats structure
+	deserializeStatistics(&packet->characterInfo.stats, buffer);
+	buffer += sizeof(Statistics);
+}
+
+void deserializeEnemy(SerialPacket* packet, char* buffer) {
+	DESERIALIZE(buffer, &packet->meta.type, sizeof(SerialPacket::Type));
+
+	//texts
+	DESERIALIZE(buffer, packet->clientInfo.handle, PACKET_STRING_SIZE);
+	DESERIALIZE(buffer, packet->clientInfo.avatar, PACKET_STRING_SIZE);
+
+	//stats structure
+	deserializeStatistics(&packet->characterInfo.stats, buffer);
+	buffer += sizeof(Statistics);
 }
 
 //-------------------------
