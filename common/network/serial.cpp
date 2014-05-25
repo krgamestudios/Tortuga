@@ -296,20 +296,29 @@ void deserializeEnemy(SerialPacket* packet, char* buffer) {
 
 void serialize(SerialPacket* packet, void* buffer) {
 	switch(packet->meta.type) {
-		//No extra data
+		//no extra data
 		case SerialPacket::Type::NONE:
 		case SerialPacket::Type::PING:
 		case SerialPacket::Type::PONG:
 		case SerialPacket::Type::BROADCAST_REQUEST:
+
+		//all rejections
+		case SerialPacket::Type::BROADCAST_REJECTION:
+		case SerialPacket::Type::JOIN_REJECTION:
+		case SerialPacket::Type::REGION_REJECTION:
+		case SerialPacket::Type::CHARACTER_REJECTION:
+		case SerialPacket::Type::ENEMY_REJECTION:
+		case SerialPacket::Type::COMBAT_REJECTION:
+
 			serializeType(packet, reinterpret_cast<char*>(buffer));
 		break;
 
-		//Server info
+		//server info
 		case SerialPacket::Type::BROADCAST_RESPONSE:
 			serializeServer(packet, reinterpret_cast<char*>(buffer));
 		break;
 
-		//Client info
+		//client info
 		case SerialPacket::Type::JOIN_REQUEST:
 		case SerialPacket::Type::JOIN_RESPONSE:
 		case SerialPacket::Type::SYNCHRONIZE:
@@ -327,11 +336,28 @@ void serialize(SerialPacket* packet, void* buffer) {
 			serializeRegionContent(packet, reinterpret_cast<char*>(buffer));
 		break;
 
-		//Character info
+		//combat info
+		case SerialPacket::Type::COMBAT_ENTER:
+		case SerialPacket::Type::COMBAT_EXIT:
+			serializeCombat(packet, reinterpret_cast<char*>(buffer));
+		break;
+
+		//character info
 		case SerialPacket::Type::CHARACTER_NEW:
 		case SerialPacket::Type::CHARACTER_DELETE:
 		case SerialPacket::Type::CHARACTER_UPDATE:
+		case SerialPacket::Type::CHARACTER_STATS_REQUEST:
+		case SerialPacket::Type::CHARACTER_STATS_RESPONSE:
 			serializeCharacter(packet, reinterpret_cast<char*>(buffer));
+		break;
+
+		//enemy info
+		case SerialPacket::Type::ENEMY_NEW:
+		case SerialPacket::Type::ENEMY_DELETE:
+		case SerialPacket::Type::ENEMY_UPDATE:
+		case SerialPacket::Type::ENEMY_STATS_REQUEST:
+		case SerialPacket::Type::ENEMY_STATS_RESPONSE:
+			serializeEnemy(packet, reinterpret_cast<char*>(buffer));
 		break;
 	}
 }
@@ -340,20 +366,29 @@ void deserialize(SerialPacket* packet, void* buffer) {
 	//find the type, so that you can actually deserialize the packet!
 	deserializeType(packet, reinterpret_cast<char*>(buffer));
 	switch(packet->meta.type) {
-		//No extra data
+		//no extra data
 		case SerialPacket::Type::NONE:
 		case SerialPacket::Type::PING:
 		case SerialPacket::Type::PONG:
 		case SerialPacket::Type::BROADCAST_REQUEST:
+
+		//all rejections
+		case SerialPacket::Type::BROADCAST_REJECTION:
+		case SerialPacket::Type::JOIN_REJECTION:
+		case SerialPacket::Type::REGION_REJECTION:
+		case SerialPacket::Type::CHARACTER_REJECTION:
+		case SerialPacket::Type::ENEMY_REJECTION:
+		case SerialPacket::Type::COMBAT_REJECTION:
+
 			//NOTHING
 		break;
 
-		//Server info
+		//server info
 		case SerialPacket::Type::BROADCAST_RESPONSE:
 			deserializeServer(packet, reinterpret_cast<char*>(buffer));
 		break;
 
-		//Client info
+		//client info
 		case SerialPacket::Type::JOIN_REQUEST:
 		case SerialPacket::Type::JOIN_RESPONSE:
 		case SerialPacket::Type::SYNCHRONIZE:
@@ -371,11 +406,28 @@ void deserialize(SerialPacket* packet, void* buffer) {
 			deserializeRegionContent(packet, reinterpret_cast<char*>(buffer));
 		break;
 
-		//Character info
+		//combat info
+		case SerialPacket::Type::COMBAT_ENTER:
+		case SerialPacket::Type::COMBAT_EXIT:
+			serializeCombat(packet, reinterpret_cast<char*>(buffer));
+		break;
+
+		//character info
 		case SerialPacket::Type::CHARACTER_NEW:
 		case SerialPacket::Type::CHARACTER_DELETE:
 		case SerialPacket::Type::CHARACTER_UPDATE:
+		case SerialPacket::Type::CHARACTER_STATS_REQUEST:
+		case SerialPacket::Type::CHARACTER_STATS_RESPONSE:
 			deserializeCharacter(packet, reinterpret_cast<char*>(buffer));
+		break;
+
+		//enemy info
+		case SerialPacket::Type::ENEMY_NEW:
+		case SerialPacket::Type::ENEMY_DELETE:
+		case SerialPacket::Type::ENEMY_UPDATE:
+		case SerialPacket::Type::ENEMY_STATS_REQUEST:
+		case SerialPacket::Type::ENEMY_STATS_RESPONSE:
+			serializeEnemy(packet, reinterpret_cast<char*>(buffer));
 		break;
 	}
 }

@@ -68,6 +68,12 @@ union SerialPacket {
 		REGION_CONTENT,
 		REGION_REJECTION,
 
+		//combat data
+		COMBAT_ENTER,
+		COMBAT_EXIT,
+
+		COMBAT_REJECTION,
+
 		//character data
 		CHARACTER_NEW,
 		CHARACTER_DELETE,
@@ -87,12 +93,6 @@ union SerialPacket {
 		ENEMY_STATS_RESPONSE,
 
 		ENEMY_REJECTION,
-
-		//combat data
-		COMBAT_ENTER,
-		COMBAT_EXIT,
-
-		COMBAT_REJECTION,
 
 		//more packet types go here
 
@@ -141,6 +141,7 @@ union SerialPacket {
 		int difficulty;
 		//TODO: background image, based on terrain type
 		//TODO: array of combatants
+		//TODO: rewards
 	}combatInfo;
 
 	//info about a character
