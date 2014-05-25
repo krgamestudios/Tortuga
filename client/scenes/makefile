@@ -1,17 +1,14 @@
 #config
-INCLUDES+=. .. ../../common ../../common/graphics ../../common/map ../../common/network ../../common/ui
-LIBS+=
+INCLUDES+=. .. ../../common ../../common/gameplay ../../common/graphics ../../common/map ../../common/network ../../common/ui ../../common/utilities
+LIBS+=libclient.a ../libcommon.a -lSDL_net -lwsock32 -liphlpapi -lmingw32 -lSDLmain -lSDL -llua
 CXXFLAGS+=-std=c++11 -DDEBUG $(addprefix -I,$(INCLUDES))
-CFLAGS+=-DDEBUG $(addprefix -I,$(INCLUDES))
 
 #source
 CXXSRC=$(wildcard *.cpp)
-CSRC=$(wildcard *.c)
 
 #objects
 OBJDIR=obj
 OBJ+=$(addprefix $(OBJDIR)/,$(CXXSRC:.cpp=.o))
-OBJ+=$(addprefix $(OBJDIR)/,$(CSRC:.c=.o))
 
 #output
 OUTDIR=..
@@ -33,9 +30,6 @@ $(OUTDIR):
 
 $(OBJDIR)/%.o: %.cpp
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
-
-$(OBJDIR)/%.o: %.c
-	$(CC) $(CFLAGS) -c -o $@ $<
 
 clean:
 	$(RM) *.o *.a *.exe

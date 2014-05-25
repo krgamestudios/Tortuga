@@ -35,7 +35,7 @@
 
 union SerialPacket {
 	//types of packets
-	//TODO: readd the value definitions
+	//TODO: read the value definitions
 	enum class Type {
 		//default: there is something wrong
 		NONE = 0,

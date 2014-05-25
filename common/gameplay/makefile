@@ -1,5 +1,5 @@
 #config
-INCLUDES+=. .. ../utilities
+INCLUDES+=. ..
 LIBS+=
 CXXFLAGS+=-std=c++11 -DDEBUG $(addprefix -I,$(INCLUDES))
 
