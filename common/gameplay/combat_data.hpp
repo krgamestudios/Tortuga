@@ -46,8 +46,6 @@ struct CombatData {
 
 	//time interval
 	Clock::time_point lastTick = Clock::now();
-
-	static int uidCounter;
 };
 
 #endif

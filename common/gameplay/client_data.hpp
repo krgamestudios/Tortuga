@@ -26,7 +26,6 @@
 
 struct ClientData {
 	IPaddress address = {0,0};
-	static int uidCounter;
 };
 
 #endif
