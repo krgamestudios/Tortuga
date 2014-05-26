@@ -28,14 +28,6 @@
 #include <string>
 
 //-------------------------
-//Define the various UIDs
-//-------------------------
-
-int ClientData::uidCounter = 0;
-int CombatData::uidCounter = 0;
-int EnemyData::uidCounter = 0;
-
-//-------------------------
 //Define the public members
 //-------------------------
 

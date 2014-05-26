@@ -28,6 +28,11 @@
 #include "statistics.hpp"
 
 #include <string>
+#include <cmath>
+
+//the speeds that the characters move
+constexpr double CHARACTER_WALKING_SPEED = 140;
+constexpr double CHARACTER_WALKING_MOD = 1.0/sqrt(2.0);
 
 struct CharacterData {
 	//metadata

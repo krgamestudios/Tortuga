@@ -117,6 +117,9 @@ private:
 	//misc
 	bool running = true;
 	ConfigUtility config;
+	int clientUID = 0;
+	int combatUID = 0;
+	int enemyUID = 0;
 };
 
 #endif

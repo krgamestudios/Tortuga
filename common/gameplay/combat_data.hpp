@@ -19,14 +19,33 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef CLIENTDATA_HPP_
-#define CLIENTDATA_HPP_
+#ifndef COMBATDATA_HPP_
+#define COMBATDATA_HPP_
 
-#include "SDL/SDL_net.h"
+#include "vector2.hpp"
+#include "bbox.hpp"
 
-struct ClientData {
-	IPaddress address = {0,0};
-	static int uidCounter;
+#include "character_data.hpp"
+#include "enemy_data.hpp"
+
+#include <chrono>
+#include <list>
+#include <utility>
+
+struct CombatData {
+	typedef std::chrono::steady_clock Clock;
+
+	//combatants, point to the std::map's internal pairs
+	std::list<std::pair<const int, CharacterData>*> characterList;
+	std::list<std::pair<const int, EnemyData>*> enemyList;
+
+	//world interaction
+	int mapIndex = 0;
+	Vector2 position = {0.0,0.0};
+	BBox bbox = {0,0,0,0};
+
+	//time interval
+	Clock::time_point lastTick = Clock::now();
 };
 
 #endif

@@ -47,7 +47,7 @@ void ServerApplication::HandleJoinRequest(SerialPacket packet) {
 	newClient.address = packet.meta.srcAddress;
 
 	//load the user account
-	int accountIndex = LoadUserAccount(packet.clientInfo.username, ClientData::uidCounter);
+	int accountIndex = LoadUserAccount(packet.clientInfo.username, clientUID);
 	if (accountIndex < 0) {
 		//TODO: send rejection packet
 		std::cerr << "Error: Account already loaded: " << accountIndex << std::endl;
@@ -65,7 +65,7 @@ void ServerApplication::HandleJoinRequest(SerialPacket packet) {
 
 	//send the client their info
 	packet.meta.type = SerialPacket::Type::JOIN_RESPONSE;
-	packet.clientInfo.clientIndex = ClientData::uidCounter;
+	packet.clientInfo.clientIndex = clientUID;
 	packet.clientInfo.accountIndex = accountIndex;
 	packet.clientInfo.characterIndex = characterIndex;
 
@@ -85,7 +85,7 @@ void ServerApplication::HandleJoinRequest(SerialPacket packet) {
 
 	//TODO: don't send anything to a certain client until they send the OK (the sync packet? or ignore client side?)
 	//finished this routine
-	clientMap[ClientData::uidCounter++] = newClient;
+	clientMap[clientUID++] = newClient;
 	std::cout << "Connect, total: " << clientMap.size() << std::endl;
 }
 
