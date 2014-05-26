@@ -43,6 +43,8 @@ struct EnemyData {
 	//NOTE: these are lost when unloaded
 	int tableIndex;
 	int atbGauge = 0;
+
+	static int uidCounter;
 };
 
 #endif

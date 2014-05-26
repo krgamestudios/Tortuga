@@ -31,12 +31,10 @@
 //Public access members
 //-------------------------
 
-InWorld::InWorld(ConfigUtility* const argConfig, UDPNetworkUtility* const argNetwork, int* const argClientIndex, int* const argAccountIndex, int* const argCharacterIndex):
+InWorld::InWorld(ConfigUtility* const argConfig, UDPNetworkUtility* const argNetwork, SharedParameters* const argParams):
 	config(*argConfig),
 	network(*argNetwork),
-	clientIndex(*argClientIndex),
-	accountIndex(*argAccountIndex),
-	characterIndex(*argCharacterIndex)
+	params(*argParams)
 {
 	//setup the utility objects
 	buttonImage.LoadSurface(config["dir.interface"] + "button_menu.bmp");
@@ -68,9 +66,9 @@ InWorld::InWorld(ConfigUtility* const argConfig, UDPNetworkUtility* const argNet
 	SerialPacket packet;
 	char buffer[PACKET_STRING_SIZE];
 	packet.meta.type = SerialPacket::Type::SYNCHRONIZE;
-	packet.clientInfo.clientIndex = clientIndex;
-	packet.clientInfo.accountIndex = accountIndex;
-	packet.clientInfo.characterIndex = characterIndex;
+	packet.clientInfo.clientIndex = params.clientIndex;
+	packet.clientInfo.accountIndex = params.accountIndex;
+	packet.clientInfo.characterIndex = params.characterIndex;
 	serialize(&packet, buffer);
 	network.Send(Channels::SERVER, buffer, PACKET_BUFFER_SIZE);
 
@@ -151,6 +149,7 @@ void InWorld::Render(SDL_Surface* const screen) {
 void InWorld::QuitEvent() {
 	//exit the game AND the server
 	RequestDisconnect();
+	SetNextScene(SceneList::MAINMENU);
 }
 
 void InWorld::MouseMotion(SDL_MouseMotionEvent const& motion) {
@@ -273,17 +272,15 @@ void InWorld::HandlePacket(SerialPacket packet) {
 
 void InWorld::HandleDisconnect(SerialPacket packet) {
 	network.Unbind(Channels::SERVER);
-	clientIndex = -1;
-	accountIndex = -1;
-	characterIndex = -1;
+	params.clientIndex = -1;
+	params.accountIndex = -1;
+	params.characterIndex = -1;
 	SetNextScene(SceneList::MAINMENU);
 }
 
 void InWorld::HandleRegionContent(SerialPacket packet) {
 	//replace existing regions
-	if (regionPager.FindRegion(packet.regionInfo.x, packet.regionInfo.y)) {
-		regionPager.UnloadRegion(packet.regionInfo.x, packet.regionInfo.y);
-	}
+	regionPager.UnloadRegion(packet.regionInfo.x, packet.regionInfo.y);
 	regionPager.PushRegion(packet.regionInfo.region);
 	packet.regionInfo.region = nullptr;
 }
@@ -295,7 +292,7 @@ void InWorld::HandleCharacterUpdate(SerialPacket packet) {
 	}
 
 	//update only if the message didn't originate from here
-	if (packet.characterInfo.clientIndex != clientIndex) {
+	if (packet.characterInfo.clientIndex != params.clientIndex) {
 		playerCharacters[packet.characterInfo.characterIndex].SetPosition(packet.characterInfo.position);
 		playerCharacters[packet.characterInfo.characterIndex].SetMotion(packet.characterInfo.motion);
 	}
@@ -308,14 +305,15 @@ void InWorld::HandleCharacterNew(SerialPacket packet) {
 	}
 
 	//TODO: set the player's handle
+	//TODO: use a reference, don't use a lookup for every call
 	playerCharacters[packet.characterInfo.characterIndex].GetSprite()->LoadSurface(config["dir.sprites"] + packet.characterInfo.avatar, 4, 4);
 	playerCharacters[packet.characterInfo.characterIndex].SetPosition(packet.characterInfo.position);
 	playerCharacters[packet.characterInfo.characterIndex].SetMotion(packet.characterInfo.motion);
 	playerCharacters[packet.characterInfo.characterIndex].ResetDirection();
 
 	//catch this client's player object
-	if (packet.characterInfo.characterIndex == characterIndex && !localCharacter) {
-		localCharacter = &playerCharacters[characterIndex];
+	if (packet.characterInfo.characterIndex == params.characterIndex && !localCharacter) {
+		localCharacter = &playerCharacters[params.characterIndex];
 
 		//setup the camera
 		camera.width = GetScreen()->w;
@@ -327,16 +325,13 @@ void InWorld::HandleCharacterNew(SerialPacket packet) {
 }
 
 void InWorld::HandleCharacterDelete(SerialPacket packet) {
-	//TODO: authenticate
-	if (playerCharacters.find(packet.characterInfo.characterIndex) == playerCharacters.end()) {
-		throw(std::runtime_error("Cannot delete non-existant characters"));
-	}
+	//TODO: authenticate when own character is being deleted
 
 	playerCharacters.erase(packet.characterInfo.characterIndex);
 
 	//catch this client's player object
-	if (packet.characterInfo.characterIndex == characterIndex) {
-		characterIndex = -1;
+	if (packet.characterInfo.characterIndex == params.characterIndex) {
+		params.characterIndex = -1;
 		localCharacter = nullptr;
 	}
 }
@@ -351,9 +346,9 @@ void InWorld::SendPlayerUpdate() {
 
 	//pack the packet
 	packet.meta.type = SerialPacket::Type::CHARACTER_UPDATE;
-	packet.characterInfo.clientIndex = clientIndex;
-	packet.characterInfo.accountIndex = accountIndex;
-	packet.characterInfo.characterIndex = characterIndex;
+	packet.characterInfo.clientIndex = params.clientIndex;
+	packet.characterInfo.accountIndex = params.accountIndex;
+	packet.characterInfo.characterIndex = params.characterIndex;
 	packet.characterInfo.position = localCharacter->GetPosition();
 	packet.characterInfo.motion = localCharacter->GetMotion();
 
@@ -367,9 +362,9 @@ void InWorld::RequestDisconnect() {
 
 	//send a disconnect request
 	packet.meta.type = SerialPacket::Type::DISCONNECT;
-	packet.clientInfo.clientIndex = clientIndex;
-	packet.clientInfo.accountIndex = accountIndex;
-	packet.clientInfo.characterIndex = characterIndex;
+	packet.clientInfo.clientIndex = params.clientIndex;
+	packet.clientInfo.accountIndex = params.accountIndex;
+	packet.clientInfo.characterIndex = params.characterIndex;
 	serialize(&packet, buffer);
 	network.Send(Channels::SERVER, buffer, PACKET_BUFFER_SIZE);
 }
@@ -380,9 +375,9 @@ void InWorld::RequestShutDown() {
 
 	//send a shutdown request
 	packet.meta.type = SerialPacket::Type::SHUTDOWN;
-	packet.clientInfo.clientIndex = clientIndex;
-	packet.clientInfo.accountIndex = accountIndex;
-	packet.clientInfo.characterIndex = characterIndex;
+	packet.clientInfo.clientIndex = params.clientIndex;
+	packet.clientInfo.accountIndex = params.accountIndex;
+	packet.clientInfo.characterIndex = params.characterIndex;
 	serialize(&packet, buffer);
 	network.Send(Channels::SERVER, buffer, PACKET_BUFFER_SIZE);
 }

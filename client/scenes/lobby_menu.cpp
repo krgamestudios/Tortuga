@@ -30,12 +30,10 @@
 //Public access members
 //-------------------------
 
-LobbyMenu::LobbyMenu(ConfigUtility* const argConfig, UDPNetworkUtility* const argNetwork, int* const argClientIndex, int* const argAccountIndex, int* const argCharacterIndex):
+LobbyMenu::LobbyMenu(ConfigUtility* const argConfig, UDPNetworkUtility* const argNetwork, SharedParameters* const argParams):
 	config(*argConfig),
 	network(*argNetwork),
-	clientIndex(*argClientIndex),
-	accountIndex(*argAccountIndex),
-	characterIndex(*argCharacterIndex)
+	params(*argParams)
 {
 	//setup the utility objects
 	image.LoadSurface(config["dir.interface"] + "button_menu.bmp");
@@ -94,6 +92,7 @@ void LobbyMenu::FrameEnd() {
 }
 
 void LobbyMenu::Render(SDL_Surface* const screen) {
+	//TODO: this needs rewriting
 	//TODO: I need a proper UI system for the entire client and the editor
 	//UI
 	search.DrawTo(screen);
@@ -221,9 +220,9 @@ void LobbyMenu::HandlePacket(SerialPacket packet) {
 		}
 		break;
 		case SerialPacket::Type::JOIN_RESPONSE:
-			clientIndex = packet.clientInfo.clientIndex;
-			accountIndex = packet.clientInfo.accountIndex;
-			characterIndex = packet.clientInfo.characterIndex;
+			params.clientIndex = packet.clientInfo.clientIndex;
+			params.accountIndex = packet.clientInfo.accountIndex;
+			params.characterIndex = packet.clientInfo.characterIndex;
 			network.Bind(&packet.meta.srcAddress, Channels::SERVER);
 			SetNextScene(SceneList::INWORLD);
 		break;

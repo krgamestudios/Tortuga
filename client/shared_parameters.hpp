@@ -1,4 +1,4 @@
-/* Copyright: (c) Kayne Ruse 2013, 2014
+/* Copyright: (c) Kayne Ruse 2014
  * 
  * This software is provided 'as-is', without any express or implied
  * warranty. In no event will the authors be held liable for any damages
@@ -19,36 +19,13 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef CLIENTAPPLICATION_HPP_
-#define CLIENTAPPLICATION_HPP_
+#ifndef SHAREDPARAMETERS_HPP_
+#define SHAREDPARAMETERS_HPP_
 
-#include "scene_list.hpp"
-#include "base_scene.hpp"
-
-#include "shared_parameters.hpp"
-#include "config_utility.hpp"
-#include "udp_network_utility.hpp"
-
-class ClientApplication {
-public:
-	ClientApplication() = default;
-	~ClientApplication() = default;
-
-	void Init(int argc, char** argv);
-	void Proc();
-	void Quit();
-
-private:
-	//Private access members
-	void LoadScene(SceneList sceneIndex);
-	void UnloadScene();
-
-	BaseScene* activeScene = nullptr;
-
-	//shared parameters
-	ConfigUtility config;
-	UDPNetworkUtility network;
-	SharedParameters params;
+struct SharedParameters {
+	int clientIndex = -1;
+	int accountIndex = -1;
+	int characterIndex = -1;
 };
 
 #endif

@@ -30,13 +30,14 @@
 
 #include <chrono>
 #include <list>
+#include <utility>
 
 struct CombatData {
 	typedef std::chrono::steady_clock Clock;
 
-	//combatants
-	std::list<CharacterData*> characterList;
-	std::list<EnemyData> enemyList;
+	//combatants, point to the std::map's internal pairs
+	std::list<std::pair<const int, CharacterData>*> characterList;
+	std::list<std::pair<const int, EnemyData>*> enemyList;
 
 	//world interaction
 	int mapIndex = 0;

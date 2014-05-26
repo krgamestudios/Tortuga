@@ -119,13 +119,13 @@ void ClientApplication::LoadScene(SceneList sceneIndex) {
 			activeScene = new OptionsMenu(&config);
 		break;
 		case SceneList::LOBBYMENU:
-			activeScene = new LobbyMenu(&config, &network, &clientIndex, &accountIndex, &characterIndex);
+			activeScene = new LobbyMenu(&config, &network, &params);
 		break;
 		case SceneList::INWORLD:
-			activeScene = new InWorld(&config, &network, &clientIndex, &accountIndex, &characterIndex);
+			activeScene = new InWorld(&config, &network, &params);
 		break;
 		case SceneList::INCOMBAT:
-			activeScene = new InCombat();
+			activeScene = new InCombat(&config, &network, &params);
 		break;
 		default:
 			throw(std::logic_error("Failed to recognize the scene index"));

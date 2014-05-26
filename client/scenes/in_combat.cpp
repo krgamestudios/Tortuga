@@ -25,7 +25,11 @@
 //Public access members
 //-------------------------
 
-InCombat::InCombat() {
+InCombat::InCombat(ConfigUtility* const argConfig, UDPNetworkUtility* const argNetwork, SharedParameters* const argParams):
+	config(*argConfig),
+	network(*argNetwork),
+	params(*argParams)
+{
 	//
 }
 
@@ -57,6 +61,10 @@ void InCombat::Render(SDL_Surface* const screen) {
 //Event handlers
 //-------------------------
 
+void InCombat::QuitEvent() {
+	//
+}
+
 void InCombat::MouseMotion(SDL_MouseMotionEvent const& motion) {
 	//
 }
@@ -78,5 +86,9 @@ void InCombat::KeyDown(SDL_KeyboardEvent const& key) {
 }
 
 void InCombat::KeyUp(SDL_KeyboardEvent const& key) {
+	//
+}
+
+void InCombat::HandlePacket(SerialPacket& packet) {
 	//
 }

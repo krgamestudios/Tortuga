@@ -45,6 +45,7 @@
 //client
 #include "base_scene.hpp"
 #include "player_character.hpp"
+#include "shared_parameters.hpp"
 
 //STL
 #include <map>
@@ -52,7 +53,7 @@
 class InWorld : public BaseScene {
 public:
 	//Public access members
-	InWorld(ConfigUtility* const, UDPNetworkUtility* const, int* const, int* const, int* const);
+	InWorld(ConfigUtility* const, UDPNetworkUtility* const, SharedParameters* const);
 	~InWorld();
 
 protected:
@@ -91,9 +92,7 @@ protected:
 	//shared parameters
 	ConfigUtility& config;
 	UDPNetworkUtility& network;
-	int& clientIndex;
-	int& accountIndex;
-	int& characterIndex;
+	SharedParameters& params;
 
 	//graphics
 	Image buttonImage;

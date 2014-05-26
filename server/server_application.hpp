@@ -106,6 +106,7 @@ private:
 	std::map<int, AccountData> accountMap;
 	std::map<int, CharacterData> characterMap;
 	std::map<int, CombatData> combatMap;
+	std::map<int, EnemyData> enemyMap;
 
 	//maps
 	//TODO: I need to handle multiple map objects

@@ -22,12 +22,25 @@
 #ifndef INCOMBAT_HPP_
 #define INCOMBAT_HPP_
 
+//graphics & utilities
+#include "image.hpp"
+#include "raster_font.hpp"
+#include "button.hpp"
+#include "config_utility.hpp"
+#include "shared_parameters.hpp"
+
+//network
+#include "udp_network_utility.hpp"
+#include "serial_packet.hpp"
+#include "serial.hpp"
+
+//client
 #include "base_scene.hpp"
 
 class InCombat : public BaseScene {
 public:
 	//Public access members
-	InCombat();
+	InCombat(ConfigUtility* const, UDPNetworkUtility* const, SharedParameters* const);
 	~InCombat();
 
 protected:
@@ -38,11 +51,20 @@ protected:
 	void Render(SDL_Surface* const);
 
 	//Event handlers
+	void QuitEvent();
 	void MouseMotion(SDL_MouseMotionEvent const&);
 	void MouseButtonDown(SDL_MouseButtonEvent const&);
 	void MouseButtonUp(SDL_MouseButtonEvent const&);
 	void KeyDown(SDL_KeyboardEvent const&);
 	void KeyUp(SDL_KeyboardEvent const&);
+
+	//Network handlers
+	void HandlePacket(SerialPacket&);
+
+	//shared parameters
+	ConfigUtility& config;
+	UDPNetworkUtility& network;
+	SharedParameters& params;
 };
 
 #endif
