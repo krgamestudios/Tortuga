@@ -22,10 +22,19 @@
 #ifndef SHAREDPARAMETERS_HPP_
 #define SHAREDPARAMETERS_HPP_
 
+#include "character_data.hpp"
+#include "enemy_data.hpp"
+
+#include <map>
+
 struct SharedParameters {
 	int clientIndex = -1;
 	int accountIndex = -1;
 	int characterIndex = -1;
+
+	std::map<int, CharacterData> characterMap;
+	std::map<int, CombatData> combatMap;
+	std::map<int, enemyData> enemyMap;
 };
 
 #endif
