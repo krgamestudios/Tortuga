@@ -36,13 +36,17 @@ InWorld::InWorld(
 	UDPNetworkUtility* const argNetwork,
 	int* const argClientIndex,
 	int* const argAccountIndex,
-	int* const argCharacterIndex
+	int* const argCharacterIndex,
+	std::map<int, CombatData>* argCombatMap,
+	std::map<int, CharacterData>* argCharacterMap
 	):
 	config(*argConfig),
 	network(*argNetwork),
 	clientIndex(*argClientIndex),
 	accountIndex(*argAccountIndex),
-	characterIndex(*argCharacterIndex)
+	characterIndex(*argCharacterIndex),
+	combatMap(*argCombatMap),
+	characterMap(*argCharacterMap),
 {
 	//setup the utility objects
 	buttonImage.LoadSurface(config["dir.interface"] + "button_menu.bmp");
@@ -108,14 +112,21 @@ void InWorld::Update(double delta) {
 
 	//update the characters
 	for (auto& it : playerCharacters) {
-		it.second.Update(delta);
+		if (it.second.motion.x && it.second.motion.y) {
+			//TODO: refactor this into a method
+			it.second.position += it.second.motion * CHARACTER_WALKING_SPEED * CHARACTER_WALKING_MOD;
+		}
+		else if (it.second.motion != 0) {
+			it.second.position += it.second.motion * CHARACTER_WALKING_SPEED;
+		}
+		//TODO: SPRITE: fix sprite
 	}
 	//TODO: sort the players and entities by Y position
 
 	//update the camera
 	if(localCharacter) {
-		camera.x = localCharacter->GetPosition().x - camera.marginX;
-		camera.y = localCharacter->GetPosition().y - camera.marginY;
+		camera.x = localCharacter->position.x - camera.marginX;
+		camera.y = localCharacter->position.y - camera.marginY;
 	}
 
 	//check the map
@@ -327,8 +338,8 @@ void InWorld::HandleCharacterNew(SerialPacket packet) {
 		camera.width = GetScreen()->w;
 		camera.height = GetScreen()->h;
 		//center on the player's character
-		camera.marginX = (GetScreen()->w / 2 - localCharacter->GetSprite()->GetImage()->GetClipW() / 2);
-		camera.marginY = (GetScreen()->h / 2 - localCharacter->GetSprite()->GetImage()->GetClipH() / 2);
+		camera.marginX = (GetScreen()->w / 2 - localCharacter->sprite->GetImage()->GetClipW() / 2);
+		camera.marginY = (GetScreen()->h / 2 - localCharacter->sprite->GetImage()->GetClipH() / 2);
 	}
 }
 
@@ -357,8 +368,8 @@ void InWorld::SendPlayerUpdate() {
 	packet.characterInfo.clientIndex = clientIndex;
 	packet.characterInfo.accountIndex = accountIndex;
 	packet.characterInfo.characterIndex = characterIndex;
-	packet.characterInfo.position = localCharacter->GetPosition();
-	packet.characterInfo.motion = localCharacter->GetMotion();
+	packet.characterInfo.position = localCharacter->position;
+	packet.characterInfo.motion = localCharacter->motion;
 
 	serialize(&packet, buffer);
 	network.Send(Channels::SERVER, buffer, PACKET_BUFFER_SIZE);

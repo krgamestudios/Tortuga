@@ -42,8 +42,8 @@
 #include "config_utility.hpp"
 #include "frame_rate.hpp"
 
-#include "character_data.hpp"
 #include "combat_data.hpp"
+#include "character_data.hpp"
 
 //client
 #include "base_scene.hpp"
@@ -59,7 +59,9 @@ public:
 		UDPNetworkUtility* const argNetwork,
 		int* const argClientIndex,
 		int* const argAccountIndex,
-		int* const argCharacterIndex
+		int* const argCharacterIndex,
+		std::map<int, CombatData>* argCombatMap,
+		std::map<int, CharacterData>* argCharacterMap
 	);
 	~InWorld();
 
@@ -102,6 +104,8 @@ protected:
 	int& clientIndex;
 	int& accountIndex;
 	int& characterIndex;
+	std::map<int, CombatData>& combatMap;
+	std::map<int, CharacterData>& characterMap;
 
 	//graphics
 	Image buttonImage;

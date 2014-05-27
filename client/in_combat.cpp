@@ -30,13 +30,19 @@ InCombat::InCombat(
 	UDPNetworkUtility* const argNetwork,
 	int* const argClientIndex,
 	int* const argAccountIndex,
-	int* const argCharacterIndex
+	int* const argCharacterIndex,
+	std::map<int, CombatData>* argCombatMap,
+	std::map<int, CharacterData>* argCharacterMap,
+	std::map<int, EnemyData>* argEnemyMap
 	):
 	config(*argConfig),
 	network(*argNetwork),
 	clientIndex(*argClientIndex),
 	accountIndex(*argAccountIndex),
-	characterIndex(*argCharacterIndex)
+	characterIndex(*argCharacterIndex),
+	combatMap(*argCombatMap),
+	characterMap(*argCharacterMap),
+	enemyMap(*argEnemyMap)
 {
 	//
 }

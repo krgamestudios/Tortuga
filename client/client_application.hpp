@@ -56,8 +56,8 @@ private:
 	int accountIndex = -1;
 	int characterIndex = -1;
 
-	std::map<int, CharacterData> characterMap;
 	std::map<int, CombatData> combatMap;
+	std::map<int, CharacterData> characterMap;
 	std::map<int, EnemyData> enemyMap;
 };
 

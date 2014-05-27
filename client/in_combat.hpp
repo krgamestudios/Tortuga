@@ -36,6 +36,10 @@
 #include "config_utility.hpp"
 #include "frame_rate.hpp"
 
+#include "combat_data.hpp"
+#include "character_data.hpp"
+#include "enemy_data.hpp"
+
 //client
 #include "base_scene.hpp"
 
@@ -47,7 +51,10 @@ public:
 		UDPNetworkUtility* const argNetwork,
 		int* const argClientIndex,
 		int* const argAccountIndex,
-		int* const argCharacterIndex
+		int* const argCharacterIndex,
+		std::map<int, CombatData>* argCombatMap,
+		std::map<int, CharacterData>* argCharacterMap,
+		std::map<int, EnemyData>* argEnemyMap
 	);
 	~InCombat();
 
@@ -84,6 +91,9 @@ protected:
 	int& clientIndex;
 	int& accountIndex;
 	int& characterIndex;
+	std::map<int, CombatData>& combatMap;
+	std::map<int, CharacterData>& characterMap;
+	std::map<int, EnemyData>& enemyMap;
 
 	//graphics
 	//TODO: graphics
