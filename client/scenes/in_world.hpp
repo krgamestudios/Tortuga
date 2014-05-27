@@ -44,7 +44,6 @@
 
 //client
 #include "base_scene.hpp"
-#include "player_character.hpp"
 #include "shared_parameters.hpp"
 
 //STL
@@ -98,6 +97,7 @@ protected:
 	Image buttonImage;
 	RasterFont font;
 	TileSheet tileSheet;
+	//TODO: sprites
 
 	//map
 	RegionPager<BlankAllocator, DummyFormat> regionPager;
@@ -114,7 +114,6 @@ protected:
 	FrameRate fps;
 
 	//game
-	std::map<int, PlayerCharacter> playerCharacters;
 	PlayerCharacter* localCharacter = nullptr;
 };
 
