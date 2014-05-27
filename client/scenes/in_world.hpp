@@ -42,6 +42,9 @@
 #include "config_utility.hpp"
 #include "frame_rate.hpp"
 
+#include "character_data.hpp"
+#include "combat_data.hpp"
+
 //client
 #include "base_scene.hpp"
 

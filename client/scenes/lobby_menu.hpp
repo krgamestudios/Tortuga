@@ -65,6 +65,7 @@ protected:
 	void KeyDown(SDL_KeyboardEvent const&);
 	void KeyUp(SDL_KeyboardEvent const&);
 
+	//Network handlers
 	void HandlePacket(SerialPacket);
 
 	//shared parameters

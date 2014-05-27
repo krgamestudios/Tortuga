@@ -22,8 +22,15 @@
 #ifndef ENEMYDATA_HPP_
 #define ENEMYDATA_HPP_
 
+//gameplay
 #include "statistics.hpp"
 
+//graphics
+#ifdef GRAPHICS
+ #include "sprite_sheet.hpp"
+#endif
+
+//std namespace
 #include <string>
 
 struct EnemyData {
@@ -41,6 +48,9 @@ struct EnemyData {
 
 	//active gameplay members
 	//NOTE: these are lost when unloaded
+#ifdef GRAPHICS
+	SpriteSheet sprite;
+#endif
 	int tableIndex;
 	int atbGauge = 0;
 };

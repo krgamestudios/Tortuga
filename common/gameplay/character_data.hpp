@@ -27,6 +27,12 @@
 #include "vector2.hpp"
 #include "statistics.hpp"
 
+//graphics
+#ifdef GRAPHICS
+ #include "sprite_sheet.hpp"
+#endif
+
+//std namespace
 #include <string>
 #include <cmath>
 
@@ -55,6 +61,9 @@ struct CharacterData {
 
 	//active gameplay members
 	//NOTE: these are lost when unloaded
+#ifdef GRAPHICS
+	SpriteSheet sprite;
+#endif
 	BBox bbox = {0,0,0,0};
 	bool inCombat = false;
 	int atbGauge = 0;

@@ -210,6 +210,10 @@ void LobbyMenu::KeyUp(SDL_KeyboardEvent const& key) {
 	//
 }
 
+//-------------------------
+//Network handlers
+//-------------------------
+
 void LobbyMenu::HandlePacket(SerialPacket packet) {
 		switch(packet.meta.type) {
 		case SerialPacket::Type::BROADCAST_RESPONSE: {

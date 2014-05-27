@@ -22,12 +22,20 @@
 #ifndef COMBATDATA_HPP_
 #define COMBATDATA_HPP_
 
+//POD members
 #include "vector2.hpp"
 #include "bbox.hpp"
 
+//gameplay members
 #include "character_data.hpp"
 #include "enemy_data.hpp"
 
+//graphics
+#ifdef GRAPHICS
+ #include "sprite_sheet.hpp"
+#endif
+
+//std namespace
 #include <chrono>
 #include <list>
 #include <utility>
@@ -46,6 +54,11 @@ struct CombatData {
 
 	//time interval
 	Clock::time_point lastTick = Clock::now();
+
+	//graphics
+#ifdef GRAPHICS
+	SpriteSheet sprite;
+#endif
 };
 
 #endif
