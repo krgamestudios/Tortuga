@@ -84,7 +84,7 @@ void InCombat::Render(SDL_Surface* const screen) {
 
 void InCombat::QuitEvent() {
 	//exit the game AND the server
-	RequestDisconnect();
+//	RequestDisconnect();
 	SetNextScene(SceneList::MAINMENU);
 }
 

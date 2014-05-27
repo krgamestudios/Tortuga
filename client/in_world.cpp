@@ -46,7 +46,7 @@ InWorld::InWorld(
 	accountIndex(*argAccountIndex),
 	characterIndex(*argCharacterIndex),
 	combatMap(*argCombatMap),
-	characterMap(*argCharacterMap),
+	characterMap(*argCharacterMap)
 {
 	//setup the utility objects
 	buttonImage.LoadSurface(config["dir.interface"] + "button_menu.bmp");
@@ -111,13 +111,13 @@ void InWorld::Update(double delta) {
 	}
 
 	//update the characters
-	for (auto& it : playerCharacters) {
+	for (auto& it : characterMap) {
 		if (it.second.motion.x && it.second.motion.y) {
 			//TODO: refactor this into a method
-			it.second.position += it.second.motion * CHARACTER_WALKING_SPEED * CHARACTER_WALKING_MOD;
+			it.second.position += it.second.motion * delta * CHARACTER_WALKING_MOD;
 		}
 		else if (it.second.motion != 0) {
-			it.second.position += it.second.motion * CHARACTER_WALKING_SPEED;
+			it.second.position += it.second.motion * delta;
 		}
 		//TODO: SPRITE: fix sprite
 	}
@@ -151,8 +151,9 @@ void InWorld::Render(SDL_Surface* const screen) {
 	}
 
 	//draw characters
-	for (auto& it : playerCharacters) {
-		it.second.DrawTo(screen, camera.x, camera.y);
+	for (auto& it : characterMap) {
+		//TODO: refactor this
+		it.second.sprite.DrawTo(screen, it.second.position.x - camera.x, it.second.position.y - camera.y);
 	}
 
 	//draw UI
@@ -200,28 +201,28 @@ void InWorld::KeyDown(SDL_KeyboardEvent const& key) {
 		//player movement
 		case SDLK_LEFT:
 			if (localCharacter) {
-				localCharacter->AdjustDirection(PlayerCharacter::Direction::WEST);
+				localCharacter->motion.x -= CHARACTER_WALKING_SPEED;
 				SendPlayerUpdate();
 			}
 		break;
 
 		case SDLK_RIGHT:
 			if (localCharacter) {
-				localCharacter->AdjustDirection(PlayerCharacter::Direction::EAST);
+				localCharacter->motion.x += CHARACTER_WALKING_SPEED;
 				SendPlayerUpdate();
 			}
 		break;
 
 		case SDLK_UP:
 			if (localCharacter) {
-				localCharacter->AdjustDirection(PlayerCharacter::Direction::NORTH);
+				localCharacter->motion.y -= CHARACTER_WALKING_SPEED;
 				SendPlayerUpdate();
 			}
 		break;
 
 		case SDLK_DOWN:
 			if (localCharacter) {
-				localCharacter->AdjustDirection(PlayerCharacter::Direction::SOUTH);
+				localCharacter->motion.y += CHARACTER_WALKING_SPEED;
 				SendPlayerUpdate();
 			}
 		break;
@@ -233,28 +234,28 @@ void InWorld::KeyUp(SDL_KeyboardEvent const& key) {
 		//player movement
 		case SDLK_LEFT:
 			if (localCharacter) {
-				localCharacter->AdjustDirection(PlayerCharacter::Direction::EAST);
+				localCharacter->motion.x += CHARACTER_WALKING_SPEED;
 				SendPlayerUpdate();
 			}
 		break;
 
 		case SDLK_RIGHT:
 			if (localCharacter) {
-				localCharacter->AdjustDirection(PlayerCharacter::Direction::WEST);
+				localCharacter->motion.x -= CHARACTER_WALKING_SPEED;
 				SendPlayerUpdate();
 			}
 		break;
 
 		case SDLK_UP:
 			if (localCharacter) {
-				localCharacter->AdjustDirection(PlayerCharacter::Direction::SOUTH);
+				localCharacter->motion.y += CHARACTER_WALKING_SPEED;
 				SendPlayerUpdate();
 			}
 		break;
 
 		case SDLK_DOWN:
 			if (localCharacter) {
-				localCharacter->AdjustDirection(PlayerCharacter::Direction::NORTH);
+				localCharacter->motion.y -= CHARACTER_WALKING_SPEED;
 				SendPlayerUpdate();
 			}
 		break;
@@ -305,48 +306,50 @@ void InWorld::HandleRegionContent(SerialPacket packet) {
 }
 
 void InWorld::HandleCharacterUpdate(SerialPacket packet) {
-	if (playerCharacters.find(packet.characterInfo.characterIndex) == playerCharacters.end()) {
+	if (characterMap.find(packet.characterInfo.characterIndex) == characterMap.end()) {
 		HandleCharacterNew(packet);
 		return;
 	}
 
 	//update only if the message didn't originate from here
 	if (packet.characterInfo.clientIndex != clientIndex) {
-		playerCharacters[packet.characterInfo.characterIndex].SetPosition(packet.characterInfo.position);
-		playerCharacters[packet.characterInfo.characterIndex].SetMotion(packet.characterInfo.motion);
+		characterMap[packet.characterInfo.characterIndex].position = packet.characterInfo.position;
+		characterMap[packet.characterInfo.characterIndex].motion = packet.characterInfo.motion;
 	}
-	playerCharacters[packet.characterInfo.characterIndex].ResetDirection();
+	//TODO: refactor this
+//	characterMap[packet.characterInfo.characterIndex].ResetDirection();
 }
 
 void InWorld::HandleCharacterNew(SerialPacket packet) {
-	if (playerCharacters.find(packet.characterInfo.characterIndex) != playerCharacters.end()) {
+	if (characterMap.find(packet.characterInfo.characterIndex) != characterMap.end()) {
 		throw(std::runtime_error("Cannot create duplicate characters"));
 	}
 
 	//TODO: set the player's handle
 	//TODO: use a reference, don't use a lookup for every call
-	playerCharacters[packet.characterInfo.characterIndex].GetSprite()->LoadSurface(config["dir.sprites"] + packet.characterInfo.avatar, 4, 4);
-	playerCharacters[packet.characterInfo.characterIndex].SetPosition(packet.characterInfo.position);
-	playerCharacters[packet.characterInfo.characterIndex].SetMotion(packet.characterInfo.motion);
-	playerCharacters[packet.characterInfo.characterIndex].ResetDirection();
+	characterMap[packet.characterInfo.characterIndex].sprite.LoadSurface(config["dir.sprites"] + packet.characterInfo.avatar, 4, 4);
+	characterMap[packet.characterInfo.characterIndex].position = packet.characterInfo.position;
+	characterMap[packet.characterInfo.characterIndex].motion = packet.characterInfo.motion;
+	//TODO: refactor this
+//	characterMap[packet.characterInfo.characterIndex].ResetDirection();
 
 	//catch this client's player object
 	if (packet.characterInfo.characterIndex == characterIndex && !localCharacter) {
-		localCharacter = &playerCharacters[characterIndex];
+		localCharacter = &characterMap[characterIndex];
 
 		//setup the camera
 		camera.width = GetScreen()->w;
 		camera.height = GetScreen()->h;
 		//center on the player's character
-		camera.marginX = (GetScreen()->w / 2 - localCharacter->sprite->GetImage()->GetClipW() / 2);
-		camera.marginY = (GetScreen()->h / 2 - localCharacter->sprite->GetImage()->GetClipH() / 2);
+		camera.marginX = (GetScreen()->w / 2 - localCharacter->sprite.GetImage()->GetClipW() / 2);
+		camera.marginY = (GetScreen()->h / 2 - localCharacter->sprite.GetImage()->GetClipH() / 2);
 	}
 }
 
 void InWorld::HandleCharacterDelete(SerialPacket packet) {
 	//TODO: authenticate when own character is being deleted
 
-	playerCharacters.erase(packet.characterInfo.characterIndex);
+	characterMap.erase(packet.characterInfo.characterIndex);
 
 	//catch this client's player object
 	if (packet.characterInfo.characterIndex == characterIndex) {
