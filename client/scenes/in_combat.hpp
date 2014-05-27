@@ -22,17 +22,19 @@
 #ifndef INCOMBAT_HPP_
 #define INCOMBAT_HPP_
 
-//graphics & utilities
-#include "image.hpp"
-#include "raster_font.hpp"
-#include "button.hpp"
-#include "config_utility.hpp"
-#include "shared_parameters.hpp"
-
 //network
 #include "udp_network_utility.hpp"
 #include "serial_packet.hpp"
 #include "serial.hpp"
+
+//graphics
+#include "image.hpp"
+#include "raster_font.hpp"
+#include "button.hpp"
+
+//common
+#include "config_utility.hpp"
+#include "frame_rate.hpp"
 
 //client
 #include "base_scene.hpp"
@@ -40,7 +42,13 @@
 class InCombat : public BaseScene {
 public:
 	//Public access members
-	InCombat(ConfigUtility* const, UDPNetworkUtility* const, SharedParameters* const);
+	InCombat(
+		ConfigUtility* const argConfig,
+		UDPNetworkUtility* const argNetwork,
+		int* const argClientIndex,
+		int* const argAccountIndex,
+		int* const argCharacterIndex
+	);
 	~InCombat();
 
 protected:
@@ -48,6 +56,7 @@ protected:
 	void FrameStart();
 	void Update(double delta);
 	void FrameEnd();
+	void RenderFrame();
 	void Render(SDL_Surface* const);
 
 	//Event handlers
@@ -59,12 +68,29 @@ protected:
 	void KeyUp(SDL_KeyboardEvent const&);
 
 	//Network handlers
-	void HandlePacket(SerialPacket&);
+	void HandlePacket(SerialPacket);
+	void HandleDisconnect(SerialPacket);
+	//TODO: more
+
+	//Server control
+	void SendPlayerUpdate();
+	void RequestDisconnect();
+	void RequestShutdown();
+	//TOOD: more
 
 	//shared parameters
 	ConfigUtility& config;
 	UDPNetworkUtility& network;
-	SharedParameters& params;
+	int& clientIndex;
+	int& accountIndex;
+	int& characterIndex;
+
+	//graphics
+	//TODO: graphics
+
+	//UI
+	//TODO: UI
+	FrameRate fps;
 };
 
 #endif

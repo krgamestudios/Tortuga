@@ -27,7 +27,6 @@
 #include "raster_font.hpp"
 #include "button.hpp"
 #include "config_utility.hpp"
-#include "shared_parameters.hpp"
 
 //network
 #include "udp_network_utility.hpp"
@@ -43,7 +42,13 @@
 class LobbyMenu : public BaseScene {
 public:
 	//Public access members
-	LobbyMenu(ConfigUtility* const, UDPNetworkUtility* const, SharedParameters* const);
+	LobbyMenu(
+		ConfigUtility* const argConfig,
+		UDPNetworkUtility* const argNetwork,
+		int* const argClientIndex,
+		int* const argAccountIndex,
+		int* const argCharacterIndex
+	);
 	~LobbyMenu();
 
 protected:
@@ -65,7 +70,9 @@ protected:
 	//shared parameters
 	ConfigUtility& config;
 	UDPNetworkUtility& network;
-	SharedParameters& params;
+	int& clientIndex;
+	int& accountIndex;
+	int& characterIndex;
 
 	//members
 	Image image;

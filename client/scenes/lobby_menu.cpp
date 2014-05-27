@@ -30,10 +30,18 @@
 //Public access members
 //-------------------------
 
-LobbyMenu::LobbyMenu(ConfigUtility* const argConfig, UDPNetworkUtility* const argNetwork, SharedParameters* const argParams):
+LobbyMenu::LobbyMenu(
+	ConfigUtility* const argConfig,
+	UDPNetworkUtility* const argNetwork,
+	int* const argClientIndex,
+	int* const argAccountIndex,
+	int* const argCharacterIndex
+	):
 	config(*argConfig),
 	network(*argNetwork),
-	params(*argParams)
+	clientIndex(*argClientIndex),
+	accountIndex(*argAccountIndex),
+	characterIndex(*argCharacterIndex)
 {
 	//setup the utility objects
 	image.LoadSurface(config["dir.interface"] + "button_menu.bmp");
@@ -220,9 +228,9 @@ void LobbyMenu::HandlePacket(SerialPacket packet) {
 		}
 		break;
 		case SerialPacket::Type::JOIN_RESPONSE:
-			params.clientIndex = packet.clientInfo.clientIndex;
-			params.accountIndex = packet.clientInfo.accountIndex;
-			params.characterIndex = packet.clientInfo.characterIndex;
+			clientIndex = packet.clientInfo.clientIndex;
+			accountIndex = packet.clientInfo.accountIndex;
+			characterIndex = packet.clientInfo.characterIndex;
 			network.Bind(&packet.meta.srcAddress, Channels::SERVER);
 			SetNextScene(SceneList::INWORLD);
 		break;

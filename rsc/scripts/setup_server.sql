@@ -1,3 +1,4 @@
+--TODO: Rename the SQL's tables, for consistency
 -------------------------
 --Server
 -------------------------

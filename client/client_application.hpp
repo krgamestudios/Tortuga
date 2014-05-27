@@ -25,9 +25,13 @@
 #include "scene_list.hpp"
 #include "base_scene.hpp"
 
-#include "shared_parameters.hpp"
 #include "config_utility.hpp"
 #include "udp_network_utility.hpp"
+#include "character_data.hpp"
+#include "combat_data.hpp"
+#include "enemy_data.hpp"
+
+#include <map>
 
 class ClientApplication {
 public:
@@ -48,7 +52,13 @@ private:
 	//shared parameters
 	ConfigUtility config;
 	UDPNetworkUtility network;
-	SharedParameters params;
+	int clientIndex = -1;
+	int accountIndex = -1;
+	int characterIndex = -1;
+
+	std::map<int, CharacterData> characterMap;
+	std::map<int, CombatData> combatMap;
+	std::map<int, EnemyData> enemyMap;
 };
 
 #endif

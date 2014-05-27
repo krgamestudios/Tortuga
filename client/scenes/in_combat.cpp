@@ -25,10 +25,18 @@
 //Public access members
 //-------------------------
 
-InCombat::InCombat(ConfigUtility* const argConfig, UDPNetworkUtility* const argNetwork, SharedParameters* const argParams):
+InCombat::InCombat(
+	ConfigUtility* const argConfig,
+	UDPNetworkUtility* const argNetwork,
+	int* const argClientIndex,
+	int* const argAccountIndex,
+	int* const argCharacterIndex
+	):
 	config(*argConfig),
 	network(*argNetwork),
-	params(*argParams)
+	clientIndex(*argClientIndex),
+	accountIndex(*argAccountIndex),
+	characterIndex(*argCharacterIndex)
 {
 	//
 }
@@ -53,6 +61,13 @@ void InCombat::FrameEnd() {
 	//
 }
 
+void InCombat::RenderFrame() {
+	SDL_FillRect(GetScreen(), 0, 0);
+	Render(GetScreen());
+	SDL_Flip(GetScreen());
+	fps.Calculate();
+}
+
 void InCombat::Render(SDL_Surface* const screen) {
 	//
 }
@@ -62,7 +77,9 @@ void InCombat::Render(SDL_Surface* const screen) {
 //-------------------------
 
 void InCombat::QuitEvent() {
-	//
+	//exit the game AND the server
+	RequestDisconnect();
+	SetNextScene(SceneList::MAINMENU);
 }
 
 void InCombat::MouseMotion(SDL_MouseMotionEvent const& motion) {
@@ -89,6 +106,14 @@ void InCombat::KeyUp(SDL_KeyboardEvent const& key) {
 	//
 }
 
-void InCombat::HandlePacket(SerialPacket& packet) {
-	//
-}
+//-------------------------
+//Network handlers
+//-------------------------
+
+//TODO: network handlers
+
+//-------------------------
+//Server control
+//-------------------------
+
+//TODO: server control

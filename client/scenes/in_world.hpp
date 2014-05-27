@@ -44,7 +44,6 @@
 
 //client
 #include "base_scene.hpp"
-#include "shared_parameters.hpp"
 
 //STL
 #include <map>
@@ -52,7 +51,13 @@
 class InWorld : public BaseScene {
 public:
 	//Public access members
-	InWorld(ConfigUtility* const, UDPNetworkUtility* const, SharedParameters* const);
+	InWorld(
+		ConfigUtility* const argConfig,
+		UDPNetworkUtility* const argNetwork,
+		int* const argClientIndex,
+		int* const argAccountIndex,
+		int* const argCharacterIndex
+	);
 	~InWorld();
 
 protected:
@@ -91,7 +96,9 @@ protected:
 	//shared parameters
 	ConfigUtility& config;
 	UDPNetworkUtility& network;
-	SharedParameters& params;
+	int& clientIndex;
+	int& accountIndex;
+	int& characterIndex;
 
 	//graphics
 	Image buttonImage;
@@ -114,7 +121,7 @@ protected:
 	FrameRate fps;
 
 	//game
-	PlayerCharacter* localCharacter = nullptr;
+	CharacterData* localCharacter = nullptr;
 };
 
 #endif

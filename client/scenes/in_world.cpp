@@ -31,10 +31,18 @@
 //Public access members
 //-------------------------
 
-InWorld::InWorld(ConfigUtility* const argConfig, UDPNetworkUtility* const argNetwork, SharedParameters* const argParams):
+InWorld::InWorld(
+	ConfigUtility* const argConfig,
+	UDPNetworkUtility* const argNetwork,
+	int* const argClientIndex,
+	int* const argAccountIndex,
+	int* const argCharacterIndex
+	):
 	config(*argConfig),
 	network(*argNetwork),
-	params(*argParams)
+	clientIndex(*argClientIndex),
+	accountIndex(*argAccountIndex),
+	characterIndex(*argCharacterIndex)
 {
 	//setup the utility objects
 	buttonImage.LoadSurface(config["dir.interface"] + "button_menu.bmp");
@@ -66,9 +74,9 @@ InWorld::InWorld(ConfigUtility* const argConfig, UDPNetworkUtility* const argNet
 	SerialPacket packet;
 	char buffer[PACKET_STRING_SIZE];
 	packet.meta.type = SerialPacket::Type::SYNCHRONIZE;
-	packet.clientInfo.clientIndex = params.clientIndex;
-	packet.clientInfo.accountIndex = params.accountIndex;
-	packet.clientInfo.characterIndex = params.characterIndex;
+	packet.clientInfo.clientIndex = clientIndex;
+	packet.clientInfo.accountIndex = accountIndex;
+	packet.clientInfo.characterIndex = characterIndex;
 	serialize(&packet, buffer);
 	network.Send(Channels::SERVER, buffer, PACKET_BUFFER_SIZE);
 
@@ -272,9 +280,9 @@ void InWorld::HandlePacket(SerialPacket packet) {
 
 void InWorld::HandleDisconnect(SerialPacket packet) {
 	network.Unbind(Channels::SERVER);
-	params.clientIndex = -1;
-	params.accountIndex = -1;
-	params.characterIndex = -1;
+	clientIndex = -1;
+	accountIndex = -1;
+	characterIndex = -1;
 	SetNextScene(SceneList::MAINMENU);
 }
 
@@ -292,7 +300,7 @@ void InWorld::HandleCharacterUpdate(SerialPacket packet) {
 	}
 
 	//update only if the message didn't originate from here
-	if (packet.characterInfo.clientIndex != params.clientIndex) {
+	if (packet.characterInfo.clientIndex != clientIndex) {
 		playerCharacters[packet.characterInfo.characterIndex].SetPosition(packet.characterInfo.position);
 		playerCharacters[packet.characterInfo.characterIndex].SetMotion(packet.characterInfo.motion);
 	}
@@ -312,8 +320,8 @@ void InWorld::HandleCharacterNew(SerialPacket packet) {
 	playerCharacters[packet.characterInfo.characterIndex].ResetDirection();
 
 	//catch this client's player object
-	if (packet.characterInfo.characterIndex == params.characterIndex && !localCharacter) {
-		localCharacter = &playerCharacters[params.characterIndex];
+	if (packet.characterInfo.characterIndex == characterIndex && !localCharacter) {
+		localCharacter = &playerCharacters[characterIndex];
 
 		//setup the camera
 		camera.width = GetScreen()->w;
@@ -330,8 +338,8 @@ void InWorld::HandleCharacterDelete(SerialPacket packet) {
 	playerCharacters.erase(packet.characterInfo.characterIndex);
 
 	//catch this client's player object
-	if (packet.characterInfo.characterIndex == params.characterIndex) {
-		params.characterIndex = -1;
+	if (packet.characterInfo.characterIndex == characterIndex) {
+		characterIndex = -1;
 		localCharacter = nullptr;
 	}
 }
@@ -346,9 +354,9 @@ void InWorld::SendPlayerUpdate() {
 
 	//pack the packet
 	packet.meta.type = SerialPacket::Type::CHARACTER_UPDATE;
-	packet.characterInfo.clientIndex = params.clientIndex;
-	packet.characterInfo.accountIndex = params.accountIndex;
-	packet.characterInfo.characterIndex = params.characterIndex;
+	packet.characterInfo.clientIndex = clientIndex;
+	packet.characterInfo.accountIndex = accountIndex;
+	packet.characterInfo.characterIndex = characterIndex;
 	packet.characterInfo.position = localCharacter->GetPosition();
 	packet.characterInfo.motion = localCharacter->GetMotion();
 
@@ -362,9 +370,9 @@ void InWorld::RequestDisconnect() {
 
 	//send a disconnect request
 	packet.meta.type = SerialPacket::Type::DISCONNECT;
-	packet.clientInfo.clientIndex = params.clientIndex;
-	packet.clientInfo.accountIndex = params.accountIndex;
-	packet.clientInfo.characterIndex = params.characterIndex;
+	packet.clientInfo.clientIndex = clientIndex;
+	packet.clientInfo.accountIndex = accountIndex;
+	packet.clientInfo.characterIndex = characterIndex;
 	serialize(&packet, buffer);
 	network.Send(Channels::SERVER, buffer, PACKET_BUFFER_SIZE);
 }
@@ -375,9 +383,9 @@ void InWorld::RequestShutDown() {
 
 	//send a shutdown request
 	packet.meta.type = SerialPacket::Type::SHUTDOWN;
-	packet.clientInfo.clientIndex = params.clientIndex;
-	packet.clientInfo.accountIndex = params.accountIndex;
-	packet.clientInfo.characterIndex = params.characterIndex;
+	packet.clientInfo.clientIndex = clientIndex;
+	packet.clientInfo.accountIndex = accountIndex;
+	packet.clientInfo.characterIndex = characterIndex;
 	serialize(&packet, buffer);
 	network.Send(Channels::SERVER, buffer, PACKET_BUFFER_SIZE);
 }

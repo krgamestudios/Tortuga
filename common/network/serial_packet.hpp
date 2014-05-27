@@ -72,6 +72,8 @@ union SerialPacket {
 		COMBAT_ENTER,
 		COMBAT_EXIT,
 
+		COMBAT_UPDATE,
+
 		COMBAT_REJECTION,
 
 		//character data
