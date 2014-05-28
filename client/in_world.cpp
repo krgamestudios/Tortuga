@@ -73,16 +73,8 @@ InWorld::InWorld(
 	//TODO: add the tilesheet to the map system?
 	tileSheet.Load(config["dir.tilesets"] + "terrain.bmp", 12, 15);
 
-	//TODO: move this into it's own function
 	//request a sync
-	SerialPacket packet;
-	char buffer[PACKET_STRING_SIZE];
-	packet.meta.type = SerialPacket::Type::SYNCHRONIZE;
-	packet.clientInfo.clientIndex = clientIndex;
-	packet.clientInfo.accountIndex = accountIndex;
-	packet.clientInfo.characterIndex = characterIndex;
-	serialize(&packet, buffer);
-	network.Send(Channels::SERVER, buffer, PACKET_BUFFER_SIZE);
+	RequestSynchronize();
 
 	//debug
 //	RequestRegion(0, 0);
@@ -114,7 +106,6 @@ void InWorld::Update(double delta) {
 	for (auto& it : characterMap) {
 		it.second.Update(delta);
 	}
-	//TODO: sort the players and entities by Y position
 
 	//update the camera
 	if(localCharacter) {
@@ -145,6 +136,7 @@ void InWorld::Render(SDL_Surface* const screen) {
 
 	//draw characters
 	for (auto& it : characterMap) {
+		//TODO: drawing order according to Y position
 		it.second.DrawTo(screen, camera.x, camera.y);
 	}
 
@@ -316,20 +308,29 @@ void InWorld::HandleCharacterNew(SerialPacket packet) {
 		throw(std::runtime_error("Cannot create duplicate characters"));
 	}
 
-	//TODO: set the player's handle
-	//TODO: use a reference, don't use a lookup for every call
-	characterMap[packet.characterInfo.characterIndex].sprite.LoadSurface(config["dir.sprites"] + packet.characterInfo.avatar, 4, 4);
-	characterMap[packet.characterInfo.characterIndex].position = packet.characterInfo.position;
-	characterMap[packet.characterInfo.characterIndex].motion = packet.characterInfo.motion;
-	characterMap[packet.characterInfo.characterIndex].CorrectSprite();
+	//create the character object
+	CharacterData& character = characterMap[packet.characterInfo.characterIndex];
+
+	//set the members
+	character.handle = packet.characterInfo.handle;
+	character.avatar = packet.characterInfo.avatar;
+	character.sprite.LoadSurface(config["dir.sprites"] + character.avatar, 4, 4);
+	character.mapIndex = packet.characterInfo.mapIndex;
+	character.position = packet.characterInfo.position;
+	character.motion = packet.characterInfo.motion;
+	character.stats = packet.characterInfo.stats;
+
+	character.CorrectSprite();
 
 	//catch this client's player object
 	if (packet.characterInfo.characterIndex == characterIndex && !localCharacter) {
-		localCharacter = &characterMap[characterIndex];
+		localCharacter = &character;
 
 		//setup the camera
+		//TODO: can't change the screen size
 		camera.width = GetScreen()->w;
 		camera.height = GetScreen()->h;
+
 		//center on the player's character
 		camera.marginX = (GetScreen()->w / 2 - localCharacter->sprite.GetImage()->GetClipW() / 2);
 		camera.marginY = (GetScreen()->h / 2 - localCharacter->sprite.GetImage()->GetClipH() / 2);
@@ -337,20 +338,33 @@ void InWorld::HandleCharacterNew(SerialPacket packet) {
 }
 
 void InWorld::HandleCharacterDelete(SerialPacket packet) {
-	//TODO: authenticate when own character is being deleted
-
-	characterMap.erase(packet.characterInfo.characterIndex);
-
+	//TODO: authenticate when own character is being deleted (linked to a TODO in the server)
 	//catch this client's player object
 	if (packet.characterInfo.characterIndex == characterIndex) {
 		characterIndex = -1;
 		localCharacter = nullptr;
 	}
+
+	characterMap.erase(packet.characterInfo.characterIndex);
 }
 
 //-------------------------
 //Server control
 //-------------------------
+
+void InWorld::RequestSynchronize() {
+	SerialPacket packet;
+	char buffer[PACKET_STRING_SIZE];
+
+	//request a sync
+	packet.meta.type = SerialPacket::Type::SYNCHRONIZE;
+	packet.clientInfo.clientIndex = clientIndex;
+	packet.clientInfo.accountIndex = accountIndex;
+	packet.clientInfo.characterIndex = characterIndex;
+
+	serialize(&packet, buffer);
+	network.Send(Channels::SERVER, buffer, PACKET_BUFFER_SIZE);
+}
 
 void InWorld::SendPlayerUpdate() {
 	SerialPacket packet;

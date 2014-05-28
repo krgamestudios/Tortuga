@@ -30,10 +30,10 @@
 //-------------------------
 
 //TODO: save and load the statistics
-static const char* CREATE_CHARACTER = "INSERT INTO PlayerCharacters (owner, handle, avatar) VALUES (?, ?, ?);";
-static const char* LOAD_CHARACTER = "SELECT * FROM PlayerCharacters WHERE handle = ?;";
-static const char* SAVE_CHARACTER = "UPDATE OR FAIL PlayerCharacters SET mapIndex = ?2, positionX = ?3, positionY = ?4 WHERE uid = ?1;";
-static const char* DELETE_CHARACTER = "DELETE FROM PlayerCharacters WHERE uid = ?;";
+static const char* CREATE_CHARACTER = "INSERT INTO Characters (owner, handle, avatar) VALUES (?, ?, ?);";
+static const char* LOAD_CHARACTER = "SELECT * FROM Characters WHERE handle = ?;";
+static const char* SAVE_CHARACTER = "UPDATE OR FAIL Characters SET mapIndex = ?2, positionX = ?3, positionY = ?4 WHERE uid = ?1;";
+static const char* DELETE_CHARACTER = "DELETE FROM Characters WHERE uid = ?;";
 
 //-------------------------
 //Define the methods

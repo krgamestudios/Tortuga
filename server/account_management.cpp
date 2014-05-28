@@ -29,10 +29,10 @@
 //Define the queries
 //-------------------------
 
-static const char* CREATE_USER_ACCOUNT = "INSERT INTO UserAccounts (username) VALUES (?);";
-static const char* LOAD_USER_ACCOUNT = "SELECT * FROM UserAccounts WHERE username = ?;";
-static const char* SAVE_USER_ACCOUNT = "UPDATE OR FAIL UserAccounts SET blacklisted = ?2, whitelisted = ?3 WHERE uid = ?1;";
-static const char* DELETE_USER_ACCOUNT = "DELETE FROM UserAccounts WHERE uid = ?;";
+static const char* CREATE_USER_ACCOUNT = "INSERT INTO Accounts (username) VALUES (?);";
+static const char* LOAD_USER_ACCOUNT = "SELECT * FROM Accounts WHERE username = ?;";
+static const char* SAVE_USER_ACCOUNT = "UPDATE OR FAIL Accounts SET blacklisted = ?2, whitelisted = ?3 WHERE uid = ?1;";
+static const char* DELETE_USER_ACCOUNT = "DELETE FROM Accounts WHERE uid = ?;";
 
 //-------------------------
 //Define the methods

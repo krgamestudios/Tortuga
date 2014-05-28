@@ -90,6 +90,7 @@ protected:
 	void HandleRegionContent(SerialPacket);
 
 	//Server control
+	void RequestSynchronize();
 	void SendPlayerUpdate();
 	void RequestDisconnect();
 	void RequestShutDown();
@@ -111,7 +112,6 @@ protected:
 	Image buttonImage;
 	RasterFont font;
 	TileSheet tileSheet;
-	//TODO: sprites
 
 	//map
 	RegionPager<BlankAllocator, DummyFormat> regionPager;
@@ -119,7 +119,7 @@ protected:
 	//UI
 	Button disconnectButton;
 	Button shutDownButton;
-	//TODO: Fix the camera
+	//TODO: Review the camera
 	struct {
 		int x = 0, y = 0;
 		int width = 0, height = 0;

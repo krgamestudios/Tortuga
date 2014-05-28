@@ -1,57 +1,18 @@
---TODO: Rename the SQL's tables, for consistency
--------------------------
---Server
--------------------------
-
-CREATE TABLE IF NOT EXISTS UserAccounts (
+CREATE TABLE IF NOT EXISTS Accounts (
 	uid INTEGER PRIMARY KEY AUTOINCREMENT,
 	username varchar(100) UNIQUE,
 	--TODO: server-client security
 --	password varchar(100),
 	blacklisted BIT DEFAULT 0,
-	whitelisted BIT DEFAULT 1
---	TODO: moderator
+	whitelisted BIT DEFAULT 1,
+	administrator BIT DEFAULT 0
 );
 
--------------------------
---Items
--------------------------
-
-CREATE TABLE IF NOT EXISTS MundaneItems (
-	--metadata
-	uid INTEGER PRIMARY KEY AUTOINCREMENT,
-	itemID INTEGER,
-	stackSize INTEGER DEFAULT 0,
-	owner INTEGER REFERENCES PlayerCharacters(uid)
-);
-
-CREATE TABLE IF NOT EXISTS Consumables (
-	--metadata
-	uid INTEGER PRIMARY KEY AUTOINCREMENT,
-	itemID INTEGER,
-	stackSize INTEGER DEFAULT 0,
-	owner INTEGER REFERENCES PlayerCharacters(uid)
-	--holds all consumable items info (food, potions, etc.)
-);
-
-CREATE TABLE IF NOT EXISTS Equipment (
-	--metadata
-	uid INTEGER PRIMARY KEY AUTOINCREMENT,
-	itemID INTEGER,
-	owner INTEGER REFERENCES PlayerCharacters(uid)
-	--hold all equipment info
-	--stat mods, special effects, etc.
-);
-
--------------------------
---Players
--------------------------
-
-CREATE TABLE IF NOT EXISTS PlayerCharacters (
+CREATE TABLE IF NOT EXISTS Characters (
 	uid INTEGER PRIMARY KEY AUTOINCREMENT,
 
 	--metadata
-	owner INTEGER REFERENCES UserAccounts(uid),
+	owner INTEGER REFERENCES Accounts(uid),
 	handle varchar(100) UNIQUE,
 	avatar varchar(100),
 	birth timestamp NOT NULL DEFAULT (datetime()),
@@ -78,8 +39,25 @@ CREATE TABLE IF NOT EXISTS PlayerCharacters (
 	luck			REAL DEFAULT 0.0,
 
 	--equipment
-	weapon INTEGER REFERENCES Equipment(uid),
-	helmet INTEGER REFERENCES Equipment(uid),
-	armour INTEGER REFERENCES Equipment(uid)
+	weapon INTEGER REFERENCES WornEquipment(uid),
+	helmet INTEGER REFERENCES WornEquipment(uid),
+	armour INTEGER REFERENCES WornEquipment(uid)
 	--etc.
+);
+
+CREATE TABLE IF NOT EXISTS InventoryItems (
+	--metadata
+	uid INTEGER PRIMARY KEY AUTOINCREMENT,
+	itemID INTEGER, --type
+	stackSize INTEGER DEFAULT 0,
+	owner INTEGER REFERENCES Characters(uid)
+);
+
+CREATE TABLE IF NOT EXISTS WornEquipment (
+	--metadata
+	uid INTEGER PRIMARY KEY AUTOINCREMENT,
+	itemID INTEGER, --type
+	owner INTEGER REFERENCES Characters(uid)
+	--hold all equipment info
+	--stat mods, special effects, etc.
 );

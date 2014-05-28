@@ -106,6 +106,8 @@ void ServerApplication::HandleSynchronize(SerialPacket packet) {
 		newPacket.characterInfo.mapIndex = it.second.mapIndex;
 		newPacket.characterInfo.position = it.second.position;
 		newPacket.characterInfo.motion = it.second.motion;
+		newPacket.characterInfo.stats = it.second.stats;
+
 		serialize(&newPacket, buffer);
 		network.Send(&clientMap[packet.clientInfo.clientIndex].address, buffer, PACKET_BUFFER_SIZE);
 	}

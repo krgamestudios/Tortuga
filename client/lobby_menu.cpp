@@ -100,8 +100,8 @@ void LobbyMenu::FrameEnd() {
 }
 
 void LobbyMenu::Render(SDL_Surface* const screen) {
-	//TODO: this needs rewriting
 	//TODO: I need a proper UI system for the entire client and the editor
+
 	//UI
 	search.DrawTo(screen);
 	join.DrawTo(screen);
@@ -127,7 +127,7 @@ void LobbyMenu::Render(SDL_Surface* const screen) {
 			font.DrawStringTo("?", screen, listBox.x - font.GetCharW(), listBox.y + i*listBox.h);
 		}
 
-		//ping?
+		//TODO: ping/delay?
 	}
 }
 
