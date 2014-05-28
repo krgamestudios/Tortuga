@@ -1,4 +1,4 @@
-/* Copyright: (c) Kayne Ruse 2013
+/* Copyright: (c) Kayne Ruse 2013, 2014
  * 
  * This software is provided 'as-is', without any express or implied
  * warranty. In no event will the authors be held liable for any damages
@@ -19,33 +19,30 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef SPLASHSCREEN_HPP_
-#define SPLASHSCREEN_HPP_
+#ifndef UTILITY_HPP_
+#define UTILITY_HPP_
 
-#include "base_scene.hpp"
+#include <string>
 
-#include "config_utility.hpp"
-#include "image.hpp"
+int snapToBase(int base, int x);
+std::string truncatePath(std::string pathname);
 
-#include <chrono>
+//fixing known bugs in g++
+std::string to_string_custom(int i);
 
-class SplashScreen : public BaseScene {
-public:
-	//Public access members
-	SplashScreen(ConfigUtility* const);
-	~SplashScreen();
+int to_integer_custom(std::string);
 
-protected:
-	//Frame loop
-	void Update(double delta);
-	void Render(SDL_Surface* const);
-
-	//shared parameters
-	ConfigUtility& config;
-
-	//members
-	std::chrono::steady_clock::time_point startTick;
-	Image logo;
+//wow
+template<typename ContainerT, typename PredicateT>
+void erase_if(ContainerT& items, const PredicateT& predicate) {
+	for(auto it = items.begin(); it != items.end(); /* empty */) {
+		if(predicate(*it)) {
+			it = items.erase(it);
+		}
+		else {
+			++it;
+		}
+	}
 };
 
 #endif

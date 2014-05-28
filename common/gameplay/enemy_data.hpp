@@ -1,4 +1,4 @@
-/* Copyright: (c) Kayne Ruse 2013, 2014
+/* Copyright: (c) Kayne Ruse 2014
  * 
  * This software is provided 'as-is', without any express or implied
  * warranty. In no event will the authors be held liable for any damages
@@ -19,27 +19,40 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#include "server_application.hpp"
+#ifndef ENEMYDATA_HPP_
+#define ENEMYDATA_HPP_
 
-#include "SDL/SDL.h"
+//gameplay
+#include "statistics.hpp"
 
-#include <stdexcept>
-#include <iostream>
+//graphics
+#ifdef GRAPHICS
+ #include "sprite_sheet.hpp"
+#endif
 
-using namespace std;
+//std namespace
+#include <string>
 
-int main(int argc, char** argv) {
-	cout << "Beginning server" << endl;
-	try {
-		ServerApplication app;
-		app.Init(argc, argv);
-		app.Proc();
-		app.Quit();
-	}
-	catch(exception& e) {
-		cerr << "Fatal error: " << e.what() << endl;
-		return 1;
-	}
-	cout << "Clean exit" << endl;
-	return 0;
-}
+struct EnemyData {
+	//metadata
+	std::string handle;
+	std::string avatar;
+
+	//gameplay
+	Statistics stats;
+
+	//TODO: equipment
+	//TODO: items
+	//TODO: buffs
+	//TODO: debuffs
+
+	//active gameplay members
+	//NOTE: these are lost when unloaded
+#ifdef GRAPHICS
+	SpriteSheet sprite;
+#endif
+	int tableIndex;
+	int atbGauge = 0;
+};
+
+#endif

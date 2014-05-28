@@ -1,4 +1,4 @@
-/* Copyright: (c) Kayne Ruse 2013
+/* Copyright: (c) Kayne Ruse 2013, 2014
  * 
  * This software is provided 'as-is', without any express or implied
  * warranty. In no event will the authors be held liable for any damages
@@ -29,8 +29,6 @@
 
 //networking
 #include "udp_network_utility.hpp"
-#include "serial_packet.hpp"
-#include "serial.hpp"
 
 //graphics
 #include "image.hpp"
@@ -42,9 +40,11 @@
 #include "config_utility.hpp"
 #include "frame_rate.hpp"
 
+#include "combat_data.hpp"
+#include "character_data.hpp"
+
 //client
 #include "base_scene.hpp"
-#include "player_character.hpp"
 
 //STL
 #include <map>
@@ -52,7 +52,15 @@
 class InWorld : public BaseScene {
 public:
 	//Public access members
-	InWorld(ConfigUtility* const, UDPNetworkUtility* const, int* const, int* const, int* const);
+	InWorld(
+		ConfigUtility* const argConfig,
+		UDPNetworkUtility* const argNetwork,
+		int* const argClientIndex,
+		int* const argAccountIndex,
+		int* const argCharacterIndex,
+		std::map<int, CombatData>* argCombatMap,
+		std::map<int, CharacterData>* argCharacterMap
+	);
 	~InWorld();
 
 protected:
@@ -80,6 +88,7 @@ protected:
 	void HandleRegionContent(SerialPacket);
 
 	//Server control
+	void RequestSynchronize();
 	void SendPlayerUpdate();
 	void RequestDisconnect();
 	void RequestShutDown();
@@ -94,6 +103,8 @@ protected:
 	int& clientIndex;
 	int& accountIndex;
 	int& characterIndex;
+	std::map<int, CombatData>& combatMap;
+	std::map<int, CharacterData>& characterMap;
 
 	//graphics
 	Image buttonImage;
@@ -106,7 +117,7 @@ protected:
 	//UI
 	Button disconnectButton;
 	Button shutDownButton;
-	//TODO: Fix the camera
+	//TODO: Review the camera
 	struct {
 		int x = 0, y = 0;
 		int width = 0, height = 0;
@@ -115,8 +126,7 @@ protected:
 	FrameRate fps;
 
 	//game
-	std::map<int, PlayerCharacter> playerCharacters;
-	PlayerCharacter* localCharacter = nullptr;
+	CharacterData* localCharacter = nullptr;
 };
 
 #endif

@@ -1,4 +1,4 @@
-/* Copyright: (c) Kayne Ruse 2013
+/* Copyright: (c) Kayne Ruse 2013, 2014
  * 
  * This software is provided 'as-is', without any express or implied
  * warranty. In no event will the authors be held liable for any damages
@@ -19,42 +19,45 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef CONFIGUTILITY_HPP_
-#define CONFIGUTILITY_HPP_
+#ifndef MAINMENU_HPP_
+#define MAINMENU_HPP_
 
-#include <map>
-#include <string>
+#include "base_scene.hpp"
 
-class ConfigUtility {
+#include "config_utility.hpp"
+#include "image.hpp"
+#include "raster_font.hpp"
+#include "button.hpp"
+
+class MainMenu : public BaseScene {
 public:
-	ConfigUtility() = default;
-	ConfigUtility(std::string s) { Load(s); }
+	//Public access members
+	MainMenu(ConfigUtility* const);
+	~MainMenu();
 
-	void Load(std::string fname);
+protected:
+	//Frame loop
+	void FrameStart();
+	void Update(double delta);
+	void FrameEnd();
+	void Render(SDL_Surface* const);
 
-	//convert to a type
-	std::string& String(std::string);
-	int Integer(std::string);
-	double Double(std::string);
-	bool Boolean(std::string);
+	//Event handlers
+	void MouseMotion(SDL_MouseMotionEvent const&);
+	void MouseButtonDown(SDL_MouseButtonEvent const&);
+	void MouseButtonUp(SDL_MouseButtonEvent const&);
+	void KeyDown(SDL_KeyboardEvent const&);
+	void KeyUp(SDL_KeyboardEvent const&);
 
-	//shorthand
-	std::string& operator[](std::string s) {
-		return String(s);
-	}
-	int Int(std::string s) {
-		return Integer(s);
-	}
-	bool Bool(std::string s) {
-		return Boolean(s);
-	}
+	//shared parameters
+	ConfigUtility& config;
 
-	//OO breaker
-	std::map<std::string, std::string>* GetMap() {
-		return &table;
-	}
-private:
-	std::map<std::string, std::string> table;
+	//members
+	Image image;
+	RasterFont font;
+	Button startButton;
+	Button optionsButton;
+	Button quitButton;
 };
 
 #endif

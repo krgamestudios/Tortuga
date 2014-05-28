@@ -1,4 +1,4 @@
-/* Copyright: (c) Kayne Ruse 2013
+/* Copyright: (c) Kayne Ruse 2014
  * 
  * This software is provided 'as-is', without any express or implied
  * warranty. In no event will the authors be held liable for any damages
@@ -19,43 +19,13 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef OPTIONSMENU_HPP_
-#define OPTIONSMENU_HPP_
+#ifndef CLIENTDATA_HPP_
+#define CLIENTDATA_HPP_
 
-#include "base_scene.hpp"
+#include "SDL/SDL_net.h"
 
-#include "config_utility.hpp"
-#include "image.hpp"
-#include "raster_font.hpp"
-#include "button.hpp"
-
-class OptionsMenu : public BaseScene {
-public:
-	//Public access members
-	OptionsMenu(ConfigUtility* const);
-	~OptionsMenu();
-
-protected:
-	//Frame loop
-	void FrameStart();
-	void Update(double delta);
-	void FrameEnd();
-	void Render(SDL_Surface* const);
-
-	//Event handlers
-	void MouseMotion(SDL_MouseMotionEvent const&);
-	void MouseButtonDown(SDL_MouseButtonEvent const&);
-	void MouseButtonUp(SDL_MouseButtonEvent const&);
-	void KeyDown(SDL_KeyboardEvent const&);
-	void KeyUp(SDL_KeyboardEvent const&);
-
-	//shared parameters
-	ConfigUtility& config;
-
-	//members
-	Image image;
-	RasterFont font;
-	Button backButton;
+struct ClientData {
+	IPaddress address = {0,0};
 };
 
 #endif

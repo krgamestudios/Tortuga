@@ -1,4 +1,4 @@
-/* Copyright: (c) Kayne Ruse 2013
+/* Copyright: (c) Kayne Ruse 2013, 2014
  * 
  * This software is provided 'as-is', without any express or implied
  * warranty. In no event will the authors be held liable for any damages
@@ -19,33 +19,43 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#include "splash_screen.hpp"
+#ifndef OPTIONSMENU_HPP_
+#define OPTIONSMENU_HPP_
 
-//-------------------------
-//Public access members
-//-------------------------
+#include "base_scene.hpp"
 
-SplashScreen::SplashScreen(ConfigUtility* const argConfig):
-	config(*argConfig)
-{
-	logo.LoadSurface(config["dir.logos"] + "krstudios.bmp");
-	startTick = std::chrono::steady_clock::now();
-}
+#include "config_utility.hpp"
+#include "image.hpp"
+#include "raster_font.hpp"
+#include "button.hpp"
 
-SplashScreen::~SplashScreen() {
-	//
-}
+class OptionsMenu : public BaseScene {
+public:
+	//Public access members
+	OptionsMenu(ConfigUtility* const);
+	~OptionsMenu();
 
-//-------------------------
-//Frame loop
-//-------------------------
+protected:
+	//Frame loop
+	void FrameStart();
+	void Update(double delta);
+	void FrameEnd();
+	void Render(SDL_Surface* const);
 
-void SplashScreen::Update(double delta) {
-	if (std::chrono::steady_clock::now() - startTick > std::chrono::duration<int>(1)) {
-		SetNextScene(SceneList::MAINMENU);
-	}
-}
+	//Event handlers
+	void MouseMotion(SDL_MouseMotionEvent const&);
+	void MouseButtonDown(SDL_MouseButtonEvent const&);
+	void MouseButtonUp(SDL_MouseButtonEvent const&);
+	void KeyDown(SDL_KeyboardEvent const&);
+	void KeyUp(SDL_KeyboardEvent const&);
 
-void SplashScreen::Render(SDL_Surface* const screen) {
-	logo.DrawTo(screen, (screen->w - logo.GetClipW()) / 2, (screen->h - logo.GetClipH()) / 2);
-}
+	//shared parameters
+	ConfigUtility& config;
+
+	//members
+	Image image;
+	RasterFont font;
+	Button backButton;
+};
+
+#endif

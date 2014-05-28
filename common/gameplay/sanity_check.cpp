@@ -19,41 +19,18 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef ENEMYDATA_HPP_
-#define ENEMYDATA_HPP_
+#include "account_data.hpp"
+#include "character_data.hpp"
+#include "client_data.hpp"
+#include "combat_data.hpp"
+#include "enemy_data.hpp"
+#include "statistics.hpp"
 
-#include <string>
-
-struct EnemyData {
-	//metadata
-	std::string handle;
-	std::string avatar;
-
-	//statistics
-	int level = 0;
-	int exp = 0;
-	int maxHP = 0;
-	int health = 0;
-	int maxMP = 0;
-	int mana = 0;
-	int attack = 0;
-	int defence = 0;
-	int intelligence = 0;
-	int resistance = 0;
-	int speed = 0;
-	float accuracy = 0.0;
-	float evasion = 0.0;
-	float luck = 0.0;
-
-	//TODO: equipment
-	//TODO: items
-	//TODO: buffs
-	//TODO: debuffs
-
-	//active gameplay members
-	//NOTE: these are lost when unloaded
-	int tableIndex;
-	int atbGauge = 0;
-};
-
-#endif
+/* DOCS: Sanity check, read more
+ * Since most/all of the files in this directory are header files, I've created
+ * this source file as a "sanity check", to ensure that the above header files
+ * are written correctly via make.
+ * 
+ * Oddly enough, I'm pretty sure this is the first directory compiled in a
+ * clean build.
+*/

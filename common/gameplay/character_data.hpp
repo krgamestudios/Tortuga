@@ -25,8 +25,20 @@
 //POD members
 #include "bbox.hpp"
 #include "vector2.hpp"
+#include "statistics.hpp"
 
+//graphics
+#ifdef GRAPHICS
+ #include "sprite_sheet.hpp"
+#endif
+
+//std namespace
 #include <string>
+#include <cmath>
+
+//the speeds that the characters move
+constexpr double CHARACTER_WALKING_SPEED = 140.0;
+constexpr double CHARACTER_WALKING_MOD = 1.0/sqrt(2.0);
 
 struct CharacterData {
 	//metadata
@@ -40,28 +52,25 @@ struct CharacterData {
 	Vector2 motion = {0.0,0.0};
 
 	//base statistics
-	int level = 0;
-	int exp = 0;
-	int maxHP = 0;
-	int health = 0;
-	int maxMP = 0;
-	int mana = 0;
-	int attack = 0;
-	int defence = 0;
-	int intelligence = 0;
-	int resistance = 0;
-	int speed = 0;
-	float accuracy = 0.0;
-	float evasion = 0.0;
-	float luck = 0.0;
+	Statistics stats;
 
 	//TODO: equipment
 	//TODO: items
 	//TODO: buffs
 	//TODO: debuffs
 
+	//methods
+	void Update(double delta);
+#ifdef GRAPHICS
+	void DrawTo(SDL_Surface* const, int camX, int camY);
+	void CorrectSprite();
+#endif
+
 	//active gameplay members
 	//NOTE: these are lost when unloaded
+#ifdef GRAPHICS
+	SpriteSheet sprite;
+#endif
 	BBox bbox = {0,0,0,0};
 	bool inCombat = false;
 	int atbGauge = 0;

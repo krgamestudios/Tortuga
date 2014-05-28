@@ -1,4 +1,4 @@
-/* Copyright: (c) Kayne Ruse 2013
+/* Copyright: (c) Kayne Ruse 2013, 2014
  * 
  * This software is provided 'as-is', without any express or implied
  * warranty. In no event will the authors be held liable for any damages
@@ -19,41 +19,33 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#include "utility.hpp"
+#ifndef SPLASHSCREEN_HPP_
+#define SPLASHSCREEN_HPP_
 
-#include <algorithm>
+#include "base_scene.hpp"
 
-int snapToBase(int base, int x) {
-	//snap to a grid
-	if (x < 0) {
-		x++;
-		return x / base * base - base;
-	}
-	return x / base * base;
-}
+#include "config_utility.hpp"
+#include "image.hpp"
 
-std::string truncatePath(std::string pathname) {
-	return std::string(
-		std::find_if(
-			pathname.rbegin(),
-			pathname.rend(),
-			[](char ch) -> bool {
-				//windows only
-				return ch == '/' || ch == '\\';
-//				//unix only
-//				return ch == '/';
-			}).base(),
-		pathname.end());
-}
+#include <chrono>
 
-std::string to_string_custom(int i) {
-	char buffer[20];
-	snprintf(buffer, 20, "%d", i);
-	return std::string(buffer);
-}
+class SplashScreen : public BaseScene {
+public:
+	//Public access members
+	SplashScreen(ConfigUtility* const);
+	~SplashScreen();
 
-int to_integer_custom(std::string s) {
-	int ret = 0;
-	sscanf(s.c_str(), "%d", &ret);
-	return ret;
-}
+protected:
+	//Frame loop
+	void Update(double delta);
+	void Render(SDL_Surface* const);
+
+	//shared parameters
+	ConfigUtility& config;
+
+	//members
+	std::chrono::steady_clock::time_point startTick;
+	Image logo;
+};
+
+#endif

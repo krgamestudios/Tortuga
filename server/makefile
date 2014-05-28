@@ -1,17 +1,14 @@
 #config
-INCLUDES+=. ../common ../common/map ../common/script ../common/network
+INCLUDES+=. ../common/gameplay ../common/map ../common/network ../common/script ../common/utilities
 LIBS+=../libcommon.a -lSDL_net -lwsock32 -liphlpapi -lmingw32 -lSDLmain -lSDL -llua -lsqlite3
-CXXFLAGS+=-std=c++11 -DDEBUG $(addprefix -I,$(INCLUDES))
-CFLAGS+=-DDEBUG $(addprefix -I,$(INCLUDES))
+CXXFLAGS+=-std=c++11 $(addprefix -I,$(INCLUDES))
 
 #source
 CXXSRC=$(wildcard *.cpp)
-CSRC=$(wildcard *.c)
 
 #objects
 OBJDIR=obj
 OBJ+=$(addprefix $(OBJDIR)/,$(CXXSRC:.cpp=.o))
-OBJ+=$(addprefix $(OBJDIR)/,$(CSRC:.c=.o))
 
 #output
 OUTDIR=../out
@@ -33,9 +30,6 @@ $(OUTDIR):
 
 $(OBJDIR)/%.o: %.cpp
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
-
-$(OBJDIR)/%.o: %.c
-	$(CC) $(CFLAGS) -c -o $@ $<
 
 clean:
 	$(RM) *.o *.a *.exe

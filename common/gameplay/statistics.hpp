@@ -1,4 +1,4 @@
-/* Copyright: (c) Kayne Ruse 2013
+/* Copyright: (c) Kayne Ruse 2014
  * 
  * This software is provided 'as-is', without any express or implied
  * warranty. In no event will the authors be held liable for any damages
@@ -19,30 +19,24 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef INCOMBAT_HPP_
-#define INCOMBAT_HPP_
+#ifndef STATISTICS_HPP_
+#define STATISTICS_HPP_
 
-#include "base_scene.hpp"
-
-class InCombat : public BaseScene {
-public:
-	//Public access members
-	InCombat();
-	~InCombat();
-
-protected:
-	//Frame loop
-	void FrameStart();
-	void Update(double delta);
-	void FrameEnd();
-	void Render(SDL_Surface* const);
-
-	//Event handlers
-	void MouseMotion(SDL_MouseMotionEvent const&);
-	void MouseButtonDown(SDL_MouseButtonEvent const&);
-	void MouseButtonUp(SDL_MouseButtonEvent const&);
-	void KeyDown(SDL_KeyboardEvent const&);
-	void KeyUp(SDL_KeyboardEvent const&);
+struct Statistics {
+	int level = 0;
+	int exp = 0;
+	int maxHP = 0;
+	int health = 0;
+	int maxMP = 0;
+	int mana = 0;
+	int attack = 0;
+	int defence = 0;
+	int intelligence = 0;
+	int resistance = 0;
+	int speed = 0;
+	float accuracy = 0.0;
+	float evasion = 0.0;
+	float luck = 0.0;
 };
 
 #endif

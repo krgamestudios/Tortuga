@@ -22,17 +22,11 @@
 #include "server_application.hpp"
 
 #include "sql_utility.hpp"
+#include "serial.hpp"
 
 #include <stdexcept>
 #include <iostream>
 #include <string>
-
-//-------------------------
-//Define the various UIDs
-//-------------------------
-
-int ClientData::uidCounter = 0;
-int CombatData::uidCounter = 0;
 
 //-------------------------
 //Define the public members
@@ -59,7 +53,7 @@ void ServerApplication::Init(int argc, char** argv) {
 	if (SDLNet_Init()) {
 		throw(std::runtime_error("Failed to initialize SDL_net"));
 	}
-	network.Open(config.Int("server.port"), PACKET_BUFFER_SIZE);
+	network.Open(config.Int("server.port"));
 	std::cout << "Initialized SDL_net" << std::endl;
 
 	//Init SQL
@@ -126,12 +120,7 @@ void ServerApplication::Proc() {
 	SerialPacket packet;
 	while(running) {
 		//suck in the waiting packets & process them
-		while(network.Receive()) {
-			//get the packet
-			deserialize(&packet, network.GetInData());
-			//cache the source address
-			packet.meta.srcAddress = network.GetInPacket()->address;
-			//we need to go deeper
+		while(network.Receive(&packet)) {
 			HandlePacket(packet);
 		}
 		//update the internals

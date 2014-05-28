@@ -1,4 +1,4 @@
-/* Copyright: (c) Kayne Ruse 2014
+/* Copyright: (c) Kayne Ruse 2013, 2014
  * 
  * This software is provided 'as-is', without any express or implied
  * warranty. In no event will the authors be held liable for any damages
@@ -19,14 +19,41 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef CLIENTDATA_HPP_
-#define CLIENTDATA_HPP_
+#include "utility.hpp"
 
-#include "SDL/SDL_net.h"
+#include <algorithm>
 
-struct ClientData {
-	IPaddress address = {0,0};
-	static int uidCounter;
-};
+int snapToBase(int base, int x) {
+	//snap to a grid
+	if (x < 0) {
+		x++;
+		return x / base * base - base;
+	}
+	return x / base * base;
+}
 
-#endif
+std::string truncatePath(std::string pathname) {
+	return std::string(
+		std::find_if(
+			pathname.rbegin(),
+			pathname.rend(),
+			[](char ch) -> bool {
+				//windows only
+				return ch == '/' || ch == '\\';
+//				//unix only
+//				return ch == '/';
+			}).base(),
+		pathname.end());
+}
+
+std::string to_string_custom(int i) {
+	char buffer[20];
+	snprintf(buffer, 20, "%d", i);
+	return std::string(buffer);
+}
+
+int to_integer_custom(std::string s) {
+	int ret = 0;
+	sscanf(s.c_str(), "%d", &ret);
+	return ret;
+}

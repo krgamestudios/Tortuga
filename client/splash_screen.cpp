@@ -1,4 +1,4 @@
-/* Copyright: (c) Kayne Ruse 2013
+/* Copyright: (c) Kayne Ruse 2013, 2014
  * 
  * This software is provided 'as-is', without any express or implied
  * warranty. In no event will the authors be held liable for any damages
@@ -19,17 +19,20 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#include "in_combat.hpp"
+#include "splash_screen.hpp"
 
 //-------------------------
 //Public access members
 //-------------------------
 
-InCombat::InCombat() {
-	//
+SplashScreen::SplashScreen(ConfigUtility* const argConfig):
+	config(*argConfig)
+{
+	logo.LoadSurface(config["dir.logos"] + "krstudios.bmp");
+	startTick = std::chrono::steady_clock::now();
 }
 
-InCombat::~InCombat() {
+SplashScreen::~SplashScreen() {
 	//
 }
 
@@ -37,46 +40,12 @@ InCombat::~InCombat() {
 //Frame loop
 //-------------------------
 
-void InCombat::FrameStart() {
-	//
-}
-
-void InCombat::Update(double delta) {
-	//
-}
-
-void InCombat::FrameEnd() {
-	//
-}
-
-void InCombat::Render(SDL_Surface* const screen) {
-	//
-}
-
-//-------------------------
-//Event handlers
-//-------------------------
-
-void InCombat::MouseMotion(SDL_MouseMotionEvent const& motion) {
-	//
-}
-
-void InCombat::MouseButtonDown(SDL_MouseButtonEvent const& button) {
-	//
-}
-
-void InCombat::MouseButtonUp(SDL_MouseButtonEvent const& button) {
-	//
-}
-
-void InCombat::KeyDown(SDL_KeyboardEvent const& key) {
-	switch(key.keysym.sym) {
-		case SDLK_ESCAPE:
-			QuitEvent();
-			break;
+void SplashScreen::Update(double delta) {
+	if (std::chrono::steady_clock::now() - startTick > std::chrono::duration<int>(1)) {
+		SetNextScene(SceneList::MAINMENU);
 	}
 }
 
-void InCombat::KeyUp(SDL_KeyboardEvent const& key) {
-	//
+void SplashScreen::Render(SDL_Surface* const screen) {
+	logo.DrawTo(screen, (screen->w - logo.GetClipW()) / 2, (screen->h - logo.GetClipH()) / 2);
 }

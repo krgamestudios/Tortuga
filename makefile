@@ -1,4 +1,3 @@
-#TODO: The build process needs revising
 #for use on Windows:
 
 #MKDIR=mkdir

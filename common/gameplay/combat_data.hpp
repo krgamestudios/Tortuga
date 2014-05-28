@@ -22,21 +22,30 @@
 #ifndef COMBATDATA_HPP_
 #define COMBATDATA_HPP_
 
+//POD members
 #include "vector2.hpp"
 #include "bbox.hpp"
 
+//gameplay members
 #include "character_data.hpp"
 #include "enemy_data.hpp"
 
+//graphics
+#ifdef GRAPHICS
+ #include "sprite_sheet.hpp"
+#endif
+
+//std namespace
 #include <chrono>
 #include <list>
+#include <utility>
 
 struct CombatData {
 	typedef std::chrono::steady_clock Clock;
 
-	//combatants
-	std::list<CharacterData*> characterList;
-	std::list<EnemyData> enemyList;
+	//combatants, point to the std::map's internal pairs
+	std::list<std::pair<const int, CharacterData>*> characterList;
+	std::list<std::pair<const int, EnemyData>*> enemyList;
 
 	//world interaction
 	int mapIndex = 0;
@@ -46,7 +55,10 @@ struct CombatData {
 	//time interval
 	Clock::time_point lastTick = Clock::now();
 
-	static int uidCounter;
+	//graphics
+#ifdef GRAPHICS
+	SpriteSheet sprite;
+#endif
 };
 
 #endif

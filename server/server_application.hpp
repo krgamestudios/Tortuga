@@ -35,9 +35,7 @@
 #include "region_pager.hpp"
 
 //networking
-#include "serial_packet.hpp"
 #include "udp_network_utility.hpp"
-#include "serial.hpp"
 
 //common
 #include "config_utility.hpp"
@@ -106,6 +104,7 @@ private:
 	std::map<int, AccountData> accountMap;
 	std::map<int, CharacterData> characterMap;
 	std::map<int, CombatData> combatMap;
+	std::map<int, EnemyData> enemyMap;
 
 	//maps
 	//TODO: I need to handle multiple map objects
@@ -116,6 +115,9 @@ private:
 	//misc
 	bool running = true;
 	ConfigUtility config;
+	int clientUID = 0;
+	int combatUID = 0;
+	int enemyUID = 0;
 };
 
 #endif

@@ -19,20 +19,49 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef SERIAL_HPP_
-#define SERIAL_HPP_
+#include "character_data.hpp"
 
-#include "serial_packet.hpp"
+void CharacterData::Update(double delta) {
+	if (motion.x && motion.y) {
+		position += motion * delta * CHARACTER_WALKING_MOD;
+	}
+	else if (motion != 0) {
+		position += motion * delta;
+	}
+#ifdef GRAPHICS
+	sprite.Update(delta);
+#endif
+}
 
-/* NOTE: Keep the PACKET_BUFFER_SIZE up to date
- * NOTE: REGION_CONTENT is currently the largest type of packet
- *  map content: REGION_WIDTH * REGION_HEIGHT * REGION_DEPTH * sizoeof(region::type_t)
- *  map format: sizeof(int) * 3
- *  metadata: sizeof(SerialPacket::Type)
-*/
-#define PACKET_BUFFER_SIZE REGION_WIDTH * REGION_HEIGHT * REGION_DEPTH * sizeof(Region::type_t) + sizeof(int) * 3 + sizeof(SerialPacket::Type)
+#ifdef GRAPHICS
 
-void serialize(SerialPacket* const, void* dest);
-void deserialize(SerialPacket* const, void* src);
+void CharacterData::DrawTo(SDL_Surface* const dest, int camX, int camY) {
+	sprite.DrawTo(dest, position.x - camX, position.y - camY);
+}
+
+void CharacterData::CorrectSprite() {
+	//NOTE: These must correspond to the sprite sheet in use
+	if (motion.y > 0) {
+		sprite.SetYIndex(0);
+	}
+	else if (motion.y < 0) {
+		sprite.SetYIndex(1);
+	}
+	else if (motion.x > 0) {
+		sprite.SetYIndex(3);
+	}
+	else if (motion.x < 0) {
+		sprite.SetYIndex(2);
+	}
+
+	//animation
+	if (motion != 0) {
+		sprite.SetDelay(0.1);
+	}
+	else {
+		sprite.SetDelay(0);
+		sprite.SetXIndex(0);
+	}
+}
 
 #endif

@@ -1,4 +1,4 @@
-/* Copyright: (c) Kayne Ruse 2013
+/* Copyright: (c) Kayne Ruse 2013, 2014
  * 
  * This software is provided 'as-is', without any express or implied
  * warranty. In no event will the authors be held liable for any damages
@@ -19,21 +19,35 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef MAINMENU_HPP_
-#define MAINMENU_HPP_
+#ifndef LOBBYMENU_HPP_
+#define LOBBYMENU_HPP_
 
-#include "base_scene.hpp"
-
-#include "config_utility.hpp"
+//graphics & utilities
 #include "image.hpp"
 #include "raster_font.hpp"
 #include "button.hpp"
+#include "config_utility.hpp"
 
-class MainMenu : public BaseScene {
+//network
+#include "udp_network_utility.hpp"
+
+//client
+#include "base_scene.hpp"
+
+//STL
+#include <vector>
+
+class LobbyMenu : public BaseScene {
 public:
 	//Public access members
-	MainMenu(ConfigUtility* const);
-	~MainMenu();
+	LobbyMenu(
+		ConfigUtility* const argConfig,
+		UDPNetworkUtility* const argNetwork,
+		int* const argClientIndex,
+		int* const argAccountIndex,
+		int* const argCharacterIndex
+	);
+	~LobbyMenu();
 
 protected:
 	//Frame loop
@@ -49,15 +63,38 @@ protected:
 	void KeyDown(SDL_KeyboardEvent const&);
 	void KeyUp(SDL_KeyboardEvent const&);
 
+	//Network handlers
+	void HandlePacket(SerialPacket);
+
 	//shared parameters
 	ConfigUtility& config;
+	UDPNetworkUtility& network;
+	int& clientIndex;
+	int& accountIndex;
+	int& characterIndex;
 
 	//members
 	Image image;
 	RasterFont font;
-	Button startButton;
-	Button optionsButton;
-	Button quitButton;
+	Button search;
+	Button join;
+	Button back;
+
+	//server list
+	struct ServerInformation {
+		IPaddress address;
+		int networkVersion;
+		std::string name;
+		int playerCount;
+		bool compatible;
+	};
+
+	std::vector<ServerInformation> serverInfo;
+
+	//a terrible hack, forgive me
+	//I'd love a proper gui system for this
+	SDL_Rect listBox;
+	ServerInformation* selection = nullptr;
 };
 
 #endif

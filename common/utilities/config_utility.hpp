@@ -1,4 +1,4 @@
-/* Copyright: (c) Kayne Ruse 2013
+/* Copyright: (c) Kayne Ruse 2013, 2014
  * 
  * This software is provided 'as-is', without any express or implied
  * warranty. In no event will the authors be held liable for any damages
@@ -19,30 +19,42 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef UTILITY_HPP_
-#define UTILITY_HPP_
+#ifndef CONFIGUTILITY_HPP_
+#define CONFIGUTILITY_HPP_
 
+#include <map>
 #include <string>
 
-int snapToBase(int base, int x);
-std::string truncatePath(std::string pathname);
+class ConfigUtility {
+public:
+	ConfigUtility() = default;
+	ConfigUtility(std::string s) { Load(s); }
 
-//fixing known bugs in g++
-std::string to_string_custom(int i);
+	void Load(std::string fname);
 
-int to_integer_custom(std::string);
+	//convert to a type
+	std::string& String(std::string);
+	int Integer(std::string);
+	double Double(std::string);
+	bool Boolean(std::string);
 
-//wow
-template<typename ContainerT, typename PredicateT>
-void erase_if(ContainerT& items, const PredicateT& predicate) {
-	for(auto it = items.begin(); it != items.end(); /* empty */) {
-		if(predicate(*it)) {
-			it = items.erase(it);
-		}
-		else {
-			++it;
-		}
+	//shorthand
+	std::string& operator[](std::string s) {
+		return String(s);
 	}
+	int Int(std::string s) {
+		return Integer(s);
+	}
+	bool Bool(std::string s) {
+		return Boolean(s);
+	}
+
+	//OO breaker
+	std::map<std::string, std::string>* GetMap() {
+		return &table;
+	}
+private:
+	std::map<std::string, std::string> table;
 };
 
 #endif

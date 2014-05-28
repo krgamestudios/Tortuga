@@ -1,4 +1,4 @@
-/* Copyright: (c) Kayne Ruse 2013
+/* Copyright: (c) Kayne Ruse 2013, 2014
  * 
  * This software is provided 'as-is', without any express or implied
  * warranty. In no event will the authors be held liable for any damages
@@ -19,47 +19,69 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef LOBBYMENU_HPP_
-#define LOBBYMENU_HPP_
-
-//graphics & utilities
-#include "image.hpp"
-#include "raster_font.hpp"
-#include "button.hpp"
-#include "config_utility.hpp"
+#ifndef INCOMBAT_HPP_
+#define INCOMBAT_HPP_
 
 //network
 #include "udp_network_utility.hpp"
-#include "serial_packet.hpp"
-#include "serial.hpp"
+
+//graphics
+#include "image.hpp"
+#include "raster_font.hpp"
+#include "button.hpp"
+
+//common
+#include "config_utility.hpp"
+#include "frame_rate.hpp"
+
+#include "combat_data.hpp"
+#include "character_data.hpp"
+#include "enemy_data.hpp"
 
 //client
 #include "base_scene.hpp"
 
-//STL
-#include <vector>
-
-class LobbyMenu : public BaseScene {
+class InCombat : public BaseScene {
 public:
 	//Public access members
-	LobbyMenu(ConfigUtility* const, UDPNetworkUtility* const, int* const, int* const, int* const);
-	~LobbyMenu();
+	InCombat(
+		ConfigUtility* const argConfig,
+		UDPNetworkUtility* const argNetwork,
+		int* const argClientIndex,
+		int* const argAccountIndex,
+		int* const argCharacterIndex,
+		std::map<int, CombatData>* argCombatMap,
+		std::map<int, CharacterData>* argCharacterMap,
+		std::map<int, EnemyData>* argEnemyMap
+	);
+	~InCombat();
 
 protected:
 	//Frame loop
 	void FrameStart();
 	void Update(double delta);
 	void FrameEnd();
+	void RenderFrame();
 	void Render(SDL_Surface* const);
 
 	//Event handlers
+	void QuitEvent();
 	void MouseMotion(SDL_MouseMotionEvent const&);
 	void MouseButtonDown(SDL_MouseButtonEvent const&);
 	void MouseButtonUp(SDL_MouseButtonEvent const&);
 	void KeyDown(SDL_KeyboardEvent const&);
 	void KeyUp(SDL_KeyboardEvent const&);
 
+	//Network handlers
 	void HandlePacket(SerialPacket);
+	void HandleDisconnect(SerialPacket);
+	//TODO: more
+
+	//Server control
+	void SendPlayerUpdate();
+	void RequestDisconnect();
+	void RequestShutdown();
+	//TODO: more
 
 	//shared parameters
 	ConfigUtility& config;
@@ -67,29 +89,16 @@ protected:
 	int& clientIndex;
 	int& accountIndex;
 	int& characterIndex;
+	std::map<int, CombatData>& combatMap;
+	std::map<int, CharacterData>& characterMap;
+	std::map<int, EnemyData>& enemyMap;
 
-	//members
-	Image image;
-	RasterFont font;
-	Button search;
-	Button join;
-	Button back;
+	//graphics
+	//TODO: graphics
 
-	//server list
-	struct ServerInformation {
-		IPaddress address;
-		int networkVersion;
-		std::string name;
-		int playerCount;
-		bool compatible;
-	};
-
-	std::vector<ServerInformation> serverInfo;
-
-	//a terrible hack, forgive me
-	//I'd love a proper gui system for this
-	SDL_Rect listBox;
-	ServerInformation* selection = nullptr;
+	//UI
+	//TODO: UI
+	FrameRate fps;
 };
 
 #endif

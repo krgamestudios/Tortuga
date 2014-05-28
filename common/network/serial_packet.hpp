@@ -1,4 +1,4 @@
-/* Copyright: (c) Kayne Ruse 2013
+/* Copyright: (c) Kayne Ruse 2013, 2014
  * 
  * This software is provided 'as-is', without any express or implied
  * warranty. In no event will the authors be held liable for any damages
@@ -24,13 +24,12 @@
 
 #include "vector2.hpp"
 #include "region.hpp"
+#include "statistics.hpp"
 
 #include "SDL/SDL_net.h"
 
-#define NETWORK_VERSION 20140512
+#define NETWORK_VERSION 20140528
 #define PACKET_STRING_SIZE 100
-
-#pragma pack(push, 0)
 
 union SerialPacket {
 	//types of packets
@@ -38,39 +37,66 @@ union SerialPacket {
 		//default: there is something wrong
 		NONE = 0,
 
-		//not used
+		//keep alive
 		PING = 1,
 		PONG = 2,
 
-		//TODO: rejection message
-
-		//Searching for a server to join
+		//searching for a server to join
 		BROADCAST_REQUEST = 3,
 		BROADCAST_RESPONSE = 4,
+		BROADCAST_REJECTION = 5,
 
 		//try to join the server
-		JOIN_REQUEST = 5,
-		JOIN_RESPONSE = 6,
+		JOIN_REQUEST = 6,
+		JOIN_RESPONSE = 7,
+		JOIN_REJECTION = 8,
 
 		//mass update
-		SYNCHRONIZE = 7,
+		SYNCHRONIZE = 9,
 
 		//disconnect from the server
-		DISCONNECT = 8,
+		DISCONNECT = 10,
 
 		//shut down the server
-		SHUTDOWN = 9,
+		SHUTDOWN = 11,
 
 		//map data
-		REGION_REQUEST = 10,
-		REGION_CONTENT = 11,
+		REGION_REQUEST = 12,
+		REGION_CONTENT = 13,
+		REGION_REJECTION = 14,
 
-		//Character movement, etc.
-		CHARACTER_NEW = 12,
-		CHARACTER_DELETE = 13,
-		CHARACTER_UPDATE = 14,
+		//combat data
+		COMBAT_ENTER = 15,
+		COMBAT_EXIT = 16,
 
-		//TODO: combat packets
+		COMBAT_UPDATE = 17,
+
+		COMBAT_REJECTION = 18,
+
+		//character data
+		CHARACTER_NEW = 19,
+		CHARACTER_DELETE = 20,
+		CHARACTER_UPDATE = 21,
+
+		CHARACTER_STATS_REQUEST = 22,
+		CHARACTER_STATS_RESPONSE = 23,
+
+		CHARACTER_REJECTION = 24,
+
+		//enemy data
+		ENEMY_NEW = 25,
+		ENEMY_DELETE = 26,
+		ENEMY_UPDATE = 27,
+
+		ENEMY_STATS_REQUEST = 28,
+		ENEMY_STATS_RESPONSE = 29,
+
+		ENEMY_REJECTION = 30,
+
+		//more packet types go here
+
+		//not used
+		LAST,
 	};
 
 	//metadata on the packet itself
@@ -79,7 +105,7 @@ union SerialPacket {
 		IPaddress srcAddress;
 	}meta;
 
-	//information about the server
+	//info about the server
 	struct ServerInformation {
 		Metadata meta;
 		int networkVersion;
@@ -87,18 +113,19 @@ union SerialPacket {
 		int playerCount;
 	}serverInfo;
 
-	//information about the client
+	//info about the client
 	struct ClientInformation {
 		Metadata meta;
 		int clientIndex;
 		int accountIndex;
 		int characterIndex;
 		char username[PACKET_STRING_SIZE];
+		//TODO: password
 		char handle[PACKET_STRING_SIZE];
 		char avatar[PACKET_STRING_SIZE];
 	}clientInfo;
 
-	//map data
+	//info about a region
 	struct RegionInformation {
 		Metadata meta;
 		int mapIndex;
@@ -106,7 +133,17 @@ union SerialPacket {
 		Region* region;
 	}regionInfo;
 
-	//information about a character
+	//info about a combat scenario
+	struct CombatInformation {
+		Metadata meta;
+		int combatIndex;
+		int difficulty;
+		//TODO: background image, based on terrain type
+		//TODO: array of combatants
+		//TODO: rewards
+	}combatInfo;
+
+	//info about a character
 	struct CharacterInformation {
 		Metadata meta;
 		int clientIndex;
@@ -117,7 +154,16 @@ union SerialPacket {
 		int mapIndex;
 		Vector2 position;
 		Vector2 motion;
+		Statistics stats;
 	}characterInfo;
+
+	//info about an enemy
+	struct EnemyInformation {
+		Metadata meta;
+		char handle[PACKET_STRING_SIZE];
+		char avatar[PACKET_STRING_SIZE];
+		Statistics stats;
+	}enemyInfo;
 
 	//defaults
 	SerialPacket() {
@@ -125,7 +171,5 @@ union SerialPacket {
 		meta.srcAddress = {0,0};
 	}
 };
-
-#pragma pack(pop)
 
 #endif
