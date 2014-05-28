@@ -28,73 +28,70 @@
 
 #include "SDL/SDL_net.h"
 
-#define NETWORK_VERSION 20140526
-
-//maximum string size; don't use std::string
+#define NETWORK_VERSION 20140528
 #define PACKET_STRING_SIZE 100
 
 union SerialPacket {
 	//types of packets
-	//TODO: read the value definitions
 	enum class Type {
 		//default: there is something wrong
 		NONE = 0,
 
 		//keep alive
-		PING,
-		PONG,
+		PING = 1,
+		PONG = 2,
 
 		//searching for a server to join
-		BROADCAST_REQUEST,
-		BROADCAST_RESPONSE,
-		BROADCAST_REJECTION,
+		BROADCAST_REQUEST = 3,
+		BROADCAST_RESPONSE = 4,
+		BROADCAST_REJECTION = 5,
 
 		//try to join the server
-		JOIN_REQUEST,
-		JOIN_RESPONSE,
-		JOIN_REJECTION,
+		JOIN_REQUEST = 6,
+		JOIN_RESPONSE = 7,
+		JOIN_REJECTION = 8,
 
 		//mass update
-		SYNCHRONIZE,
+		SYNCHRONIZE = 9,
 
 		//disconnect from the server
-		DISCONNECT,
+		DISCONNECT = 10,
 
 		//shut down the server
-		SHUTDOWN,
+		SHUTDOWN = 11,
 
 		//map data
-		REGION_REQUEST,
-		REGION_CONTENT,
-		REGION_REJECTION,
+		REGION_REQUEST = 12,
+		REGION_CONTENT = 13,
+		REGION_REJECTION = 14,
 
 		//combat data
-		COMBAT_ENTER,
-		COMBAT_EXIT,
+		COMBAT_ENTER = 15,
+		COMBAT_EXIT = 16,
 
-		COMBAT_UPDATE,
+		COMBAT_UPDATE = 17,
 
-		COMBAT_REJECTION,
+		COMBAT_REJECTION = 18,
 
 		//character data
-		CHARACTER_NEW,
-		CHARACTER_DELETE,
-		CHARACTER_UPDATE,
+		CHARACTER_NEW = 19,
+		CHARACTER_DELETE = 20,
+		CHARACTER_UPDATE = 21,
 
-		CHARACTER_STATS_REQUEST,
-		CHARACTER_STATS_RESPONSE,
+		CHARACTER_STATS_REQUEST = 22,
+		CHARACTER_STATS_RESPONSE = 23,
 
-		CHARACTER_REJECTION,
+		CHARACTER_REJECTION = 24,
 
 		//enemy data
-		ENEMY_NEW,
-		ENEMY_DELETE,
-		ENEMY_UPDATE,
+		ENEMY_NEW = 25,
+		ENEMY_DELETE = 26,
+		ENEMY_UPDATE = 27,
 
-		ENEMY_STATS_REQUEST,
-		ENEMY_STATS_RESPONSE,
+		ENEMY_STATS_REQUEST = 28,
+		ENEMY_STATS_RESPONSE = 29,
 
-		ENEMY_REJECTION,
+		ENEMY_REJECTION = 30,
 
 		//more packet types go here
 

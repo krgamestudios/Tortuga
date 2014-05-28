@@ -325,7 +325,7 @@ void InWorld::HandleCharacterNew(SerialPacket packet) {
 		localCharacter = &character;
 
 		//setup the camera
-		//TODO: can't change the screen size
+		//TODO: can't change the screen size?
 		camera.width = GetScreen()->w;
 		camera.height = GetScreen()->h;
 
