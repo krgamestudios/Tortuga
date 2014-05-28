@@ -30,8 +30,6 @@
 
 //network
 #include "udp_network_utility.hpp"
-#include "serial_packet.hpp"
-#include "serial.hpp"
 
 //client
 #include "base_scene.hpp"

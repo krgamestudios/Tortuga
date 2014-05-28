@@ -1,4 +1,4 @@
-/* Copyright: (c) Kayne Ruse 2013
+/* Copyright: (c) Kayne Ruse 2013, 2014
  * 
  * This software is provided 'as-is', without any express or implied
  * warranty. In no event will the authors be held liable for any damages
@@ -24,12 +24,14 @@
 
 #include "SDL/SDL_net.h"
 
+#include "serial_packet.hpp"
+
 class UDPNetworkUtility {
 public:
 	UDPNetworkUtility() = default;
 	~UDPNetworkUtility() = default;
 
-	void Open(int port, int packSize);
+	void Open(int port);
 	void Close();
 
 	//bind to a channel
@@ -41,31 +43,30 @@ public:
 		return SDLNet_UDP_GetPeerAddress(socket, channel);
 	}
 
-	int Send(const char* ip, int port, void* data, int len);
-	int Send(IPaddress* add, void* data, int len);
-	int Send(int channel, void* data, int len);
-	int SendAll(void* data, int len);
+	//send a buffer
+	int SendTo(const char* ip, int port, void* data, int len);
+	int SendTo(IPaddress* add, void* data, int len);
+	int SendTo(int channel, void* data, int len);
+	int SendToAllChannels(void* data, int len);
 	int Receive();
 
-	void* GetOutData() const {
-		return reinterpret_cast<void*>(packOut->data);
-	};
-	void* GetInData() const {
-		return reinterpret_cast<void*>(packIn->data);
-	};
-	UDPpacket* GetOutPacket() const {
-		return packOut;
-	}
-	UDPpacket* GetInPacket() const {
-		return packIn;
+	//send a SerialPacket
+	int SendTo(const char* ip, int port, SerialPacket* serialPacket);
+	int SendTo(IPaddress* add, SerialPacket* serialPacket);
+	int SendTo(int channel, SerialPacket* serialPacket);
+	int SendToAllChannels(SerialPacket* serialPacket);
+	int Receive(SerialPacket* serialPacket);
+
+	//accessors
+	UDPpacket* GetPacket() const {
+		return packet;
 	}
 	UDPsocket GetSocket() const {
 		return socket;
 	}
 private:
 	UDPsocket socket = nullptr;
-	UDPpacket* packOut = nullptr;
-	UDPpacket* packIn = nullptr;
+	UDPpacket* packet = nullptr;
 };
 
 #endif

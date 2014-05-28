@@ -35,9 +35,7 @@
 #include "region_pager.hpp"
 
 //networking
-#include "serial_packet.hpp"
 #include "udp_network_utility.hpp"
-#include "serial.hpp"
 
 //common
 #include "config_utility.hpp"

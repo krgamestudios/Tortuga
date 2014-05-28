@@ -56,7 +56,7 @@ void ClientApplication::Init(int argc, char** argv) {
 	if (SDLNet_Init()) {
 		throw(std::runtime_error("Failed to initialize SDL_net"));
 	}
-	network.Open(0, PACKET_BUFFER_SIZE);
+	network.Open(0);
 }
 
 void ClientApplication::Proc() {

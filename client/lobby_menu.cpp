@@ -86,11 +86,9 @@ void LobbyMenu::FrameStart() {
 }
 
 void LobbyMenu::Update(double delta) {
-	//suck in all waiting packets
+	//suck in and process all waiting packets
 	SerialPacket packet;
-	while(network.Receive()) {
-		deserialize(&packet, network.GetInData());
-		packet.meta.srcAddress = network.GetInPacket()->address;
+	while(network.Receive(&packet)) {
 		HandlePacket(packet);
 	}
 }
@@ -149,14 +147,10 @@ void LobbyMenu::MouseButtonDown(SDL_MouseButtonEvent const& button) {
 
 void LobbyMenu::MouseButtonUp(SDL_MouseButtonEvent const& button) {
 	if (search.MouseButtonUp(button) == Button::State::HOVER) {
-		//the vars
-		SerialPacket packet;
-		char buffer[PACKET_BUFFER_SIZE];
-
 		//broadcast to the network, or a specific server
+		SerialPacket packet;
 		packet.meta.type = SerialPacket::Type::BROADCAST_REQUEST;
-		serialize(&packet, buffer);
-		network.Send(config["server.host"].c_str(), config.Int("server.port"), buffer, PACKET_BUFFER_SIZE);
+		network.SendTo(config["server.host"].c_str(), config.Int("server.port"), &packet);
 
 		//reset the server list
 		serverInfo.clear();
@@ -164,19 +158,15 @@ void LobbyMenu::MouseButtonUp(SDL_MouseButtonEvent const& button) {
 	}
 
 	else if (join.MouseButtonUp(button) == Button::State::HOVER && selection != nullptr && selection->compatible) {
-		//the vars
-		SerialPacket packet;
-		char buffer[PACKET_BUFFER_SIZE];
-
 		//pack the packet
+		SerialPacket packet;
 		packet.meta.type = SerialPacket::Type::JOIN_REQUEST;
 		strncpy(packet.clientInfo.username, config["client.username"].c_str(), PACKET_STRING_SIZE);
 		strncpy(packet.clientInfo.handle, config["client.handle"].c_str(), PACKET_STRING_SIZE);
 		strncpy(packet.clientInfo.avatar, config["client.avatar"].c_str(), PACKET_STRING_SIZE);
 
 		//join the selected server
-		serialize(&packet, buffer);
-		network.Send(&selection->address, buffer, PACKET_BUFFER_SIZE);
+		network.SendTo(&selection->address, &packet);
 		selection = nullptr;
 	}
 

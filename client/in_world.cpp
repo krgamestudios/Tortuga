@@ -96,9 +96,7 @@ void InWorld::Update(double delta) {
 	SerialPacket packet;
 
 	//suck in all waiting packets
-	while(network.Receive()) {
-		deserialize(&packet, network.GetInData());
-		packet.meta.srcAddress = network.GetInPacket()->address;
+	while(network.Receive(&packet)) {
 		HandlePacket(packet);
 	}
 
@@ -354,7 +352,6 @@ void InWorld::HandleCharacterDelete(SerialPacket packet) {
 
 void InWorld::RequestSynchronize() {
 	SerialPacket packet;
-	char buffer[PACKET_STRING_SIZE];
 
 	//request a sync
 	packet.meta.type = SerialPacket::Type::SYNCHRONIZE;
@@ -362,13 +359,11 @@ void InWorld::RequestSynchronize() {
 	packet.clientInfo.accountIndex = accountIndex;
 	packet.clientInfo.characterIndex = characterIndex;
 
-	serialize(&packet, buffer);
-	network.Send(Channels::SERVER, buffer, PACKET_BUFFER_SIZE);
+	network.SendTo(Channels::SERVER, &packet);
 }
 
 void InWorld::SendPlayerUpdate() {
 	SerialPacket packet;
-	char buffer[PACKET_BUFFER_SIZE];
 
 	//pack the packet
 	packet.meta.type = SerialPacket::Type::CHARACTER_UPDATE;
@@ -378,47 +373,43 @@ void InWorld::SendPlayerUpdate() {
 	packet.characterInfo.position = localCharacter->position;
 	packet.characterInfo.motion = localCharacter->motion;
 
-	serialize(&packet, buffer);
-	network.Send(Channels::SERVER, buffer, PACKET_BUFFER_SIZE);
+	network.SendTo(Channels::SERVER, &packet);
 }
 
 void InWorld::RequestDisconnect() {
 	SerialPacket packet;
-	char buffer[PACKET_BUFFER_SIZE];
 
 	//send a disconnect request
 	packet.meta.type = SerialPacket::Type::DISCONNECT;
 	packet.clientInfo.clientIndex = clientIndex;
 	packet.clientInfo.accountIndex = accountIndex;
 	packet.clientInfo.characterIndex = characterIndex;
-	serialize(&packet, buffer);
-	network.Send(Channels::SERVER, buffer, PACKET_BUFFER_SIZE);
+
+	network.SendTo(Channels::SERVER, &packet);
 }
 
 void InWorld::RequestShutDown() {
 	SerialPacket packet;
-	char buffer[PACKET_BUFFER_SIZE];
 
 	//send a shutdown request
 	packet.meta.type = SerialPacket::Type::SHUTDOWN;
 	packet.clientInfo.clientIndex = clientIndex;
 	packet.clientInfo.accountIndex = accountIndex;
 	packet.clientInfo.characterIndex = characterIndex;
-	serialize(&packet, buffer);
-	network.Send(Channels::SERVER, buffer, PACKET_BUFFER_SIZE);
+
+	network.SendTo(Channels::SERVER, &packet);
 }
 
 void InWorld::RequestRegion(int mapIndex, int x, int y) {
 	SerialPacket packet;
-	char buffer[PACKET_BUFFER_SIZE];
 
 	//pack the region's data
 	packet.meta.type = SerialPacket::Type::REGION_REQUEST;
 	packet.regionInfo.mapIndex = mapIndex;
 	packet.regionInfo.x = x;
 	packet.regionInfo.y = y;
-	serialize(&packet, buffer);
-	network.Send(Channels::SERVER, buffer, PACKET_BUFFER_SIZE);
+
+	network.SendTo(Channels::SERVER, &packet);
 }
 
 //-------------------------

@@ -36,9 +36,7 @@ void ServerApplication::HandleBroadcastRequest(SerialPacket packet) {
 	packet.serverInfo.playerCount = characterMap.size();
 
 	//bounce this packet
-	char buffer[PACKET_BUFFER_SIZE];
-	serialize(&packet, buffer);
-	network.Send(&packet.meta.srcAddress, buffer, PACKET_BUFFER_SIZE);
+	network.SendTo(&packet.meta.srcAddress, &packet);
 }
 
 void ServerApplication::HandleJoinRequest(SerialPacket packet) {
@@ -70,9 +68,7 @@ void ServerApplication::HandleJoinRequest(SerialPacket packet) {
 	packet.clientInfo.characterIndex = characterIndex;
 
 	//bounce this packet
-	char buffer[PACKET_BUFFER_SIZE];
-	serialize(&packet, buffer);
-	network.Send(&newClient.address, buffer, PACKET_BUFFER_SIZE);
+	network.SendTo(&newClient.address, &packet);
 
 	//send the new character to all clients
 	packet.meta.type = SerialPacket::Type::CHARACTER_NEW;
@@ -94,7 +90,6 @@ void ServerApplication::HandleSynchronize(SerialPacket packet) {
 
 	//send all the server's data to this client
 	SerialPacket newPacket;
-	char buffer[PACKET_BUFFER_SIZE];
 
 	//characters
 	newPacket.meta.type = SerialPacket::Type::CHARACTER_UPDATE;
@@ -108,8 +103,7 @@ void ServerApplication::HandleSynchronize(SerialPacket packet) {
 		newPacket.characterInfo.motion = it.second.motion;
 		newPacket.characterInfo.stats = it.second.stats;
 
-		serialize(&newPacket, buffer);
-		network.Send(&clientMap[packet.clientInfo.clientIndex].address, buffer, PACKET_BUFFER_SIZE);
+		network.SendTo(&clientMap[packet.clientInfo.clientIndex].address, &newPacket);
 	}
 }
 
@@ -117,9 +111,7 @@ void ServerApplication::HandleDisconnect(SerialPacket packet) {
 	//TODO: authenticate who is disconnecting/kicking
 
 	//forward to the specified client
-	char buffer[PACKET_BUFFER_SIZE];
-	serialize(&packet, buffer);
-	network.Send(&clientMap[accountMap[packet.clientInfo.accountIndex].clientIndex].address, buffer, PACKET_BUFFER_SIZE);
+	network.SendTo(&clientMap[accountMap[packet.clientInfo.accountIndex].clientIndex].address, &packet);
 
 	//unload client and server-side characters
 	for (std::map<int, CharacterData>::iterator it = characterMap.begin(); it != characterMap.end(); /* EMPTY */ ) {
@@ -175,17 +167,13 @@ void ServerApplication::HandleRegionRequest(SerialPacket packet) {
 	packet.regionInfo.region = regionPager.GetRegion(packet.regionInfo.x, packet.regionInfo.y);
 
 	//send the content
-	char buffer[PACKET_BUFFER_SIZE];
-	serialize(&packet, buffer);
-	network.Send(&packet.meta.srcAddress, buffer, PACKET_BUFFER_SIZE);
+	network.SendTo(&packet.meta.srcAddress, &packet);
 }
 
 void ServerApplication::PumpPacket(SerialPacket packet) {
 	//NOTE: I don't really like this, but it'll do for now
-	char buffer[PACKET_BUFFER_SIZE];
-	serialize(&packet, buffer);
 	for (auto& it : clientMap) {
-		network.Send(&it.second.address, buffer, PACKET_BUFFER_SIZE);
+		network.SendTo(&it.second.address, &packet);
 	}
 }
 
