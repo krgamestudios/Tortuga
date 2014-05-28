@@ -112,14 +112,7 @@ void InWorld::Update(double delta) {
 
 	//update the characters
 	for (auto& it : characterMap) {
-		if (it.second.motion.x && it.second.motion.y) {
-			//TODO: refactor this into a method
-			it.second.position += it.second.motion * delta * CHARACTER_WALKING_MOD;
-		}
-		else if (it.second.motion != 0) {
-			it.second.position += it.second.motion * delta;
-		}
-		//TODO: SPRITE: fix sprite
+		it.second.Update(delta);
 	}
 	//TODO: sort the players and entities by Y position
 
@@ -152,8 +145,7 @@ void InWorld::Render(SDL_Surface* const screen) {
 
 	//draw characters
 	for (auto& it : characterMap) {
-		//TODO: refactor this
-		it.second.sprite.DrawTo(screen, it.second.position.x - camera.x, it.second.position.y - camera.y);
+		it.second.DrawTo(screen, camera.x, camera.y);
 	}
 
 	//draw UI
@@ -316,8 +308,7 @@ void InWorld::HandleCharacterUpdate(SerialPacket packet) {
 		characterMap[packet.characterInfo.characterIndex].position = packet.characterInfo.position;
 		characterMap[packet.characterInfo.characterIndex].motion = packet.characterInfo.motion;
 	}
-	//TODO: refactor this
-//	characterMap[packet.characterInfo.characterIndex].ResetDirection();
+	characterMap[packet.characterInfo.characterIndex].CorrectSprite();
 }
 
 void InWorld::HandleCharacterNew(SerialPacket packet) {
@@ -330,8 +321,7 @@ void InWorld::HandleCharacterNew(SerialPacket packet) {
 	characterMap[packet.characterInfo.characterIndex].sprite.LoadSurface(config["dir.sprites"] + packet.characterInfo.avatar, 4, 4);
 	characterMap[packet.characterInfo.characterIndex].position = packet.characterInfo.position;
 	characterMap[packet.characterInfo.characterIndex].motion = packet.characterInfo.motion;
-	//TODO: refactor this
-//	characterMap[packet.characterInfo.characterIndex].ResetDirection();
+	characterMap[packet.characterInfo.characterIndex].CorrectSprite();
 
 	//catch this client's player object
 	if (packet.characterInfo.characterIndex == characterIndex && !localCharacter) {

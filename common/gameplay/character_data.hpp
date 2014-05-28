@@ -59,6 +59,13 @@ struct CharacterData {
 	//TODO: buffs
 	//TODO: debuffs
 
+	//methods
+	void Update(double delta);
+#ifdef GRAPHICS
+	void DrawTo(SDL_Surface* const, int camX, int camY);
+	void CorrectSprite();
+#endif
+
 	//active gameplay members
 	//NOTE: these are lost when unloaded
 #ifdef GRAPHICS

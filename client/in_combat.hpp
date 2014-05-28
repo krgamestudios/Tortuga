@@ -83,7 +83,7 @@ protected:
 	void SendPlayerUpdate();
 	void RequestDisconnect();
 	void RequestShutdown();
-	//TOOD: more
+	//TODO: more
 
 	//shared parameters
 	ConfigUtility& config;
