@@ -40,7 +40,16 @@
 #include <list>
 #include <utility>
 
+#define COMBAT_MAX_CHARACTER_COUNT 12
+#define COMBAT_MAX_ENEMY_COUNT 12
+
 struct CombatData {
+	enum class Terrain {
+		//TODO: types of terrains
+		NONE = 0,
+		GRASSLANDS,
+	};
+
 	typedef std::chrono::steady_clock Clock;
 
 	//combatants, point to the std::map's internal pairs

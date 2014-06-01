@@ -99,7 +99,19 @@ void serializeCombat(SerialPacket* packet, char* buffer) {
 	//integers
 	SERIALIZE(buffer, &packet->combatInfo.combatIndex, sizeof(int));
 	SERIALIZE(buffer, &packet->combatInfo.difficulty, sizeof(int));
-	//TODO: more comabat info
+
+	SERIALIZE(buffer, &packet->combatInfo.terrainType, sizeof(CombatData::Terrain));
+
+	//arrays
+	SERIALIZE(buffer, &packet->combatInfo.characterArray, COMBAT_MAX_CHARACTER_COUNT);
+	SERIALIZE(buffer, &packet->combatInfo.enemyArray, COMBAT_MAX_ENEMY_COUNT);
+
+	//position
+	SERIALIZE(buffer, &packet->combatInfo.mapIndex, sizeof(int));
+	SERIALIZE(buffer, &packet->combatInfo.position.x, sizeof(double));
+	SERIALIZE(buffer, &packet->combatInfo.position.y, sizeof(double));
+
+	//TODO: rewards
 }
 
 void serializeStatistics(Statistics* stats, char* buffer) {
@@ -231,7 +243,19 @@ void deserializeCombat(SerialPacket* packet, char* buffer) {
 	//integers
 	DESERIALIZE(buffer, &packet->combatInfo.combatIndex, sizeof(int));
 	DESERIALIZE(buffer, &packet->combatInfo.difficulty, sizeof(int));
-	//TODO: more comabat info
+
+	DESERIALIZE(buffer, &packet->combatInfo.terrainType, sizeof(CombatData::Terrain));
+
+	//arrays
+	DESERIALIZE(buffer, &packet->combatInfo.characterArray, COMBAT_MAX_CHARACTER_COUNT);
+	DESERIALIZE(buffer, &packet->combatInfo.enemyArray, COMBAT_MAX_ENEMY_COUNT);
+
+	//position
+	DESERIALIZE(buffer, &packet->combatInfo.mapIndex, sizeof(int));
+	DESERIALIZE(buffer, &packet->combatInfo.position.x, sizeof(double));
+	DESERIALIZE(buffer, &packet->combatInfo.position.y, sizeof(double));
+
+	//TODO: rewards
 }
 
 
@@ -337,8 +361,16 @@ void serialize(SerialPacket* packet, void* buffer) {
 		break;
 
 		//combat info
-		case SerialPacket::Type::COMBAT_ENTER:
-		case SerialPacket::Type::COMBAT_EXIT:
+		case SerialPacket::Type::COMBAT_NEW:
+		case SerialPacket::Type::COMBAT_DELETE:
+		case SerialPacket::Type::COMBAT_UPDATE:
+
+		//TODO: is this the best fit?
+		case SerialPacket::Type::COMBAT_ENTER_REQUEST:
+		case SerialPacket::Type::COMBAT_ENTER_RESPONSE:
+		case SerialPacket::Type::COMBAT_EXIT_REQUEST:
+		case SerialPacket::Type::COMBAT_EXIT_RESPONSE:
+
 			serializeCombat(packet, reinterpret_cast<char*>(buffer));
 		break;
 
@@ -407,8 +439,16 @@ void deserialize(SerialPacket* packet, void* buffer) {
 		break;
 
 		//combat info
-		case SerialPacket::Type::COMBAT_ENTER:
-		case SerialPacket::Type::COMBAT_EXIT:
+		case SerialPacket::Type::COMBAT_NEW:
+		case SerialPacket::Type::COMBAT_DELETE:
+		case SerialPacket::Type::COMBAT_UPDATE:
+
+		//TODO: is this the best fit?
+		case SerialPacket::Type::COMBAT_ENTER_REQUEST:
+		case SerialPacket::Type::COMBAT_ENTER_RESPONSE:
+		case SerialPacket::Type::COMBAT_EXIT_REQUEST:
+		case SerialPacket::Type::COMBAT_EXIT_RESPONSE:
+
 			serializeCombat(packet, reinterpret_cast<char*>(buffer));
 		break;
 
