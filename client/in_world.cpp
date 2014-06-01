@@ -77,7 +77,7 @@ InWorld::InWorld(
 	RequestSynchronize();
 
 	//debug
-//	RequestRegion(0, 0);
+	//
 }
 
 InWorld::~InWorld() {
@@ -273,6 +273,7 @@ void InWorld::HandlePacket(SerialPacket packet) {
 }
 
 void InWorld::HandleDisconnect(SerialPacket packet) {
+	//TODO: I probably need a separate disconnection scene, for setting the client state back to normal
 	network.Unbind(Channels::SERVER);
 	clientIndex = -1;
 	accountIndex = -1;
