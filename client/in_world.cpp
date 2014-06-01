@@ -273,12 +273,7 @@ void InWorld::HandlePacket(SerialPacket packet) {
 }
 
 void InWorld::HandleDisconnect(SerialPacket packet) {
-	//TODO: I probably need a separate disconnection scene, for setting the client state back to normal
-	network.Unbind(Channels::SERVER);
-	clientIndex = -1;
-	accountIndex = -1;
-	characterIndex = -1;
-	SetNextScene(SceneList::MAINMENU);
+	SetNextScene(SceneList::RESTART);
 }
 
 void InWorld::HandleRegionContent(SerialPacket packet) {

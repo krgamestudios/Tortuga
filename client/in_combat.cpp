@@ -167,8 +167,7 @@ void InCombat::HandlePacket(SerialPacket packet) {
 }
 
 void InCombat::HandleDisconnect(SerialPacket) {
-	//TODO: stuff
-	//TODO: I probably need a separate disconnection scene, for setting the client state back to normal
+	SetNextScene(SceneList::RESTART);
 }
 
 //TODO: more network handlers
