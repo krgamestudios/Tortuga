@@ -89,6 +89,10 @@ void Restart::Update(double delta) {
 	if (std::chrono::steady_clock::now() - startTick > std::chrono::duration<int>(10)) {
 		QuitEvent();
 	}
+
+	while(network.Receive()) {
+		//EAT INCOMING PACKETS
+	}
 }
 
 void Restart::RenderFrame() {

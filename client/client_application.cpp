@@ -51,7 +51,11 @@ void ClientApplication::Init(int argc, char** argv) {
 	if (SDL_Init(SDL_INIT_VIDEO)) {
 		throw(std::runtime_error("Failed to initialize SDL"));
 	}
-	BaseScene::SetScreen(config.Int("screen.w"), config.Int("screen.h"), 0, (config.Bool("screen.f")) ? SDL_HWSURFACE|SDL_DOUBLEBUF|SDL_FULLSCREEN : SDL_HWSURFACE|SDL_DOUBLEBUF);
+	int w = config.Int("client.screen.w");
+	int h = config.Int("client.screen.h");
+	int f = config.Bool("client.screen.f") ? SDL_HWSURFACE|SDL_DOUBLEBUF|SDL_FULLSCREEN : SDL_HWSURFACE|SDL_DOUBLEBUF;
+
+	BaseScene::SetScreen(w ? w : 800, h ? h : 600, 0, f);
 
 	//initialize SDL_net
 	if (SDLNet_Init()) {

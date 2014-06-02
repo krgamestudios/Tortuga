@@ -28,7 +28,7 @@
 
 class Region {
 public:
-	typedef unsigned short type_t;
+	typedef unsigned char type_t;
 
 	Region() = delete;
 	Region(int x, int y);
