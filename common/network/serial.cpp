@@ -108,8 +108,8 @@ void serializeCombat(SerialPacket* packet, char* buffer) {
 
 	//position
 	SERIALIZE(buffer, &packet->combatInfo.mapIndex, sizeof(int));
-	SERIALIZE(buffer, &packet->combatInfo.position.x, sizeof(double));
-	SERIALIZE(buffer, &packet->combatInfo.position.y, sizeof(double));
+	SERIALIZE(buffer, &packet->combatInfo.origin.x, sizeof(double));
+	SERIALIZE(buffer, &packet->combatInfo.origin.y, sizeof(double));
 
 	//TODO: rewards
 }
@@ -147,8 +147,8 @@ void serializeCharacter(SerialPacket* packet, char* buffer) {
 	SERIALIZE(buffer, packet->clientInfo.avatar, PACKET_STRING_SIZE);
 
 	//vectors
-	SERIALIZE(buffer, &packet->characterInfo.position.x, sizeof(double));
-	SERIALIZE(buffer, &packet->characterInfo.position.y, sizeof(double));
+	SERIALIZE(buffer, &packet->characterInfo.origin.x, sizeof(double));
+	SERIALIZE(buffer, &packet->characterInfo.origin.y, sizeof(double));
 	SERIALIZE(buffer, &packet->characterInfo.motion.x, sizeof(double));
 	SERIALIZE(buffer, &packet->characterInfo.motion.y, sizeof(double));
 
@@ -252,8 +252,8 @@ void deserializeCombat(SerialPacket* packet, char* buffer) {
 
 	//position
 	DESERIALIZE(buffer, &packet->combatInfo.mapIndex, sizeof(int));
-	DESERIALIZE(buffer, &packet->combatInfo.position.x, sizeof(double));
-	DESERIALIZE(buffer, &packet->combatInfo.position.y, sizeof(double));
+	DESERIALIZE(buffer, &packet->combatInfo.origin.x, sizeof(double));
+	DESERIALIZE(buffer, &packet->combatInfo.origin.y, sizeof(double));
 
 	//TODO: rewards
 }
@@ -292,8 +292,8 @@ void deserializeCharacter(SerialPacket* packet, char* buffer) {
 	DESERIALIZE(buffer, packet->clientInfo.avatar, PACKET_STRING_SIZE);
 
 	//vectors
-	DESERIALIZE(buffer, &packet->characterInfo.position.x, sizeof(double));
-	DESERIALIZE(buffer, &packet->characterInfo.position.y, sizeof(double));
+	DESERIALIZE(buffer, &packet->characterInfo.origin.x, sizeof(double));
+	DESERIALIZE(buffer, &packet->characterInfo.origin.y, sizeof(double));
 	DESERIALIZE(buffer, &packet->characterInfo.motion.x, sizeof(double));
 	DESERIALIZE(buffer, &packet->characterInfo.motion.y, sizeof(double));
 

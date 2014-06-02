@@ -22,8 +22,6 @@
 #ifndef CHARACTERDATA_HPP_
 #define CHARACTERDATA_HPP_
 
-//POD members
-#include "bbox.hpp"
 #include "vector2.hpp"
 #include "statistics.hpp"
 
@@ -48,7 +46,7 @@ struct CharacterData {
 
 	//world position
 	int mapIndex = 0;
-	Vector2 position = {0.0,0.0};
+	Vector2 origin = {0.0,0.0};
 	Vector2 motion = {0.0,0.0};
 
 	//base statistics
@@ -71,7 +69,7 @@ struct CharacterData {
 #ifdef GRAPHICS
 	SpriteSheet sprite;
 #endif
-	BBox bbox = {0,0,0,0};
+	Vector2 bounds = {0.0,0.0};
 	bool inCombat = false;
 	int atbGauge = 0;
 	//TODO: stored command

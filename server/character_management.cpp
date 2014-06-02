@@ -32,7 +32,7 @@
 //TODO: save and load the statistics
 static const char* CREATE_CHARACTER = "INSERT INTO Characters (owner, handle, avatar) VALUES (?, ?, ?);";
 static const char* LOAD_CHARACTER = "SELECT * FROM Characters WHERE handle = ?;";
-static const char* SAVE_CHARACTER = "UPDATE OR FAIL Characters SET mapIndex = ?2, positionX = ?3, positionY = ?4 WHERE uid = ?1;";
+static const char* SAVE_CHARACTER = "UPDATE OR FAIL Characters SET mapIndex = ?2, originX = ?3, originY = ?4 WHERE uid = ?1;";
 static const char* DELETE_CHARACTER = "DELETE FROM Characters WHERE uid = ?;";
 
 //-------------------------
@@ -117,10 +117,10 @@ int ServerApplication::LoadCharacter(int owner, std::string handle, std::string 
 		newChar.avatar = reinterpret_cast<const char*>(sqlite3_column_text(statement, 3));
 		//Don't cache the birth
 
-		//world position
+		//world origin
 		newChar.mapIndex = sqlite3_column_int(statement, 5);
-		newChar.position.x = (double)sqlite3_column_int(statement, 6);
-		newChar.position.y = (double)sqlite3_column_int(statement, 7);
+		newChar.origin.x = (double)sqlite3_column_int(statement, 6);
+		newChar.origin.y = (double)sqlite3_column_int(statement, 7);
 
 		//statistics
 		newChar.stats.level = sqlite3_column_int(statement, 8);
@@ -176,8 +176,8 @@ int ServerApplication::SaveCharacter(int uid) {
 	bool ret = false;
 	ret |= sqlite3_bind_int(statement, 1, uid) != SQLITE_OK;
 	ret |= sqlite3_bind_int(statement, 2, character.mapIndex) != SQLITE_OK;
-	ret |= sqlite3_bind_int(statement, 3, (int)character.position.x) != SQLITE_OK;
-	ret |= sqlite3_bind_int(statement, 4, (int)character.position.y) != SQLITE_OK;
+	ret |= sqlite3_bind_int(statement, 3, (int)character.origin.x) != SQLITE_OK;
+	ret |= sqlite3_bind_int(statement, 4, (int)character.origin.y) != SQLITE_OK;
 	//TODO: stats, etc.
 
 	//check for binding errors

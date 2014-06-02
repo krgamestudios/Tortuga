@@ -42,12 +42,6 @@ public:
 		return x*x+y*y;
 	}
 
-	double operator[](size_t i) {
-		if (i >= 2)
-			throw(std::domain_error("Out of range"));
-		return *(&x+i);
-	}
-
 	//Arithmetic operators
 	Vector2 operator+(Vector2 v) const {
 		Vector2 ret;

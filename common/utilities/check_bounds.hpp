@@ -19,42 +19,12 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef ENEMYDATA_HPP_
-#define ENEMYDATA_HPP_
+#ifndef CHECKBOUNDS_HPP_
+#define CHECKBOUNDS_HPP_
 
 #include "vector2.hpp"
-#include "statistics.hpp"
 
-//graphics
-#ifdef GRAPHICS
- #include "sprite_sheet.hpp"
-#endif
-
-//std namespace
-#include <string>
-
-struct EnemyData {
-	//metadata
-	std::string handle;
-	std::string avatar;
-
-	//gameplay
-	Statistics stats;
-
-	//TODO: equipment
-	//TODO: items
-	//TODO: buffs
-	//TODO: debuffs
-
-	//active gameplay members
-	//NOTE: these are lost when unloaded
-#ifdef GRAPHICS
-	SpriteSheet sprite;
-	Vector2 origin = {0.0,0.0};
-	Vector2 bounds = {0.0,0.0};
-#endif
-	int tableIndex;
-	int atbGauge = 0;
-};
+bool checkPoint(Vector2 const& origin, Vector2 const& bound, Vector2 const& point);
+bool checkOverlap(Vector2 const& originOne, Vector2 const& boundOne, Vector2 const& originTwo, Vector2 const& boundTwo);
 
 #endif

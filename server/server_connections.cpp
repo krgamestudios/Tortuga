@@ -75,7 +75,7 @@ void ServerApplication::HandleJoinRequest(SerialPacket packet) {
 	packet.characterInfo.characterIndex = characterIndex;
 	strncpy(packet.characterInfo.handle, characterMap[characterIndex].handle.c_str(), PACKET_STRING_SIZE);
 	strncpy(packet.characterInfo.avatar, characterMap[characterIndex].avatar.c_str(), PACKET_STRING_SIZE);
-	packet.characterInfo.position = characterMap[characterIndex].position;
+	packet.characterInfo.origin = characterMap[characterIndex].origin;
 	packet.characterInfo.motion = characterMap[characterIndex].motion;
 	PumpPacket(packet);
 
@@ -99,7 +99,7 @@ void ServerApplication::HandleSynchronize(SerialPacket packet) {
 		snprintf(newPacket.characterInfo.handle, PACKET_STRING_SIZE, "%s", it.second.handle.c_str());
 		snprintf(newPacket.characterInfo.avatar, PACKET_STRING_SIZE, "%s", it.second.avatar.c_str());
 		newPacket.characterInfo.mapIndex = it.second.mapIndex;
-		newPacket.characterInfo.position = it.second.position;
+		newPacket.characterInfo.origin = it.second.origin;
 		newPacket.characterInfo.motion = it.second.motion;
 		newPacket.characterInfo.stats = it.second.stats;
 
@@ -155,7 +155,7 @@ void ServerApplication::HandleCharacterUpdate(SerialPacket packet) {
 	}
 
 	//TODO: the server needs it's own movement system too
-	characterMap[packet.characterInfo.characterIndex].position = packet.characterInfo.position;
+	characterMap[packet.characterInfo.characterIndex].origin = packet.characterInfo.origin;
 	characterMap[packet.characterInfo.characterIndex].motion = packet.characterInfo.motion;
 
 	PumpPacket(packet);

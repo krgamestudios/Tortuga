@@ -150,7 +150,7 @@ union SerialPacket {
 		int characterArray[COMBAT_MAX_CHARACTER_COUNT];
 		int enemyArray[COMBAT_MAX_ENEMY_COUNT];
 		int mapIndex;
-		Vector2 position;
+		Vector2 origin;
 		//TODO: rewards
 	}combatInfo;
 
@@ -163,7 +163,7 @@ union SerialPacket {
 		char handle[PACKET_STRING_SIZE];
 		char avatar[PACKET_STRING_SIZE];
 		int mapIndex;
-		Vector2 position;
+		Vector2 origin;
 		Vector2 motion;
 		Statistics stats;
 	}characterInfo;

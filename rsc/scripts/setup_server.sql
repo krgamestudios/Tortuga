@@ -19,8 +19,8 @@ CREATE TABLE IF NOT EXISTS Characters (
 
 	--position
 	mapIndex		INTEGER DEFAULT 0,
-	positionX		INTEGER DEFAULT 0,
-	positionY		INTEGER DEFAULT 0,
+	originX		INTEGER DEFAULT 0,
+	originY		INTEGER DEFAULT 0,
 
 	--statistics
 	level			INTEGER DEFAULT 0,

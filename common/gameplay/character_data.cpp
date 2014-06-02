@@ -23,10 +23,10 @@
 
 void CharacterData::Update(double delta) {
 	if (motion.x && motion.y) {
-		position += motion * delta * CHARACTER_WALKING_MOD;
+		origin += motion * delta * CHARACTER_WALKING_MOD;
 	}
 	else if (motion != 0) {
-		position += motion * delta;
+		origin += motion * delta;
 	}
 #ifdef GRAPHICS
 	sprite.Update(delta);
@@ -36,7 +36,7 @@ void CharacterData::Update(double delta) {
 #ifdef GRAPHICS
 
 void CharacterData::DrawTo(SDL_Surface* const dest, int camX, int camY) {
-	sprite.DrawTo(dest, position.x - camX, position.y - camY);
+	sprite.DrawTo(dest, origin.x - camX, origin.y - camY);
 }
 
 void CharacterData::CorrectSprite() {

@@ -22,9 +22,7 @@
 #ifndef COMBATDATA_HPP_
 #define COMBATDATA_HPP_
 
-//POD members
 #include "vector2.hpp"
-#include "bbox.hpp"
 
 //gameplay members
 #include "character_data.hpp"
@@ -58,8 +56,8 @@ struct CombatData {
 
 	//world interaction
 	int mapIndex = 0;
-	Vector2 position = {0.0,0.0};
-	BBox bbox = {0,0,0,0};
+	Vector2 origin = {0.0,0.0};
+	Vector2 bounds = {0.0,0.0};
 
 	//time interval
 	Clock::time_point lastTick = Clock::now();

@@ -107,8 +107,8 @@ void InWorld::Update(double delta) {
 
 	//update the camera
 	if(localCharacter) {
-		camera.x = localCharacter->position.x - camera.marginX;
-		camera.y = localCharacter->position.y - camera.marginY;
+		camera.x = localCharacter->origin.x - camera.marginX;
+		camera.y = localCharacter->origin.y - camera.marginY;
 	}
 
 	//check the map
@@ -134,7 +134,7 @@ void InWorld::Render(SDL_Surface* const screen) {
 
 	//draw characters
 	for (auto& it : characterMap) {
-		//TODO: drawing order according to Y position
+		//TODO: drawing order according to Y origin
 		it.second.DrawTo(screen, camera.x, camera.y);
 	}
 
@@ -291,7 +291,7 @@ void InWorld::HandleCharacterUpdate(SerialPacket packet) {
 
 	//update only if the message didn't originate from here
 	if (packet.characterInfo.clientIndex != clientIndex) {
-		characterMap[packet.characterInfo.characterIndex].position = packet.characterInfo.position;
+		characterMap[packet.characterInfo.characterIndex].origin = packet.characterInfo.origin;
 		characterMap[packet.characterInfo.characterIndex].motion = packet.characterInfo.motion;
 	}
 	characterMap[packet.characterInfo.characterIndex].CorrectSprite();
@@ -310,7 +310,7 @@ void InWorld::HandleCharacterNew(SerialPacket packet) {
 	character.avatar = packet.characterInfo.avatar;
 	character.sprite.LoadSurface(config["dir.sprites"] + character.avatar, 4, 4);
 	character.mapIndex = packet.characterInfo.mapIndex;
-	character.position = packet.characterInfo.position;
+	character.origin = packet.characterInfo.origin;
 	character.motion = packet.characterInfo.motion;
 	character.stats = packet.characterInfo.stats;
 
@@ -366,7 +366,7 @@ void InWorld::SendPlayerUpdate() {
 	packet.characterInfo.clientIndex = clientIndex;
 	packet.characterInfo.accountIndex = accountIndex;
 	packet.characterInfo.characterIndex = characterIndex;
-	packet.characterInfo.position = localCharacter->position;
+	packet.characterInfo.origin = localCharacter->origin;
 	packet.characterInfo.motion = localCharacter->motion;
 
 	network.SendTo(Channels::SERVER, &packet);
