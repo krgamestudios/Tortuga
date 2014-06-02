@@ -32,6 +32,7 @@
 #define NETWORK_VERSION 20140601
 #define PACKET_STRING_SIZE 100
 
+//TODO: would it be possible to serialize structures directly?
 union SerialPacket {
 	//types of packets
 	enum class Type {

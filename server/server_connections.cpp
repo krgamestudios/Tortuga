@@ -70,13 +70,21 @@ void ServerApplication::HandleJoinRequest(SerialPacket packet) {
 	//bounce this packet
 	network.SendTo(&newClient.address, &packet);
 
+	//reference to prevent multiple lookups
+	//TODO: I need a way to pack structures unto packets more easily
+	//NOTE: this chunk of code is similar to HandleSynchronize
+	CharacterData& character = characterMap[characterIndex];
+
 	//send the new character to all clients
 	packet.meta.type = SerialPacket::Type::CHARACTER_NEW;
 	packet.characterInfo.characterIndex = characterIndex;
-	strncpy(packet.characterInfo.handle, characterMap[characterIndex].handle.c_str(), PACKET_STRING_SIZE);
-	strncpy(packet.characterInfo.avatar, characterMap[characterIndex].avatar.c_str(), PACKET_STRING_SIZE);
-	packet.characterInfo.origin = characterMap[characterIndex].origin;
-	packet.characterInfo.motion = characterMap[characterIndex].motion;
+	strncpy(packet.characterInfo.handle, character.handle.c_str(), PACKET_STRING_SIZE);
+	strncpy(packet.characterInfo.avatar, character.avatar.c_str(), PACKET_STRING_SIZE);
+	packet.characterInfo.mapIndex = character.mapIndex;
+	packet.characterInfo.origin = character.origin;
+	packet.characterInfo.motion = character.motion;
+	packet.characterInfo.stats = character.stats;
+
 	PumpPacket(packet);
 
 	//TODO: don't send anything to a certain client until they send the OK (the sync packet? or ignore client side?)
