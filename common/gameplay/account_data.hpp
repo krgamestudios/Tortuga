@@ -29,6 +29,8 @@ struct AccountData {
 	//TODO: password
 	bool blackListed = false;
 	bool whiteListed = true;
+	bool mod = false;
+	bool admin = false;
 
 	int clientIndex;
 };

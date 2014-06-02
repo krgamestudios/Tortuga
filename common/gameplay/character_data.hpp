@@ -48,6 +48,7 @@ struct CharacterData {
 	int mapIndex = 0;
 	Vector2 origin = {0.0,0.0};
 	Vector2 motion = {0.0,0.0};
+	Vector2 bounds = {0.0,0.0};
 
 	//base statistics
 	Statistics stats;
@@ -69,7 +70,6 @@ struct CharacterData {
 #ifdef GRAPHICS
 	SpriteSheet sprite;
 #endif
-	Vector2 bounds = {0.0,0.0};
 	bool inCombat = false;
 	int atbGauge = 0;
 	//TODO: stored command

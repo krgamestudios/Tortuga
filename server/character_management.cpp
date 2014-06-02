@@ -29,17 +29,37 @@
 //Define the queries
 //-------------------------
 
-//TODO: save and load the statistics
 static const char* CREATE_CHARACTER = "INSERT INTO Characters (owner, handle, avatar) VALUES (?, ?, ?);";
 static const char* LOAD_CHARACTER = "SELECT * FROM Characters WHERE handle = ?;";
-static const char* SAVE_CHARACTER = "UPDATE OR FAIL Characters SET mapIndex = ?2, originX = ?3, originY = ?4 WHERE uid = ?1;";
+
+static const char* SAVE_CHARACTER = "UPDATE OR FAIL Characters SET "
+	"mapIndex = ?2,"
+	"originX = ?3,"
+	"originY = ?4,"
+	"level = ?5,"
+	"exp = ?6,"
+	"maxHP = ?7,"
+	"health = ?8,"
+	"maxMP = ?9,"
+	"mana = ?10,"
+	"attack = ?11,"
+	"defence = ?12,"
+	"intelligence = ?13,"
+	"resistance = ?14,"
+	"speed = ?15,"
+	"accuracy = ?16,"
+	"evasion = ?17,"
+	"luck = ?18"
+" WHERE uid = ?1;";
+
 static const char* DELETE_CHARACTER = "DELETE FROM Characters WHERE uid = ?;";
 
 //-------------------------
 //Define the methods
 //-------------------------
 
-//TODO: default stats as a parameter
+//TODO: should statistics be stored separately?
+//TODO: default stats as a parameter? This would be good for differing beggining states or multiple classes
 int ServerApplication::CreateCharacter(int owner, std::string handle, std::string avatar) {
 	//Create the character, failing if it exists
 	sqlite3_stmt* statement = nullptr;
@@ -139,6 +159,9 @@ int ServerApplication::LoadCharacter(int owner, std::string handle, std::string 
 		newChar.stats.luck = sqlite3_column_double(statement, 21);
 
 		//TODO: equipment
+		//TODO: items
+		//TODO: buffs
+		//TODO: debuffs
 
 		//finish the routine
 		sqlite3_finalize(statement);
@@ -178,7 +201,27 @@ int ServerApplication::SaveCharacter(int uid) {
 	ret |= sqlite3_bind_int(statement, 2, character.mapIndex) != SQLITE_OK;
 	ret |= sqlite3_bind_int(statement, 3, (int)character.origin.x) != SQLITE_OK;
 	ret |= sqlite3_bind_int(statement, 4, (int)character.origin.y) != SQLITE_OK;
-	//TODO: stats, etc.
+
+	//statistics
+	ret |= sqlite3_bind_int(statement, 5, character.stats.level) != SQLITE_OK;
+	ret |= sqlite3_bind_int(statement, 6, character.stats.exp) != SQLITE_OK;
+	ret |= sqlite3_bind_int(statement, 7, character.stats.maxHP) != SQLITE_OK;
+	ret |= sqlite3_bind_int(statement, 8, character.stats.health) != SQLITE_OK;
+	ret |= sqlite3_bind_int(statement, 9, character.stats.maxMP) != SQLITE_OK;
+	ret |= sqlite3_bind_int(statement, 10, character.stats.mana) != SQLITE_OK;
+	ret |= sqlite3_bind_int(statement, 11, character.stats.attack) != SQLITE_OK;
+	ret |= sqlite3_bind_int(statement, 12, character.stats.defence) != SQLITE_OK;
+	ret |= sqlite3_bind_int(statement, 13, character.stats.intelligence) != SQLITE_OK;
+	ret |= sqlite3_bind_int(statement, 14, character.stats.resistance) != SQLITE_OK;
+	ret |= sqlite3_bind_int(statement, 15, character.stats.speed) != SQLITE_OK;
+	ret |= sqlite3_bind_double(statement, 16, character.stats.accuracy) != SQLITE_OK;
+	ret |= sqlite3_bind_double(statement, 17, character.stats.evasion) != SQLITE_OK;
+	ret |= sqlite3_bind_double(statement, 18, character.stats.luck) != SQLITE_OK;
+
+	//TODO: equipment
+	//TODO: items
+	//TODO: buffs
+	//TODO: debuffs
 
 	//check for binding errors
 	if (ret) {

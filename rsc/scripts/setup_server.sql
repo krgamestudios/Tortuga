@@ -1,3 +1,7 @@
+--TODO: why is the database setup script scripted, while accessing, etc. hardcoded?
+--there should be a way to control the database more directly
+--TODO: move this script into a hardocded Init() method?
+
 CREATE TABLE IF NOT EXISTS Accounts (
 	uid INTEGER PRIMARY KEY AUTOINCREMENT,
 	username varchar(100) UNIQUE,
@@ -5,7 +9,8 @@ CREATE TABLE IF NOT EXISTS Accounts (
 --	password varchar(100),
 	blacklisted BIT DEFAULT 0,
 	whitelisted BIT DEFAULT 1,
-	administrator BIT DEFAULT 0
+	mod BIT DEFAULT 0,
+	admin BIT DEFAULT 0
 );
 
 CREATE TABLE IF NOT EXISTS Characters (
