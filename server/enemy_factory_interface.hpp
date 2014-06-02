@@ -23,17 +23,9 @@
 #define ENEMYFACTORYINTERFACE_HPP_
 
 #include "enemy_data.hpp"
+#include "room_data.hpp"
 
 #include <list>
-
-//TODO: move this elsewhere
-enum RoomType {
-	OVERWORLD,
-	RUINS,
-	TOWERS,
-	FORESTS,
-	CAVES,
-};
 
 //NOTE: Based on biome, world difficulty, etc.
 class EnemyFactoryInterface {
@@ -44,12 +36,12 @@ public:
 	virtual void Generate(std::list<EnemyData>* container) = 0;
 
 	//control the difficulty of the room
-	RoomType SetType(RoomType t) { return type = t; }
+	RoomData::RoomType SetType(RoomData::RoomType t) { return type = t; }
 	int SetDifficulty(int d) { return difficulty = d; }
-	RoomType GetType() { return type; }
+	RoomData::RoomType GetType() { return type; }
 	int GetDifficulty() { return difficulty; }
 protected:
-	RoomType type;
+	RoomData::RoomType type;
 	int difficulty;
 };
 

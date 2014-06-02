@@ -22,7 +22,7 @@
 #ifndef ENEMYDATA_HPP_
 #define ENEMYDATA_HPP_
 
-//gameplay
+#include "vector2.hpp"
 #include "statistics.hpp"
 
 //graphics
@@ -50,6 +50,8 @@ struct EnemyData {
 	//NOTE: these are lost when unloaded
 #ifdef GRAPHICS
 	SpriteSheet sprite;
+	Vector2 origin = {0.0,0.0};
+	Vector2 bounds = {0.0,0.0};
 #endif
 	int tableIndex;
 	int atbGauge = 0;

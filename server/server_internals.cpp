@@ -78,8 +78,7 @@ void ServerApplication::Init(int argc, char** argv) {
 	//setup the map object
 	regionPager.GetAllocator()->SetLuaState(luaState);
 	regionPager.GetFormat()->SetLuaState(luaState);
-	//TODO: config parameter
-	regionPager.GetFormat()->SetSaveDir("save/mapname/");
+	regionPager.GetFormat()->SetSaveDir(config["dir.maps"] + config["map.savename"]);
 	std::cout << "Prepared the map system" << std::endl;
 
 	//push the pager onto the lua registry

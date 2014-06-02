@@ -21,6 +21,11 @@
 */
 #include "in_combat.hpp"
 
+#include "channels.hpp"
+#include "utility.hpp"
+
+#include <stdexcept>
+
 //-------------------------
 //Public access members
 //-------------------------
@@ -44,6 +49,26 @@ InCombat::InCombat(
 	characterMap(*argCharacterMap),
 	enemyMap(*argEnemyMap)
 {
+/*	//setup the utility objects
+	buttonImage.LoadSurface(config["dir.interface"] + "button_menu.bmp");
+	buttonImage.SetClipH(buttonImage.GetClipH()/3);
+	font.LoadSurface(config["dir.fonts"] + "pk_white_8.bmp");
+
+	//pass the utility objects
+	backButton.SetImage(&buttonImage);
+	backButton.SetFont(&font);
+
+	//set the button positions
+	backButton.SetX(50);
+	backButton.SetY(50 + buttonImage.GetClipH() * 0);
+
+	//set the button texts
+	backButton.SetText("Back");
+
+	//request a sync
+	RequestSynchronize();
+*/
+	//debug
 	//
 }
 
@@ -60,7 +85,14 @@ void InCombat::FrameStart() {
 }
 
 void InCombat::Update(double delta) {
-	//
+	SerialPacket packet;
+
+	//suck in all waiting packets
+	while(network.Receive(&packet)) {
+		HandlePacket(packet);
+	}
+
+	//TODO: more
 }
 
 void InCombat::FrameEnd() {
@@ -75,7 +107,13 @@ void InCombat::RenderFrame() {
 }
 
 void InCombat::Render(SDL_Surface* const screen) {
-	//
+	//TODO: draw the background
+
+	//TODO: draw the characters
+
+	//TODO: draw the enemies
+
+	//TODO: draw the UI
 }
 
 //-------------------------
@@ -84,7 +122,7 @@ void InCombat::Render(SDL_Surface* const screen) {
 
 void InCombat::QuitEvent() {
 	//exit the game AND the server
-//	RequestDisconnect();
+	RequestDisconnect();
 	SetNextScene(SceneList::MAINMENU);
 }
 
@@ -116,10 +154,75 @@ void InCombat::KeyUp(SDL_KeyboardEvent const& key) {
 //Network handlers
 //-------------------------
 
-//TODO: network handlers
+void InCombat::HandlePacket(SerialPacket packet) {
+	switch(packet.meta.type) {
+		case SerialPacket::Type::DISCONNECT:
+			HandleDisconnect(packet);
+		break;
+		//handle errors
+		default:
+			throw(std::runtime_error(std::string() + "Unknown SerialPacket::Type encountered in InCombat: " + to_string_custom(int(packet.meta.type))));
+		break;
+	}
+}
+
+void InCombat::HandleDisconnect(SerialPacket) {
+	SetNextScene(SceneList::RESTART);
+}
+
+//TODO: more network handlers
 
 //-------------------------
 //Server control
 //-------------------------
 
-//TODO: server control
+void InCombat::RequestSynchronize() {
+	SerialPacket packet;
+
+	//request a sync
+	packet.meta.type = SerialPacket::Type::SYNCHRONIZE;
+	packet.clientInfo.clientIndex = clientIndex;
+	packet.clientInfo.accountIndex = accountIndex;
+	packet.clientInfo.characterIndex = characterIndex;
+
+	network.SendTo(Channels::SERVER, &packet);
+}
+
+void InCombat::SendPlayerUpdate() {
+	SerialPacket packet;
+
+	//pack the packet
+	packet.meta.type = SerialPacket::Type::CHARACTER_UPDATE;
+	packet.characterInfo.clientIndex = clientIndex;
+	packet.characterInfo.accountIndex = accountIndex;
+	packet.characterInfo.characterIndex = characterIndex;
+//	packet.characterInfo.position = localCharacter->position;
+//	packet.characterInfo.motion = localCharacter->motion;
+	//TODO: stats
+
+	network.SendTo(Channels::SERVER, &packet);
+}
+
+void InCombat::RequestDisconnect() {
+	SerialPacket packet;
+
+	//send a disconnect request
+	packet.meta.type = SerialPacket::Type::DISCONNECT;
+	packet.clientInfo.clientIndex = clientIndex;
+	packet.clientInfo.accountIndex = accountIndex;
+	packet.clientInfo.characterIndex = characterIndex;
+
+	network.SendTo(Channels::SERVER, &packet);
+}
+
+void InCombat::RequestShutdown() {
+	SerialPacket packet;
+
+	//send a shutdown request
+	packet.meta.type = SerialPacket::Type::SHUTDOWN;
+	packet.clientInfo.clientIndex = clientIndex;
+	packet.clientInfo.accountIndex = accountIndex;
+	packet.clientInfo.characterIndex = characterIndex;
+
+	network.SendTo(Channels::SERVER, &packet);
+}

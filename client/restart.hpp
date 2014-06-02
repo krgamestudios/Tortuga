@@ -1,4 +1,4 @@
-/* Copyright: (c) Kayne Ruse 2013, 2014
+/* Copyright: (c) Kayne Ruse 2014
  * 
  * This software is provided 'as-is', without any express or implied
  * warranty. In no event will the authors be held liable for any damages
@@ -19,31 +19,54 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef OPTIONSMENU_HPP_
-#define OPTIONSMENU_HPP_
+#ifndef RESTART_HPP_
+#define RESTART_HPP_
 
-#include "base_scene.hpp"
+//network
+#include "udp_network_utility.hpp"
 
-#include "config_utility.hpp"
+//graphics
 #include "image.hpp"
 #include "raster_font.hpp"
 #include "button.hpp"
 
-//TODO: The options screen needs to be USED
-class OptionsMenu : public BaseScene {
+//common
+#include "config_utility.hpp"
+#include "frame_rate.hpp"
+
+#include "combat_data.hpp"
+#include "character_data.hpp"
+#include "enemy_data.hpp"
+
+//client
+#include "base_scene.hpp"
+
+//std namespace
+#include <chrono>
+
+class Restart : public BaseScene {
 public:
 	//Public access members
-	OptionsMenu(ConfigUtility* const);
-	~OptionsMenu();
+	Restart(
+		ConfigUtility* const argConfig,
+		UDPNetworkUtility* const argNetwork,
+		int* const argClientIndex,
+		int* const argAccountIndex,
+		int* const argCharacterIndex,
+		std::map<int, CombatData>* argCombatMap,
+		std::map<int, CharacterData>* argCharacterMap,
+		std::map<int, EnemyData>* argEnemyMap
+	);
+	~Restart();
 
 protected:
 	//Frame loop
-	void FrameStart();
 	void Update(double delta);
-	void FrameEnd();
+	void RenderFrame();
 	void Render(SDL_Surface* const);
 
 	//Event handlers
+	void QuitEvent();
 	void MouseMotion(SDL_MouseMotionEvent const&);
 	void MouseButtonDown(SDL_MouseButtonEvent const&);
 	void MouseButtonUp(SDL_MouseButtonEvent const&);
@@ -52,11 +75,24 @@ protected:
 
 	//shared parameters
 	ConfigUtility& config;
+	UDPNetworkUtility& network;
+	int& clientIndex;
+	int& accountIndex;
+	int& characterIndex;
+	std::map<int, CombatData>& combatMap;
+	std::map<int, CharacterData>& characterMap;
+	std::map<int, EnemyData>& enemyMap;
 
-	//members
+	//graphics
 	Image image;
 	RasterFont font;
+
+	//UI
 	Button backButton;
+	FrameRate fps;
+
+	//auto return
+	std::chrono::steady_clock::time_point startTick;
 };
 
 #endif

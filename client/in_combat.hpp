@@ -75,9 +75,10 @@ protected:
 	//Network handlers
 	void HandlePacket(SerialPacket);
 	void HandleDisconnect(SerialPacket);
-	//TODO: more
+	//TODO: more network handlers
 
 	//Server control
+	void RequestSynchronize();
 	void SendPlayerUpdate();
 	void RequestDisconnect();
 	void RequestShutdown();

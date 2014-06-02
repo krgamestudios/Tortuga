@@ -25,12 +25,14 @@
 #include "vector2.hpp"
 #include "region.hpp"
 #include "statistics.hpp"
+#include "combat_data.hpp"
 
 #include "SDL/SDL_net.h"
 
-#define NETWORK_VERSION 20140528
+#define NETWORK_VERSION 20140601
 #define PACKET_STRING_SIZE 100
 
+//TODO: would it be possible to serialize structures directly?
 union SerialPacket {
 	//types of packets
 	enum class Type {
@@ -38,60 +40,67 @@ union SerialPacket {
 		NONE = 0,
 
 		//keep alive
-		PING = 1,
-		PONG = 2,
+		PING,
+		PONG,
 
 		//searching for a server to join
-		BROADCAST_REQUEST = 3,
-		BROADCAST_RESPONSE = 4,
-		BROADCAST_REJECTION = 5,
+		BROADCAST_REQUEST,
+		BROADCAST_RESPONSE,
+		BROADCAST_REJECTION,
 
 		//try to join the server
-		JOIN_REQUEST = 6,
-		JOIN_RESPONSE = 7,
-		JOIN_REJECTION = 8,
+		JOIN_REQUEST,
+		JOIN_RESPONSE,
+		JOIN_REJECTION,
 
 		//mass update
-		SYNCHRONIZE = 9,
+		SYNCHRONIZE,
 
 		//disconnect from the server
-		DISCONNECT = 10,
+		DISCONNECT,
 
 		//shut down the server
-		SHUTDOWN = 11,
+		SHUTDOWN,
 
 		//map data
-		REGION_REQUEST = 12,
-		REGION_CONTENT = 13,
-		REGION_REJECTION = 14,
+		REGION_REQUEST,
+		REGION_CONTENT,
+		REGION_REJECTION,
 
 		//combat data
-		COMBAT_ENTER = 15,
-		COMBAT_EXIT = 16,
+		COMBAT_NEW,
+		COMBAT_DELETE,
+		COMBAT_UPDATE,
 
-		COMBAT_UPDATE = 17,
+		COMBAT_ENTER_REQUEST,
+		COMBAT_ENTER_RESPONSE,
 
-		COMBAT_REJECTION = 18,
+		COMBAT_EXIT_REQUEST,
+		COMBAT_EXIT_RESPONSE,
+
+		//TODO: COMBAT info
+
+		COMBAT_REJECTION,
 
 		//character data
-		CHARACTER_NEW = 19,
-		CHARACTER_DELETE = 20,
-		CHARACTER_UPDATE = 21,
+		CHARACTER_NEW,
+		CHARACTER_DELETE,
+		CHARACTER_UPDATE,
 
-		CHARACTER_STATS_REQUEST = 22,
-		CHARACTER_STATS_RESPONSE = 23,
+		CHARACTER_STATS_REQUEST,
+		CHARACTER_STATS_RESPONSE,
 
-		CHARACTER_REJECTION = 24,
+		CHARACTER_REJECTION,
 
 		//enemy data
-		ENEMY_NEW = 25,
-		ENEMY_DELETE = 26,
-		ENEMY_UPDATE = 27,
+		ENEMY_NEW,
+		ENEMY_DELETE,
+		ENEMY_UPDATE,
 
-		ENEMY_STATS_REQUEST = 28,
-		ENEMY_STATS_RESPONSE = 29,
+		ENEMY_STATS_REQUEST,
+		ENEMY_STATS_RESPONSE,
 
-		ENEMY_REJECTION = 30,
+		ENEMY_REJECTION,
 
 		//more packet types go here
 
@@ -138,8 +147,11 @@ union SerialPacket {
 		Metadata meta;
 		int combatIndex;
 		int difficulty;
-		//TODO: background image, based on terrain type
-		//TODO: array of combatants
+		CombatData::Terrain terrainType;
+		int characterArray[COMBAT_MAX_CHARACTER_COUNT];
+		int enemyArray[COMBAT_MAX_ENEMY_COUNT];
+		int mapIndex;
+		Vector2 origin;
 		//TODO: rewards
 	}combatInfo;
 
@@ -152,7 +164,7 @@ union SerialPacket {
 		char handle[PACKET_STRING_SIZE];
 		char avatar[PACKET_STRING_SIZE];
 		int mapIndex;
-		Vector2 position;
+		Vector2 origin;
 		Vector2 motion;
 		Statistics stats;
 	}characterInfo;
@@ -163,6 +175,7 @@ union SerialPacket {
 		char handle[PACKET_STRING_SIZE];
 		char avatar[PACKET_STRING_SIZE];
 		Statistics stats;
+		//TODO: rewards
 	}enemyInfo;
 
 	//defaults

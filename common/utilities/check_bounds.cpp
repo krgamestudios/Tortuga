@@ -19,19 +19,22 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#include "account_data.hpp"
-#include "character_data.hpp"
-#include "client_data.hpp"
-#include "combat_data.hpp"
-#include "enemy_data.hpp"
-#include "room_data.hpp"
-#include "statistics.hpp"
+#include "check_bounds.hpp"
 
-/* DOCS: Sanity check, read more
- * Since most/all of the files in this directory are header files, I've created
- * this source file as a "sanity check", to ensure that the above header files
- * are written correctly via make.
- * 
- * Oddly enough, I'm pretty sure this is the first directory compiled in a
- * clean build.
-*/
+bool checkPoint(Vector2 const& origin, Vector2 const& bound, Vector2 const& point) {
+	return !(
+		point.x < origin.x ||
+		point.y < origin.y ||
+		point.x >= origin.x + bound.x ||
+		point.y >= origin.y + bound.y
+	);
+}
+
+bool checkOverlap(Vector2 const& originOne, Vector2 const& boundOne, Vector2 const& originTwo, Vector2 const& boundTwo) {
+	return !(
+		originOne.x >= originTwo.x + boundTwo.x ||
+		originOne.x + boundOne.x >= originTwo.x ||
+		originOne.y >= originTwo.y + boundTwo.y ||
+		originOne.y + boundOne.y >= originTwo.y
+	);
+}

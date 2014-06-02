@@ -31,7 +31,7 @@
 
 static const char* CREATE_USER_ACCOUNT = "INSERT INTO Accounts (username) VALUES (?);";
 static const char* LOAD_USER_ACCOUNT = "SELECT * FROM Accounts WHERE username = ?;";
-static const char* SAVE_USER_ACCOUNT = "UPDATE OR FAIL Accounts SET blacklisted = ?2, whitelisted = ?3 WHERE uid = ?1;";
+static const char* SAVE_USER_ACCOUNT = "UPDATE OR FAIL Accounts SET blacklisted = ?2, whitelisted = ?3, mod = ?4, admin = ?5 WHERE uid = ?1;";
 static const char* DELETE_USER_ACCOUNT = "DELETE FROM Accounts WHERE uid = ?;";
 
 //-------------------------
@@ -98,6 +98,8 @@ int ServerApplication::LoadUserAccount(std::string username, int clientIndex) {
 		newAccount.username = reinterpret_cast<const char*>(sqlite3_column_text(statement, 1));
 		newAccount.blackListed = sqlite3_column_int(statement, 2);
 		newAccount.whiteListed = sqlite3_column_int(statement, 3);
+		newAccount.mod = sqlite3_column_int(statement, 4);
+		newAccount.admin = sqlite3_column_int(statement, 5);
 		newAccount.clientIndex = clientIndex;
 
 		//finish the routine
@@ -137,6 +139,8 @@ int ServerApplication::SaveUserAccount(int uid) {
 	ret |= sqlite3_bind_int(statement, 1, uid) != SQLITE_OK;
 	ret |= sqlite3_bind_int(statement, 2, account.blackListed) != SQLITE_OK;
 	ret |= sqlite3_bind_int(statement, 3, account.whiteListed) != SQLITE_OK;
+	ret |= sqlite3_bind_int(statement, 4, account.mod) != SQLITE_OK;
+	ret |= sqlite3_bind_int(statement, 5, account.admin) != SQLITE_OK;
 
 	//check for binding errors
 	if (ret) {
@@ -165,7 +169,7 @@ void ServerApplication::UnloadUserAccount(int uid) {
 
 void ServerApplication::DeleteUserAccount(int uid) {
 	//delete a user account from the database, and remove it from memory
-	//NOTE: the associated characters are unloaded externally
+	//NOTE: the associated characters should be deleted externally
 	sqlite3_stmt* statement = nullptr;
 
 	//prep
