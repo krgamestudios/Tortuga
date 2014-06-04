@@ -26,19 +26,41 @@
 void serializeEnemy(EnemyPacket* packet, void* buffer) {
 	SERIALIZE(buffer, &packet->type, sizeof(SerialPacketType));
 
-	//TODO
+	//identify the enemy
+	SERIALIZE(buffer, &packet->enemyIndex, sizeof(int));
+	SERIALIZE(buffer, &packet->handle, PACKET_STRING_SIZE);
+	SERIALIZE(buffer, &packet->avatar, PACKET_STRING_SIZE);
+
+	//gameplay
 
 	//stats structure
 	serializeStatistics(&packet->stats, buffer);
 	buffer = reinterpret_cast<char*>(buffer) + sizeof(Statistics);
+
+	//TODO: equipment
+	//TODO: items
+	//TODO: buffs
+	//TODO: debuffs
+
+	//TODO: rewards
 }
 
 void deserializeEnemy(EnemyPacket* packet, void* buffer) {
 	DESERIALIZE(buffer, &packet->type, sizeof(SerialPacketType));
 
-	//TODO
+	//identify the enemy
+	DESERIALIZE(buffer, &packet->enemyIndex, sizeof(int));
+	DESERIALIZE(buffer, &packet->handle, PACKET_STRING_SIZE);
+	DESERIALIZE(buffer, &packet->avatar, PACKET_STRING_SIZE);
 
 	//stats structure
 	deserializeStatistics(&packet->stats, buffer);
 	buffer = reinterpret_cast<char*>(buffer) + sizeof(Statistics);
+
+	//TODO: equipment
+	//TODO: items
+	//TODO: buffs
+	//TODO: debuffs
+
+	//TODO: rewards
 }

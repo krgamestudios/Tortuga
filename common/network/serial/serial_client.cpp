@@ -26,11 +26,17 @@
 void serializeClient(ClientPacket* packet, void* buffer) {
 	SERIALIZE(buffer, &packet->type, sizeof(SerialPacketType));
 
-	//TODO
+	SERIALIZE(buffer, &packet->clientIndex, sizeof(int));
+	SERIALIZE(buffer, &packet->accountIndex, sizeof(int));
+	SERIALIZE(buffer, &packet->username, sizeof(PACKET_STRING_SIZE));
+	SERIALIZE(buffer, &packet->password, sizeof(PACKET_STRING_SIZE));
 }
 
 void deserializeClient(ClientPacket* packet, void* buffer) {
 	DESERIALIZE(buffer, &packet->type, sizeof(SerialPacketType));
 
-	//TODO
+	DESERIALIZE(buffer, &packet->clientIndex, sizeof(int));
+	DESERIALIZE(buffer, &packet->accountIndex, sizeof(int));
+	DESERIALIZE(buffer, &packet->username, sizeof(PACKET_STRING_SIZE));
+	DESERIALIZE(buffer, &packet->password, sizeof(PACKET_STRING_SIZE));
 }

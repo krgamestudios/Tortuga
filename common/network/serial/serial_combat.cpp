@@ -26,11 +26,39 @@
 void serializeCombat(CombatPacket* packet, void* buffer) {
 	SERIALIZE(buffer, &packet->type, sizeof(SerialPacketType));
 
-	//TODO
+	//identify the combat instance
+	SERIALIZE(buffer, &packet->combatIndex, sizeof(int));
+	SERIALIZE(buffer, &packet->difficulty, sizeof(int));
+	SERIALIZE(buffer, &packet->terrainType, sizeof(CombatData::Terrain));
+
+	//combatants
+	SERIALIZE(buffer, &packet->characterArray, sizeof(int) * COMBAT_MAX_CHARACTERS);
+	SERIALIZE(buffer, &packet->enemyArray, sizeof(int) * COMBAT_MAX_ENEMIES);
+
+	//location
+	SERIALIZE(buffer, &packet->mapIndex, sizeof(int));
+	SERIALIZE(buffer, &packet->origin.x, sizeof(double));
+	SERIALIZE(buffer, &packet->origin.y, sizeof(double));
+
+	//TODO: rewards
 }
 
 void deserializeCombat(CombatPacket* packet, void* buffer) {
 	DESERIALIZE(buffer, &packet->type, sizeof(SerialPacketType));
 
-	//TODO
+	//identify the combat instance
+	DESERIALIZE(buffer, &packet->combatIndex, sizeof(int));
+	DESERIALIZE(buffer, &packet->difficulty, sizeof(int));
+	DESERIALIZE(buffer, &packet->terrainType, sizeof(CombatData::Terrain));
+
+	//combatants
+	DESERIALIZE(buffer, &packet->characterArray, sizeof(int) * COMBAT_MAX_CHARACTERS);
+	DESERIALIZE(buffer, &packet->enemyArray, sizeof(int) * COMBAT_MAX_ENEMIES);
+
+	//location
+	DESERIALIZE(buffer, &packet->mapIndex, sizeof(int));
+	DESERIALIZE(buffer, &packet->origin.x, sizeof(double));
+	DESERIALIZE(buffer, &packet->origin.y, sizeof(double));
+
+	//TODO: rewards
 }

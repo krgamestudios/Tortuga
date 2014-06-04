@@ -26,11 +26,17 @@
 void serializeServer(ServerPacket* packet, void* buffer) {
 	SERIALIZE(buffer, &packet->type, sizeof(SerialPacketType));
 
-	//TODO
+	//identify the server
+	SERIALIZE(buffer, &packet->name, PACKET_STRING_SIZE);
+	SERIALIZE(buffer, &packet->playerCount, sizeof(int));
+	SERIALIZE(buffer, &packet->version, sizeof(int));
 }
 
 void deserializeServer(ServerPacket* packet, void* buffer) {
 	DESERIALIZE(buffer, &packet->type, sizeof(SerialPacketType));
 
-	//TODO
+	//identify the server
+	DESERIALIZE(buffer, &packet->name, PACKET_STRING_SIZE);
+	DESERIALIZE(buffer, &packet->playerCount, sizeof(int));
+	DESERIALIZE(buffer, &packet->version, sizeof(int));
 }

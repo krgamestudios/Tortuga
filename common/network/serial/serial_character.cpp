@@ -26,19 +26,55 @@
 void serializeCharacter(CharacterPacket* packet, void* buffer) {
 	SERIALIZE(buffer, &packet->type, sizeof(SerialPacketType));
 
-	//TODO
+	//identify the character
+	SERIALIZE(buffer, &packet->characterIndex, sizeof(int));
+	SERIALIZE(buffer, &packet->handle, PACKET_STRING_SIZE);
+	SERIALIZE(buffer, &packet->avatar, PACKET_STRING_SIZE);
+
+	//the owner
+	SERIALIZE(buffer, &packet->accountIndex, sizeof(int));
+
+	//location
+	SERIALIZE(buffer, &packet->roomIndex, sizeof(int));
+	SERIALIZE(buffer, &packet->origin.x, sizeof(double));
+	SERIALIZE(buffer, &packet->origin.y, sizeof(double));
+	SERIALIZE(buffer, &packet->motion.x, sizeof(double));
+	SERIALIZE(buffer, &packet->motion.y, sizeof(double));
 
 	//stats structure
 	serializeStatistics(&packet->stats, buffer);
 	buffer = reinterpret_cast<char*>(buffer) + sizeof(Statistics);
+
+	//TODO: equipment
+	//TODO: items
+	//TODO: buffs
+	//TODO: debuffs
 }
 
 void deserializeCharacter(CharacterPacket* packet, void* buffer) {
 	DESERIALIZE(buffer, &packet->type, sizeof(SerialPacketType));
 
-	//TODO
+	//identify the character
+	DESERIALIZE(buffer, &packet->characterIndex, sizeof(int));
+	DESERIALIZE(buffer, &packet->handle, PACKET_STRING_SIZE);
+	DESERIALIZE(buffer, &packet->avatar, PACKET_STRING_SIZE);
+
+	//the owner
+	DESERIALIZE(buffer, &packet->accountIndex, sizeof(int));
+
+	//location
+	DESERIALIZE(buffer, &packet->roomIndex, sizeof(int));
+	DESERIALIZE(buffer, &packet->origin.x, sizeof(double));
+	DESERIALIZE(buffer, &packet->origin.y, sizeof(double));
+	DESERIALIZE(buffer, &packet->motion.x, sizeof(double));
+	DESERIALIZE(buffer, &packet->motion.y, sizeof(double));
 
 	//stats structure
 	deserializeStatistics(&packet->stats, buffer);
 	buffer = reinterpret_cast<char*>(buffer) + sizeof(Statistics);
+
+	//TODO: equipment
+	//TODO: items
+	//TODO: buffs
+	//TODO: debuffs
 }

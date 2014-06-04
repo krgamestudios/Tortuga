@@ -46,6 +46,8 @@ struct EnemyData {
 	//TODO: buffs
 	//TODO: debuffs
 
+	//TODO: rewards
+
 	//active gameplay members
 	//NOTE: these are lost when unloaded
 #ifdef GRAPHICS
