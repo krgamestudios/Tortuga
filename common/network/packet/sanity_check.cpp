@@ -1,4 +1,4 @@
-/* Copyright: (c) Kayne Ruse 2014
+/* Copyright: (c) Kayne Ruse 2013, 2014
  * 
  * This software is provided 'as-is', without any express or implied
  * warranty. In no event will the authors be held liable for any damages
@@ -19,23 +19,10 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef ROOMDATA_HPP_
-#define ROOMDATA_HPP_
+#include "serial_packet.hpp"
 
-struct RoomData {
-	enum class RoomType {
-		OVERWORLD,
-		RUINS,
-		TOWERS,
-		FORESTS,
-		CAVES,
-	};
-
-	/* TODO: more
-	 * "multiple rooms system" using this structure
-	 * Pager
-	 * collision map
-	*/
-};
-
-#endif
+/* DOCS: Sanity check, read more
+ * Since most/all of the files in this directory are header files, I've created
+ * this source file as a "sanity check", to ensure that the above header files
+ * are written correctly via make.
+*/

@@ -1,4 +1,4 @@
-/* Copyright: (c) Kayne Ruse 2014
+/* Copyright: (c) Kayne Ruse 2013, 2014
  * 
  * This software is provided 'as-is', without any express or implied
  * warranty. In no event will the authors be held liable for any damages
@@ -19,52 +19,28 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef COMBATDATA_HPP_
-#define COMBATDATA_HPP_
+#ifndef SERIALPACKETBASE_HPP_
+#define SERIALPACKETBASE_HPP_
 
-#include "vector2.hpp"
-
-//gameplay members
-#include "character_data.hpp"
-#include "enemy_data.hpp"
-
-//graphics
-#ifdef GRAPHICS
- #include "sprite_sheet.hpp"
+#ifndef SERIALPACKET_HPP_
+ #error Cannot include this file without 'serial_packet.hpp'
 #endif
 
-//std namespace
-#include <chrono>
-#include <array>
-#include <utility>
+#include "serial_packet_type.hpp"
 
-#define COMBAT_MAX_CHARACTERS 12
-#define COMBAT_MAX_ENEMIES 12
+#include "SDL/SDL_net.h"
 
-struct CombatData {
-	enum class Terrain {
-		//TODO: types of terrains
-		NONE = 0,
-		GRASSLANDS,
-	};
+#define PACKET_STRING_SIZE 100
 
-	typedef std::chrono::steady_clock Clock;
+struct SerialPacketBase {
+	//members
+	SerialPacketType type;
+	IPaddress srcAddress;
 
-	std::array<CharacterData, COMBAT_MAX_CHARACTERS> characterArray;
-	std::array<EnemyData, COMBAT_MAX_ENEMIES> enemyArray;
-
-	//world interaction
-	int mapIndex = 0;
-	Vector2 origin = {0.0,0.0};
-	Vector2 bounds = {0.0,0.0};
-
-	//time interval
-	Clock::time_point lastTick = Clock::now();
-
-	//graphics
-#ifdef GRAPHICS
-	SpriteSheet sprite;
-#endif
+	typedef SerialPacketType Type;
 };
+
+typedef SerialPacketBase* SerialPacket;
+typedef SerialPacketType PacketType;
 
 #endif

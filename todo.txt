@@ -1,3 +1,6 @@
+TODO: Modulate this god class
+TODO: Segment SerialPacket?
+TODO: Not all structures in common/gameplay are needed by the client
 TODO: I need to keep the documentation up to date. Namely, the GDD is getting out of date.
 TODO: I completely forgot about status ailments
 TODO: Time delay for requesting region packets

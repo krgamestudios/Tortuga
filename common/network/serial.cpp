@@ -103,8 +103,8 @@ void serializeCombat(SerialPacket* packet, char* buffer) {
 	SERIALIZE(buffer, &packet->combatInfo.terrainType, sizeof(CombatData::Terrain));
 
 	//arrays
-	SERIALIZE(buffer, &packet->combatInfo.characterArray, COMBAT_MAX_CHARACTER_COUNT);
-	SERIALIZE(buffer, &packet->combatInfo.enemyArray, COMBAT_MAX_ENEMY_COUNT);
+	SERIALIZE(buffer, &packet->combatInfo.characterArray, COMBAT_MAX_CHARACTERS);
+	SERIALIZE(buffer, &packet->combatInfo.enemyArray, COMBAT_MAX_ENEMIES);
 
 	//position
 	SERIALIZE(buffer, &packet->combatInfo.mapIndex, sizeof(int));
@@ -247,8 +247,8 @@ void deserializeCombat(SerialPacket* packet, char* buffer) {
 	DESERIALIZE(buffer, &packet->combatInfo.terrainType, sizeof(CombatData::Terrain));
 
 	//arrays
-	DESERIALIZE(buffer, &packet->combatInfo.characterArray, COMBAT_MAX_CHARACTER_COUNT);
-	DESERIALIZE(buffer, &packet->combatInfo.enemyArray, COMBAT_MAX_ENEMY_COUNT);
+	DESERIALIZE(buffer, &packet->combatInfo.characterArray, COMBAT_MAX_CHARACTERS);
+	DESERIALIZE(buffer, &packet->combatInfo.enemyArray, COMBAT_MAX_ENEMIES);
 
 	//position
 	DESERIALIZE(buffer, &packet->combatInfo.mapIndex, sizeof(int));
