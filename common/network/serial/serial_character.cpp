@@ -19,20 +19,26 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef SERIAL_HPP_
-#define SERIAL_HPP_
+#include "serial.hpp"
 
-#include "serial_packet.hpp"
+#include "serial_util.hpp"
 
-/* NOTE: Keep the PACKET_BUFFER_SIZE up to date
- * NOTE: REGION_CONTENT is currently the largest type of packet
- *  map content: REGION_WIDTH * REGION_HEIGHT * REGION_DEPTH * sizoeof(region::type_t)
- *  map format: sizeof(int) * 3
- *  metadata: sizeof(SerialPacket::Type)
-*/
-#define PACKET_BUFFER_SIZE REGION_WIDTH * REGION_HEIGHT * REGION_DEPTH * sizeof(Region::type_t) + sizeof(int) * 3 + sizeof(SerialPacket::Type)
+void serializeCharacter(CharacterPacket* packet, void* buffer) {
+	SERIALIZE(buffer, &packet->type, sizeof(SerialPacketType));
 
-void serialize(SerialPacket* const, void* dest);
-void deserialize(SerialPacket* const, void* src);
+	//TODO
 
-#endif
+	//stats structure
+	serializeStatistics(&packet->stats, buffer);
+	buffer = reinterpret_cast<char*>(buffer) + sizeof(Statistics);
+}
+
+void deserializeCharacter(CharacterPacket* packet, void* buffer) {
+	DESERIALIZE(buffer, &packet->type, sizeof(SerialPacketType));
+
+	//TODO
+
+	//stats structure
+	deserializeStatistics(&packet->stats, buffer);
+	buffer = reinterpret_cast<char*>(buffer) + sizeof(Statistics);
+}

@@ -1,4 +1,4 @@
-/* Copyright: (c) Kayne Ruse 2013, 2014
+/* Copyright: (c) Kayne Ruse 2014
  * 
  * This software is provided 'as-is', without any express or implied
  * warranty. In no event will the authors be held liable for any damages
@@ -19,29 +19,13 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef SERIALPACKETBASE_HPP_
-#define SERIALPACKETBASE_HPP_
+#ifndef SERIALIZEUTIL_HPP_
+#define SERIALIZEUTIL_HPP_
 
-#ifndef SERIALPACKET_HPP_
- #error Cannot include this file without 'serial_packet.hpp'
-#endif
+#include <cstring>
 
-#include "serial_packet_type.hpp"
-
-#include "SDL/SDL_net.h"
-
-#define PACKET_STRING_SIZE 100
-
-struct SerialPacketBase {
-	//members
-	SerialPacketType type;
-	IPaddress srcAddress;
-
-	typedef SerialPacketType Type;
-
-	virtual ~SerialPacketBase();
-};
-
-typedef SerialPacketBase SerialPacket;
+//NOTE: The strange assignments here used in order to move the void* parameter
+#define SERIALIZE(buffer, data, size) memcpy(buffer, data, size); buffer = reinterpret_cast<char*>(buffer) + size;
+#define DESERIALIZE(buffer, data, size) memcpy(data, buffer, size); buffer = reinterpret_cast<char*>(buffer) + size;
 
 #endif

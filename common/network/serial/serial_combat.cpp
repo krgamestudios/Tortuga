@@ -1,4 +1,4 @@
-/* Copyright: (c) Kayne Ruse 2013, 2014
+/* Copyright: (c) Kayne Ruse 2014
  * 
  * This software is provided 'as-is', without any express or implied
  * warranty. In no event will the authors be held liable for any damages
@@ -19,29 +19,18 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef SERIALPACKETBASE_HPP_
-#define SERIALPACKETBASE_HPP_
+#include "serial.hpp"
 
-#ifndef SERIALPACKET_HPP_
- #error Cannot include this file without 'serial_packet.hpp'
-#endif
+#include "serial_util.hpp"
 
-#include "serial_packet_type.hpp"
+void serializeCombat(CombatPacket* packet, void* buffer) {
+	SERIALIZE(buffer, &packet->type, sizeof(SerialPacketType));
 
-#include "SDL/SDL_net.h"
+	//TODO
+}
 
-#define PACKET_STRING_SIZE 100
+void deserializeCombat(CombatPacket* packet, void* buffer) {
+	DESERIALIZE(buffer, &packet->type, sizeof(SerialPacketType));
 
-struct SerialPacketBase {
-	//members
-	SerialPacketType type;
-	IPaddress srcAddress;
-
-	typedef SerialPacketType Type;
-
-	virtual ~SerialPacketBase();
-};
-
-typedef SerialPacketBase SerialPacket;
-
-#endif
+	//TODO
+}
