@@ -283,6 +283,18 @@ void CharacterManager::DeleteCharacter(int uid) {
 	characterMap.erase(uid);
 }
 
+void CharacterManager::UnloadCharacterIf(std::function<bool(std::map<int, CharacterData>::iterator)> f) {
+	//save this character, then unload it if the parameter returns true
+	for (std::map<int, CharacterData>::iterator it = characterMap.begin(); it != characterMap.end(); /* EMPTY */ ) {
+		if (f(it)) {
+			SaveCharacter(it->first);
+			it = characterMap.erase(it);
+			continue;
+		}
+		it++;
+	}
+}
+
 //-------------------------
 //Define the accessors and mutators
 //-------------------------

@@ -42,11 +42,11 @@ AccountManager::AccountManager() {
 
 AccountManager::~AccountManager() {
 	for (auto& it : accountMap) {
-		SaveUserAccount(it.first);
+		SaveAccount(it.first);
 	}
 }
 
-int AccountManager::CreateUserAccount(std::string username, int clientIndex) {
+int AccountManager::CreateAccount(std::string username, int clientIndex) {
 	//create this user account, failing if it exists, leave this account in memory
 	sqlite3_stmt* statement = nullptr;
 
@@ -70,10 +70,10 @@ int AccountManager::CreateUserAccount(std::string username, int clientIndex) {
 	sqlite3_finalize(statement);
 
 	//load this account into memory
-	return LoadUserAccount(username, clientIndex);
+	return LoadAccount(username, clientIndex);
 }
 
-int AccountManager::LoadUserAccount(std::string username, int clientIndex) {
+int AccountManager::LoadAccount(std::string username, int clientIndex) {
 	//load this user account, failing if it is in memory, creating it if it doesn't exist
 	sqlite3_stmt* statement = nullptr;
 
@@ -119,13 +119,13 @@ int AccountManager::LoadUserAccount(std::string username, int clientIndex) {
 
 	if (ret == SQLITE_DONE) {
 		//create the non-existant account instead
-		return CreateUserAccount(username, clientIndex);
+		return CreateAccount(username, clientIndex);
 	}
 
-	throw(std::runtime_error(std::string() + "Unknown SQL error in LoadUserAccount: " + sqlite3_errmsg(database) ));
+	throw(std::runtime_error(std::string() + "Unknown SQL error in LoadAccount: " + sqlite3_errmsg(database) ));
 }
 
-int AccountManager::SaveUserAccount(int uid) {
+int AccountManager::SaveAccount(int uid) {
 	//save this user account from memory, replacing it if it exists in the database
 	//DOCS: To use this method, change the in-memory copy, and then call this function using that object's UID.
 
@@ -168,14 +168,14 @@ int AccountManager::SaveUserAccount(int uid) {
 	return 0;
 }
 
-void AccountManager::UnloadUserAccount(int uid) {
+void AccountManager::UnloadAccount(int uid) {
 	//save this user account, and then unload it
 	//NOTE: the associated characters are unloaded externally
-	SaveUserAccount(uid);
+	SaveAccount(uid);
 	accountMap.erase(uid);
 }
 
-void AccountManager::DeleteUserAccount(int uid) {
+void AccountManager::DeleteAccount(int uid) {
 	//delete a user account from the database, and remove it from memory
 	//NOTE: the associated characters should be deleted externally
 	sqlite3_stmt* statement = nullptr;

@@ -34,11 +34,11 @@ public:
 	~AccountManager();
 
 	//public access methods
-	int CreateUserAccount(std::string username, int clientIndex);
-	int LoadUserAccount(std::string username, int clientIndex);
-	int SaveUserAccount(int uid);
-	void UnloadUserAccount(int uid);
-	void DeleteUserAccount(int uid);
+	int CreateAccount(std::string username, int clientIndex);
+	int LoadAccount(std::string username, int clientIndex);
+	int SaveAccount(int uid);
+	void UnloadAccount(int uid);
+	void DeleteAccount(int uid);
 
 	//accessors and mutators
 	AccountData* GetAccount(int uid);

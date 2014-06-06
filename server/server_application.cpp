@@ -106,7 +106,7 @@ void ServerApplication::Init(int argc, char** argv) {
 
 	std::cout << "Internal sizes:" << std::endl;
 	std::cout << "\tTile Size: " << sizeof(Region::type_t) << std::endl;
-	std::cout << "\tRegion Format: " << REGION_WIDTH << ", " << REGION_HEIGHT << ", " << REGION_DEPTH << << std::endl;
+	std::cout << "\tRegion Format: " << REGION_WIDTH << ", " << REGION_HEIGHT << ", " << REGION_DEPTH << std::endl;
 	std::cout << "\tRegion Content Footprint: " << REGION_WIDTH * REGION_HEIGHT * REGION_DEPTH * sizeof(Region::type_t) << std::endl;
 	std::cout << "\tPACKET_BUFFER_SIZE (max size): " << PACKET_BUFFER_SIZE << std::endl;
 
@@ -122,7 +122,7 @@ void ServerApplication::Proc() {
 	while(running) {
 		//suck in the waiting packets & process them
 		while(network.Receive(&packet)) {
-			HandlePacket(packet);
+			HandlePacket(&packet);
 		}
 		//update the internals
 		//TODO: update the internals i.e. player positions
@@ -148,25 +148,25 @@ void ServerApplication::Quit() {
 //handle incoming traffic
 //-------------------------
 
-void ServerApplication::HandlePacket(SerialPacket packet) {
-	switch(packet.meta.type) {
+void ServerApplication::HandlePacket(SerialPacket* const argPacket) {
+	switch(argPacket->type) {
 		//basic connections
 		case SerialPacketType::BROADCAST_REQUEST:
-			HandleBroadcastRequest(packet);
+			HandleBroadcastRequest(dynamic_cast<SerialPacket*>(argPacket));
 		break;
 		case SerialPacketType::JOIN_REQUEST:
-			HandleJoinRequest(packet);
+			HandleJoinRequest(dynamic_cast<ClientPacket*>(argPacket));
 		break;
 		case SerialPacketType::DISCONNECT:
-			HandleDisconnect(packet);
+			HandleDisconnect(dynamic_cast<ClientPacket*>(argPacket));
 		break;
 		case SerialPacketType::SHUTDOWN:
-			HandleShutdown(packet);
+			HandleShutdown(dynamic_cast<SerialPacket*>(argPacket));
 		break;
 
 		//map management
 		case SerialPacketType::REGION_REQUEST:
-			HandleRegionRequest(packet);
+			HandleRegionRequest(dynamic_cast<RegionPacket*>(argPacket));
 		break;
 
 		//combat management
@@ -174,14 +174,14 @@ void ServerApplication::HandlePacket(SerialPacket packet) {
 
 		//character management
 		case SerialPacketType::CHARACTER_NEW:
-			HandleCharacterNew(packet);
+			HandleCharacterNew(dynamic_cast<SerialPacket*>(argPacket));
 		break;
 		case SerialPacketType::CHARACTER_DELETE:
-			HandleCharacterDelete(packet);
+			HandleCharacterDelete(dynamic_cast<SerialPacket*>(argPacket));
 		break;
 		case SerialPacketType::CHARACTER_UPDATE:
 		case SerialPacketType::CHARACTER_STATS_REQUEST: //TODO: ?
-			HandleCharacterUpdate(packet);
+			HandleCharacterUpdate(dynamic_cast<SerialPacket*>(argPacket));
 		break;
 
 		//enemy management
@@ -189,12 +189,12 @@ void ServerApplication::HandlePacket(SerialPacket packet) {
 
 		//mismanagement
 		case SerialPacketType::SYNCHRONIZE:
-			HandleSynchronize(packet);
+			HandleSynchronize(dynamic_cast<SerialPacket*>(argPacket));
 		break;
 
 		//handle errors
 		default:
-			throw(std::runtime_error(std::string() + "Unknown SerialPacketType encountered in the server: " + to_string_custom(int(packet.type))));
+			throw(std::runtime_error(std::string() + "Unknown SerialPacketType encountered in the server: " + to_string_custom(int(argPacket->type))));
 		break;
 	}
 }
@@ -203,129 +203,82 @@ void ServerApplication::HandlePacket(SerialPacket packet) {
 //basic connections
 //-------------------------
 
-void ServerApplication::HandleBroadcastRequest(SerialPacket packet) {
-	//pack the server's data
-	packet.meta.type = SerialPacket::Type::BROADCAST_RESPONSE;
-	packet.serverInfo.networkVersion = NETWORK_VERSION;
-	snprintf(packet.serverInfo.name, PACKET_STRING_SIZE, "%s", config["server.name"].c_str());
-	packet.serverInfo.playerCount = characterMap.size();
+void ServerApplication::HandleBroadcastRequest(SerialPacket* const argPacket) {
+	//send the server's data
+	ServerPacket newPacket;
 
-	//bounce this packet
-	network.SendTo(&packet.meta.srcAddress, &packet);
+	newPacket.type = SerialPacketType::BROADCAST_RESPONSE;
+	snprintf(newPacket.name, PACKET_STRING_SIZE, "%s", config["server.name"].c_str());
+	newPacket.playerCount = characterMgr.GetContainer()->size();
+	newPacket.version = NETWORK_VERSION;
+
+	network.SendTo(&argPacket->srcAddress, dynamic_cast<SerialPacket*>(&newPacket));
 }
 
-void ServerApplication::HandleJoinRequest(SerialPacket packet) {
+void ServerApplication::HandleJoinRequest(ClientPacket* const argPacket) {
 	//create the new client
 	ClientData newClient;
-	newClient.address = packet.meta.srcAddress;
+	newClient.address = argPacket->srcAddress;
 
 	//load the user account
-	int accountIndex = LoadUserAccount(packet.clientInfo.username, clientUID);
+	//TODO: handle passwords
+	int accountIndex = accountMgr.LoadAccount(argPacket->username, clientUID);
 	if (accountIndex < 0) {
 		//TODO: send rejection packet
 		std::cerr << "Error: Account already loaded: " << accountIndex << std::endl;
 		return;
 	}
 
-	//load the new character
-	int characterIndex = LoadCharacter(accountIndex, packet.clientInfo.handle, packet.clientInfo.avatar);
-	if (characterIndex < 0) {
-		//TODO: send rejection packet
-		std::cerr << "Error: Character already loaded: " << characterIndex << std::endl;
-		UnloadUserAccount(accountIndex);
-		return;
-	}
-
 	//send the client their info
-	packet.meta.type = SerialPacket::Type::JOIN_RESPONSE;
-	packet.clientInfo.clientIndex = clientUID;
-	packet.clientInfo.accountIndex = accountIndex;
-	packet.clientInfo.characterIndex = characterIndex;
+	ClientPacket newPacket;
+	newPacket.type = SerialPacketType::JOIN_RESPONSE;
+	newPacket.clientIndex = clientUID;
+	newPacket.accountIndex = accountIndex;
 
-	//bounce this packet
-	network.SendTo(&newClient.address, &packet);
+	network.SendTo(&newClient.address, dynamic_cast<SerialPacket*>(&newPacket));
 
-	//reference to prevent multiple lookups
-	//TODO: I need a way to pack structures unto packets more easily
-	//NOTE: this chunk of code is similar to HandleSynchronize
-	CharacterData& character = characterMap[characterIndex];
-
-	//send the new character to all clients
-	packet.meta.type = SerialPacket::Type::CHARACTER_NEW;
-	packet.characterInfo.characterIndex = characterIndex;
-	strncpy(packet.characterInfo.handle, character.handle.c_str(), PACKET_STRING_SIZE);
-	strncpy(packet.characterInfo.avatar, character.avatar.c_str(), PACKET_STRING_SIZE);
-	packet.characterInfo.mapIndex = character.mapIndex;
-	packet.characterInfo.origin = character.origin;
-	packet.characterInfo.motion = character.motion;
-	packet.characterInfo.stats = character.stats;
-
-	PumpPacket(packet);
-
-	//TODO: don't send anything to a certain client until they send the OK (the sync packet? or ignore client side?)
 	//finished this routine
 	clientMap[clientUID++] = newClient;
-	std::cout << "Connect, total: " << clientMap.size() << std::endl;
+	std::cout << "New connection, " << clientMap.size() << " clients and " << accountMgr.GetContainer()->size() << " accounts total" << std::endl;
 }
 
-void ServerApplication::HandleSynchronize(SerialPacket packet) {
-	//TODO: compensate for large distances
-
-	//send all the server's data to this client
-	SerialPacket newPacket;
-
-	//characters
-	newPacket.meta.type = SerialPacket::Type::CHARACTER_UPDATE;
-	for (auto& it : characterMap) {
-		//TODO: update this for the expanded CharacterData structure
-		newPacket.characterInfo.characterIndex = it.first;
-		snprintf(newPacket.characterInfo.handle, PACKET_STRING_SIZE, "%s", it.second.handle.c_str());
-		snprintf(newPacket.characterInfo.avatar, PACKET_STRING_SIZE, "%s", it.second.avatar.c_str());
-		newPacket.characterInfo.mapIndex = it.second.mapIndex;
-		newPacket.characterInfo.origin = it.second.origin;
-		newPacket.characterInfo.motion = it.second.motion;
-		newPacket.characterInfo.stats = it.second.stats;
-
-		network.SendTo(&clientMap[packet.clientInfo.clientIndex].address, &newPacket);
-	}
-}
-
-void ServerApplication::HandleDisconnect(SerialPacket packet) {
+void ServerApplication::HandleDisconnect(ClientPacket* const argPacket) {
 	//TODO: authenticate who is disconnecting/kicking
 
 	//forward to the specified client
-	network.SendTo(&clientMap[accountMap[packet.clientInfo.accountIndex].clientIndex].address, &packet);
+	network.SendTo(
+		&clientMap[ accountMgr.GetAccount(argPacket->accountIndex)->clientIndex ].address,
+		dynamic_cast<SerialPacket*>(argPacket)
+	);
 
-	//unload client and server-side characters
-	for (std::map<int, CharacterData>::iterator it = characterMap.begin(); it != characterMap.end(); /* EMPTY */ ) {
-		if (it->second.owner == packet.clientInfo.accountIndex) {
+	//save and unload this account's characters
+	//pump the unload message to all remaining clients
+	characterMgr.UnloadCharacterIf([&](std::map<int, CharacterData>::iterator it) -> bool {
+		if (argPacket->accountIndex == it->second.owner) {
 			PumpCharacterUnload(it->first);
-			SaveCharacter(it->first);
-			it = characterMap.erase(it); //efficient
-			continue;
+			return true;
 		}
-		else {
-			++it;
-		}
-	}
+		return false;
+	});
 
 	//erase the in-memory stuff
-	clientMap.erase(accountMap[packet.clientInfo.accountIndex].clientIndex);
-	UnloadUserAccount(packet.clientInfo.accountIndex);
+	clientMap.erase(accountMgr.GetAccount(argPacket->accountIndex)->clientIndex);
+	accountMgr.UnloadAccount(argPacket->accountIndex);
 
 	//finished this routine
-	std::cout << "Disconnect, total: " << clientMap.size() << std::endl;
+	std::cout << "Disconnection, " << clientMap.size() << " clients and " << accountMgr.GetContainer()->size() << " accounts total" << std::endl;
 }
 
-void ServerApplication::HandleShutdown(SerialPacket packet) {
+void ServerApplication::HandleShutdown(SerialPacket* const argPacket) {
 	//TODO: authenticate who is shutting the server down
 
 	//end the server
 	running = false;
 
 	//disconnect all clients
-	packet.meta.type = SerialPacket::Type::DISCONNECT;
-	PumpPacket(packet);
+	SerialPacket newPacket;
+	newPacket.type = SerialPacketType::DISCONNECT;
+	PumpPacket(&newPacket);
 
 	//finished this routine
 	std::cout << "Shutdown signal accepted" << std::endl;
@@ -335,13 +288,18 @@ void ServerApplication::HandleShutdown(SerialPacket packet) {
 //map management
 //-------------------------
 
-void ServerApplication::HandleRegionRequest(SerialPacket packet) {
-	//TODO: this should be moved elsewhere
-	packet.meta.type = SerialPacket::Type::REGION_CONTENT;
-	packet.regionInfo.region = regionPager.GetRegion(packet.regionInfo.x, packet.regionInfo.y);
+void ServerApplication::HandleRegionRequest(RegionPacket* const argPacket) {
+	RegionPacket newPacket;
+
+	newPacket.type = SerialPacketType::REGION_CONTENT;
+	newPacket.roomIndex = argPacket->roomIndex;
+	newPacket.x = argPacket->x;
+	newPacket.y = argPacket->y;
+
+	newPacket.region = roomMgr.GetRoom(argPacket->roomIndex)->GetPager()->GetRegion(argPacket->x, argPacket->y);
 
 	//send the content
-	network.SendTo(&packet.meta.srcAddress, &packet);
+	network.SendTo(&argPacket->srcAddress, dynamic_cast<SerialPacket*>(argPacket));
 }
 
 //-------------------------
@@ -380,6 +338,32 @@ void ServerApplication::HandleCharacterUpdate(SerialPacket packet) {
 //-------------------------
 
 //TODO: enemy management
+
+//-------------------------
+//mismanagement
+//-------------------------
+
+void ServerApplication::HandleSynchronize(SerialPacket packet) {
+	//TODO: compensate for large distances
+
+	//send all the server's data to this client
+	SerialPacket newPacket;
+
+	//characters
+	newPacket.meta.type = SerialPacket::Type::CHARACTER_UPDATE;
+	for (auto& it : characterMap) {
+		//TODO: update this for the expanded CharacterData structure
+		newPacket.characterInfo.characterIndex = it.first;
+		snprintf(newPacket.characterInfo.handle, PACKET_STRING_SIZE, "%s", it.second.handle.c_str());
+		snprintf(newPacket.characterInfo.avatar, PACKET_STRING_SIZE, "%s", it.second.avatar.c_str());
+		newPacket.characterInfo.mapIndex = it.second.mapIndex;
+		newPacket.characterInfo.origin = it.second.origin;
+		newPacket.characterInfo.motion = it.second.motion;
+		newPacket.characterInfo.stats = it.second.stats;
+
+		network.SendTo(&clientMap[packet.clientInfo.clientIndex].address, &newPacket);
+	}
+}
 
 //-------------------------
 //utility methods

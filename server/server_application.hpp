@@ -61,34 +61,34 @@ public:
 
 private:
 	//handle incoming traffic
-	void HandlePacket(SerialPacket);
+	void HandlePacket(SerialPacket* const);
 
 	//basic connections
-	void HandleBroadcastRequest(SerialPacket);
-	void HandleJoinRequest(SerialPacket);
-	void HandleDisconnect(SerialPacket);
-	void HandleShutdown(SerialPacket);
+	void HandleBroadcastRequest(SerialPacket* const);
+	void HandleJoinRequest(ClientPacket* const);
+	void HandleDisconnect(ClientPacket* const);
+	void HandleShutdown(SerialPacket* const);
 
 	//map management
-	void HandleRegionRequest(SerialPacket);
+	void HandleRegionRequest(RegionPacket* const);
 
 	//combat management
 	//TODO: combat management
 
 	//character management
-	void HandleCharacterNew(SerialPacket);
-	void HandleCharacterDelete(SerialPacket);
-	void HandleCharacterUpdate(SerialPacket);
+	void HandleCharacterNew(SerialPacket* const);
+	void HandleCharacterDelete(SerialPacket* const);
+	void HandleCharacterUpdate(SerialPacket* const);
 
 	//enemy management
 	//TODO: enemy management
 
 	//mismanagement
-	void HandleSynchronize(SerialPacket);
+	void HandleSynchronize(SerialPacket* const);
 
 	//utility methods
 	//TODO: a function that only sends to characters in a certain proximity
-	void PumpPacket(SerialPacket);
+	void PumpPacket(SerialPacket* const);
 	void PumpCharacterUnload(int uid);
 
 	//APIs and utilities

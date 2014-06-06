@@ -27,6 +27,7 @@
 #include "sqlite3/sqlite3.h"
 
 #include <map>
+#include <functional>
 
 class CharacterManager {
 public:
@@ -39,6 +40,8 @@ public:
 	int SaveCharacter(int uid);
 	void UnloadCharacter(int uid);
 	void DeleteCharacter(int uid);
+
+	void UnloadCharacterIf(std::function<bool(std::map<int, CharacterData>::iterator)> f);
 
 	//accessors and mutators
 	CharacterData* GetCharacter(int uid);
