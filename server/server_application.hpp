@@ -24,22 +24,19 @@
 
 //server specific stuff
 #include "client_data.hpp"
-#include "account_data.hpp"
-#include "character_data.hpp"
-#include "combat_data.hpp"
-#include "enemy_factory_generic.hpp"
+#include "account_manager.hpp"
+#include "character_manager.hpp"
+#include "combat_manager.hpp"
+#include "room_manager.hpp"
 
 //maps
 #include "map_allocator.hpp"
 #include "map_file_format.hpp"
 #include "region_pager.hpp"
 
-//networking
+//common utilities
 #include "udp_network_utility.hpp"
-
-//common
 #include "config_utility.hpp"
-#include "vector2.hpp"
 
 //APIs
 #include "lua/lua.hpp"
@@ -51,10 +48,9 @@
 #include <string>
 
 //The main application class
-//TODO: modulate this god class
 class ServerApplication {
 public:
-	//standard functions
+	//public methods
 	ServerApplication() = default;
 	~ServerApplication() = default;
 
@@ -63,47 +59,55 @@ public:
 	void Quit();
 
 private:
+	//handle incoming traffic
 	void HandlePacket(SerialPacket);
 
-	//handle incoming traffic
+	//basic connections
 	void HandleBroadcastRequest(SerialPacket);
 	void HandleJoinRequest(SerialPacket);
-	void HandleSynchronize(SerialPacket);
 	void HandleDisconnect(SerialPacket);
 	void HandleShutdown(SerialPacket);
-	void HandleCharacterUpdate(SerialPacket);
+
+	//map management
 	void HandleRegionRequest(SerialPacket);
 
+	//combat management
+	//TODO: combat management
+
+	//character management
+	void HandleCharacterNew(SerialPacket);
+	void HandleCharacterDelete(SerialPacket);
+	void HandleCharacterUpdate(SerialPacket);
+
+	//enemy management
+	//TODO: enemy management
+
+	//mismanagement
+	void HandleSynchronize(SerialPacket);
+
+	//utility methods
 	//TODO: a function that only sends to characters in a certain proximity
 	void PumpPacket(SerialPacket);
 	void PumpCharacterUnload(int uid);
 
-	//TODO: Account management
-	//TODO: character management
-	//TODO: combat management
-
-	//APIs
-	UDPNetworkUtility network;
+	//APIs and utilities
 	sqlite3* database = nullptr;
 	lua_State* luaState = nullptr;
+	UDPNetworkUtility network;
+	ConfigUtility config;
 
 	//server tables
 	std::map<int, ClientData> clientMap;
-	std::map<int, CombatData> combatMap;
-	std::map<int, EnemyData> enemyMap;
 
-	//maps
-	//TODO: I need to handle multiple map objects
-	//TODO: Unload regions that are distant from any characters
-	RegionPager<LuaAllocator, LuaFormat> regionPager;
-	EnemyFactoryGeneric enemyFactory;
+	//managers
+	AccountManager accountMgr;
+	CharacterManager characterMgr;
+	CombatManager combatMgr;
+	RoomManager roomMgr;
 
 	//misc
 	bool running = true;
-	ConfigUtility config;
 	int clientUID = 0;
-	int combatUID = 0;
-	int enemyUID = 0;
 };
 
 #endif

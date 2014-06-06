@@ -29,7 +29,7 @@
 #include <string>
 
 //-------------------------
-//Define the public members
+//public methods
 //-------------------------
 
 void ServerApplication::Init(int argc, char** argv) {
@@ -75,17 +75,13 @@ void ServerApplication::Init(int argc, char** argv) {
 	//Setup the objects
 	//-------------------------
 
-	//setup the map object
-	regionPager.GetAllocator()->SetLuaState(luaState);
-	regionPager.GetFormat()->SetLuaState(luaState);
-	regionPager.GetFormat()->SetSaveDir(config["dir.maps"] + config["map.savename"]);
-	std::cout << "Prepared the map system" << std::endl;
+	accountMgr.SetDatabase(database);
+	characterMgr.SetDatabase(database);
 
-	//push the pager onto the lua registry
-	lua_pushstring(luaState, "pager");
-	lua_pushlightuserdata(luaState, reinterpret_cast<void*>(&regionPager));
-	lua_settable(luaState, LUA_REGISTRYINDEX);
-	std::cout << "Registered the map system in lua" << std::endl;
+	combatMgr.SetLuaState(luaState);
+	roomMgr.SetLuaState(luaState);
+
+	std::cout << "Internal managers ready" << std::endl;
 
 	//-------------------------
 	//Run the startup scripts
@@ -103,16 +99,21 @@ void ServerApplication::Init(int argc, char** argv) {
 	}
 	std::cout << "Completed lua's setup script" << std::endl;
 
+	//-------------------------
 	//debug output
+	//-------------------------
+
 	std::cout << "Internal sizes:" << std::endl;
-	std::cout << "\tsizeof(SerialPacket): " << sizeof(SerialPacket) << std::endl;
-	std::cout << "\tPACKET_BUFFER_SIZE: " << PACKET_BUFFER_SIZE << std::endl;
+	std::cout << "\tTile Size: " << sizeof(Region::type_t) << std::endl;
+	std::cout << "\tRegion Format: " << REGION_WIDTH << ", " << REGION_HEIGHT << ", " << REGION_DEPTH << << std::endl;
+	std::cout << "\tRegion Content Footprint: " << REGION_WIDTH * REGION_HEIGHT * REGION_DEPTH * sizeof(Region::type_t) << std::endl;
+	std::cout << "\tPACKET_BUFFER_SIZE (max size): " << PACKET_BUFFER_SIZE << std::endl;
 
+	//-------------------------
 	//finalize the startup
-	std::cout << "Startup completed successfully" << std::endl;
+	//-------------------------
 
-	//debugging
-	//
+	std::cout << "Startup completed successfully" << std::endl;
 }
 
 void ServerApplication::Proc() {
@@ -156,7 +157,7 @@ void ServerApplication::Quit() {
 }
 
 //-------------------------
-//Define the network switch
+//handle incoming traffic
 //-------------------------
 
 void ServerApplication::HandlePacket(SerialPacket packet) {
@@ -191,9 +192,7 @@ void ServerApplication::HandlePacket(SerialPacket packet) {
 			HandleCharacterDelete(packet);
 		break;
 		case SerialPacketType::CHARACTER_UPDATE:
-			HandleCharacterUpdate(packet);
-		break;
-		case SerialPacketType::CHARACTER_STATS_REQUEST:
+		case SerialPacketType::CHARACTER_STATS_REQUEST: //TODO: ?
 			HandleCharacterUpdate(packet);
 		break;
 
@@ -213,7 +212,7 @@ void ServerApplication::HandlePacket(SerialPacket packet) {
 }
 
 //-------------------------
-//Define the network handlers
+//basic connections
 //-------------------------
 
 void ServerApplication::HandleBroadcastRequest(SerialPacket packet) {
@@ -344,6 +343,37 @@ void ServerApplication::HandleShutdown(SerialPacket packet) {
 	std::cout << "Shutdown signal accepted" << std::endl;
 }
 
+//-------------------------
+//map management
+//-------------------------
+
+void ServerApplication::HandleRegionRequest(SerialPacket packet) {
+	//TODO: this should be moved elsewhere
+	packet.meta.type = SerialPacket::Type::REGION_CONTENT;
+	packet.regionInfo.region = regionPager.GetRegion(packet.regionInfo.x, packet.regionInfo.y);
+
+	//send the content
+	network.SendTo(&packet.meta.srcAddress, &packet);
+}
+
+//-------------------------
+//combat management
+//-------------------------
+
+//TODO: combat management
+
+//-------------------------
+//Character Management
+//-------------------------
+
+void ServerApplication::HandleCharacterNew(SerialPacket) {
+	//TODO: fill this
+}
+
+void ServerApplication::HandleCharacterDelete(SerialPacket) {
+	//TODO: fill this
+}
+
 void ServerApplication::HandleCharacterUpdate(SerialPacket packet) {
 	//TODO: this should be moved elsewhere
 	if (characterMap.find(packet.characterInfo.characterIndex) == characterMap.end()) {
@@ -357,14 +387,17 @@ void ServerApplication::HandleCharacterUpdate(SerialPacket packet) {
 	PumpPacket(packet);
 }
 
-void ServerApplication::HandleRegionRequest(SerialPacket packet) {
-	//TODO: this should be moved elsewhere
-	packet.meta.type = SerialPacket::Type::REGION_CONTENT;
-	packet.regionInfo.region = regionPager.GetRegion(packet.regionInfo.x, packet.regionInfo.y);
+//-------------------------
+//enemy management
+//-------------------------
 
-	//send the content
-	network.SendTo(&packet.meta.srcAddress, &packet);
-}
+//TODO: enemy management
+
+//-------------------------
+//utility methods
+//-------------------------
+
+//TODO: a function that only sends to characters in a certain proximity
 
 void ServerApplication::PumpPacket(SerialPacket packet) {
 	//NOTE: I don't really like this, but it'll do for now
@@ -380,10 +413,3 @@ void ServerApplication::PumpCharacterUnload(int uid) {
 	delPacket.characterInfo.characterIndex = uid;
 	PumpPacket(delPacket);
 }
-
-//-------------------------
-//Define the utility methods
-//-------------------------
-
-//TODO: utility methods
-
