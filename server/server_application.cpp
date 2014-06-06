@@ -80,6 +80,7 @@ void ServerApplication::Init(int argc, char** argv) {
 
 	combatMgr.SetLuaState(luaState);
 	roomMgr.SetLuaState(luaState);
+	enemyMgr.SetLuaState(luaState);
 
 	std::cout << "Internal managers ready" << std::endl;
 
@@ -132,19 +133,6 @@ void ServerApplication::Proc() {
 
 void ServerApplication::Quit() {
 	std::cout << "Shutting down" << std::endl;
-
-	//save the server state
-	for (auto& it : accountMap) {
-		SaveUserAccount(it.first);
-	}
-	for (auto& it : characterMap) {
-		SaveCharacter(it.first);
-	}
-
-	//empty the members
-	accountMap.clear();
-	characterMap.clear();
-	regionPager.UnloadAll();
 
 	//APIs
 	lua_close(luaState);

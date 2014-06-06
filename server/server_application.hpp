@@ -23,10 +23,11 @@
 #define SERVERAPPLICATION_HPP_
 
 //server specific stuff
-#include "client_data.hpp"
 #include "account_manager.hpp"
 #include "character_manager.hpp"
+#include "client_data.hpp"
 #include "combat_manager.hpp"
+#include "enemy_manager.hpp"
 #include "room_manager.hpp"
 
 //maps
@@ -96,13 +97,14 @@ private:
 	UDPNetworkUtility network;
 	ConfigUtility config;
 
-	//server tables
+	//simple tables
 	std::map<int, ClientData> clientMap;
 
 	//managers
 	AccountManager accountMgr;
 	CharacterManager characterMgr;
 	CombatManager combatMgr;
+	EnemyManager enemyMgr;
 	RoomManager roomMgr;
 
 	//misc

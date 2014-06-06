@@ -30,8 +30,8 @@
 
 class AccountManager {
 public:
-	AccountManager() = default;
-	~AccountManager() = default;
+	AccountManager();
+	~AccountManager();
 
 	//public access methods
 	int CreateUserAccount(std::string username, int clientIndex);

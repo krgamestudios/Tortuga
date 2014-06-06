@@ -30,8 +30,8 @@
 
 class CharacterManager {
 public:
-	CharacterManager() = default;
-	~CharacterManager() = default;
+	CharacterManager();
+	~CharacterManager();
 
 	//public access methods
 	int CreateCharacter(int owner, std::string handle, std::string avatar);

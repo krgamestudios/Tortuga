@@ -36,6 +36,16 @@ static const char* DELETE_USER_ACCOUNT = "DELETE FROM Accounts WHERE uid = ?;";
 //Define the public methods
 //-------------------------
 
+AccountManager::AccountManager() {
+	//
+}
+
+AccountManager::~AccountManager() {
+	for (auto& it : accountMap) {
+		SaveUserAccount(it.first);
+	}
+}
+
 int AccountManager::CreateUserAccount(std::string username, int clientIndex) {
 	//create this user account, failing if it exists, leave this account in memory
 	sqlite3_stmt* statement = nullptr;

@@ -58,6 +58,16 @@ static const char* DELETE_CHARACTER = "DELETE FROM Characters WHERE uid = ?;";
 //Define the methods
 //-------------------------
 
+CharacterManager::CharacterManager() {
+	//
+}
+
+CharacterManager::~CharacterManager() {
+	for (auto& it : characterMap) {
+		SaveCharacter(it.first);
+	}
+}
+
 //TODO: should statistics be stored separately?
 //TODO: default stats as a parameter? This would be good for differing beggining states or multiple classes
 int CharacterManager::CreateCharacter(int owner, std::string handle, std::string avatar) {
