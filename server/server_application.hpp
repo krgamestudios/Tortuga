@@ -81,11 +81,6 @@ private:
 	//Account management
 	
 	//character management
-	int CreateCharacter(int owner, std::string handle, std::string avatar);
-	int LoadCharacter(int owner, std::string handle, std::string avatar);
-	int SaveCharacter(int uid);
-	void UnloadCharacter(int uid);
-	void DeleteCharacter(int uid);
 
 	//TODO: combat management
 

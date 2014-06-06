@@ -19,7 +19,7 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#include "server_application.hpp"
+#include "character_manager.hpp"
 
 #include "sqlite3/sqlite3.h"
 
@@ -60,7 +60,7 @@ static const char* DELETE_CHARACTER = "DELETE FROM Characters WHERE uid = ?;";
 
 //TODO: should statistics be stored separately?
 //TODO: default stats as a parameter? This would be good for differing beggining states or multiple classes
-int ServerApplication::CreateCharacter(int owner, std::string handle, std::string avatar) {
+int CharacterManager::CreateCharacter(int owner, std::string handle, std::string avatar) {
 	//Create the character, failing if it exists
 	sqlite3_stmt* statement = nullptr;
 
@@ -93,7 +93,7 @@ int ServerApplication::CreateCharacter(int owner, std::string handle, std::strin
 	return LoadCharacter(owner, handle, avatar);
 }
 
-int ServerApplication::LoadCharacter(int owner, std::string handle, std::string avatar) {
+int CharacterManager::LoadCharacter(int owner, std::string handle, std::string avatar) {
 	//load the specified character, creating it if it doesn't exist
 	//fail if it is already loaded, or does not belong to this account
 	sqlite3_stmt* statement = nullptr;
@@ -178,7 +178,7 @@ int ServerApplication::LoadCharacter(int owner, std::string handle, std::string 
 	throw(std::runtime_error(std::string() + "Unknown SQL error in LoadCharacter: " + sqlite3_errmsg(database) ));
 }
 
-int ServerApplication::SaveCharacter(int uid) {
+int CharacterManager::SaveCharacter(int uid) {
 	//save this character from memory, replacing it if it exists in the database
 	//DOCS: To use this method, change the in-memory copy, and then call this function using that object's UID.
 
@@ -241,13 +241,13 @@ int ServerApplication::SaveCharacter(int uid) {
 	return 0;
 }
 
-void ServerApplication::UnloadCharacter(int uid) {
+void CharacterManager::UnloadCharacter(int uid) {
 	//save this character, then unload it
 	SaveCharacter(uid);
 	characterMap.erase(uid);
 }
 
-void ServerApplication::DeleteCharacter(int uid) {
+void CharacterManager::DeleteCharacter(int uid) {
 	//delete this character from the database, then remove it from memory
 	sqlite3_stmt* statement = nullptr;
 
@@ -271,4 +271,30 @@ void ServerApplication::DeleteCharacter(int uid) {
 	//finish the routine
 	sqlite3_finalize(statement);
 	characterMap.erase(uid);
+}
+
+//-------------------------
+//Define the accessors and mutators
+//-------------------------
+
+CharacterData* CharacterManager::GetCharacter(int uid) {
+	std::map<int, CharacterData>::iterator it = characterMap.find(uid);
+
+	if (it == characterMap.end()) {
+		return nullptr;
+	}
+
+	return &it->second;
+}
+
+std::map<int, CharacterData>* CharacterManager::GetContainer() {
+	return &characterMap;
+}
+
+sqlite3* CharacterManager::SetDatabase(sqlite3* db) {
+	return database = db;
+}
+
+sqlite3* CharacterManager::GetDatabase() {
+	return database;
 }
