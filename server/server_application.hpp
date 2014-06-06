@@ -30,11 +30,6 @@
 #include "enemy_manager.hpp"
 #include "room_manager.hpp"
 
-//maps
-#include "map_allocator.hpp"
-#include "map_file_format.hpp"
-#include "region_pager.hpp"
-
 //common utilities
 #include "udp_network_utility.hpp"
 #include "config_utility.hpp"
@@ -76,15 +71,15 @@ private:
 	//TODO: combat management
 
 	//character management
-	void HandleCharacterNew(SerialPacket* const);
-	void HandleCharacterDelete(SerialPacket* const);
-	void HandleCharacterUpdate(SerialPacket* const);
+	void HandleCharacterNew(CharacterPacket* const);
+	void HandleCharacterDelete(CharacterPacket* const);
+	void HandleCharacterUpdate(CharacterPacket* const);
 
 	//enemy management
 	//TODO: enemy management
 
 	//mismanagement
-	void HandleSynchronize(SerialPacket* const);
+	void HandleSynchronize(ClientPacket* const);
 
 	//utility methods
 	//TODO: a function that only sends to characters in a certain proximity

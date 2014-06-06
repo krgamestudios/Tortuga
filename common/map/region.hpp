@@ -22,9 +22,9 @@
 #ifndef REGION_HPP_
 #define REGION_HPP_
 
-#define REGION_WIDTH 20
-#define REGION_HEIGHT 20
-#define REGION_DEPTH 3
+constexpr int REGION_WIDTH = 20;
+constexpr int REGION_HEIGHT = 20;
+constexpr int REGION_DEPTH = 3;
 
 class Region {
 public:

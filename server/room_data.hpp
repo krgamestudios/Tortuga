@@ -22,6 +22,11 @@
 #ifndef ROOMDATA_HPP_
 #define ROOMDATA_HPP_
 
+//map system
+#include "map_allocator.hpp"
+#include "map_file_format.hpp"
+#include "region_pager.hpp"
+
 struct RoomData {
 	enum class RoomType {
 		OVERWORLD,
@@ -31,11 +36,12 @@ struct RoomData {
 		CAVES,
 	};
 
-	/* TODO: more
-	 * "multiple rooms system" using this structure
-	 * Pager
-	 * collision map
-	*/
+	//members
+	RegionPager<LuaAllocator, LuaFormat> pager;
+	RoomType type;
+
+	//TODO: collision map
+	//TODO: NPCs?
 };
 
 #endif

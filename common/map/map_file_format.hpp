@@ -28,6 +28,8 @@
 
 #include <string>
 
+//TODO: I'm unhappy with using this system, there needs to be a way to handle saving/loading better
+
 class DummyFormat {
 public:
 	void Load(Region** const, int x, int y);

@@ -33,7 +33,7 @@ static const char* CREATE_CHARACTER = "INSERT INTO Characters (owner, handle, av
 static const char* LOAD_CHARACTER = "SELECT * FROM Characters WHERE handle = ?;";
 
 static const char* SAVE_CHARACTER = "UPDATE OR FAIL Characters SET "
-	"mapIndex = ?2,"
+	"roomIndex = ?2,"
 	"originX = ?3,"
 	"originY = ?4,"
 	"level = ?5,"
@@ -148,7 +148,7 @@ int CharacterManager::LoadCharacter(int owner, std::string handle, std::string a
 		//Don't cache the birth
 
 		//world origin
-		newChar.mapIndex = sqlite3_column_int(statement, 5);
+		newChar.roomIndex = sqlite3_column_int(statement, 5);
 		newChar.origin.x = (double)sqlite3_column_int(statement, 6);
 		newChar.origin.y = (double)sqlite3_column_int(statement, 7);
 
@@ -208,7 +208,7 @@ int CharacterManager::SaveCharacter(int uid) {
 	//parameters
 	bool ret = false;
 	ret |= sqlite3_bind_int(statement, 1, uid) != SQLITE_OK;
-	ret |= sqlite3_bind_int(statement, 2, character.mapIndex) != SQLITE_OK;
+	ret |= sqlite3_bind_int(statement, 2, character.roomIndex) != SQLITE_OK;
 	ret |= sqlite3_bind_int(statement, 3, (int)character.origin.x) != SQLITE_OK;
 	ret |= sqlite3_bind_int(statement, 4, (int)character.origin.y) != SQLITE_OK;
 

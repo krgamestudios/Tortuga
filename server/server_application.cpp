@@ -174,14 +174,14 @@ void ServerApplication::HandlePacket(SerialPacket* const argPacket) {
 
 		//character management
 		case SerialPacketType::CHARACTER_NEW:
-			HandleCharacterNew(dynamic_cast<SerialPacket*>(argPacket));
+			HandleCharacterNew(dynamic_cast<CharacterPacket*>(argPacket));
 		break;
 		case SerialPacketType::CHARACTER_DELETE:
-			HandleCharacterDelete(dynamic_cast<SerialPacket*>(argPacket));
+			HandleCharacterDelete(dynamic_cast<CharacterPacket*>(argPacket));
 		break;
 		case SerialPacketType::CHARACTER_UPDATE:
 		case SerialPacketType::CHARACTER_STATS_REQUEST: //TODO: ?
-			HandleCharacterUpdate(dynamic_cast<SerialPacket*>(argPacket));
+			HandleCharacterUpdate(dynamic_cast<CharacterPacket*>(argPacket));
 		break;
 
 		//enemy management
@@ -189,7 +189,7 @@ void ServerApplication::HandlePacket(SerialPacket* const argPacket) {
 
 		//mismanagement
 		case SerialPacketType::SYNCHRONIZE:
-			HandleSynchronize(dynamic_cast<SerialPacket*>(argPacket));
+			HandleSynchronize(dynamic_cast<ClientPacket*>(argPacket));
 		break;
 
 		//handle errors
@@ -296,7 +296,7 @@ void ServerApplication::HandleRegionRequest(RegionPacket* const argPacket) {
 	newPacket.x = argPacket->x;
 	newPacket.y = argPacket->y;
 
-	newPacket.region = roomMgr.GetRoom(argPacket->roomIndex)->GetPager()->GetRegion(argPacket->x, argPacket->y);
+	newPacket.region = roomMgr.GetRoom(argPacket->roomIndex)->pager.GetRegion(argPacket->x, argPacket->y);
 
 	//send the content
 	network.SendTo(&argPacket->srcAddress, dynamic_cast<SerialPacket*>(argPacket));
@@ -312,25 +312,46 @@ void ServerApplication::HandleRegionRequest(RegionPacket* const argPacket) {
 //Character Management
 //-------------------------
 
-void ServerApplication::HandleCharacterNew(SerialPacket) {
+void ServerApplication::HandleCharacterNew(CharacterPacket* const argPacket) {
 	//TODO: fill this
 }
 
-void ServerApplication::HandleCharacterDelete(SerialPacket) {
+void ServerApplication::HandleCharacterDelete(CharacterPacket* const argPacket) {
 	//TODO: fill this
 }
 
-void ServerApplication::HandleCharacterUpdate(SerialPacket packet) {
-	//TODO: this should be moved elsewhere
-	if (characterMap.find(packet.characterInfo.characterIndex) == characterMap.end()) {
-		throw(std::runtime_error("Cannot update a non-existant character"));
+void ServerApplication::HandleCharacterUpdate(CharacterPacket* const argPacket) {
+	CharacterData* character = characterMgr.GetCharacter(argPacket->characterIndex);
+
+	//make a new character if this one doesn't exist
+	if (!character) {
+		//this isn't normal
+		std::cerr << "Warning: HandleCharacterUpdate() is passing to HandleCharacterNew()" << std::endl;
+		HandleCharacterNew(argPacket);
+		return;
 	}
 
-	//TODO: the server needs it's own movement system too
-	characterMap[packet.characterInfo.characterIndex].origin = packet.characterInfo.origin;
-	characterMap[packet.characterInfo.characterIndex].motion = packet.characterInfo.motion;
+	/* TODO: rewrite this design flaw, read more
+	 * Slaving the client to the server here is a terrible idea, instead there
+	 * needs to be a utility function to update and send the server-side character
+	 * to the clients.
+	 *
+	 * Other things to consider include functionality to reequip the character,
+	 * apply status effects and to change the stats as well. These should all be
+	 * handled server-side.
+	*/
+	character->roomIndex = argPacket->roomIndex;
+	character->origin = argPacket->origin;
+	character->motion = argPacket->motion;
 
-	PumpPacket(packet);
+	character->stats = argPacket->stats;
+
+	//TODO: equipment
+	//TODO: items
+	//TODO: buffs
+	//TODO: debuffs
+
+	PumpPacket(argPacket);
 }
 
 //-------------------------
@@ -343,26 +364,29 @@ void ServerApplication::HandleCharacterUpdate(SerialPacket packet) {
 //mismanagement
 //-------------------------
 
-void ServerApplication::HandleSynchronize(SerialPacket packet) {
+void ServerApplication::HandleSynchronize(ClientPacket* const argPacket) {
 	//TODO: compensate for large distances
+	//TODO: I quite dislike this function
 
 	//send all the server's data to this client
-	SerialPacket newPacket;
+	CharacterPacket characterPacket;
 
 	//characters
-	newPacket.meta.type = SerialPacket::Type::CHARACTER_UPDATE;
-	for (auto& it : characterMap) {
+	characterPacket.type = SerialPacketType::CHARACTER_UPDATE;
+	for (auto& it : *characterMgr.GetContainer()) {
 		//TODO: update this for the expanded CharacterData structure
-		newPacket.characterInfo.characterIndex = it.first;
-		snprintf(newPacket.characterInfo.handle, PACKET_STRING_SIZE, "%s", it.second.handle.c_str());
-		snprintf(newPacket.characterInfo.avatar, PACKET_STRING_SIZE, "%s", it.second.avatar.c_str());
-		newPacket.characterInfo.mapIndex = it.second.mapIndex;
-		newPacket.characterInfo.origin = it.second.origin;
-		newPacket.characterInfo.motion = it.second.motion;
-		newPacket.characterInfo.stats = it.second.stats;
+		characterPacket.characterIndex = it.first;
+		snprintf(characterPacket.handle, PACKET_STRING_SIZE, "%s", it.second.handle.c_str());
+		snprintf(characterPacket.avatar, PACKET_STRING_SIZE, "%s", it.second.avatar.c_str());
+		characterPacket.roomIndex = it.second.roomIndex;
+		characterPacket.origin = it.second.origin;
+		characterPacket.motion = it.second.motion;
+		characterPacket.stats = it.second.stats;
 
-		network.SendTo(&clientMap[packet.clientInfo.clientIndex].address, &newPacket);
+		network.SendTo(&clientMap[argPacket->clientIndex].address, dynamic_cast<SerialPacket*>(&characterPacket));
 	}
+
+	//TODO: more
 }
 
 //-------------------------
@@ -371,17 +395,16 @@ void ServerApplication::HandleSynchronize(SerialPacket packet) {
 
 //TODO: a function that only sends to characters in a certain proximity
 
-void ServerApplication::PumpPacket(SerialPacket packet) {
-	//NOTE: I don't really like this, but it'll do for now
+void ServerApplication::PumpPacket(SerialPacket* const argPacket) {
 	for (auto& it : clientMap) {
-		network.SendTo(&it.second.address, &packet);
+		network.SendTo(&it.second.address, argPacket);
 	}
 }
 
 void ServerApplication::PumpCharacterUnload(int uid) {
 	//delete the client-side character(s)
-	SerialPacket delPacket;
-	delPacket.meta.type = SerialPacket::Type::CHARACTER_DELETE;
-	delPacket.characterInfo.characterIndex = uid;
-	PumpPacket(delPacket);
+	CharacterPacket newPacket;
+	newPacket.type = SerialPacketType::CHARACTER_DELETE;
+	newPacket.characterIndex = uid;
+	PumpPacket(dynamic_cast<SerialPacket*>(&newPacket));
 }
