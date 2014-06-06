@@ -42,9 +42,7 @@ void serializePacket(SerialPacketBase* packet, void* buffer) {
 		case SerialPacketType::BROADCAST_REQUEST:
 
 		//all rejections
-		case SerialPacketType::BROADCAST_REJECTION:
 		case SerialPacketType::JOIN_REJECTION:
-		case SerialPacketType::REGION_REJECTION:
 		case SerialPacketType::CHARACTER_REJECTION:
 		case SerialPacketType::ENEMY_REJECTION:
 		case SerialPacketType::COMBAT_REJECTION:
@@ -120,9 +118,7 @@ void deserializePacket(SerialPacketBase* packet, void* buffer) {
 		case SerialPacketType::BROADCAST_REQUEST:
 
 		//all rejections
-		case SerialPacketType::BROADCAST_REJECTION:
 		case SerialPacketType::JOIN_REJECTION:
-		case SerialPacketType::REGION_REJECTION:
 		case SerialPacketType::CHARACTER_REJECTION:
 		case SerialPacketType::ENEMY_REJECTION:
 		case SerialPacketType::COMBAT_REJECTION:

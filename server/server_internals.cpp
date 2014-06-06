@@ -184,7 +184,7 @@ void ServerApplication::HandlePacket(SerialPacket packet) {
 		break;
 		//handle errors
 		default:
-			throw(std::runtime_error("Unknown SerialPacket::Type encountered"));
+			throw(std::runtime_error("Unknown SerialPacketType encountered"));
 		break;
 	}
 }

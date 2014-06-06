@@ -28,7 +28,7 @@ struct ClientPacket : SerialPacketBase {
 	int clientIndex;
 	int accountIndex;
 	char username[PACKET_STRING_SIZE];
-	char password[PACKET_STRING_SIZE]; //hashed, not currently used
+//	char password[PACKET_STRING_SIZE]; //hashed, not currently used
 };
 
 #endif

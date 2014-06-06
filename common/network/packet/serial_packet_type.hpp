@@ -22,39 +22,49 @@
 #ifndef SERIALPACKETTYPE_HPP_
 #define SERIALPACKETTYPE_HPP_
 
+/* Key for the comments:
+ * request => response
+*/
+
 enum class SerialPacketType {
 	//default: there is something wrong
 	NONE = 0,
 
 	//keep alive
+	//ping => pong
 	PING,
 	PONG,
 
-	//searching for a server to join
+	//search for the server list
+	//none => server name, player count, version info (and source address)
 	BROADCAST_REQUEST,
 	BROADCAST_RESPONSE,
-	BROADCAST_REJECTION,
 
 	//try to join the server
+	//username, and password => client index, account index
 	JOIN_REQUEST,
 	JOIN_RESPONSE,
 	JOIN_REJECTION,
 
-	//mass update
+	//mass update of all surrounding content
+	//character.x, character.y => packet barrage
 	SYNCHRONIZE,
 
 	//disconnect from the server
+	//autentication, account index => disconnect that account
 	DISCONNECT,
 
 	//shut down the server
+	//autentication => disconnect, shutdown
 	SHUTDOWN,
 
 	//map data
+	//room index, region.x, region.y => room index, region.x, region.y, region content
 	REGION_REQUEST,
 	REGION_CONTENT,
-	REGION_REJECTION,
 
 	//combat data
+	//TODO: system incomplete
 	COMBAT_NEW,
 	COMBAT_DELETE,
 	COMBAT_UPDATE,
@@ -70,16 +80,20 @@ enum class SerialPacketType {
 	COMBAT_REJECTION,
 
 	//character data
+	//character data => etc.
 	CHARACTER_NEW,
 	CHARACTER_DELETE,
 	CHARACTER_UPDATE,
 
+	//authentication, character index => character stats
 	CHARACTER_STATS_REQUEST,
 	CHARACTER_STATS_RESPONSE,
 
+	//character new => character rejection, disconnect?
 	CHARACTER_REJECTION,
 
 	//enemy data
+	//enemy data => etc.
 	ENEMY_NEW,
 	ENEMY_DELETE,
 	ENEMY_UPDATE,
@@ -87,12 +101,13 @@ enum class SerialPacketType {
 	ENEMY_STATS_REQUEST,
 	ENEMY_STATS_RESPONSE,
 
+	//enemy index => enemy doens't exist
 	ENEMY_REJECTION,
 
-	//more packet types go here
+	//NOTE: more packet types go here
 
 	//not used
-	LAST,
+	LAST
 };
 
 #endif

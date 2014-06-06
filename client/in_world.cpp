@@ -267,7 +267,7 @@ void InWorld::HandlePacket(SerialPacket packet) {
 		break;
 		//handle errors
 		default:
-			throw(std::runtime_error(std::string() + "Unknown SerialPacket::Type encountered in InWorld: " + to_string_custom(int(packet.meta.type))));
+			throw(std::runtime_error(std::string() + "Unknown SerialPacketType encountered in InWorld: " + to_string_custom(int(packet.meta.type))));
 		break;
 	}
 }
