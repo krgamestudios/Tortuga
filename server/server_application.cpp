@@ -1,4 +1,4 @@
-/* Copyright: (c) Kayne Ruse 2013, 2014
+/* Copyright: (c) Kayne Ruse 2014
  * 
  * This software is provided 'as-is', without any express or implied
  * warranty. In no event will the authors be held liable for any damages
@@ -21,11 +21,199 @@
 */
 #include "server_application.hpp"
 
+#include "sql_utility.hpp"
+#include "serial.hpp"
+
 #include <stdexcept>
 #include <iostream>
+#include <string>
 
 //-------------------------
-//Handle various network input
+//Define the public members
+//-------------------------
+
+void ServerApplication::Init(int argc, char** argv) {
+	//NOTE: I might need to rearrange the init process so that lua & SQL can interact with the map system as needed.
+	std::cout << "Beginning startup" << std::endl;
+
+	//initial setup
+	config.Load("rsc\\config.cfg");
+
+	//-------------------------
+	//Initialize the APIs
+	//-------------------------
+
+	//Init SDL
+	if (SDL_Init(0)) {
+		throw(std::runtime_error("Failed to initialize SDL"));
+	}
+	std::cout << "Initialized SDL" << std::endl;
+
+	//Init SDL_net
+	if (SDLNet_Init()) {
+		throw(std::runtime_error("Failed to initialize SDL_net"));
+	}
+	network.Open(config.Int("server.port"));
+	std::cout << "Initialized SDL_net" << std::endl;
+
+	//Init SQL
+	int ret = sqlite3_open_v2(config["server.dbname"].c_str(), &database, SQLITE_OPEN_READWRITE|SQLITE_OPEN_CREATE, nullptr);
+	if (ret != SQLITE_OK || !database) {
+		throw(std::runtime_error(std::string() + "Failed to initialize SQL: " + sqlite3_errmsg(database) ));
+	}
+	std::cout << "Initialized SQL" << std::endl;
+
+	//Init lua
+	luaState = luaL_newstate();
+	if (!luaState) {
+		throw(std::runtime_error("Failed to initialize lua"));
+	}
+	luaL_openlibs(luaState);
+	std::cout << "Initialized lua" << std::endl;
+
+	//-------------------------
+	//Setup the objects
+	//-------------------------
+
+	//setup the map object
+	regionPager.GetAllocator()->SetLuaState(luaState);
+	regionPager.GetFormat()->SetLuaState(luaState);
+	regionPager.GetFormat()->SetSaveDir(config["dir.maps"] + config["map.savename"]);
+	std::cout << "Prepared the map system" << std::endl;
+
+	//push the pager onto the lua registry
+	lua_pushstring(luaState, "pager");
+	lua_pushlightuserdata(luaState, reinterpret_cast<void*>(&regionPager));
+	lua_settable(luaState, LUA_REGISTRYINDEX);
+	std::cout << "Registered the map system in lua" << std::endl;
+
+	//-------------------------
+	//Run the startup scripts
+	//-------------------------
+
+	//setup the database
+	if (runSQLScript(database, config["dir.scripts"] + "setup_server.sql")) {
+		throw(std::runtime_error("Failed to initialize SQL's setup script"));
+	}
+	std::cout << "Completed SQL's setup script" << std::endl;
+
+	//run lua's startup script
+	if (luaL_dofile(luaState, (config["dir.scripts"] + "setup_server.lua").c_str())) {
+		throw(std::runtime_error(std::string() + "Failed to initialize lua's setup script: " + lua_tostring(luaState, -1) ));
+	}
+	std::cout << "Completed lua's setup script" << std::endl;
+
+	//debug output
+	std::cout << "Internal sizes:" << std::endl;
+	std::cout << "\tsizeof(SerialPacket): " << sizeof(SerialPacket) << std::endl;
+	std::cout << "\tPACKET_BUFFER_SIZE: " << PACKET_BUFFER_SIZE << std::endl;
+
+	//finalize the startup
+	std::cout << "Startup completed successfully" << std::endl;
+
+	//debugging
+	//
+}
+
+void ServerApplication::Proc() {
+	SerialPacket packet;
+	while(running) {
+		//suck in the waiting packets & process them
+		while(network.Receive(&packet)) {
+			HandlePacket(packet);
+		}
+		//update the internals
+		//TODO: update the internals i.e. player positions
+		//give the computer a break
+		SDL_Delay(10);
+	}
+}
+
+void ServerApplication::Quit() {
+	std::cout << "Shutting down" << std::endl;
+
+	//save the server state
+	for (auto& it : accountMap) {
+		SaveUserAccount(it.first);
+	}
+	for (auto& it : characterMap) {
+		SaveCharacter(it.first);
+	}
+
+	//empty the members
+	accountMap.clear();
+	characterMap.clear();
+	regionPager.UnloadAll();
+
+	//APIs
+	lua_close(luaState);
+	sqlite3_close_v2(database);
+	network.Close();
+	SDLNet_Quit();
+	SDL_Quit();
+
+	std::cout << "Shutdown finished" << std::endl;
+}
+
+//-------------------------
+//Define the network switch
+//-------------------------
+
+void ServerApplication::HandlePacket(SerialPacket packet) {
+	switch(packet.meta.type) {
+		//basic connections
+		case SerialPacketType::BROADCAST_REQUEST:
+			HandleBroadcastRequest(packet);
+		break;
+		case SerialPacketType::JOIN_REQUEST:
+			HandleJoinRequest(packet);
+		break;
+		case SerialPacketType::DISCONNECT:
+			HandleDisconnect(packet);
+		break;
+		case SerialPacketType::SHUTDOWN:
+			HandleShutdown(packet);
+		break;
+
+		//map management
+		case SerialPacketType::REGION_REQUEST:
+			HandleRegionRequest(packet);
+		break;
+
+		//combat management
+		//TODO: combat management
+
+		//character management
+		case SerialPacketType::CHARACTER_NEW:
+			HandleCharacterNew(packet);
+		break;
+		case SerialPacketType::CHARACTER_DELETE:
+			HandleCharacterDelete(packet);
+		break;
+		case SerialPacketType::CHARACTER_UPDATE:
+			HandleCharacterUpdate(packet);
+		break;
+		case SerialPacketType::CHARACTER_STATS_REQUEST:
+			HandleCharacterUpdate(packet);
+		break;
+
+		//enemy management
+		//TODO: enemy management
+
+		//mismanagement
+		case SerialPacketType::SYNCHRONIZE:
+			HandleSynchronize(packet);
+		break;
+
+		//handle errors
+		default:
+			throw(std::runtime_error(std::string() + "Unknown SerialPacketType encountered in the server: " + to_string_custom(int(packet.type))));
+		break;
+	}
+}
+
+//-------------------------
+//Define the network handlers
 //-------------------------
 
 void ServerApplication::HandleBroadcastRequest(SerialPacket packet) {
@@ -192,3 +380,10 @@ void ServerApplication::PumpCharacterUnload(int uid) {
 	delPacket.characterInfo.characterIndex = uid;
 	PumpPacket(delPacket);
 }
+
+//-------------------------
+//Define the utility methods
+//-------------------------
+
+//TODO: utility methods
+

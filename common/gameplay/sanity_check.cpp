@@ -20,10 +20,8 @@
  * distribution.
 */
 #include "character_data.hpp"
-#include "client_data.hpp"
 #include "combat_data.hpp"
 #include "enemy_data.hpp"
-#include "room_data.hpp"
 #include "statistics.hpp"
 
 /* DOCS: Sanity check, read more

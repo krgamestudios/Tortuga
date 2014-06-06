@@ -78,10 +78,8 @@ private:
 	void PumpPacket(SerialPacket);
 	void PumpCharacterUnload(int uid);
 
-	//Account management
-	
-	//character management
-
+	//TODO: Account management
+	//TODO: character management
 	//TODO: combat management
 
 	//APIs
@@ -91,7 +89,6 @@ private:
 
 	//server tables
 	std::map<int, ClientData> clientMap;
-	std::map<int, CharacterData> characterMap;
 	std::map<int, CombatData> combatMap;
 	std::map<int, EnemyData> enemyMap;
 
