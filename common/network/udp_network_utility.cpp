@@ -166,7 +166,7 @@ int UDPNetworkUtility::SendTo(const char* ip, int port, SerialPacket* serialPack
 
 int UDPNetworkUtility::SendTo(IPaddress* add, SerialPacket* serialPacket) {
 	memset(packet->data, 0, packet->maxlen);
-	serialize(serialPacket, packet->data);
+	serializePacket(serialPacket, packet->data);
 	packet->len = PACKET_BUFFER_SIZE;
 	packet->address = *add;
 
@@ -181,7 +181,7 @@ int UDPNetworkUtility::SendTo(IPaddress* add, SerialPacket* serialPacket) {
 
 int UDPNetworkUtility::SendTo(int channel, SerialPacket* serialPacket) {
 	memset(packet->data, 0, packet->maxlen);
-	serialize(serialPacket, packet->data);
+	serializePacket(serialPacket, packet->data);
 	packet->len = PACKET_BUFFER_SIZE;
 
 	int ret = SDLNet_UDP_Send(socket, channel, packet);
@@ -195,7 +195,7 @@ int UDPNetworkUtility::SendTo(int channel, SerialPacket* serialPacket) {
 
 int UDPNetworkUtility::SendToAllChannels(SerialPacket* serialPacket) {
 	memset(packet->data, 0, packet->maxlen);
-	serialize(serialPacket, packet->data);
+	serializePacket(serialPacket, packet->data);
 	packet->len = PACKET_BUFFER_SIZE;
 
 	int sent = 0;
@@ -213,8 +213,8 @@ int UDPNetworkUtility::SendToAllChannels(SerialPacket* serialPacket) {
 int UDPNetworkUtility::Receive(SerialPacket* serialPacket) {
 	memset(packet->data, 0, packet->maxlen);
 	int ret = SDLNet_UDP_Recv(socket, packet);
-	deserialize(serialPacket, packet->data);
-	serialPacket->meta.srcAddress = packet->address;
+	deserializePacket(serialPacket, packet->data);
+	serialPacket->srcAddress = packet->address;
 
 	if (ret < 0) {
 		throw(std::runtime_error("Unknown network error occured"));

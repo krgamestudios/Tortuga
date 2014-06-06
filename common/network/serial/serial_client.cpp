@@ -19,52 +19,24 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef COMBATDATA_HPP_
-#define COMBATDATA_HPP_
+#include "serial.hpp"
 
-#include "vector2.hpp"
+#include "serial_util.hpp"
 
-//gameplay members
-#include "character_data.hpp"
-#include "enemy_data.hpp"
+void serializeClient(ClientPacket* packet, void* buffer) {
+	SERIALIZE(buffer, &packet->type, sizeof(SerialPacketType));
 
-//graphics
-#ifdef GRAPHICS
- #include "sprite_sheet.hpp"
-#endif
+	SERIALIZE(buffer, &packet->clientIndex, sizeof(int));
+	SERIALIZE(buffer, &packet->accountIndex, sizeof(int));
+	SERIALIZE(buffer, &packet->username, sizeof(PACKET_STRING_SIZE));
+//	SERIALIZE(buffer, &packet->password, sizeof(PACKET_STRING_SIZE));
+}
 
-//std namespace
-#include <chrono>
-#include <array>
-#include <utility>
+void deserializeClient(ClientPacket* packet, void* buffer) {
+	DESERIALIZE(buffer, &packet->type, sizeof(SerialPacketType));
 
-#define COMBAT_MAX_CHARACTERS 12
-#define COMBAT_MAX_ENEMIES 12
-
-struct CombatData {
-	enum class Terrain {
-		//TODO: types of terrains
-		NONE = 0,
-		GRASSLANDS,
-	};
-
-	typedef std::chrono::steady_clock Clock;
-
-	std::array<CharacterData, COMBAT_MAX_CHARACTERS> characterArray;
-	std::array<EnemyData, COMBAT_MAX_ENEMIES> enemyArray;
-
-	//world interaction
-	int mapIndex = 0;
-	Vector2 origin = {0.0,0.0};
-	Vector2 bounds = {0.0,0.0};
-
-	//time interval
-	Clock::time_point lastTick = Clock::now();
-
-	//graphics
-#ifdef GRAPHICS
-	SpriteSheet sprite;
-#endif
-};
-
-#endif
+	DESERIALIZE(buffer, &packet->clientIndex, sizeof(int));
+	DESERIALIZE(buffer, &packet->accountIndex, sizeof(int));
+	DESERIALIZE(buffer, &packet->username, sizeof(PACKET_STRING_SIZE));
+//	DESERIALIZE(buffer, &packet->password, sizeof(PACKET_STRING_SIZE));
+}

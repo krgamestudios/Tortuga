@@ -1,5 +1,5 @@
 #config
-INCLUDES+=. packet serial ../gameplay ../map ../utilities
+INCLUDES+=. ../../gameplay ../../map ../../utilities
 LIBS+=
 CXXFLAGS+=-std=c++11 $(addprefix -I,$(INCLUDES))
 
@@ -11,14 +11,12 @@ OBJDIR=obj
 OBJ+=$(addprefix $(OBJDIR)/,$(CXXSRC:.cpp=.o))
 
 #output
-OUTDIR=../..
+OUTDIR=../../..
 OUT=$(addprefix $(OUTDIR)/,libcommon.a)
 
 #targets
 all: $(OBJ) $(OUT)
 	ar -crs $(OUT) $(OBJ)
-	$(MAKE) -C packet
-	$(MAKE) -C serial
 
 $(OBJ): | $(OBJDIR)
 

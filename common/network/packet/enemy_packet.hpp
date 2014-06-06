@@ -1,4 +1,4 @@
-/* Copyright: (c) Kayne Ruse 2014
+/* Copyright: (c) Kayne Ruse 2013, 2014
  * 
  * This software is provided 'as-is', without any express or implied
  * warranty. In no event will the authors be held liable for any damages
@@ -19,52 +19,26 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef COMBATDATA_HPP_
-#define COMBATDATA_HPP_
+#ifndef ENEMYPACKET_HPP_
+#define ENEMYPACKET_HPP_
 
-#include "vector2.hpp"
+#include "serial_packet_base.hpp"
 
-//gameplay members
-#include "character_data.hpp"
-#include "enemy_data.hpp"
+struct EnemyPacket : SerialPacketBase {
+	//identify the enemy
+	int enemyIndex;
+	char handle[PACKET_STRING_SIZE];
+	char avatar[PACKET_STRING_SIZE];
 
-//graphics
-#ifdef GRAPHICS
- #include "sprite_sheet.hpp"
-#endif
+	//gameplay
+	Statistics stats;
 
-//std namespace
-#include <chrono>
-#include <array>
-#include <utility>
+	//TODO: equipment
+	//TODO: items
+	//TODO: buffs
+	//TODO: debuffs
 
-#define COMBAT_MAX_CHARACTERS 12
-#define COMBAT_MAX_ENEMIES 12
-
-struct CombatData {
-	enum class Terrain {
-		//TODO: types of terrains
-		NONE = 0,
-		GRASSLANDS,
-	};
-
-	typedef std::chrono::steady_clock Clock;
-
-	std::array<CharacterData, COMBAT_MAX_CHARACTERS> characterArray;
-	std::array<EnemyData, COMBAT_MAX_ENEMIES> enemyArray;
-
-	//world interaction
-	int mapIndex = 0;
-	Vector2 origin = {0.0,0.0};
-	Vector2 bounds = {0.0,0.0};
-
-	//time interval
-	Clock::time_point lastTick = Clock::now();
-
-	//graphics
-#ifdef GRAPHICS
-	SpriteSheet sprite;
-#endif
+	//TODO: rewards
 };
 
 #endif

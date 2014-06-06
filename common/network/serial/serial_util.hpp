@@ -19,52 +19,13 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef COMBATDATA_HPP_
-#define COMBATDATA_HPP_
+#ifndef SERIALIZEUTIL_HPP_
+#define SERIALIZEUTIL_HPP_
 
-#include "vector2.hpp"
+#include <cstring>
 
-//gameplay members
-#include "character_data.hpp"
-#include "enemy_data.hpp"
-
-//graphics
-#ifdef GRAPHICS
- #include "sprite_sheet.hpp"
-#endif
-
-//std namespace
-#include <chrono>
-#include <array>
-#include <utility>
-
-#define COMBAT_MAX_CHARACTERS 12
-#define COMBAT_MAX_ENEMIES 12
-
-struct CombatData {
-	enum class Terrain {
-		//TODO: types of terrains
-		NONE = 0,
-		GRASSLANDS,
-	};
-
-	typedef std::chrono::steady_clock Clock;
-
-	std::array<CharacterData, COMBAT_MAX_CHARACTERS> characterArray;
-	std::array<EnemyData, COMBAT_MAX_ENEMIES> enemyArray;
-
-	//world interaction
-	int mapIndex = 0;
-	Vector2 origin = {0.0,0.0};
-	Vector2 bounds = {0.0,0.0};
-
-	//time interval
-	Clock::time_point lastTick = Clock::now();
-
-	//graphics
-#ifdef GRAPHICS
-	SpriteSheet sprite;
-#endif
-};
+//NOTE: The strange assignments here used in order to move the void* parameter
+#define SERIALIZE(buffer, data, size) memcpy(buffer, data, size); buffer = reinterpret_cast<char*>(buffer) + size;
+#define DESERIALIZE(buffer, data, size) memcpy(data, buffer, size); buffer = reinterpret_cast<char*>(buffer) + size;
 
 #endif
