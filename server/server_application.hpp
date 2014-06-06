@@ -79,12 +79,7 @@ private:
 	void PumpCharacterUnload(int uid);
 
 	//Account management
-	int CreateUserAccount(std::string username, int clientIndex);
-	int LoadUserAccount(std::string username, int clientIndex);
-	int SaveUserAccount(int uid);
-	void UnloadUserAccount(int uid);
-	void DeleteUserAccount(int uid);
-
+	
 	//character management
 	int CreateCharacter(int owner, std::string handle, std::string avatar);
 	int LoadCharacter(int owner, std::string handle, std::string avatar);
@@ -101,7 +96,6 @@ private:
 
 	//server tables
 	std::map<int, ClientData> clientMap;
-	std::map<int, AccountData> accountMap;
 	std::map<int, CharacterData> characterMap;
 	std::map<int, CombatData> combatMap;
 	std::map<int, EnemyData> enemyMap;

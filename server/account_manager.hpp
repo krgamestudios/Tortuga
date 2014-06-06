@@ -19,15 +19,37 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#include "character_data.hpp"
-#include "client_data.hpp"
-#include "combat_data.hpp"
-#include "enemy_data.hpp"
-#include "room_data.hpp"
-#include "statistics.hpp"
+#ifndef ACCOUNTMANAGER_HPP_
+#define ACCOUNTMANAGER_HPP_
 
-/* DOCS: Sanity check, read more
- * Since most/all of the files in this directory are header files, I've created
- * this source file as a "sanity check", to ensure that the above header files
- * are written correctly via make.
-*/
+#include "account_data.hpp"
+
+#include "sqlite3/sqlite3.h"
+
+#include <map>
+
+class AccountManager {
+public:
+	AccountManager() = default;
+	~AccountManager() = default;
+
+	//public access methods
+	int CreateUserAccount(std::string username, int clientIndex);
+	int LoadUserAccount(std::string username, int clientIndex);
+	int SaveUserAccount(int uid);
+	void UnloadUserAccount(int uid);
+	void DeleteUserAccount(int uid);
+
+	//accessors and mutators
+	AccountData* GetAccount(int uid);
+	std::map<int, AccountData>* GetContainer();
+
+	sqlite3* SetDatabase(sqlite3* db);
+	sqlite3* GetDatabase();
+
+private:
+	std::map<int, AccountData> accountMap;
+	sqlite3* database = nullptr;
+};
+
+#endif
