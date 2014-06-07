@@ -24,9 +24,11 @@
 
 #include "region.hpp"
 
-#include <list>
+#include "lua/lua.hpp"
 
-//TODO: add lua interface?
+#include <list>
+#include <string>
+
 class RegionPager {
 public:
 	RegionPager() = default;
@@ -48,8 +50,17 @@ public:
 
 	//accessors & mutators
 	std::list<Region*>* GetContainer() { return &regionList; }
-protected:
+
+	std::string SetDirectory(std::string s) { return directory = s; }
+	std::string GetDirectory() { return directory; }
+
+	lua_State* SetLuaState(lua_State* L) { return luaState = L; }
+	lua_State* GetLuaState() { return luaState; }
+
+private:
 	std::list<Region*> regionList;
+	std::string directory;
+	lua_State* luaState = nullptr;
 };
 
 #endif
