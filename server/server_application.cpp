@@ -195,7 +195,7 @@ void ServerApplication::HandlePacket(SerialPacket* const argPacket) {
 			HandleCharacterDelete(dynamic_cast<CharacterPacket*>(argPacket));
 		break;
 		case SerialPacketType::CHARACTER_UPDATE:
-		case SerialPacketType::CHARACTER_STATS_REQUEST: //TODO: ?
+		case SerialPacketType::CHARACTER_STATS_REQUEST:
 			HandleCharacterUpdate(dynamic_cast<CharacterPacket*>(argPacket));
 		break;
 
@@ -328,11 +328,52 @@ void ServerApplication::HandleRegionRequest(RegionPacket* const argPacket) {
 //-------------------------
 
 void ServerApplication::HandleCharacterNew(CharacterPacket* const argPacket) {
-	//TODO: fill this
+	int characterIndex = characterMgr.CreateCharacter(argPacket->accountIndex, argPacket->handle, argPacket->avatar);
+
+	if (characterIndex == -1) {
+		//TODO: rejection packet
+		std::cerr << "Warning: Character already loaded" << std::endl;
+		return;
+	}
+
+	if (characterIndex == -2) {
+		//TODO: rejection packet
+		std::cerr << "Warning: Character already exists" << std::endl;
+		return;
+	}
+
+	//send this new character to all clients
+	CharacterPacket newPacket;
+	newPacket.type = SerialPacketType::CHARACTER_NEW;
+	CopyCharacterToPacket(&newPacket, characterIndex);
+	PumpPacket(&newPacket);
 }
 
 void ServerApplication::HandleCharacterDelete(CharacterPacket* const argPacket) {
-	//TODO: fill this
+	//NOTE: Disconnecting only unloads a character, this explicitly deletes it
+
+	//Authenticate the owner is doing this
+	int characterIndex = characterMgr.LoadCharacter(argPacket->accountIndex, argPacket->handle, argPacket->avatar);
+
+	//if this is not your character
+	if (characterIndex == -2) {
+		//TODO: rejection packet
+		std::cerr << "Warning: Character cannot be deleted" << std::endl;
+
+		//unload an unneeded character
+		if (characterIndex != -1) {
+			characterMgr.UnloadCharacter(characterIndex);
+		}
+		return;
+	}
+
+	//delete it
+	characterMgr.DeleteCharacter(characterIndex);
+
+	//TODO: success packet
+
+	//Unload this character from all clients
+	PumpCharacterUnload(characterIndex);
 }
 
 void ServerApplication::HandleCharacterUpdate(CharacterPacket* const argPacket) {
@@ -381,27 +422,22 @@ void ServerApplication::HandleCharacterUpdate(CharacterPacket* const argPacket) 
 
 void ServerApplication::HandleSynchronize(ClientPacket* const argPacket) {
 	//TODO: compensate for large distances
-	//TODO: I quite dislike this function
+	//NOTE: I quite dislike this function
 
-	//send all the server's data to this client
-	CharacterPacket characterPacket;
+	//send all of the server's data to this client
+	ClientData& client = clientMap[argPacket->clientIndex];
 
-	//characters
-	characterPacket.type = SerialPacketType::CHARACTER_UPDATE;
+	//send all characters
+	CharacterPacket newPacket;
+	newPacket.type = SerialPacketType::CHARACTER_UPDATE;
+
 	for (auto& it : *characterMgr.GetContainer()) {
-		//TODO: update this for the expanded CharacterData structure
-		characterPacket.characterIndex = it.first;
-		snprintf(characterPacket.handle, PACKET_STRING_SIZE, "%s", it.second.handle.c_str());
-		snprintf(characterPacket.avatar, PACKET_STRING_SIZE, "%s", it.second.avatar.c_str());
-		characterPacket.roomIndex = it.second.roomIndex;
-		characterPacket.origin = it.second.origin;
-		characterPacket.motion = it.second.motion;
-		characterPacket.stats = it.second.stats;
-
-		network.SendTo(&clientMap[argPacket->clientIndex].address, dynamic_cast<SerialPacket*>(&characterPacket));
+		newPacket.characterIndex = it.first;
+		CopyCharacterToPacket(&newPacket, it.first);
+		network.SendTo(&client.address, dynamic_cast<SerialPacket*>(&newPacket));
 	}
 
-	//TODO: more
+	//TODO: more in HandleSynchronize()
 }
 
 //-------------------------
@@ -422,4 +458,21 @@ void ServerApplication::PumpCharacterUnload(int uid) {
 	newPacket.type = SerialPacketType::CHARACTER_DELETE;
 	newPacket.characterIndex = uid;
 	PumpPacket(dynamic_cast<SerialPacket*>(&newPacket));
+}
+
+void ServerApplication::CopyCharacterToPacket(CharacterPacket* const packet, int characterIndex) {
+	CharacterData* character = characterMgr.GetCharacter(characterIndex);
+	if (!character) {
+		throw(std::runtime_error("Failed to copy a character to a packet"));
+	}
+
+	//TODO: keep this up to date when the character changes
+	packet->characterIndex = characterIndex;
+	snprintf(packet->handle, PACKET_STRING_SIZE, "%s", character->handle.c_str());
+	snprintf(packet->avatar, PACKET_STRING_SIZE, "%s", character->avatar.c_str());
+	packet->accountIndex = character->owner;
+	packet->roomIndex = character->roomIndex;
+	packet->origin = character->origin;
+	packet->motion = character->motion;
+	packet->stats = character->stats;
 }

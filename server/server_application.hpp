@@ -85,6 +85,7 @@ private:
 	//TODO: a function that only sends to characters in a certain proximity
 	void PumpPacket(SerialPacket* const);
 	void PumpCharacterUnload(int uid);
+	void CopyCharacterToPacket(CharacterPacket* const packet, int characterIndex);
 
 	//APIs and utilities
 	sqlite3* database = nullptr;
