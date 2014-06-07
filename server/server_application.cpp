@@ -115,14 +115,29 @@ void ServerApplication::Init(int argc, char** argv) {
 	//-------------------------
 
 	std::cout << "Startup completed successfully" << std::endl;
+
+	//-------------------------
+	//debugging
+	//-------------------------
+
+	std::cout << "Debugging dump:" << std::endl;
+	std::cout << "\tMAX_PACKET_SIZE:\t\t" << MAX_PACKET_SIZE << std::endl;
+	std::cout << "\tsizeof(SerialPacket):\t\t" << sizeof(SerialPacket) << std::endl;
+	std::cout << "\tsizeof(CharacterPacket):\t" << sizeof(CharacterPacket) << std::endl;
+	std::cout << "\t\tsizeof(Statistics):\t" << sizeof(Statistics) << std::endl;
+	std::cout << "\tsizeof(ClientPacket):\t\t" << sizeof(ClientPacket) << std::endl;
+	std::cout << "\tsizeof(CombatPacket):\t\t" << sizeof(CombatPacket) << std::endl;
+	std::cout << "\tsizeof(EnemyPacket):\t\t" << sizeof(EnemyPacket) << std::endl;
+	std::cout << "\tsizeof(RegionPacket):\t\t" << sizeof(RegionPacket) << std::endl;
+	std::cout << "\tsizeof(ServerPacket):\t\t" << sizeof(ServerPacket) << std::endl;
 }
 
 void ServerApplication::Proc() {
-	SerialPacket packet;
+	char packetBuffer[MAX_PACKET_SIZE];
 	while(running) {
 		//suck in the waiting packets & process them
-		while(network.Receive(&packet)) {
-			HandlePacket(&packet);
+		while(network.Receive(reinterpret_cast<SerialPacket*>(packetBuffer))) {
+			HandlePacket(reinterpret_cast<SerialPacket*>(packetBuffer));
 		}
 		//update the internals
 		//TODO: update the internals i.e. player positions

@@ -31,4 +31,14 @@
 
 //NOTE: SerialPacket is defined in serial_packet_base.hpp
 
+union MaxPacket {
+	CharacterPacket a;
+	ClientPacket b;
+	CombatPacket c;
+	EnemyPacket d;
+	RegionPacket e;
+	ServerPacket f;
+};
+constexpr int MAX_PACKET_SIZE = sizeof(MaxPacket);
+
 #endif
