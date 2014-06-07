@@ -23,8 +23,6 @@
 #define ROOMDATA_HPP_
 
 //map system
-#include "map_allocator.hpp"
-#include "map_file_format.hpp"
 #include "region_pager.hpp"
 
 struct RoomData {
@@ -37,7 +35,7 @@ struct RoomData {
 	};
 
 	//members
-	RegionPager<LuaAllocator, LuaFormat> pager;
+	RegionPager pager;
 	RoomType type;
 
 	//TODO: collision map

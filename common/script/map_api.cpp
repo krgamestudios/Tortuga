@@ -22,8 +22,6 @@
 #include "map_api.hpp"
 
 //map headers
-#include "map_allocator.hpp"
-#include "map_file_format.hpp"
 #include "region_pager.hpp"
 
 //NOTE: When operating on a region, setTile() & getTile() *are not* zero indexed, but when operating on the entire map they *are* zero indexed.
@@ -42,7 +40,7 @@ static int setTile(lua_State* L) {
 		lua_gettable(L, LUA_REGISTRYINDEX);
 
 		//assume the pager is using lua
-		RegionPager<LuaAllocator, LuaFormat>* pager = reinterpret_cast<RegionPager<LuaAllocator, LuaFormat>*>(lua_touserdata(L, -1));
+		RegionPager* pager = reinterpret_cast<RegionPager*>(lua_touserdata(L, -1));
 
 		//balance the stack
 		lua_pop(L, 1);
@@ -65,7 +63,7 @@ static int getTile(lua_State* L) {
 		lua_gettable(L, LUA_REGISTRYINDEX);
 
 		//assume the pager is using lua
-		RegionPager<LuaAllocator, LuaFormat>* pager = reinterpret_cast<RegionPager<LuaAllocator, LuaFormat>*>(lua_touserdata(L, -1));
+		RegionPager* pager = reinterpret_cast<RegionPager*>(lua_touserdata(L, -1));
 
 		//balance the stack
 		lua_pop(L, 1);

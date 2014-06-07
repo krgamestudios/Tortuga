@@ -35,7 +35,6 @@ public:
 
 	//public access methods
 	//TODO
-	//TODO: setup the pagers and functors of each room object
 
 	//accessors and mutators
 	RoomData* GetRoom(int uid);

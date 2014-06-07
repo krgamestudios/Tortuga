@@ -23,6 +23,7 @@
 
 #include "sql_utility.hpp"
 #include "serial.hpp"
+#include "utility.hpp"
 
 #include <stdexcept>
 #include <iostream>

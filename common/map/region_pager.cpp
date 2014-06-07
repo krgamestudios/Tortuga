@@ -23,17 +23,17 @@
 
 #include "utility.hpp"
 
-Region::type_t RegionPagerBase::SetTile(int x, int y, int z, Region::type_t v) {
+Region::type_t RegionPager::SetTile(int x, int y, int z, Region::type_t v) {
 	Region* ptr = GetRegion(x, y);
 	return ptr->SetTile(x - ptr->GetX(), y - ptr->GetY(), z, v);
 }
 
-Region::type_t RegionPagerBase::GetTile(int x, int y, int z) {
+Region::type_t RegionPager::GetTile(int x, int y, int z) {
 	Region* ptr = GetRegion(x, y);
 	return ptr->GetTile(x - ptr->GetX(), y - ptr->GetY(), z);
 }
 
-Region* RegionPagerBase::GetRegion(int x, int y) {
+Region* RegionPager::GetRegion(int x, int y) {
 	//snap the coords
 	x = snapToBase(REGION_WIDTH, x);
 	y = snapToBase(REGION_HEIGHT, y);
@@ -47,7 +47,7 @@ Region* RegionPagerBase::GetRegion(int x, int y) {
 	return CreateRegion(x, y);
 }
 
-Region* RegionPagerBase::FindRegion(int x, int y) {
+Region* RegionPager::FindRegion(int x, int y) {
 	//snap the coords
 	x = snapToBase(REGION_WIDTH, x);
 	y = snapToBase(REGION_HEIGHT, y);
@@ -61,7 +61,54 @@ Region* RegionPagerBase::FindRegion(int x, int y) {
 	return nullptr;
 }
 
-Region* RegionPagerBase::PushRegion(Region* ptr) {
+Region* RegionPager::LoadRegion(int x, int y) {
+	//snap the coords
+	x = snapToBase(REGION_WIDTH, x);
+	y = snapToBase(REGION_HEIGHT, y);
+
+	//load the region if possible
+	//TODO: Load the region (lua)
+	return nullptr;
+}
+
+Region* RegionPager::SaveRegion(int x, int y) {
+	//snap the coords
+	x = snapToBase(REGION_WIDTH, x);
+	y = snapToBase(REGION_HEIGHT, y);
+
+	//find & save the region
+	Region* ptr = FindRegion(x, y);
+	if (ptr) {
+		//TODO: save the region (lua)
+	}
+	return ptr;
+}
+
+Region* RegionPager::CreateRegion(int x, int y) {
+	//snap the coords
+	x = snapToBase(REGION_WIDTH, x);
+	y = snapToBase(REGION_HEIGHT, y);
+
+	//create and push the object
+	Region* ptr = new Region(x, y);
+	//TODO: create the region (lua)
 	regionList.push_front(ptr);
-	return regionList.front();
+	return ptr;
+}
+
+void RegionPager::UnloadRegion(int x, int y) {
+	//snap the coords
+	x = snapToBase(REGION_WIDTH, x);
+	y = snapToBase(REGION_HEIGHT, y);
+
+	//custom loop, not FindRegion()
+	for (std::list<Region*>::iterator it = regionList.begin(); it != regionList.end(); /* EMPTY */) {
+		if ((*it)->GetX() == x && (*it)->GetY() == y) {
+			//TODO: unload the region (lua)
+			delete (*it);
+			it = regionList.erase(it);
+			continue;
+		}
+		++it;
+	}
 }
