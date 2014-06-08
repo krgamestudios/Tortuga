@@ -27,6 +27,8 @@
 #include "region_pager.hpp"
 
 //NOTE: When operating on a region, setTile() & getTile() *are not* zero indexed, but when operating on the entire map they *are* zero indexed.
+//TODO: enforce all possible parameter counts
+//TODO: update the map API to handle multiple rooms
 
 static int setTile(lua_State* L) {
 	if (lua_gettop(L) == 5) {

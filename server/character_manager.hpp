@@ -19,32 +19,40 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef REGION_HPP_
-#define REGION_HPP_
+#ifndef CHARACTERMANAGER_HPP_
+#define CHARACTERMANAGER_HPP_
 
-constexpr int REGION_WIDTH = 20;
-constexpr int REGION_HEIGHT = 20;
-constexpr int REGION_DEPTH = 3;
+#include "character_data.hpp"
 
-class Region {
+#include "sqlite3/sqlite3.h"
+
+#include <map>
+#include <functional>
+
+class CharacterManager {
 public:
-	typedef unsigned char type_t;
+	CharacterManager();
+	~CharacterManager();
 
-	Region() = delete;
-	Region(int x, int y);
-	~Region() = default;
+	//public access methods
+	int CreateCharacter(int owner, std::string handle, std::string avatar);
+	int LoadCharacter(int owner, std::string handle, std::string avatar);
+	int SaveCharacter(int uid);
+	void UnloadCharacter(int uid);
+	void DeleteCharacter(int uid);
 
-	type_t SetTile(int x, int y, int z, type_t v);
-	type_t GetTile(int x, int y, int z);
+	void UnloadCharacterIf(std::function<bool(std::map<int, CharacterData>::iterator)> f);
 
-	//accessors
-	int GetX() const { return x; }
-	int GetY() const { return y; }
+	//accessors and mutators
+	CharacterData* GetCharacter(int uid);
+	std::map<int, CharacterData>* GetContainer();
+
+	sqlite3* SetDatabase(sqlite3* db);
+	sqlite3* GetDatabase();
+
 private:
-	const int x;
-	const int y;
-
-	type_t tiles[REGION_WIDTH][REGION_HEIGHT][REGION_DEPTH];
+	std::map<int, CharacterData> characterMap;
+	sqlite3* database = nullptr;
 };
 
 #endif

@@ -1,4 +1,4 @@
-/* Copyright: (c) Kayne Ruse 2013, 2014
+/* Copyright: (c) Kayne Ruse 2014
  * 
  * This software is provided 'as-is', without any express or implied
  * warranty. In no event will the authors be held liable for any damages
@@ -19,26 +19,36 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef SERIALPACKET_HPP_
-#define SERIALPACKET_HPP_
+#include "combat_manager.hpp"
 
-#include "character_packet.hpp"
-#include "client_packet.hpp"
-#include "combat_packet.hpp"
-#include "enemy_packet.hpp"
-#include "region_packet.hpp"
-#include "server_packet.hpp"
+//-------------------------
+//public access methods
+//-------------------------
 
-//NOTE: SerialPacket is defined in serial_packet_base.hpp
+//TODO
 
-union MaxPacket {
-	CharacterPacket a;
-	ClientPacket b;
-	CombatPacket c;
-	EnemyPacket d;
-	RegionPacket e;
-	ServerPacket f;
-};
-constexpr int MAX_PACKET_SIZE = sizeof(MaxPacket);
+//-------------------------
+//accessors and mutators
+//-------------------------
 
-#endif
+CombatData* CombatManager::GetCombat(int uid) {
+	std::map<int, CombatData>::iterator it = combatMap.find(uid);
+
+	if (it == combatMap.end()) {
+		return nullptr;
+	}
+
+	return &it->second;
+}
+
+std::map<int, CombatData>* CombatManager::GetContainer() {
+	return &combatMap;
+}
+
+lua_State* CombatManager::SetLuaState(lua_State* L) {
+	return luaState = L;
+}
+
+lua_State* CombatManager::GetLuaState() {
+	return luaState;
+}

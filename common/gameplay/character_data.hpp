@@ -45,7 +45,7 @@ struct CharacterData {
 	std::string avatar;
 
 	//world position
-	int mapIndex = 0;
+	int roomIndex = 0;
 	Vector2 origin = {0.0,0.0};
 	Vector2 motion = {0.0,0.0};
 	Vector2 bounds = {0.0,0.0};

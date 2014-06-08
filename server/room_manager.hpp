@@ -1,4 +1,4 @@
-/* Copyright: (c) Kayne Ruse 2013, 2014
+/* Copyright: (c) Kayne Ruse 2014
  * 
  * This software is provided 'as-is', without any express or implied
  * warranty. In no event will the authors be held liable for any damages
@@ -19,26 +19,34 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef SERIALPACKET_HPP_
-#define SERIALPACKET_HPP_
+#ifndef ROOMMANAGER_HPP_
+#define ROOMMANAGER_HPP_
 
-#include "character_packet.hpp"
-#include "client_packet.hpp"
-#include "combat_packet.hpp"
-#include "enemy_packet.hpp"
-#include "region_packet.hpp"
-#include "server_packet.hpp"
+#include "room_data.hpp"
 
-//NOTE: SerialPacket is defined in serial_packet_base.hpp
+#include "lua/lua.hpp"
 
-union MaxPacket {
-	CharacterPacket a;
-	ClientPacket b;
-	CombatPacket c;
-	EnemyPacket d;
-	RegionPacket e;
-	ServerPacket f;
+#include <map>
+
+class RoomManager {
+public:
+	RoomManager() = default;
+	~RoomManager() = default;
+
+	//public access methods
+	//TODO
+	//TODO: setup the pagers and functors of each room object
+
+	//accessors and mutators
+	RoomData* GetRoom(int uid);
+	std::map<int, RoomData>* GetContainer();
+
+	lua_State* SetLuaState(lua_State*);
+	lua_State* GetLuaState();
+
+private:
+	std::map<int, RoomData> roomMap;
+	lua_State* luaState = nullptr;
 };
-constexpr int MAX_PACKET_SIZE = sizeof(MaxPacket);
 
 #endif

@@ -1,4 +1,4 @@
-/* Copyright: (c) Kayne Ruse 2013, 2014
+/* Copyright: (c) Kayne Ruse 2014
  * 
  * This software is provided 'as-is', without any express or implied
  * warranty. In no event will the authors be held liable for any damages
@@ -19,26 +19,37 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef SERIALPACKET_HPP_
-#define SERIALPACKET_HPP_
+#ifndef ACCOUNTMANAGER_HPP_
+#define ACCOUNTMANAGER_HPP_
 
-#include "character_packet.hpp"
-#include "client_packet.hpp"
-#include "combat_packet.hpp"
-#include "enemy_packet.hpp"
-#include "region_packet.hpp"
-#include "server_packet.hpp"
+#include "account_data.hpp"
 
-//NOTE: SerialPacket is defined in serial_packet_base.hpp
+#include "sqlite3/sqlite3.h"
 
-union MaxPacket {
-	CharacterPacket a;
-	ClientPacket b;
-	CombatPacket c;
-	EnemyPacket d;
-	RegionPacket e;
-	ServerPacket f;
+#include <map>
+
+class AccountManager {
+public:
+	AccountManager();
+	~AccountManager();
+
+	//public access methods
+	int CreateAccount(std::string username, int clientIndex);
+	int LoadAccount(std::string username, int clientIndex);
+	int SaveAccount(int uid);
+	void UnloadAccount(int uid);
+	void DeleteAccount(int uid);
+
+	//accessors and mutators
+	AccountData* GetAccount(int uid);
+	std::map<int, AccountData>* GetContainer();
+
+	sqlite3* SetDatabase(sqlite3* db);
+	sqlite3* GetDatabase();
+
+private:
+	std::map<int, AccountData> accountMap;
+	sqlite3* database = nullptr;
 };
-constexpr int MAX_PACKET_SIZE = sizeof(MaxPacket);
 
 #endif

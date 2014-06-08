@@ -23,23 +23,16 @@
 #define SERVERAPPLICATION_HPP_
 
 //server specific stuff
+#include "account_manager.hpp"
+#include "character_manager.hpp"
 #include "client_data.hpp"
-#include "account_data.hpp"
-#include "character_data.hpp"
-#include "combat_data.hpp"
-#include "enemy_factory_generic.hpp"
+#include "combat_manager.hpp"
+#include "enemy_manager.hpp"
+#include "room_manager.hpp"
 
-//maps
-#include "map_allocator.hpp"
-#include "map_file_format.hpp"
-#include "region_pager.hpp"
-
-//networking
+//common utilities
 #include "udp_network_utility.hpp"
-
-//common
 #include "config_utility.hpp"
-#include "vector2.hpp"
 
 //APIs
 #include "lua/lua.hpp"
@@ -51,10 +44,9 @@
 #include <string>
 
 //The main application class
-//TODO: modulate this god class
 class ServerApplication {
 public:
-	//standard functions
+	//public methods
 	ServerApplication() = default;
 	~ServerApplication() = default;
 
@@ -63,61 +55,57 @@ public:
 	void Quit();
 
 private:
-	void HandlePacket(SerialPacket);
-
 	//handle incoming traffic
-	void HandleBroadcastRequest(SerialPacket);
-	void HandleJoinRequest(SerialPacket);
-	void HandleSynchronize(SerialPacket);
-	void HandleDisconnect(SerialPacket);
-	void HandleShutdown(SerialPacket);
-	void HandleCharacterUpdate(SerialPacket);
-	void HandleRegionRequest(SerialPacket);
+	void HandlePacket(SerialPacket* const);
 
-	//TODO: a function that only sends to characters in a certain proximity
-	void PumpPacket(SerialPacket);
-	void PumpCharacterUnload(int uid);
+	//basic connections
+	void HandleBroadcastRequest(SerialPacket* const);
+	void HandleJoinRequest(ClientPacket* const);
+	void HandleDisconnect(ClientPacket* const);
+	void HandleShutdown(SerialPacket* const);
 
-	//Account management
-	int CreateUserAccount(std::string username, int clientIndex);
-	int LoadUserAccount(std::string username, int clientIndex);
-	int SaveUserAccount(int uid);
-	void UnloadUserAccount(int uid);
-	void DeleteUserAccount(int uid);
+	//map management
+	void HandleRegionRequest(RegionPacket* const);
 
-	//character management
-	int CreateCharacter(int owner, std::string handle, std::string avatar);
-	int LoadCharacter(int owner, std::string handle, std::string avatar);
-	int SaveCharacter(int uid);
-	void UnloadCharacter(int uid);
-	void DeleteCharacter(int uid);
-
+	//combat management
 	//TODO: combat management
 
-	//APIs
-	UDPNetworkUtility network;
+	//character management
+	void HandleCharacterNew(CharacterPacket* const);
+	void HandleCharacterDelete(CharacterPacket* const);
+	void HandleCharacterUpdate(CharacterPacket* const);
+
+	//enemy management
+	//TODO: enemy management
+
+	//mismanagement
+	void HandleSynchronize(ClientPacket* const);
+
+	//utility methods
+	//TODO: a function that only sends to characters in a certain proximity
+	void PumpPacket(SerialPacket* const);
+	void PumpCharacterUnload(int uid);
+	void CopyCharacterToPacket(CharacterPacket* const packet, int characterIndex);
+
+	//APIs and utilities
 	sqlite3* database = nullptr;
 	lua_State* luaState = nullptr;
+	UDPNetworkUtility network;
+	ConfigUtility config;
 
-	//server tables
+	//simple tables
 	std::map<int, ClientData> clientMap;
-	std::map<int, AccountData> accountMap;
-	std::map<int, CharacterData> characterMap;
-	std::map<int, CombatData> combatMap;
-	std::map<int, EnemyData> enemyMap;
 
-	//maps
-	//TODO: I need to handle multiple map objects
-	//TODO: Unload regions that are distant from any characters
-	RegionPager<LuaAllocator, LuaFormat> regionPager;
-	EnemyFactoryGeneric enemyFactory;
+	//managers
+	AccountManager accountMgr;
+	CharacterManager characterMgr;
+	CombatManager combatMgr;
+	EnemyManager enemyMgr;
+	RoomManager roomMgr;
 
 	//misc
 	bool running = true;
-	ConfigUtility config;
 	int clientUID = 0;
-	int combatUID = 0;
-	int enemyUID = 0;
 };
 
 #endif

@@ -19,23 +19,36 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef ROOMDATA_HPP_
-#define ROOMDATA_HPP_
+#include "enemy_manager.hpp"
 
-struct RoomData {
-	enum class RoomType {
-		OVERWORLD,
-		RUINS,
-		TOWERS,
-		FORESTS,
-		CAVES,
-	};
+//-------------------------
+//public access methods
+//-------------------------
 
-	/* TODO: more
-	 * "multiple rooms system" using this structure
-	 * Pager
-	 * collision map
-	*/
-};
+//TODO
 
-#endif
+//-------------------------
+//accessors and mutators
+//-------------------------
+
+EnemyData* EnemyManager::GetEnemy(int uid) {
+	std::map<int, EnemyData>::iterator it = enemyMap.find(uid);
+
+	if (it == enemyMap.end()) {
+		return nullptr;
+	}
+
+	return &it->second;
+}
+
+std::map<int, EnemyData>* EnemyManager::GetContainer() {
+	return &enemyMap;
+}
+
+lua_State* EnemyManager::SetLuaState(lua_State* L) {
+	return luaState = L;
+}
+
+lua_State* EnemyManager::GetLuaState() {
+	return luaState;
+}

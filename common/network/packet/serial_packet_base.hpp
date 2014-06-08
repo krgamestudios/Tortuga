@@ -30,6 +30,7 @@
 
 #include "SDL/SDL_net.h"
 
+#define NETWORK_VERSION 20140607
 #define PACKET_STRING_SIZE 100
 
 struct SerialPacketBase {
@@ -39,7 +40,7 @@ struct SerialPacketBase {
 
 	typedef SerialPacketType Type;
 
-	virtual ~SerialPacketBase();
+	virtual ~SerialPacketBase() {};
 };
 
 typedef SerialPacketBase SerialPacket;

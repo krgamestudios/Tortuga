@@ -19,9 +19,7 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#include "server_application.hpp"
-
-#include "sqlite3/sqlite3.h"
+#include "account_manager.hpp"
 
 #include <stdexcept>
 
@@ -35,10 +33,20 @@ static const char* SAVE_USER_ACCOUNT = "UPDATE OR FAIL Accounts SET blacklisted 
 static const char* DELETE_USER_ACCOUNT = "DELETE FROM Accounts WHERE uid = ?;";
 
 //-------------------------
-//Define the methods
+//Define the public methods
 //-------------------------
 
-int ServerApplication::CreateUserAccount(std::string username, int clientIndex) {
+AccountManager::AccountManager() {
+	//
+}
+
+AccountManager::~AccountManager() {
+	for (auto& it : accountMap) {
+		SaveAccount(it.first);
+	}
+}
+
+int AccountManager::CreateAccount(std::string username, int clientIndex) {
 	//create this user account, failing if it exists, leave this account in memory
 	sqlite3_stmt* statement = nullptr;
 
@@ -62,10 +70,10 @@ int ServerApplication::CreateUserAccount(std::string username, int clientIndex) 
 	sqlite3_finalize(statement);
 
 	//load this account into memory
-	return LoadUserAccount(username, clientIndex);
+	return LoadAccount(username, clientIndex);
 }
 
-int ServerApplication::LoadUserAccount(std::string username, int clientIndex) {
+int AccountManager::LoadAccount(std::string username, int clientIndex) {
 	//load this user account, failing if it is in memory, creating it if it doesn't exist
 	sqlite3_stmt* statement = nullptr;
 
@@ -111,13 +119,13 @@ int ServerApplication::LoadUserAccount(std::string username, int clientIndex) {
 
 	if (ret == SQLITE_DONE) {
 		//create the non-existant account instead
-		return CreateUserAccount(username, clientIndex);
+		return CreateAccount(username, clientIndex);
 	}
 
-	throw(std::runtime_error(std::string() + "Unknown SQL error in LoadUserAccount: " + sqlite3_errmsg(database) ));
+	throw(std::runtime_error(std::string() + "Unknown SQL error in LoadAccount: " + sqlite3_errmsg(database) ));
 }
 
-int ServerApplication::SaveUserAccount(int uid) {
+int AccountManager::SaveAccount(int uid) {
 	//save this user account from memory, replacing it if it exists in the database
 	//DOCS: To use this method, change the in-memory copy, and then call this function using that object's UID.
 
@@ -160,14 +168,14 @@ int ServerApplication::SaveUserAccount(int uid) {
 	return 0;
 }
 
-void ServerApplication::UnloadUserAccount(int uid) {
+void AccountManager::UnloadAccount(int uid) {
 	//save this user account, and then unload it
 	//NOTE: the associated characters are unloaded externally
-	SaveUserAccount(uid);
+	SaveAccount(uid);
 	accountMap.erase(uid);
 }
 
-void ServerApplication::DeleteUserAccount(int uid) {
+void AccountManager::DeleteAccount(int uid) {
 	//delete a user account from the database, and remove it from memory
 	//NOTE: the associated characters should be deleted externally
 	sqlite3_stmt* statement = nullptr;
@@ -192,4 +200,30 @@ void ServerApplication::DeleteUserAccount(int uid) {
 	//finish the routine
 	sqlite3_finalize(statement);
 	accountMap.erase(uid);
+}
+
+//-------------------------
+//Define the accessors and mutators
+//-------------------------
+
+AccountData* AccountManager::GetAccount(int uid) {
+	std::map<int, AccountData>::iterator it = accountMap.find(uid);
+
+	if (it == accountMap.end()) {
+		return nullptr;
+	}
+
+	return &it->second;
+}
+
+std::map<int, AccountData>* AccountManager::GetContainer() {
+	return &accountMap;
+}
+
+sqlite3* AccountManager::SetDatabase(sqlite3* db) {
+	return database = db;
+}
+
+sqlite3* AccountManager::GetDatabase() {
+	return database;
 }

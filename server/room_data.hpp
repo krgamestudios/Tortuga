@@ -1,4 +1,4 @@
-/* Copyright: (c) Kayne Ruse 2013, 2014
+/* Copyright: (c) Kayne Ruse 2014
  * 
  * This software is provided 'as-is', without any express or implied
  * warranty. In no event will the authors be held liable for any damages
@@ -19,26 +19,29 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef SERIALPACKET_HPP_
-#define SERIALPACKET_HPP_
+#ifndef ROOMDATA_HPP_
+#define ROOMDATA_HPP_
 
-#include "character_packet.hpp"
-#include "client_packet.hpp"
-#include "combat_packet.hpp"
-#include "enemy_packet.hpp"
-#include "region_packet.hpp"
-#include "server_packet.hpp"
+//map system
+#include "map_allocator.hpp"
+#include "map_file_format.hpp"
+#include "region_pager.hpp"
 
-//NOTE: SerialPacket is defined in serial_packet_base.hpp
+struct RoomData {
+	enum class RoomType {
+		OVERWORLD,
+		RUINS,
+		TOWERS,
+		FORESTS,
+		CAVES,
+	};
 
-union MaxPacket {
-	CharacterPacket a;
-	ClientPacket b;
-	CombatPacket c;
-	EnemyPacket d;
-	RegionPacket e;
-	ServerPacket f;
+	//members
+	RegionPager<LuaAllocator, LuaFormat> pager;
+	RoomType type;
+
+	//TODO: collision map
+	//TODO: NPCs?
 };
-constexpr int MAX_PACKET_SIZE = sizeof(MaxPacket);
 
 #endif
