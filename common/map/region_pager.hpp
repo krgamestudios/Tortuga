@@ -46,7 +46,6 @@ public:
 	Region* SaveRegion(int x, int y);
 	Region* CreateRegion(int x, int y);
 	void UnloadRegion(int x, int y);
-	void DeleteRegion(int x, int y);
 
 	//accessors & mutators
 	std::list<Region*>* GetContainer() { return &regionList; }

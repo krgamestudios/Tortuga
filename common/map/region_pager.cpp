@@ -70,10 +70,14 @@ Region* RegionPager::LoadRegion(int x, int y) {
 	x = snapToBase(REGION_WIDTH, x);
 	y = snapToBase(REGION_HEIGHT, y);
 
-	Region* ptr = new Region(x, y);
+	//overwrite?
+	Region* ptr = FindRegion(x, y);
+	if (!ptr) {
+		ptr = new Region(x, y);
+	}
 
 	//API hook
-	lua_getglobal(luaState, "map");
+	lua_getglobal(luaState, "region");
 	lua_getfield(luaState, -1, "load");
 	lua_pushlightuserdata(luaState, ptr);
 	lua_pushstring(luaState, directory.c_str());
@@ -101,7 +105,7 @@ Region* RegionPager::SaveRegion(int x, int y) {
 	Region* ptr = FindRegion(x, y);
 	if (ptr) {
 		//API hook
-		lua_getglobal(luaState, "map");
+		lua_getglobal(luaState, "region");
 		lua_getfield(luaState, -1, "save");
 		lua_pushlightuserdata(luaState, ptr);
 		lua_pushstring(luaState, directory.c_str());
@@ -118,13 +122,17 @@ Region* RegionPager::CreateRegion(int x, int y) {
 	x = snapToBase(REGION_WIDTH, x);
 	y = snapToBase(REGION_HEIGHT, y);
 
-	//create and push the object
-	Region* ptr = new Region(x, y);
+	//overwrite?
+	Region* ptr = FindRegion(x, y);
+	if (!ptr) {
+		ptr = new Region(x, y);
+	}
 
 	//API hook
-	lua_getglobal(luaState, "map");
+	lua_getglobal(luaState, "region");
 	lua_getfield(luaState, -1, "create");
 	lua_pushlightuserdata(luaState, ptr);
+	//TODO: parameters
 	if (lua_pcall(luaState, 1, 0, 0) != LUA_OK) {
 		throw(std::runtime_error(std::string() + "Lua error: " + lua_tostring(luaState, -1) ));
 	}
@@ -139,7 +147,7 @@ void RegionPager::UnloadRegion(int x, int y) {
 	x = snapToBase(REGION_WIDTH, x);
 	y = snapToBase(REGION_HEIGHT, y);
 
-	lua_getglobal(luaState, "map");
+	lua_getglobal(luaState, "region");
 
 	//custom loop, not FindRegion()
 	for (std::list<Region*>::iterator it = regionList.begin(); it != regionList.end(); /* EMPTY */) {
@@ -148,7 +156,8 @@ void RegionPager::UnloadRegion(int x, int y) {
 			//API hook
 			lua_getfield(luaState, -1, "unload");
 			lua_pushlightuserdata(luaState, *it);
-			if (lua_pcall(luaState, 1, 0, 0) != LUA_OK) {
+			lua_pushstring(luaState, directory.c_str());
+			if (lua_pcall(luaState, 2, 0, 0) != LUA_OK) {
 				throw(std::runtime_error(std::string() + "Lua error: " + lua_tostring(luaState, -1) ));
 			}
 

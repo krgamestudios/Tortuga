@@ -21,12 +21,81 @@
 */
 #include "pager_api.hpp"
 
-static int func(lua_State* L) {
+#include "region_pager.hpp"
+#include "region.hpp"
+
+#include <string>
+
+static int setTile(lua_State* L) {
+	RegionPager* pager = reinterpret_cast<RegionPager*>(lua_touserdata(L, 1));
+	int ret = pager->SetTile(lua_tointeger(L, 2), lua_tointeger(L, 3), lua_tointeger(L, 4), lua_tointeger(L, 5));
+	lua_pop(L, 5);
+	lua_pushinteger(L, ret);
+	return 1;
+}
+
+static int getTile(lua_State* L) {
+	RegionPager* pager = reinterpret_cast<RegionPager*>(lua_touserdata(L, 1));
+	int ret = pager->GetTile(lua_tointeger(L, 2), lua_tointeger(L, 3), lua_tointeger(L, 4));
+	lua_pop(L, 4);
+	lua_pushinteger(L, ret);
+	return 1;
+}
+
+static int getRegion(lua_State* L) {
+	RegionPager* pager = reinterpret_cast<RegionPager*>(lua_touserdata(L, 1));
+	Region* region = pager->GetRegion(lua_tointeger(L, 2), lua_tointeger(L, 3));
+	lua_pop(L, 3);
+	lua_pushlightuserdata(L, region);
+	return 1;
+}
+
+static int setDirectory(lua_State* L) {
+	RegionPager* pager = reinterpret_cast<RegionPager*>(lua_touserdata(L, 1));
+	std::string s = pager->SetDirectory(lua_tostring(L, 2));
+	lua_pop(L, 2);
+	lua_pushstring(L, s.c_str());
+	return 1;
+}
+
+static int getDirectory(lua_State* L) {
+	RegionPager* pager = reinterpret_cast<RegionPager*>(lua_touserdata(L, 1));
+	std::string s = pager->GetDirectory();
+	lua_pop(L, 1);
+	lua_pushstring(L, s.c_str());
+	return 1;
+}
+
+static int loadRegion(lua_State* L) {
+	//TODO: fill this
+	return 0;
+}
+
+static int saveRegion(lua_State* L) {
+	//TODO: fill this
+	return 0;
+}
+
+static int createRegion(lua_State* L) {
+	//TODO: fill this
+	return 0;
+}
+
+static int unloadRegion(lua_State* L) {
+	//TODO: fill this
 	return 0;
 }
 
 static const luaL_Reg pagerlib[] = {
-	{"name", func},
+	{"settile", setTile},
+	{"gettile", getTile},
+	{"getregion", getRegion},
+	{"setdirectory", setDirectory},
+	{"getdirectory", getDirectory},
+	{"loadregion", loadRegion},
+	{"saveregion", saveRegion},
+	{"createregion", createRegion},
+	{"unloadregion", unloadRegion},
 	{nullptr, nullptr}
 };
 
