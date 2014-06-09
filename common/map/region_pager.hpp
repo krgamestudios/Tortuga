@@ -29,6 +29,7 @@
 #include <list>
 #include <string>
 
+//TODO: split this into two: "RegionPagerBase" and "RegionPagerLua"
 class RegionPager {
 public:
 	RegionPager() = default;

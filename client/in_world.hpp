@@ -23,8 +23,6 @@
 #define INWORLD_HPP_
 
 //maps
-#include "map_allocator.hpp"
-#include "map_file_format.hpp"
 #include "region_pager.hpp"
 
 //networking
@@ -112,7 +110,7 @@ protected:
 	TileSheet tileSheet;
 
 	//map
-	RegionPager<BlankAllocator, DummyFormat> regionPager;
+	RegionPager regionPager;
 
 	//UI
 	Button disconnectButton;

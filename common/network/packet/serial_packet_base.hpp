@@ -38,8 +38,6 @@ struct SerialPacketBase {
 	SerialPacketType type;
 	IPaddress srcAddress;
 
-	typedef SerialPacketType Type;
-
 	virtual ~SerialPacketBase() {};
 };
 

@@ -22,13 +22,13 @@
 #ifndef LOBBYMENU_HPP_
 #define LOBBYMENU_HPP_
 
-//graphics & utilities
+//graphics & ui
 #include "image.hpp"
 #include "raster_font.hpp"
 #include "button.hpp"
-#include "config_utility.hpp"
 
-//network
+//utilities
+#include "config_utility.hpp"
 #include "udp_network_utility.hpp"
 
 //client
@@ -44,8 +44,7 @@ public:
 		ConfigUtility* const argConfig,
 		UDPNetworkUtility* const argNetwork,
 		int* const argClientIndex,
-		int* const argAccountIndex,
-		int* const argCharacterIndex
+		int* const argAccountIndex
 	);
 	~LobbyMenu();
 
@@ -64,14 +63,15 @@ protected:
 	void KeyUp(SDL_KeyboardEvent const&);
 
 	//Network handlers
-	void HandlePacket(SerialPacket);
+	void HandlePacket(SerialPacket* const);
+	void HandleBroadcastResponse(ServerPacket* const);
+	void HandleJoinResponse(ClientPacket* const);
 
 	//shared parameters
 	ConfigUtility& config;
 	UDPNetworkUtility& network;
 	int& clientIndex;
 	int& accountIndex;
-	int& characterIndex;
 
 	//members
 	Image image;
@@ -83,9 +83,9 @@ protected:
 	//server list
 	struct ServerInformation {
 		IPaddress address;
-		int networkVersion;
 		std::string name;
 		int playerCount;
+		int version;
 		bool compatible;
 	};
 
