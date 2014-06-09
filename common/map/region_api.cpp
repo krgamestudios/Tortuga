@@ -66,7 +66,8 @@ static int getDepth(lua_State* L) {
 
 static int load(lua_State* L) {
 	//TODO: fill this
-	return 0;
+	lua_pushboolean(L, false);
+	return 1;
 }
 
 static int save(lua_State* L) {

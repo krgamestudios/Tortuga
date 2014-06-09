@@ -76,6 +76,7 @@ void ServerApplication::Init(int argc, char** argv) {
 	//Setup the objects
 	//-------------------------
 
+	//set the hooks
 	accountMgr.SetDatabase(database);
 	characterMgr.SetDatabase(database);
 
@@ -83,7 +84,14 @@ void ServerApplication::Init(int argc, char** argv) {
 	roomMgr.SetLuaState(luaState);
 	enemyMgr.SetLuaState(luaState);
 
-	std::cout << "Internal managers ready" << std::endl;
+	std::cout << "Internal managers set" << std::endl;
+
+	//register the "globals"
+	lua_pushstring(luaState, ROOM_MANAGER_PSEUDOINDEX);
+	lua_pushlightuserdata(luaState, &roomMgr);
+	lua_settable(luaState, LUA_REGISTRYINDEX);
+
+	std::cout << "Internal managers registered with lua" << std::endl;
 
 	//-------------------------
 	//Run the startup scripts
@@ -110,6 +118,7 @@ void ServerApplication::Init(int argc, char** argv) {
 	std::cout << "\tRegion Format: " << REGION_WIDTH << ", " << REGION_HEIGHT << ", " << REGION_DEPTH << std::endl;
 	std::cout << "\tRegion Content Footprint: " << REGION_WIDTH * REGION_HEIGHT * REGION_DEPTH * sizeof(Region::type_t) << std::endl;
 	std::cout << "\tPACKET_BUFFER_SIZE (max size): " << PACKET_BUFFER_SIZE << std::endl;
+	std::cout << "\tMAX_PACKET_SIZE: " << MAX_PACKET_SIZE << std::endl;
 
 	//-------------------------
 	//finalize the startup
@@ -121,16 +130,7 @@ void ServerApplication::Init(int argc, char** argv) {
 	//debugging
 	//-------------------------
 
-	std::cout << "Debugging dump:" << std::endl;
-	std::cout << "\tMAX_PACKET_SIZE:\t\t" << MAX_PACKET_SIZE << std::endl;
-	std::cout << "\tsizeof(SerialPacket):\t\t" << sizeof(SerialPacket) << std::endl;
-	std::cout << "\tsizeof(CharacterPacket):\t" << sizeof(CharacterPacket) << std::endl;
-	std::cout << "\t\tsizeof(Statistics):\t" << sizeof(Statistics) << std::endl;
-	std::cout << "\tsizeof(ClientPacket):\t\t" << sizeof(ClientPacket) << std::endl;
-	std::cout << "\tsizeof(CombatPacket):\t\t" << sizeof(CombatPacket) << std::endl;
-	std::cout << "\tsizeof(EnemyPacket):\t\t" << sizeof(EnemyPacket) << std::endl;
-	std::cout << "\tsizeof(RegionPacket):\t\t" << sizeof(RegionPacket) << std::endl;
-	std::cout << "\tsizeof(ServerPacket):\t\t" << sizeof(ServerPacket) << std::endl;
+	//...
 }
 
 void ServerApplication::Proc() {
