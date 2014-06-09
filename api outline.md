@@ -1,0 +1,28 @@
+region.settile(r, x, y, z, v)
+region.gettile(r, x, y, z)
+region.getx(r)
+region.gety(r)
+region.getwidth()
+region.getheight()
+region.getdepth()
+region.load(r, directory)
+region.save(r, directory)
+region.create(r[, {params}])
+region.unload(r[, directory])
+
+pager.settile(p, x, y, z, v)
+pager.gettile(p, x, y, z)
+pager.getregion(p, x, y)
+pager.setdirectory(p, directory)
+pager.getdirectory(p)
+pager.loadregion(p, x, y)
+pager.saveregion(p, x, y)
+pager.createregion(p, x, y[, {params}])
+pager.unloadregion(p, x, y)
+
+room.gettype(room)
+room.get{params}(room)
+room.getregionpager(room)
+
+room.getroom(index)
+
