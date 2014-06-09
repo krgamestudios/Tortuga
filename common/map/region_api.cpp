@@ -26,7 +26,6 @@
 static int setTile(lua_State* L) {
 	Region* region = reinterpret_cast<Region*>(lua_touserdata(L, 1));
 	int ret = region->SetTile(lua_tointeger(L, 2)-1, lua_tointeger(L, 3)-1, lua_tointeger(L, 4)-1, lua_tointeger(L, 5));
-	lua_pop(L, 5);
 	lua_pushinteger(L, ret);
 	return 1;
 }
@@ -34,24 +33,19 @@ static int setTile(lua_State* L) {
 static int getTile(lua_State* L) {
 	Region* region = reinterpret_cast<Region*>(lua_touserdata(L, 1));
 	int ret = region->GetTile(lua_tointeger(L, 2)-1, lua_tointeger(L, 3)-1, lua_tointeger(L, 4)-1);
-	lua_pop(L, 4);
 	lua_pushinteger(L, ret);
 	return 1;
 }
 
 static int getX(lua_State* L) {
 	Region* region = reinterpret_cast<Region*>(lua_touserdata(L, 1));
-	int ret = region->GetX();
-	lua_pop(L, 1);
-	lua_pushinteger(L, ret);
+	lua_pushinteger(L, region->GetX());
 	return 1;
 }
 
 static int getY(lua_State* L) {
 	Region* region = reinterpret_cast<Region*>(lua_touserdata(L, 1));
-	int ret = region->GetY();
-	lua_pop(L, 1);
-	lua_pushinteger(L, ret);
+	lua_pushinteger(L, region->GetY());
 	return 1;
 }
 
