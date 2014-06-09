@@ -23,8 +23,6 @@
 
 #include "serial_util.hpp"
 
-#include "map_allocator.hpp"
-
 void serializeRegionFormat(RegionPacket* packet, void* buffer) {
 	SERIALIZE(buffer, &packet->type, sizeof(SerialPacketType));
 
@@ -71,11 +69,7 @@ void deserializeRegionContent(RegionPacket* packet, void* buffer) {
 	DESERIALIZE(buffer, &packet->y, sizeof(int));
 
 	//an object to work on
-	BlankAllocator().Create(
-		&packet->region,
-		packet->x,
-		packet->y
-	);
+	packet->region = new Region(packet->x, packet->y);
 
 	//content
 	for (register int i = 0; i < REGION_WIDTH; i++) {

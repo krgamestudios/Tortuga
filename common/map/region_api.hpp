@@ -19,44 +19,12 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef MAPFILEFORMAT_HPP_
-#define MAPFILEFORMAT_HPP_
-
-#include "region.hpp"
+#ifndef REGIONAPI_HPP_
+#define REGIONAPI_HPP_
 
 #include "lua/lua.hpp"
 
-#include <string>
-
-//TODO: I'm unhappy with using this system, there needs to be a way to handle saving/loading better
-
-class DummyFormat {
-public:
-	void Load(Region** const, int x, int y);
-	void Save(Region* const);
-
-	std::string SetSaveDir(std::string s) { return saveDir = s; }
-	std::string GetSaveDir() { return saveDir; }
-private:
-	std::string saveDir;
-};
-
-//TODO: verbose save file format
-//TODO: compact save file format
-
-class LuaFormat {
-public:
-	void Load(Region** const, int x, int y);
-	void Save(Region* const);
-
-	std::string SetSaveDir(std::string s) { return saveDir = s; }
-	std::string GetSaveDir() { return saveDir; }
-
-	lua_State* SetLuaState(lua_State* L) { return state = L; }
-	lua_State* GetLuaState() { return state; }
-private:
-	std::string saveDir;
-	lua_State* state = nullptr;
-};
+#define LUA_REGIONLIBNAME "region"
+LUAMOD_API int luaopen_regionapi(lua_State* L);
 
 #endif

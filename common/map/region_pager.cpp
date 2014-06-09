@@ -23,17 +23,19 @@
 
 #include "utility.hpp"
 
-Region::type_t RegionPagerBase::SetTile(int x, int y, int z, Region::type_t v) {
+#include <stdexcept>
+
+Region::type_t RegionPager::SetTile(int x, int y, int z, Region::type_t v) {
 	Region* ptr = GetRegion(x, y);
 	return ptr->SetTile(x - ptr->GetX(), y - ptr->GetY(), z, v);
 }
 
-Region::type_t RegionPagerBase::GetTile(int x, int y, int z) {
+Region::type_t RegionPager::GetTile(int x, int y, int z) {
 	Region* ptr = GetRegion(x, y);
 	return ptr->GetTile(x - ptr->GetX(), y - ptr->GetY(), z);
 }
 
-Region* RegionPagerBase::GetRegion(int x, int y) {
+Region* RegionPager::GetRegion(int x, int y) {
 	//snap the coords
 	x = snapToBase(REGION_WIDTH, x);
 	y = snapToBase(REGION_HEIGHT, y);
@@ -47,7 +49,7 @@ Region* RegionPagerBase::GetRegion(int x, int y) {
 	return CreateRegion(x, y);
 }
 
-Region* RegionPagerBase::FindRegion(int x, int y) {
+Region* RegionPager::FindRegion(int x, int y) {
 	//snap the coords
 	x = snapToBase(REGION_WIDTH, x);
 	y = snapToBase(REGION_HEIGHT, y);
@@ -61,7 +63,110 @@ Region* RegionPagerBase::FindRegion(int x, int y) {
 	return nullptr;
 }
 
-Region* RegionPagerBase::PushRegion(Region* ptr) {
+Region* RegionPager::LoadRegion(int x, int y) {
+	//load the region if possible
+
+	//snap the coords
+	x = snapToBase(REGION_WIDTH, x);
+	y = snapToBase(REGION_HEIGHT, y);
+
+	//overwrite?
+	Region* ptr = FindRegion(x, y);
+	if (!ptr) {
+		ptr = new Region(x, y);
+	}
+
+	//API hook
+	lua_getglobal(luaState, "region");
+	lua_getfield(luaState, -1, "load");
+	lua_pushlightuserdata(luaState, ptr);
+	lua_pushstring(luaState, directory.c_str());
+	if (lua_pcall(luaState, 2, 1, 0) != LUA_OK) {
+		throw(std::runtime_error(std::string() + "Lua error: " + lua_tostring(luaState, -1) ));
+	}
+	if (lua_toboolean(luaState, -1)) {
+		regionList.push_front(ptr);
+	}
+	else {
+		delete ptr;
+		ptr = nullptr;
+	}
+	lua_pop(luaState, 2);
+
+	return ptr;
+}
+
+Region* RegionPager::SaveRegion(int x, int y) {
+	//snap the coords
+	x = snapToBase(REGION_WIDTH, x);
+	y = snapToBase(REGION_HEIGHT, y);
+
+	//find & save the region
+	Region* ptr = FindRegion(x, y);
+	if (ptr) {
+		//API hook
+		lua_getglobal(luaState, "region");
+		lua_getfield(luaState, -1, "save");
+		lua_pushlightuserdata(luaState, ptr);
+		lua_pushstring(luaState, directory.c_str());
+		if (lua_pcall(luaState, 2, 0, 0) != LUA_OK) {
+			throw(std::runtime_error(std::string() + "Lua error: " + lua_tostring(luaState, -1) ));
+		}
+		lua_pop(luaState, 1);
+	}
+	return ptr;
+}
+
+Region* RegionPager::CreateRegion(int x, int y) {
+	//snap the coords
+	x = snapToBase(REGION_WIDTH, x);
+	y = snapToBase(REGION_HEIGHT, y);
+
+	//overwrite?
+	Region* ptr = FindRegion(x, y);
+	if (!ptr) {
+		ptr = new Region(x, y);
+	}
+
+	//API hook
+	lua_getglobal(luaState, "region");
+	lua_getfield(luaState, -1, "create");
+	lua_pushlightuserdata(luaState, ptr);
+	//TODO: parameters
+	if (lua_pcall(luaState, 1, 0, 0) != LUA_OK) {
+		throw(std::runtime_error(std::string() + "Lua error: " + lua_tostring(luaState, -1) ));
+	}
+	lua_pop(luaState, 1);
+
 	regionList.push_front(ptr);
-	return regionList.front();
+	return ptr;
+}
+
+void RegionPager::UnloadRegion(int x, int y) {
+	//snap the coords
+	x = snapToBase(REGION_WIDTH, x);
+	y = snapToBase(REGION_HEIGHT, y);
+
+	lua_getglobal(luaState, "region");
+
+	//custom loop, not FindRegion()
+	for (std::list<Region*>::iterator it = regionList.begin(); it != regionList.end(); /* EMPTY */) {
+		if ((*it)->GetX() == x && (*it)->GetY() == y) {
+
+			//API hook
+			lua_getfield(luaState, -1, "unload");
+			lua_pushlightuserdata(luaState, *it);
+			lua_pushstring(luaState, directory.c_str());
+			if (lua_pcall(luaState, 2, 0, 0) != LUA_OK) {
+				throw(std::runtime_error(std::string() + "Lua error: " + lua_tostring(luaState, -1) ));
+			}
+
+			delete (*it);
+			it = regionList.erase(it);
+			continue;
+		}
+		++it;
+	}
+
+	lua_pop(luaState, 1);
 }

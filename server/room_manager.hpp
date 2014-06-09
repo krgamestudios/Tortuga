@@ -28,14 +28,15 @@
 
 #include <map>
 
+#define ROOM_MANAGER_PSEUDOINDEX "RoomManager"
+
 class RoomManager {
 public:
 	RoomManager() = default;
 	~RoomManager() = default;
 
 	//public access methods
-	//TODO
-	//TODO: setup the pagers and functors of each room object
+	//TODO: Fill this out
 
 	//accessors and mutators
 	RoomData* GetRoom(int uid);

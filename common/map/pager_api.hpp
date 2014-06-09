@@ -19,30 +19,12 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef MAPALLOCATOR_HPP_
-#define MAPALLOCATOR_HPP_
-
-#include "region.hpp"
+#ifndef PAGERAPI_HPP_
+#define PAGERAPI_HPP_
 
 #include "lua/lua.hpp"
 
-class BlankAllocator {
-public:
-	void Create(Region** const, int x, int y);
-	void Unload(Region* const);
-private:
-	//
-};
-
-class LuaAllocator {
-public:
-	void Create(Region** const, int x, int y);
-	void Unload(Region* const);
-
-	lua_State* SetLuaState(lua_State* L) { return state = L; }
-	lua_State* GetLuaState() { return state; }
-private:
-	lua_State* state = nullptr;
-};
+#define LUA_PAGERLIBNAME "pager"
+LUAMOD_API int luaopen_pagerapi(lua_State* L);
 
 #endif

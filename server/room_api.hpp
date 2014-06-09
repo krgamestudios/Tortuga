@@ -19,12 +19,12 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef MAPAPI_HPP_
-#define MAPAPI_HPP_
+#ifndef ROOMAPI_HPP_
+#define ROOMAPI_HPP_
 
 #include "lua/lua.hpp"
 
-#define LUA_MAPLIBNAME "map"
-LUAMOD_API int luaopen_mapapi(lua_State* L);
+#define LUA_ROOMLIBNAME "room"
+LUAMOD_API int luaopen_roomapi(lua_State* L);
 
 #endif
