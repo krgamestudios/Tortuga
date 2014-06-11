@@ -29,6 +29,7 @@
 #include <list>
 #include <string>
 
+//TODO: split this into two: "RegionPagerBase" and "RegionPagerLua"
 class RegionPager {
 public:
 	RegionPager() = default;
@@ -41,6 +42,7 @@ public:
 	//region manipulation
 	Region* GetRegion(int x, int y);
 	Region* FindRegion(int x, int y);
+	Region* PushRegion(Region* const);
 
 	Region* LoadRegion(int x, int y);
 	Region* SaveRegion(int x, int y);

@@ -23,8 +23,6 @@
 #define INWORLD_HPP_
 
 //maps
-#include "map_allocator.hpp"
-#include "map_file_format.hpp"
 #include "region_pager.hpp"
 
 //networking
@@ -80,19 +78,19 @@ protected:
 	void KeyUp(SDL_KeyboardEvent const&);
 
 	//Network handlers
-	void HandlePacket(SerialPacket);
-	void HandleDisconnect(SerialPacket);
-	void HandleCharacterNew(SerialPacket);
-	void HandleCharacterDelete(SerialPacket);
-	void HandleCharacterUpdate(SerialPacket);
-	void HandleRegionContent(SerialPacket);
+	void HandlePacket(SerialPacket* const);
+	void HandleDisconnect(SerialPacket* const);
+	void HandleCharacterNew(CharacterPacket* const);
+	void HandleCharacterDelete(CharacterPacket* const);
+	void HandleCharacterUpdate(CharacterPacket* const);
+	void HandleRegionContent(RegionPacket* const);
 
 	//Server control
 	void RequestSynchronize();
 	void SendPlayerUpdate();
 	void RequestDisconnect();
 	void RequestShutDown();
-	void RequestRegion(int mapIndex, int x, int y);
+	void RequestRegion(int roomIndex, int x, int y);
 
 	//utilities
 	void UpdateMap();
@@ -112,7 +110,7 @@ protected:
 	TileSheet tileSheet;
 
 	//map
-	RegionPager<BlankAllocator, DummyFormat> regionPager;
+	RegionPager regionPager;
 
 	//UI
 	Button disconnectButton;

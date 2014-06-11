@@ -63,7 +63,25 @@ Region* RegionPager::FindRegion(int x, int y) {
 	return nullptr;
 }
 
+Region* RegionPager::PushRegion(Region* const region) {
+	if (
+		region->GetX() != snapToBase(REGION_WIDTH, region->GetX()) ||
+		region->GetY() != snapToBase(REGION_HEIGHT, region->GetY())
+		)
+	{
+		throw(std::runtime_error("Pushed region does not conform to the region grid"));
+	}
+
+	regionList.push_front(region);
+	return regionList.front();
+}
+
 Region* RegionPager::LoadRegion(int x, int y) {
+	//only work if using lua
+	if (!luaState) {
+		throw(std::runtime_error("RegionPager::luaState is null"));
+	}
+
 	//load the region if possible
 
 	//snap the coords
@@ -97,6 +115,11 @@ Region* RegionPager::LoadRegion(int x, int y) {
 }
 
 Region* RegionPager::SaveRegion(int x, int y) {
+	//only work if using lua
+	if (!luaState) {
+		throw(std::runtime_error("RegionPager::luaState is null"));
+	}
+
 	//snap the coords
 	x = snapToBase(REGION_WIDTH, x);
 	y = snapToBase(REGION_HEIGHT, y);
@@ -118,6 +141,11 @@ Region* RegionPager::SaveRegion(int x, int y) {
 }
 
 Region* RegionPager::CreateRegion(int x, int y) {
+	//only work if using lua
+	if (!luaState) {
+		throw(std::runtime_error("RegionPager::luaState is null"));
+	}
+
 	//snap the coords
 	x = snapToBase(REGION_WIDTH, x);
 	y = snapToBase(REGION_HEIGHT, y);
@@ -143,6 +171,11 @@ Region* RegionPager::CreateRegion(int x, int y) {
 }
 
 void RegionPager::UnloadRegion(int x, int y) {
+	//only work if using lua
+	if (!luaState) {
+		throw(std::runtime_error("RegionPager::luaState is null"));
+	}
+
 	//snap the coords
 	x = snapToBase(REGION_WIDTH, x);
 	y = snapToBase(REGION_HEIGHT, y);
