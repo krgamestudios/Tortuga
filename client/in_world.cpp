@@ -95,10 +95,11 @@ void InWorld::FrameStart() {
 
 void InWorld::Update(double delta) {
 	//suck in and process all waiting packets
-	char packetBuffer[MAX_PACKET_SIZE];
-	while(network.Receive(reinterpret_cast<SerialPacket*>(packetBuffer))) {
-		HandlePacket(reinterpret_cast<SerialPacket*>(packetBuffer));
+	SerialPacket* packetBuffer = static_cast<SerialPacket*>(malloc(MAX_PACKET_SIZE));
+	while(network.Receive(packetBuffer)) {
+		HandlePacket(packetBuffer);
 	}
+	free(static_cast<void*>(packetBuffer));
 
 	//update the characters
 	for (auto& it : characterMap) {
@@ -254,16 +255,16 @@ void InWorld::HandlePacket(SerialPacket* const argPacket) {
 			HandleDisconnect(argPacket);
 		break;
 		case SerialPacketType::CHARACTER_NEW:
-			HandleCharacterNew(dynamic_cast<CharacterPacket*>(argPacket));
+			HandleCharacterNew(static_cast<CharacterPacket*>(argPacket));
 		break;
 		case SerialPacketType::CHARACTER_DELETE:
-			HandleCharacterDelete(dynamic_cast<CharacterPacket*>(argPacket));
+			HandleCharacterDelete(static_cast<CharacterPacket*>(argPacket));
 		break;
 		case SerialPacketType::CHARACTER_UPDATE:
-			HandleCharacterUpdate(dynamic_cast<CharacterPacket*>(argPacket));
+			HandleCharacterUpdate(static_cast<CharacterPacket*>(argPacket));
 		break;
 		case SerialPacketType::REGION_CONTENT:
-			HandleRegionContent(dynamic_cast<RegionPacket*>(argPacket));
+			HandleRegionContent(static_cast<RegionPacket*>(argPacket));
 		break;
 		//handle errors
 		default:

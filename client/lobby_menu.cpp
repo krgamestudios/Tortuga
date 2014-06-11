@@ -85,10 +85,11 @@ void LobbyMenu::FrameStart() {
 
 void LobbyMenu::Update(double delta) {
 	//suck in and process all waiting packets
-	char packetBuffer[MAX_PACKET_SIZE];
-	while(network.Receive(reinterpret_cast<SerialPacket*>(packetBuffer))) {
-		HandlePacket(reinterpret_cast<SerialPacket*>(packetBuffer));
+	SerialPacket* packetBuffer = static_cast<SerialPacket*>(malloc(MAX_PACKET_SIZE));
+	while(network.Receive(packetBuffer)) {
+		HandlePacket(packetBuffer);
 	}
+	free(static_cast<void*>(packetBuffer));
 }
 
 void LobbyMenu::FrameEnd() {
@@ -204,10 +205,10 @@ void LobbyMenu::KeyUp(SDL_KeyboardEvent const& key) {
 void LobbyMenu::HandlePacket(SerialPacket* const argPacket) {
 		switch(argPacket->type) {
 		case SerialPacketType::BROADCAST_RESPONSE:
-			HandleBroadcastResponse(dynamic_cast<ServerPacket*>(argPacket));
+			HandleBroadcastResponse(static_cast<ServerPacket*>(argPacket));
 		break;
 		case SerialPacketType::JOIN_RESPONSE:
-			HandleJoinResponse(dynamic_cast<ClientPacket*>(argPacket));
+			HandleJoinResponse(static_cast<ClientPacket*>(argPacket));
 		break;
 		//handle errors
 		default:

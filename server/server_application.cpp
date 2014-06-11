@@ -134,17 +134,18 @@ void ServerApplication::Init(int argc, char** argv) {
 }
 
 void ServerApplication::Proc() {
-	char packetBuffer[MAX_PACKET_SIZE];
+	SerialPacket* packetBuffer = static_cast<SerialPacket*>(malloc(MAX_PACKET_SIZE));
 	while(running) {
 		//suck in the waiting packets & process them
-		while(network.Receive(reinterpret_cast<SerialPacket*>(packetBuffer))) {
-			HandlePacket(reinterpret_cast<SerialPacket*>(packetBuffer));
+		while(network.Receive(packetBuffer)) {
+			HandlePacket(packetBuffer);
 		}
 		//update the internals
 		//TODO: update the internals i.e. player positions
 		//give the computer a break
 		SDL_Delay(10);
 	}
+	free(static_cast<void*>(packetBuffer));
 }
 
 void ServerApplication::Quit() {
@@ -168,21 +169,21 @@ void ServerApplication::HandlePacket(SerialPacket* const argPacket) {
 	switch(argPacket->type) {
 		//basic connections
 		case SerialPacketType::BROADCAST_REQUEST:
-			HandleBroadcastRequest(dynamic_cast<SerialPacket*>(argPacket));
+			HandleBroadcastRequest(static_cast<SerialPacket*>(argPacket));
 		break;
 		case SerialPacketType::JOIN_REQUEST:
-			HandleJoinRequest(dynamic_cast<ClientPacket*>(argPacket));
+			HandleJoinRequest(static_cast<ClientPacket*>(argPacket));
 		break;
 		case SerialPacketType::DISCONNECT:
-			HandleDisconnect(dynamic_cast<ClientPacket*>(argPacket));
+			HandleDisconnect(static_cast<ClientPacket*>(argPacket));
 		break;
 		case SerialPacketType::SHUTDOWN:
-			HandleShutdown(dynamic_cast<SerialPacket*>(argPacket));
+			HandleShutdown(static_cast<SerialPacket*>(argPacket));
 		break;
 
 		//map management
 		case SerialPacketType::REGION_REQUEST:
-			HandleRegionRequest(dynamic_cast<RegionPacket*>(argPacket));
+			HandleRegionRequest(static_cast<RegionPacket*>(argPacket));
 		break;
 
 		//combat management
@@ -190,14 +191,14 @@ void ServerApplication::HandlePacket(SerialPacket* const argPacket) {
 
 		//character management
 		case SerialPacketType::CHARACTER_NEW:
-			HandleCharacterNew(dynamic_cast<CharacterPacket*>(argPacket));
+			HandleCharacterNew(static_cast<CharacterPacket*>(argPacket));
 		break;
 		case SerialPacketType::CHARACTER_DELETE:
-			HandleCharacterDelete(dynamic_cast<CharacterPacket*>(argPacket));
+			HandleCharacterDelete(static_cast<CharacterPacket*>(argPacket));
 		break;
 		case SerialPacketType::CHARACTER_UPDATE:
 		case SerialPacketType::CHARACTER_STATS_REQUEST:
-			HandleCharacterUpdate(dynamic_cast<CharacterPacket*>(argPacket));
+			HandleCharacterUpdate(static_cast<CharacterPacket*>(argPacket));
 		break;
 
 		//enemy management
@@ -205,12 +206,12 @@ void ServerApplication::HandlePacket(SerialPacket* const argPacket) {
 
 		//mismanagement
 		case SerialPacketType::SYNCHRONIZE:
-			HandleSynchronize(dynamic_cast<ClientPacket*>(argPacket));
+			HandleSynchronize(static_cast<ClientPacket*>(argPacket));
 		break;
 
 		//handle errors
 		default:
-			throw(std::runtime_error(std::string() + "Unknown SerialPacketType encountered in the server: " + to_string_custom(int(argPacket->type))));
+			throw(std::runtime_error(std::string() + "Unknown SerialPacketType encountered in the server: " + to_string_custom(static_cast<int>(argPacket->type)) ));
 		break;
 	}
 }
@@ -228,7 +229,7 @@ void ServerApplication::HandleBroadcastRequest(SerialPacket* const argPacket) {
 	newPacket.playerCount = characterMgr.GetContainer()->size();
 	newPacket.version = NETWORK_VERSION;
 
-	network.SendTo(&argPacket->srcAddress, dynamic_cast<SerialPacket*>(&newPacket));
+	network.SendTo(&argPacket->srcAddress, static_cast<SerialPacket*>(&newPacket));
 }
 
 void ServerApplication::HandleJoinRequest(ClientPacket* const argPacket) {
@@ -251,7 +252,7 @@ void ServerApplication::HandleJoinRequest(ClientPacket* const argPacket) {
 	newPacket.clientIndex = clientUID;
 	newPacket.accountIndex = accountIndex;
 
-	network.SendTo(&newClient.address, dynamic_cast<SerialPacket*>(&newPacket));
+	network.SendTo(&newClient.address, static_cast<SerialPacket*>(&newPacket));
 
 	//finished this routine
 	clientMap[clientUID++] = newClient;
@@ -264,7 +265,7 @@ void ServerApplication::HandleDisconnect(ClientPacket* const argPacket) {
 	//forward to the specified client
 	network.SendTo(
 		&clientMap[ accountMgr.GetAccount(argPacket->accountIndex)->clientIndex ].address,
-		dynamic_cast<SerialPacket*>(argPacket)
+		static_cast<SerialPacket*>(argPacket)
 	);
 
 	//save and unload this account's characters
@@ -315,7 +316,7 @@ void ServerApplication::HandleRegionRequest(RegionPacket* const argPacket) {
 	newPacket.region = roomMgr.GetRoom(argPacket->roomIndex)->pager.GetRegion(argPacket->x, argPacket->y);
 
 	//send the content
-	network.SendTo(&argPacket->srcAddress, dynamic_cast<SerialPacket*>(argPacket));
+	network.SendTo(&argPacket->srcAddress, static_cast<SerialPacket*>(argPacket));
 }
 
 //-------------------------
@@ -435,7 +436,7 @@ void ServerApplication::HandleSynchronize(ClientPacket* const argPacket) {
 	for (auto& it : *characterMgr.GetContainer()) {
 		newPacket.characterIndex = it.first;
 		CopyCharacterToPacket(&newPacket, it.first);
-		network.SendTo(&client.address, dynamic_cast<SerialPacket*>(&newPacket));
+		network.SendTo(&client.address, static_cast<SerialPacket*>(&newPacket));
 	}
 
 	//TODO: more in HandleSynchronize()
@@ -458,7 +459,7 @@ void ServerApplication::PumpCharacterUnload(int uid) {
 	CharacterPacket newPacket;
 	newPacket.type = SerialPacketType::CHARACTER_DELETE;
 	newPacket.characterIndex = uid;
-	PumpPacket(dynamic_cast<SerialPacket*>(&newPacket));
+	PumpPacket(static_cast<SerialPacket*>(&newPacket));
 }
 
 void ServerApplication::CopyCharacterToPacket(CharacterPacket* const packet, int characterIndex) {

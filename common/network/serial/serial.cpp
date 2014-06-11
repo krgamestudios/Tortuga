@@ -56,7 +56,7 @@ void serializePacket(SerialPacketBase* packet, void* buffer) {
 		case SerialPacketType::CHARACTER_UPDATE:
 		case SerialPacketType::CHARACTER_STATS_REQUEST:
 		case SerialPacketType::CHARACTER_STATS_RESPONSE:
-			serializeCharacter(dynamic_cast<CharacterPacket*>(packet), buffer);
+			serializeCharacter(static_cast<CharacterPacket*>(packet), buffer);
 		break;
 
 		//client info
@@ -65,7 +65,7 @@ void serializePacket(SerialPacketBase* packet, void* buffer) {
 		case SerialPacketType::SYNCHRONIZE:
 		case SerialPacketType::DISCONNECT:
 		case SerialPacketType::SHUTDOWN:
-			serializeClient(dynamic_cast<ClientPacket*>(packet), buffer);
+			serializeClient(static_cast<ClientPacket*>(packet), buffer);
 		break;
 
 		//combat info
@@ -79,7 +79,7 @@ void serializePacket(SerialPacketBase* packet, void* buffer) {
 		case SerialPacketType::COMBAT_EXIT_REQUEST:
 		case SerialPacketType::COMBAT_EXIT_RESPONSE:
 
-			serializeCombat(dynamic_cast<CombatPacket*>(packet), buffer);
+			serializeCombat(static_cast<CombatPacket*>(packet), buffer);
 		break;
 
 		//enemy info
@@ -88,21 +88,21 @@ void serializePacket(SerialPacketBase* packet, void* buffer) {
 		case SerialPacketType::ENEMY_UPDATE:
 		case SerialPacketType::ENEMY_STATS_REQUEST:
 		case SerialPacketType::ENEMY_STATS_RESPONSE:
-			serializeEnemy(dynamic_cast<EnemyPacket*>(packet), buffer);
+			serializeEnemy(static_cast<EnemyPacket*>(packet), buffer);
 		break;
 
 		//region info
 		case SerialPacketType::REGION_REQUEST:
-			serializeRegionFormat(dynamic_cast<RegionPacket*>(packet), buffer);
+			serializeRegionFormat(static_cast<RegionPacket*>(packet), buffer);
 		break;
 
 		case SerialPacketType::REGION_CONTENT:
-			serializeRegionContent(dynamic_cast<RegionPacket*>(packet), buffer);
+			serializeRegionContent(static_cast<RegionPacket*>(packet), buffer);
 		break;
 
 		//server info
 		case SerialPacketType::BROADCAST_RESPONSE:
-			serializeServer(dynamic_cast<ServerPacket*>(packet), buffer);
+			serializeServer(static_cast<ServerPacket*>(packet), buffer);
 		break;
 	}
 }
@@ -132,7 +132,7 @@ void deserializePacket(SerialPacketBase* packet, void* buffer) {
 		case SerialPacketType::CHARACTER_UPDATE:
 		case SerialPacketType::CHARACTER_STATS_REQUEST:
 		case SerialPacketType::CHARACTER_STATS_RESPONSE:
-			deserializeCharacter(dynamic_cast<CharacterPacket*>(packet), buffer);
+			deserializeCharacter(static_cast<CharacterPacket*>(packet), buffer);
 		break;
 
 		//client info
@@ -141,7 +141,7 @@ void deserializePacket(SerialPacketBase* packet, void* buffer) {
 		case SerialPacketType::SYNCHRONIZE:
 		case SerialPacketType::DISCONNECT:
 		case SerialPacketType::SHUTDOWN:
-			deserializeClient(dynamic_cast<ClientPacket*>(packet), buffer);
+			deserializeClient(static_cast<ClientPacket*>(packet), buffer);
 		break;
 
 		//combat info
@@ -155,7 +155,7 @@ void deserializePacket(SerialPacketBase* packet, void* buffer) {
 		case SerialPacketType::COMBAT_EXIT_REQUEST:
 		case SerialPacketType::COMBAT_EXIT_RESPONSE:
 
-			serializeCombat(dynamic_cast<CombatPacket*>(packet), buffer);
+			serializeCombat(static_cast<CombatPacket*>(packet), buffer);
 		break;
 
 		//enemy info
@@ -164,21 +164,21 @@ void deserializePacket(SerialPacketBase* packet, void* buffer) {
 		case SerialPacketType::ENEMY_UPDATE:
 		case SerialPacketType::ENEMY_STATS_REQUEST:
 		case SerialPacketType::ENEMY_STATS_RESPONSE:
-			serializeEnemy(dynamic_cast<EnemyPacket*>(packet), buffer);
+			serializeEnemy(static_cast<EnemyPacket*>(packet), buffer);
 		break;
 
 		//region info
 		case SerialPacketType::REGION_REQUEST:
-			deserializeRegionFormat(dynamic_cast<RegionPacket*>(packet), buffer);
+			deserializeRegionFormat(static_cast<RegionPacket*>(packet), buffer);
 		break;
 
 		case SerialPacketType::REGION_CONTENT:
-			deserializeRegionContent(dynamic_cast<RegionPacket*>(packet), buffer);
+			deserializeRegionContent(static_cast<RegionPacket*>(packet), buffer);
 		break;
 
 		//server info
 		case SerialPacketType::BROADCAST_RESPONSE:
-			deserializeServer(dynamic_cast<ServerPacket*>(packet), buffer);
+			deserializeServer(static_cast<ServerPacket*>(packet), buffer);
 		break;
 	}
 }
