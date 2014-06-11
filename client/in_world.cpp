@@ -22,6 +22,7 @@
 #include "in_world.hpp"
 
 #include "channels.hpp"
+#include "utility.hpp"
 
 #include <algorithm>
 #include <cmath>
@@ -93,11 +94,10 @@ void InWorld::FrameStart() {
 }
 
 void InWorld::Update(double delta) {
-	SerialPacket packet;
-
-	//suck in all waiting packets
-	while(network.Receive(&packet)) {
-		HandlePacket(packet);
+	//suck in and process all waiting packets
+	char packetBuffer[MAX_PACKET_SIZE];
+	while(network.Receive(reinterpret_cast<SerialPacket*>(packetBuffer))) {
+		HandlePacket(reinterpret_cast<SerialPacket*>(packetBuffer));
 	}
 
 	//update the characters
@@ -248,76 +248,55 @@ void InWorld::KeyUp(SDL_KeyboardEvent const& key) {
 //Network handlers
 //-------------------------
 
-void InWorld::HandlePacket(SerialPacket packet) {
-	switch(packet.meta.type) {
-		case SerialPacket::Type::DISCONNECT:
-			HandleDisconnect(packet);
+void InWorld::HandlePacket(SerialPacket* const argPacket) {
+	switch(argPacket->type) {
+		case SerialPacketType::DISCONNECT:
+			HandleDisconnect(argPacket);
 		break;
-		case SerialPacket::Type::REGION_CONTENT:
-			HandleRegionContent(packet);
+		case SerialPacketType::CHARACTER_NEW:
+			HandleCharacterNew(dynamic_cast<CharacterPacket*>(argPacket));
 		break;
-		case SerialPacket::Type::CHARACTER_UPDATE:
-			HandleCharacterUpdate(packet);
+		case SerialPacketType::CHARACTER_DELETE:
+			HandleCharacterDelete(dynamic_cast<CharacterPacket*>(argPacket));
 		break;
-		case SerialPacket::Type::CHARACTER_NEW:
-			HandleCharacterNew(packet);
+		case SerialPacketType::CHARACTER_UPDATE:
+			HandleCharacterUpdate(dynamic_cast<CharacterPacket*>(argPacket));
 		break;
-		case SerialPacket::Type::CHARACTER_DELETE:
-			HandleCharacterDelete(packet);
+		case SerialPacketType::REGION_CONTENT:
+			HandleRegionContent(dynamic_cast<RegionPacket*>(argPacket));
 		break;
 		//handle errors
 		default:
-			throw(std::runtime_error(std::string() + "Unknown SerialPacketType encountered in InWorld: " + to_string_custom(int(packet.meta.type))));
+			throw(std::runtime_error(std::string() + "Unknown SerialPacketType encountered in InWorld: " + to_string_custom(int(argPacket->type)) ));
 		break;
 	}
 }
 
-void InWorld::HandleDisconnect(SerialPacket packet) {
+void InWorld::HandleDisconnect(SerialPacket* const argPacket) {
 	SetNextScene(SceneList::RESTART);
 }
 
-void InWorld::HandleRegionContent(SerialPacket packet) {
-	//replace existing regions
-	regionPager.UnloadRegion(packet.regionInfo.x, packet.regionInfo.y);
-	regionPager.PushRegion(packet.regionInfo.region);
-	packet.regionInfo.region = nullptr;
-}
-
-void InWorld::HandleCharacterUpdate(SerialPacket packet) {
-	if (characterMap.find(packet.characterInfo.characterIndex) == characterMap.end()) {
-		HandleCharacterNew(packet);
-		return;
-	}
-
-	//update only if the message didn't originate from here
-	if (packet.characterInfo.clientIndex != clientIndex) {
-		characterMap[packet.characterInfo.characterIndex].origin = packet.characterInfo.origin;
-		characterMap[packet.characterInfo.characterIndex].motion = packet.characterInfo.motion;
-	}
-	characterMap[packet.characterInfo.characterIndex].CorrectSprite();
-}
-
-void InWorld::HandleCharacterNew(SerialPacket packet) {
-	if (characterMap.find(packet.characterInfo.characterIndex) != characterMap.end()) {
+void InWorld::HandleCharacterNew(CharacterPacket* const argPacket) {
+	if (characterMap.find(argPacket->characterIndex) != characterMap.end()) {
 		throw(std::runtime_error("Cannot create duplicate characters"));
 	}
 
 	//create the character object
-	CharacterData& character = characterMap[packet.characterInfo.characterIndex];
+	CharacterData& character = characterMap[argPacket->characterIndex];
 
 	//set the members
-	character.handle = packet.characterInfo.handle;
-	character.avatar = packet.characterInfo.avatar;
+	character.handle = argPacket->handle;
+	character.avatar = argPacket->avatar;
 	character.sprite.LoadSurface(config["dir.sprites"] + character.avatar, 4, 4);
-	character.mapIndex = packet.characterInfo.mapIndex;
-	character.origin = packet.characterInfo.origin;
-	character.motion = packet.characterInfo.motion;
-	character.stats = packet.characterInfo.stats;
+	character.roomIndex = argPacket->roomIndex;
+	character.origin = argPacket->origin;
+	character.motion = argPacket->motion;
+	character.stats = argPacket->stats;
 
 	character.CorrectSprite();
 
 	//catch this client's player object
-	if (packet.characterInfo.characterIndex == characterIndex && !localCharacter) {
+	if (argPacket->characterIndex == characterIndex && !localCharacter) {
 		localCharacter = &character;
 
 		//setup the camera
@@ -331,15 +310,39 @@ void InWorld::HandleCharacterNew(SerialPacket packet) {
 	}
 }
 
-void InWorld::HandleCharacterDelete(SerialPacket packet) {
+void InWorld::HandleCharacterDelete(CharacterPacket* const argPacket) {
 	//TODO: authenticate when own character is being deleted (linked to a TODO in the server)
 	//catch this client's player object
-	if (packet.characterInfo.characterIndex == characterIndex) {
+	if (argPacket->characterIndex == characterIndex) {
 		characterIndex = -1;
 		localCharacter = nullptr;
 	}
 
-	characterMap.erase(packet.characterInfo.characterIndex);
+	characterMap.erase(argPacket->characterIndex);
+}
+
+void InWorld::HandleCharacterUpdate(CharacterPacket* const argPacket) {
+	if (characterMap.find(argPacket->characterIndex) == characterMap.end()) {
+		HandleCharacterNew(argPacket);
+		return;
+	}
+
+	CharacterData& character = characterMap[argPacket->characterIndex];
+
+	//TODO: review this
+	if (argPacket->characterIndex != characterIndex) {
+		character.roomIndex = argPacket->roomIndex;
+		character.origin = argPacket->origin;
+		character.motion = argPacket->motion;
+		character.CorrectSprite();
+	}
+}
+
+void InWorld::HandleRegionContent(RegionPacket* const argPacket) {
+	//replace existing regions
+	regionPager.UnloadRegion(argPacket->x, argPacket->y);
+	regionPager.PushRegion(argPacket->region);
+	argPacket->region = nullptr;
 }
 
 //-------------------------
@@ -347,63 +350,68 @@ void InWorld::HandleCharacterDelete(SerialPacket packet) {
 //-------------------------
 
 void InWorld::RequestSynchronize() {
-	SerialPacket packet;
+	ClientPacket newPacket;
 
 	//request a sync
-	packet.meta.type = SerialPacket::Type::SYNCHRONIZE;
-	packet.clientInfo.clientIndex = clientIndex;
-	packet.clientInfo.accountIndex = accountIndex;
-	packet.clientInfo.characterIndex = characterIndex;
+	newPacket.type = SerialPacketType::SYNCHRONIZE;
+	newPacket.clientIndex = clientIndex;
+	newPacket.accountIndex = accountIndex;
 
-	network.SendTo(Channels::SERVER, &packet);
+	network.SendTo(Channels::SERVER, &newPacket);
 }
 
 void InWorld::SendPlayerUpdate() {
-	SerialPacket packet;
+	CharacterPacket newPacket;
 
 	//pack the packet
-	packet.meta.type = SerialPacket::Type::CHARACTER_UPDATE;
-	packet.characterInfo.clientIndex = clientIndex;
-	packet.characterInfo.accountIndex = accountIndex;
-	packet.characterInfo.characterIndex = characterIndex;
-	packet.characterInfo.origin = localCharacter->origin;
-	packet.characterInfo.motion = localCharacter->motion;
+	newPacket.type = SerialPacketType::CHARACTER_UPDATE;
 
-	network.SendTo(Channels::SERVER, &packet);
+	newPacket.characterIndex = characterIndex;
+	//handle, avatar
+	newPacket.accountIndex = accountIndex;
+	newPacket.roomIndex = localCharacter->roomIndex;
+	newPacket.origin = localCharacter->origin;
+	newPacket.motion = localCharacter->motion;
+	newPacket.stats = localCharacter->stats;
+
+	//TODO: equipment
+	//TODO: items
+	//TODO: buffs
+	//TODO: debuffs
+
+	network.SendTo(Channels::SERVER, &newPacket);
 }
 
 void InWorld::RequestDisconnect() {
-	SerialPacket packet;
+	ClientPacket newPacket;
 
 	//send a disconnect request
-	packet.meta.type = SerialPacket::Type::DISCONNECT;
-	packet.clientInfo.clientIndex = clientIndex;
-	packet.clientInfo.accountIndex = accountIndex;
-	packet.clientInfo.characterIndex = characterIndex;
+	newPacket.type = SerialPacketType::DISCONNECT;
+	newPacket.clientIndex = clientIndex;
+	newPacket.accountIndex = accountIndex;
 
-	network.SendTo(Channels::SERVER, &packet);
+	network.SendTo(Channels::SERVER, &newPacket);
 }
 
 void InWorld::RequestShutDown() {
-	SerialPacket packet;
+	ClientPacket newPacket;
 
 	//send a shutdown request
-	packet.meta.type = SerialPacket::Type::SHUTDOWN;
-	packet.clientInfo.clientIndex = clientIndex;
-	packet.clientInfo.accountIndex = accountIndex;
-	packet.clientInfo.characterIndex = characterIndex;
+	newPacket.type = SerialPacketType::SHUTDOWN;
+	newPacket.clientIndex = clientIndex;
+	newPacket.accountIndex = accountIndex;
 
-	network.SendTo(Channels::SERVER, &packet);
+	network.SendTo(Channels::SERVER, &newPacket);
 }
 
-void InWorld::RequestRegion(int mapIndex, int x, int y) {
-	SerialPacket packet;
+void InWorld::RequestRegion(int roomIndex, int x, int y) {
+	RegionPacket packet;
 
 	//pack the region's data
-	packet.meta.type = SerialPacket::Type::REGION_REQUEST;
-	packet.regionInfo.mapIndex = mapIndex;
-	packet.regionInfo.x = x;
-	packet.regionInfo.y = y;
+	packet.type = SerialPacketType::REGION_REQUEST;
+	packet.roomIndex = roomIndex;
+	packet.x = x;
+	packet.y = y;
 
 	network.SendTo(Channels::SERVER, &packet);
 }

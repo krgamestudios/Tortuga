@@ -63,6 +63,19 @@ Region* RegionPager::FindRegion(int x, int y) {
 	return nullptr;
 }
 
+Region* RegionPager::PushRegion(Region* const region) {
+	if (
+		region->GetX() != snapToBase(REGION_WIDTH, region->GetX()) ||
+		region->GetY() != snapToBase(REGION_HEIGHT, region->GetY())
+		)
+	{
+		throw(std::runtime_error("Pushed region does not conform to the region grid"));
+	}
+
+	regionList.push_front(region);
+	return regionList.front();
+}
+
 Region* RegionPager::LoadRegion(int x, int y) {
 	//only work if using lua
 	if (!luaState) {
