@@ -26,7 +26,7 @@
 int snapToBase(int base, int x) {
 	//snap to a grid
 	if (x < 0) {
-		x++;
+		++x;
 		return x / base * base - base;
 	}
 	return x / base * base;

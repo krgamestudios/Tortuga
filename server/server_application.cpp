@@ -117,7 +117,7 @@ void ServerApplication::Init(int argc, char** argv) {
 	std::cout << "\tTile Size: " << sizeof(Region::type_t) << std::endl;
 	std::cout << "\tRegion Format: " << REGION_WIDTH << ", " << REGION_HEIGHT << ", " << REGION_DEPTH << std::endl;
 	std::cout << "\tRegion Content Footprint: " << REGION_WIDTH * REGION_HEIGHT * REGION_DEPTH * sizeof(Region::type_t) << std::endl;
-	std::cout << "\tPACKET_BUFFER_SIZE (max size): " << PACKET_BUFFER_SIZE << std::endl;
+	std::cout << "\tPACKET_BUFFER_SIZE: " << PACKET_BUFFER_SIZE << std::endl;
 	std::cout << "\tMAX_PACKET_SIZE: " << MAX_PACKET_SIZE << std::endl;
 
 	//-------------------------
