@@ -38,6 +38,7 @@ public:
 	//region manipulation
 	virtual Region* GetRegion(int x, int y);
 	virtual Region* FindRegion(int x, int y);
+	virtual Region* PushRegion(Region* const);
 
 	virtual Region* LoadRegion(int x, int y);
 	virtual Region* SaveRegion(int x, int y);

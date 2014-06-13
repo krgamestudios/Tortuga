@@ -54,6 +54,11 @@ Region* RegionPagerBase::FindRegion(int x, int y) {
 	return it != regionList.end() ? &(*it) : nullptr;
 }
 
+Region* RegionPagerBase::PushRegion(Region* const ptr) {
+	regionList.push_front(*ptr);
+	return &regionList.front();
+}
+
 Region* RegionPagerBase::LoadRegion(int x, int y) {
 	//TODO: load the region if possible
 	return nullptr;

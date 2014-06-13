@@ -23,7 +23,7 @@
 #define INWORLD_HPP_
 
 //maps
-#include "region_pager.hpp"
+#include "region_pager_base.hpp"
 
 //networking
 #include "udp_network_utility.hpp"
@@ -110,7 +110,7 @@ protected:
 	TileSheet tileSheet;
 
 	//map
-	RegionPager regionPager;
+	RegionPagerBase regionPager;
 
 	//UI
 	Button disconnectButton;

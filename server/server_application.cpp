@@ -151,6 +151,14 @@ void ServerApplication::Proc() {
 void ServerApplication::Quit() {
 	std::cout << "Shutting down" << std::endl;
 
+	//close the managers
+	clientMap.clear();
+	accountMgr.UnloadAll();
+	characterMgr.UnloadAll();
+	//TODO: unload combats
+	//TODO: unload enemies
+	//TODO: unload rooms
+
 	//APIs
 	lua_close(luaState);
 	sqlite3_close_v2(database);

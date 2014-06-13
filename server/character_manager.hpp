@@ -31,8 +31,8 @@
 
 class CharacterManager {
 public:
-	CharacterManager();
-	~CharacterManager();
+	CharacterManager() = default;
+	~CharacterManager() { UnloadAll(); };
 
 	//public access methods
 	int CreateCharacter(int owner, std::string handle, std::string avatar);
@@ -42,6 +42,8 @@ public:
 	void DeleteCharacter(int uid);
 
 	void UnloadCharacterIf(std::function<bool(std::map<int, CharacterData>::iterator)> f);
+
+	void UnloadAll();
 
 	//accessors and mutators
 	CharacterData* GetCharacter(int uid);
