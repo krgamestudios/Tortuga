@@ -23,19 +23,19 @@
 #define ROOMDATA_HPP_
 
 //map system
-#include "region_pager.hpp"
+#include "region_pager_lua.hpp"
 
 struct RoomData {
 	enum class RoomType {
-		OVERWORLD,
-		RUINS,
-		TOWERS,
-		FORESTS,
-		CAVES,
+		OVERWORLD = 0,
+		RUINS = 1,
+		TOWERS = 2,
+		FORESTS = 3,
+		CAVE = 4,
 	};
 
 	//members
-	RegionPager pager;
+	RegionPagerLua pager;
 	RoomType type;
 
 	//TODO: collision map

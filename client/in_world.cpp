@@ -95,10 +95,11 @@ void InWorld::FrameStart() {
 
 void InWorld::Update(double delta) {
 	//suck in and process all waiting packets
-	char packetBuffer[MAX_PACKET_SIZE];
-	while(network.Receive(reinterpret_cast<SerialPacket*>(packetBuffer))) {
-		HandlePacket(reinterpret_cast<SerialPacket*>(packetBuffer));
+	SerialPacket* packetBuffer = static_cast<SerialPacket*>(malloc(MAX_PACKET_SIZE));
+	while(network.Receive(packetBuffer)) {
+		HandlePacket(packetBuffer);
 	}
+	free(static_cast<void*>(packetBuffer));
 
 	//update the characters
 	for (auto& it : characterMap) {
@@ -127,9 +128,9 @@ void InWorld::RenderFrame() {
 }
 
 void InWorld::Render(SDL_Surface* const screen) {
-	//draw the map
-	for (auto it = regionPager.GetContainer()->begin(); it != regionPager.GetContainer()->end(); it++) {
-		tileSheet.DrawRegionTo(screen, *it, camera.x, camera.y);
+	//draw the map0
+	for (std::list<Region>::iterator it = regionPager.GetContainer()->begin(); it != regionPager.GetContainer()->end(); it++) {
+		tileSheet.DrawRegionTo(screen, &(*it), camera.x, camera.y);
 	}
 
 	//draw characters
@@ -254,16 +255,16 @@ void InWorld::HandlePacket(SerialPacket* const argPacket) {
 			HandleDisconnect(argPacket);
 		break;
 		case SerialPacketType::CHARACTER_NEW:
-			HandleCharacterNew(dynamic_cast<CharacterPacket*>(argPacket));
+			HandleCharacterNew(static_cast<CharacterPacket*>(argPacket));
 		break;
 		case SerialPacketType::CHARACTER_DELETE:
-			HandleCharacterDelete(dynamic_cast<CharacterPacket*>(argPacket));
+			HandleCharacterDelete(static_cast<CharacterPacket*>(argPacket));
 		break;
 		case SerialPacketType::CHARACTER_UPDATE:
-			HandleCharacterUpdate(dynamic_cast<CharacterPacket*>(argPacket));
+			HandleCharacterUpdate(static_cast<CharacterPacket*>(argPacket));
 		break;
 		case SerialPacketType::REGION_CONTENT:
-			HandleRegionContent(dynamic_cast<RegionPacket*>(argPacket));
+			HandleRegionContent(static_cast<RegionPacket*>(argPacket));
 		break;
 		//handle errors
 		default:
@@ -342,6 +343,9 @@ void InWorld::HandleRegionContent(RegionPacket* const argPacket) {
 	//replace existing regions
 	regionPager.UnloadRegion(argPacket->x, argPacket->y);
 	regionPager.PushRegion(argPacket->region);
+
+	//clean up after the serial code
+	delete argPacket->region;
 	argPacket->region = nullptr;
 }
 
@@ -430,13 +434,13 @@ void InWorld::UpdateMap() {
 	int yEnd = snapToBase(REGION_HEIGHT, (camera.y+camera.height)/tileSheet.GetTileH()) + REGION_HEIGHT;
 
 	//prune distant regions
-	for (auto it = regionPager.GetContainer()->begin(); it != regionPager.GetContainer()->end(); /* EMPTY */) {
+	for (std::list<Region>::iterator it = regionPager.GetContainer()->begin(); it != regionPager.GetContainer()->end(); /* EMPTY */) {
 		//check if the region is outside off this area
-		if ((*it)->GetX() < xStart || (*it)->GetX() > xEnd || (*it)->GetY() < yStart || (*it)->GetY() > yEnd) {
+		if (it->GetX() < xStart || it->GetX() > xEnd || it->GetY() < yStart || it->GetY() > yEnd) {
 
 			//clunky, but the alternative was time consuming
-			int tmpX = (*it)->GetX();
-			int tmpY = (*it)->GetY();
+			int tmpX = it->GetX();
+			int tmpY = it->GetY();
 			++it;
 
 			regionPager.UnloadRegion(tmpX, tmpY);

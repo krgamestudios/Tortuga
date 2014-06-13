@@ -19,42 +19,36 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef CHARACTERMANAGER_HPP_
-#define CHARACTERMANAGER_HPP_
+#ifndef REGIONPAGERLUA_HPP_
+#define REGIONPAGERLUA_HPP_
 
-#include "character_data.hpp"
+#include "region_pager_base.hpp"
 
-#include "sqlite3/sqlite3.h"
+#include "lua/lua.hpp"
 
-#include <map>
-#include <functional>
+#include <string>
 
-class CharacterManager {
+class RegionPagerLua : public RegionPagerBase {
 public:
-	CharacterManager() = default;
-	~CharacterManager() { UnloadAll(); };
+	RegionPagerLua() = default;
+	~RegionPagerLua() = default;
 
-	//public access methods
-	int CreateCharacter(int owner, std::string handle, std::string avatar);
-	int LoadCharacter(int owner, std::string handle, std::string avatar);
-	int SaveCharacter(int uid);
-	void UnloadCharacter(int uid);
-	void DeleteCharacter(int uid);
+	//region manipulation
+	Region* LoadRegion(int x, int y) override;
+	Region* SaveRegion(int x, int y) override;
+	Region* CreateRegion(int x, int y) override;
+	void UnloadRegion(int x, int y) override;
 
-	void UnloadCharacterIf(std::function<bool(std::map<int, CharacterData>::iterator)> f);
+	void UnloadAll() override;
 
-	void UnloadAll();
+	std::string SetDirectory(std::string s) { return directory = s; }
+	std::string GetDirectory() { return directory; }
 
-	//accessors and mutators
-	CharacterData* GetCharacter(int uid);
-	std::map<int, CharacterData>* GetContainer();
-
-	sqlite3* SetDatabase(sqlite3* db);
-	sqlite3* GetDatabase();
-
-private:
-	std::map<int, CharacterData> characterMap;
-	sqlite3* database = nullptr;
+	lua_State* SetLuaState(lua_State* L) { return luaState = L; }
+	lua_State* GetLuaState() { return luaState; }
+protected:
+	std::string directory;
+	lua_State* luaState = nullptr;
 };
 
 #endif

@@ -21,34 +21,52 @@
 */
 #include "room_manager.hpp"
 
+#include <stdexcept>
+
 //-------------------------
 //public access methods
 //-------------------------
 
-//TODO
+RoomData* RoomManager::CreateRoom(int uid) {
+	//don't overwrite existing rooms
+	std::map<int, RoomData*>::iterator it = roomMap.find(uid);
+	if (it != roomMap.end()) {
+		throw(std::runtime_error("Cannot overwrite an existing room"));
+	}
+	roomMap[uid] = new RoomData();
+	//TODO: create room in the API
+	if (luaState) {
+		roomMap[uid]->pager.SetLuaState(luaState);
+	}
+	return roomMap[uid];
+}
 
-//-------------------------
-//accessors and mutators
-//-------------------------
+RoomData* RoomManager::UnloadRoom(int uid) {
+	//TODO: unload room in the API
+	delete roomMap[uid];
+	roomMap.erase(uid);
+}
 
 RoomData* RoomManager::GetRoom(int uid) {
-	std::map<int, RoomData>::iterator it = roomMap.find(uid);
+	RoomData* ptr = FindRoom(uid);
+	if (ptr) return ptr;
+	ptr = CreateRoom(uid);
+	return ptr;
+}
 
+RoomData* RoomManager::FindRoom(int uid) {
+	std::map<int, RoomData*>::iterator it = roomMap.find(uid);
 	if (it == roomMap.end()) {
 		return nullptr;
 	}
-
-	return &it->second;
+	return it->second;
 }
 
-std::map<int, RoomData>* RoomManager::GetContainer() {
-	return &roomMap;
-}
-
-lua_State* RoomManager::SetLuaState(lua_State* L) {
-	return luaState = L;
-}
-
-lua_State* RoomManager::GetLuaState() {
-	return luaState;
+RoomData* RoomManager::PushRoom(int uid, RoomData* room) {
+	//unload existing rooms with this index
+	std::map<int, RoomData*>::iterator it = roomMap.find(uid);
+	if (it != roomMap.end()) {
+		UnloadRoom(uid);
+	}
+	roomMap[uid] = room;
 }

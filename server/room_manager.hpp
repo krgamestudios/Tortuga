@@ -36,17 +36,21 @@ public:
 	~RoomManager() = default;
 
 	//public access methods
-	//TODO: Fill this out
+	RoomData* CreateRoom(int uid);
+	RoomData* UnloadRoom(int uid);
+
+	RoomData* GetRoom(int uid);
+	RoomData* FindRoom(int uid);
+	RoomData* PushRoom(int uid, RoomData*);
 
 	//accessors and mutators
-	RoomData* GetRoom(int uid);
-	std::map<int, RoomData>* GetContainer();
+	std::map<int, RoomData*>* GetContainer() { return &roomMap; }
 
-	lua_State* SetLuaState(lua_State*);
-	lua_State* GetLuaState();
+	lua_State* SetLuaState(lua_State* L) { return luaState = L; }
+	lua_State* GetLuaState() { return luaState; }
 
 private:
-	std::map<int, RoomData> roomMap;
+	std::map<int, RoomData*> roomMap;
 	lua_State* luaState = nullptr;
 };
 

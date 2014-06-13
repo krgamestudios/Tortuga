@@ -30,8 +30,8 @@
 
 class AccountManager {
 public:
-	AccountManager();
-	~AccountManager();
+	AccountManager() = default;
+	~AccountManager() { UnloadAll(); };
 
 	//public access methods
 	int CreateAccount(std::string username, int clientIndex);
@@ -39,6 +39,8 @@ public:
 	int SaveAccount(int uid);
 	void UnloadAccount(int uid);
 	void DeleteAccount(int uid);
+
+	void UnloadAll();
 
 	//accessors and mutators
 	AccountData* GetAccount(int uid);

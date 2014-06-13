@@ -86,10 +86,11 @@ void InCombat::FrameStart() {
 
 void InCombat::Update(double delta) {
 	//suck in and process all waiting packets
-	char packetBuffer[MAX_PACKET_SIZE];
-	while(network.Receive(reinterpret_cast<SerialPacket*>(packetBuffer))) {
-		HandlePacket(reinterpret_cast<SerialPacket*>(packetBuffer));
+	SerialPacket* packetBuffer = static_cast<SerialPacket*>(malloc(MAX_PACKET_SIZE));
+	while(network.Receive(packetBuffer)) {
+		HandlePacket(packetBuffer);
 	}
+	free(static_cast<void*>(packetBuffer));
 
 	//TODO: more
 }

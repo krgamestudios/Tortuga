@@ -19,49 +19,38 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef REGIONPAGER_HPP_
-#define REGIONPAGER_HPP_
+#ifndef REGIONPAGERBASE_HPP_
+#define REGIONPAGERBASE_HPP_
 
 #include "region.hpp"
 
-#include "lua/lua.hpp"
-
 #include <list>
-#include <string>
 
-//TODO: split this into two: "RegionPagerBase" and "RegionPagerLua"
-class RegionPager {
+class RegionPagerBase {
 public:
-	RegionPager() = default;
-	~RegionPager() = default;
+	RegionPagerBase() = default;
+	virtual ~RegionPagerBase() { UnloadAll(); };
 
 	//tile manipulation
-	Region::type_t SetTile(int x, int y, int z, Region::type_t v);
-	Region::type_t GetTile(int x, int y, int z);
+	virtual Region::type_t SetTile(int x, int y, int z, Region::type_t v);
+	virtual Region::type_t GetTile(int x, int y, int z);
 
 	//region manipulation
-	Region* GetRegion(int x, int y);
-	Region* FindRegion(int x, int y);
-	Region* PushRegion(Region* const);
+	virtual Region* GetRegion(int x, int y);
+	virtual Region* FindRegion(int x, int y);
+	virtual Region* PushRegion(Region* const);
 
-	Region* LoadRegion(int x, int y);
-	Region* SaveRegion(int x, int y);
-	Region* CreateRegion(int x, int y);
-	void UnloadRegion(int x, int y);
+	virtual Region* LoadRegion(int x, int y);
+	virtual Region* SaveRegion(int x, int y);
+	virtual Region* CreateRegion(int x, int y);
+	virtual void UnloadRegion(int x, int y);
+
+	virtual void UnloadAll();
 
 	//accessors & mutators
-	std::list<Region*>* GetContainer() { return &regionList; }
-
-	std::string SetDirectory(std::string s) { return directory = s; }
-	std::string GetDirectory() { return directory; }
-
-	lua_State* SetLuaState(lua_State* L) { return luaState = L; }
-	lua_State* GetLuaState() { return luaState; }
-
-private:
-	std::list<Region*> regionList;
-	std::string directory;
-	lua_State* luaState = nullptr;
+	std::list<Region>* GetContainer() { return &regionList; }
+protected:
+	std::list<Region> regionList;
 };
 
 #endif

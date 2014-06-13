@@ -32,77 +32,77 @@ enum class SerialPacketType {
 
 	//keep alive
 	//ping => pong
-	PING,
-	PONG,
+	PING = 1,
+	PONG = 2,
 
 	//search for the server list
 	//none => server name, player count, version info (and source address)
-	BROADCAST_REQUEST,
-	BROADCAST_RESPONSE,
+	BROADCAST_REQUEST = 3,
+	BROADCAST_RESPONSE = 4,
 
 	//try to join the server
 	//username, and password => client index, account index
-	JOIN_REQUEST,
-	JOIN_RESPONSE,
-	JOIN_REJECTION,
+	JOIN_REQUEST = 5,
+	JOIN_RESPONSE = 6,
+	JOIN_REJECTION = 7,
 
 	//mass update of all surrounding content
 	//character.x, character.y => packet barrage
-	SYNCHRONIZE,
+	SYNCHRONIZE = 8,
 
 	//disconnect from the server
 	//autentication, account index => disconnect that account
-	DISCONNECT,
+	DISCONNECT = 9,
 
 	//shut down the server
 	//autentication => disconnect, shutdown
-	SHUTDOWN,
+	SHUTDOWN = 10,
 
 	//map data
 	//room index, region.x, region.y => room index, region.x, region.y, region content
-	REGION_REQUEST,
-	REGION_CONTENT,
+	REGION_REQUEST = 11,
+	REGION_CONTENT = 12,
 
 	//combat data
 	//TODO: system incomplete
-	COMBAT_NEW,
-	COMBAT_DELETE,
-	COMBAT_UPDATE,
+	COMBAT_NEW = 13,
+	COMBAT_DELETE = 14,
+	COMBAT_UPDATE = 15,
 
-	COMBAT_ENTER_REQUEST,
-	COMBAT_ENTER_RESPONSE,
+	COMBAT_ENTER_REQUEST = 16,
+	COMBAT_ENTER_RESPONSE = 17,
 
-	COMBAT_EXIT_REQUEST,
-	COMBAT_EXIT_RESPONSE,
+	COMBAT_EXIT_REQUEST = 18,
+	COMBAT_EXIT_RESPONSE = 19,
 
 	//TODO: COMBAT info
 
-	COMBAT_REJECTION,
+	COMBAT_REJECTION = 20,
 
 	//character data
 	//character data => etc.
-	CHARACTER_NEW,
-	CHARACTER_DELETE,
-	CHARACTER_UPDATE,
+	CHARACTER_NEW = 21,
+	CHARACTER_DELETE = 22,
+	CHARACTER_UPDATE = 23,
 
 	//authentication, character index => character stats
-	CHARACTER_STATS_REQUEST,
-	CHARACTER_STATS_RESPONSE,
+	CHARACTER_STATS_REQUEST= 24,
+	CHARACTER_STATS_RESPONSE = 25,
 
 	//character new => character rejection, disconnect?
-	CHARACTER_REJECTION,
+	CHARACTER_REJECTION = 26,
 
 	//enemy data
 	//enemy data => etc.
-	ENEMY_NEW,
-	ENEMY_DELETE,
-	ENEMY_UPDATE,
+	ENEMY_NEW = 27,
+	ENEMY_DELETE = 28,
+	ENEMY_UPDATE = 29,
 
-	ENEMY_STATS_REQUEST,
-	ENEMY_STATS_RESPONSE,
+	ENEMY_STATS_REQUEST = 30,
+	ENEMY_STATS_RESPONSE = 31,
 
 	//enemy index => enemy doens't exist
-	ENEMY_REJECTION,
+	ENEMY_REJECTION= 32,
 
 	//NOTE: more packet types go here
 
