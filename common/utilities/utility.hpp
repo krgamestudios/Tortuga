@@ -32,17 +32,4 @@ std::string to_string_custom(int i);
 
 int to_integer_custom(std::string);
 
-//wow
-template<typename ContainerT, typename PredicateT>
-void erase_if(ContainerT& items, const PredicateT& predicate) {
-	for(auto it = items.begin(); it != items.end(); /* empty */) {
-		if(predicate(*it)) {
-			it = items.erase(it);
-		}
-		else {
-			++it;
-		}
-	}
-};
-
 #endif
