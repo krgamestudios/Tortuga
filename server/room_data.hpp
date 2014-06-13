@@ -23,7 +23,7 @@
 #define ROOMDATA_HPP_
 
 //map system
-#include "region_pager.hpp"
+#include "region_pager_lua.hpp"
 
 struct RoomData {
 	enum class RoomType {
@@ -35,7 +35,7 @@ struct RoomData {
 	};
 
 	//members
-	RegionPager pager;
+	RegionPagerLua pager;
 	RoomType type;
 
 	//TODO: collision map

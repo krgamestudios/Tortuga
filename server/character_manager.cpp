@@ -58,16 +58,6 @@ static const char* DELETE_CHARACTER = "DELETE FROM Characters WHERE uid = ?;";
 //Define the methods
 //-------------------------
 
-CharacterManager::CharacterManager() {
-	//
-}
-
-CharacterManager::~CharacterManager() {
-	for (auto& it : characterMap) {
-		SaveCharacter(it.first);
-	}
-}
-
 //TODO: default stats as a parameter? This would be good for differing beggining states or multiple classes
 int CharacterManager::CreateCharacter(int owner, std::string handle, std::string avatar) {
 	//Create the character, failing if it exists
@@ -292,6 +282,13 @@ void CharacterManager::UnloadCharacterIf(std::function<bool(std::map<int, Charac
 		}
 		it++;
 	}
+}
+
+void CharacterManager::UnloadAll() {
+	for (auto& it : characterMap) {
+		SaveCharacter(it.first);
+	}
+	characterMap.clear();
 }
 
 //-------------------------

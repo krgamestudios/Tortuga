@@ -128,9 +128,9 @@ void InWorld::RenderFrame() {
 }
 
 void InWorld::Render(SDL_Surface* const screen) {
-	//draw the map
-	for (auto it = regionPager.GetContainer()->begin(); it != regionPager.GetContainer()->end(); it++) {
-		tileSheet.DrawRegionTo(screen, *it, camera.x, camera.y);
+	//draw the map0
+	for (std::list<Region>::iterator it = regionPager.GetContainer()->begin(); it != regionPager.GetContainer()->end(); it++) {
+		tileSheet.DrawRegionTo(screen, &(*it), camera.x, camera.y);
 	}
 
 	//draw characters
@@ -343,6 +343,9 @@ void InWorld::HandleRegionContent(RegionPacket* const argPacket) {
 	//replace existing regions
 	regionPager.UnloadRegion(argPacket->x, argPacket->y);
 	regionPager.PushRegion(argPacket->region);
+
+	//clean up after the serial code
+	delete argPacket->region;
 	argPacket->region = nullptr;
 }
 
@@ -431,13 +434,13 @@ void InWorld::UpdateMap() {
 	int yEnd = snapToBase(REGION_HEIGHT, (camera.y+camera.height)/tileSheet.GetTileH()) + REGION_HEIGHT;
 
 	//prune distant regions
-	for (auto it = regionPager.GetContainer()->begin(); it != regionPager.GetContainer()->end(); /* EMPTY */) {
+	for (std::list<Region>::iterator it = regionPager.GetContainer()->begin(); it != regionPager.GetContainer()->end(); /* EMPTY */) {
 		//check if the region is outside off this area
-		if ((*it)->GetX() < xStart || (*it)->GetX() > xEnd || (*it)->GetY() < yStart || (*it)->GetY() > yEnd) {
+		if (it->GetX() < xStart || it->GetX() > xEnd || it->GetY() < yStart || it->GetY() > yEnd) {
 
 			//clunky, but the alternative was time consuming
-			int tmpX = (*it)->GetX();
-			int tmpY = (*it)->GetY();
+			int tmpX = it->GetX();
+			int tmpY = it->GetY();
 			++it;
 
 			regionPager.UnloadRegion(tmpX, tmpY);

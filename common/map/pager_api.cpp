@@ -21,42 +21,42 @@
 */
 #include "pager_api.hpp"
 
-#include "region_pager.hpp"
+#include "region_pager_lua.hpp"
 #include "region.hpp"
 
 #include <stdexcept>
 #include <string>
 
 static int setTile(lua_State* L) {
-	RegionPager* pager = reinterpret_cast<RegionPager*>(lua_touserdata(L, 1));
+	RegionPagerLua* pager = reinterpret_cast<RegionPagerLua*>(lua_touserdata(L, 1));
 	int ret = pager->SetTile(lua_tointeger(L, 2), lua_tointeger(L, 3), lua_tointeger(L, 4), lua_tointeger(L, 5));
 	lua_pushinteger(L, ret);
 	return 1;
 }
 
 static int getTile(lua_State* L) {
-	RegionPager* pager = reinterpret_cast<RegionPager*>(lua_touserdata(L, 1));
+	RegionPagerLua* pager = reinterpret_cast<RegionPagerLua*>(lua_touserdata(L, 1));
 	int ret = pager->GetTile(lua_tointeger(L, 2), lua_tointeger(L, 3), lua_tointeger(L, 4));
 	lua_pushinteger(L, ret);
 	return 1;
 }
 
 static int getRegion(lua_State* L) {
-	RegionPager* pager = reinterpret_cast<RegionPager*>(lua_touserdata(L, 1));
+	RegionPagerLua* pager = reinterpret_cast<RegionPagerLua*>(lua_touserdata(L, 1));
 	Region* region = pager->GetRegion(lua_tointeger(L, 2), lua_tointeger(L, 3));
 	lua_pushlightuserdata(L, region);
 	return 1;
 }
 
 static int setDirectory(lua_State* L) {
-	RegionPager* pager = reinterpret_cast<RegionPager*>(lua_touserdata(L, 1));
+	RegionPagerLua* pager = reinterpret_cast<RegionPagerLua*>(lua_touserdata(L, 1));
 	std::string s = pager->SetDirectory(lua_tostring(L, 2));
 	lua_pushstring(L, s.c_str());
 	return 1;
 }
 
 static int getDirectory(lua_State* L) {
-	RegionPager* pager = reinterpret_cast<RegionPager*>(lua_touserdata(L, 1));
+	RegionPagerLua* pager = reinterpret_cast<RegionPagerLua*>(lua_touserdata(L, 1));
 	std::string s = pager->GetDirectory();
 	lua_pushstring(L, s.c_str());
 	return 1;
@@ -64,7 +64,7 @@ static int getDirectory(lua_State* L) {
 
 static int loadRegion(lua_State* L) {
 	//get the parameters
-	RegionPager* pager = reinterpret_cast<RegionPager*>(lua_touserdata(L, 1));
+	RegionPagerLua* pager = reinterpret_cast<RegionPagerLua*>(lua_touserdata(L, 1));
 	Region* region = pager->GetRegion(lua_tointeger(L, 2), lua_tointeger(L, 3));
 	std::string s = pager->GetDirectory();
 
@@ -83,7 +83,7 @@ static int loadRegion(lua_State* L) {
 
 static int saveRegion(lua_State* L) {
 	//get the parameters
-	RegionPager* pager = reinterpret_cast<RegionPager*>(lua_touserdata(L, 1));
+	RegionPagerLua* pager = reinterpret_cast<RegionPagerLua*>(lua_touserdata(L, 1));
 	Region* region = pager->GetRegion(lua_tointeger(L, 2), lua_tointeger(L, 3));
 	std::string s = pager->GetDirectory();
 
@@ -102,7 +102,7 @@ static int saveRegion(lua_State* L) {
 
 static int createRegion(lua_State* L) {
 	//get the parameters
-	RegionPager* pager = reinterpret_cast<RegionPager*>(lua_touserdata(L, 1));
+	RegionPagerLua* pager = reinterpret_cast<RegionPagerLua*>(lua_touserdata(L, 1));
 	Region* region = pager->GetRegion(lua_tointeger(L, 2), lua_tointeger(L, 3));
 
 	//push the parameters
@@ -120,7 +120,7 @@ static int createRegion(lua_State* L) {
 
 static int unloadRegion(lua_State* L) {
 	//get the parameters
-	RegionPager* pager = reinterpret_cast<RegionPager*>(lua_touserdata(L, 1));
+	RegionPagerLua* pager = reinterpret_cast<RegionPagerLua*>(lua_touserdata(L, 1));
 	Region* region = pager->GetRegion(lua_tointeger(L, 2), lua_tointeger(L, 3));
 	std::string s = pager->GetDirectory();
 
