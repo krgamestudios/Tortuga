@@ -316,7 +316,7 @@ void ServerApplication::HandleRegionRequest(RegionPacket* const argPacket) {
 	newPacket.region = roomMgr.GetRoom(argPacket->roomIndex)->pager.GetRegion(argPacket->x, argPacket->y);
 
 	//send the content
-	network.SendTo(&argPacket->srcAddress, static_cast<SerialPacket*>(argPacket));
+	network.SendTo(&argPacket->srcAddress, static_cast<SerialPacket*>(&newPacket));
 }
 
 //-------------------------

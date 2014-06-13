@@ -1,5 +1,5 @@
+TODO: encapsulate the data structures
 TODO: Get the rooms working
-TODO: update the map API to handle multiple rooms
 
 TODO: Rejection packets
 TODO: Authentication

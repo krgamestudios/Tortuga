@@ -27,11 +27,11 @@
 
 struct RoomData {
 	enum class RoomType {
-		OVERWORLD,
-		RUINS,
-		TOWERS,
-		FORESTS,
-		CAVES,
+		OVERWORLD = 0,
+		RUINS = 1,
+		TOWERS = 2,
+		FORESTS = 3,
+		CAVE = 4,
 	};
 
 	//members
