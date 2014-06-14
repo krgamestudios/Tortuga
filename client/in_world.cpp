@@ -301,7 +301,6 @@ void InWorld::HandleCharacterNew(CharacterPacket* const argPacket) {
 		localCharacter = &character;
 
 		//setup the camera
-		//TODO: can't change the screen size?
 		camera.width = GetScreen()->w;
 		camera.height = GetScreen()->h;
 

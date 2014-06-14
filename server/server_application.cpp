@@ -29,6 +29,9 @@
 #include <iostream>
 #include <string>
 
+using std::cout;
+using std::endl;
+
 //-------------------------
 //public methods
 //-------------------------
@@ -233,7 +236,7 @@ void ServerApplication::HandleBroadcastRequest(SerialPacket* const argPacket) {
 	ServerPacket newPacket;
 
 	newPacket.type = SerialPacketType::BROADCAST_RESPONSE;
-	snprintf(newPacket.name, PACKET_STRING_SIZE, "%s", config["server.name"].c_str());
+	strncpy(newPacket.name, config["server.name"].c_str(), PACKET_STRING_SIZE);
 	newPacket.playerCount = characterMgr.GetContainer()->size();
 	newPacket.version = NETWORK_VERSION;
 
@@ -241,6 +244,8 @@ void ServerApplication::HandleBroadcastRequest(SerialPacket* const argPacket) {
 }
 
 void ServerApplication::HandleJoinRequest(ClientPacket* const argPacket) {
+	cout << "Attempting connection: " << argPacket->username << endl;
+
 	//create the new client
 	ClientData newClient;
 	newClient.address = argPacket->srcAddress;
@@ -268,6 +273,7 @@ void ServerApplication::HandleJoinRequest(ClientPacket* const argPacket) {
 }
 
 void ServerApplication::HandleDisconnect(ClientPacket* const argPacket) {
+	cout << "Trying to disconnect account " << argPacket->accountIndex << endl;
 	//TODO: authenticate who is disconnecting/kicking
 
 	//forward to the specified client
@@ -281,8 +287,10 @@ void ServerApplication::HandleDisconnect(ClientPacket* const argPacket) {
 	characterMgr.UnloadCharacterIf([&](std::map<int, CharacterData>::iterator it) -> bool {
 		if (argPacket->accountIndex == it->second.owner) {
 			PumpCharacterUnload(it->first);
+			cout << "Deleting character " << it->first << endl;
 			return true;
 		}
+		cout << "Not deleting character " << it->first << endl;
 		return false;
 	});
 
@@ -338,7 +346,8 @@ void ServerApplication::HandleRegionRequest(RegionPacket* const argPacket) {
 //-------------------------
 
 void ServerApplication::HandleCharacterNew(CharacterPacket* const argPacket) {
-	int characterIndex = characterMgr.CreateCharacter(argPacket->accountIndex, argPacket->handle, argPacket->avatar);
+	//NOTE: misnomer, try to load the character first
+	int characterIndex = characterMgr.LoadCharacter(argPacket->accountIndex, argPacket->handle, argPacket->avatar);
 
 	if (characterIndex == -1) {
 		//TODO: rejection packet
@@ -478,8 +487,8 @@ void ServerApplication::CopyCharacterToPacket(CharacterPacket* const packet, int
 
 	//TODO: keep this up to date when the character changes
 	packet->characterIndex = characterIndex;
-	snprintf(packet->handle, PACKET_STRING_SIZE, "%s", character->handle.c_str());
-	snprintf(packet->avatar, PACKET_STRING_SIZE, "%s", character->avatar.c_str());
+	strncpy(packet->handle, character->handle.c_str(), PACKET_STRING_SIZE);
+	strncpy(packet->avatar, character->avatar.c_str(), PACKET_STRING_SIZE);
 	packet->accountIndex = character->owner;
 	packet->roomIndex = character->roomIndex;
 	packet->origin = character->origin;

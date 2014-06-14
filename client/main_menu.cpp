@@ -21,6 +21,11 @@
 */
 #include "main_menu.hpp"
 
+#include <iostream>
+
+using std::cout;
+using std::endl;
+
 //-------------------------
 //Public access members
 //-------------------------
@@ -53,6 +58,11 @@ MainMenu::MainMenu(ConfigUtility* const argConfig):
 	startButton.SetText("Start");
 	optionsButton.SetText("Options");
 	quitButton.SetText("Quit");
+
+	//debug
+	cout << config["client.username"] << endl;
+	cout << config["client.handle"] << endl;
+	cout << config["client.avatar"] << endl;
 }
 
 MainMenu::~MainMenu() {
