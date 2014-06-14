@@ -238,5 +238,11 @@ void LobbyMenu::HandleJoinResponse(ClientPacket* const argPacket) {
 	network.Bind(&argPacket->srcAddress, Channels::SERVER);
 	SetNextScene(SceneList::INWORLD);
 
-	//TODO: send this player's character info
+	//send this player's character info
+	CharacterPacket newPacket;
+	newPacket.type = SerialPacketType::CHARACTER_NEW;
+	strncpy(newPacket.handle, config["client.handle"].c_str(), PACKET_STRING_SIZE);
+	strncpy(newPacket.avatar, config["client.avatar"].c_str(), PACKET_STRING_SIZE);
+	newPacket.accountIndex = accountIndex;
+	network.SendTo(Channels::SERVER, &newPacket);
 }

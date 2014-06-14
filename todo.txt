@@ -1,3 +1,4 @@
+TODO: rename restart scene to cleanup scene
 TODO: encapsulate the data structures
 TODO: Get the rooms working
 

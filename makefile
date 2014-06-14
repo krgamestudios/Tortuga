@@ -3,7 +3,7 @@
 #MKDIR=mkdir
 #RM=del /y
 
-CXXFLAGS+=-static-libgcc -static-libstdc++ -g
+CXXFLAGS+=-static-libgcc -static-libstdc++
 
 export
 
