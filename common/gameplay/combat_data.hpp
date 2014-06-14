@@ -43,7 +43,7 @@
 
 struct CombatData {
 	enum class Terrain {
-		//TODO: types of terrains
+		//TODO: types of combat terrains
 		NONE = 0,
 		GRASSLANDS,
 	};

@@ -73,7 +73,6 @@ void serializePacket(SerialPacketBase* packet, void* buffer) {
 		case SerialPacketType::COMBAT_DELETE:
 		case SerialPacketType::COMBAT_UPDATE:
 
-		//TODO: is this the best fit?
 		case SerialPacketType::COMBAT_ENTER_REQUEST:
 		case SerialPacketType::COMBAT_ENTER_RESPONSE:
 		case SerialPacketType::COMBAT_EXIT_REQUEST:

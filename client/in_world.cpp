@@ -338,7 +338,7 @@ void InWorld::HandleCharacterUpdate(CharacterPacket* const argPacket) {
 
 	CharacterData& character = characterMap[argPacket->characterIndex];
 
-	//TODO: review this
+	//other characters moving
 	if (argPacket->characterIndex != characterIndex) {
 		character.roomIndex = argPacket->roomIndex;
 		character.origin = argPacket->origin;
