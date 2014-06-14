@@ -19,33 +19,36 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef REGION_HPP_
-#define REGION_HPP_
+#ifndef REGIONPAGERLUA_HPP_
+#define REGIONPAGERLUA_HPP_
 
-constexpr int REGION_WIDTH = 20;
-constexpr int REGION_HEIGHT = 20;
-constexpr int REGION_DEPTH = 3;
+#include "region_pager_base.hpp"
 
-class Region {
+#include "lua/lua.hpp"
+
+#include <string>
+
+class RegionPagerLua : public RegionPagerBase {
 public:
-	typedef unsigned char type_t;
+	RegionPagerLua() = default;
+	~RegionPagerLua() = default;
 
-	Region() = delete;
-	Region(int x, int y);
-	Region(Region const&);
-	~Region() = default;
+	//region manipulation
+	Region* LoadRegion(int x, int y) override;
+	Region* SaveRegion(int x, int y) override;
+	Region* CreateRegion(int x, int y) override;
+	void UnloadRegion(int x, int y) override;
 
-	type_t SetTile(int x, int y, int z, type_t v);
-	type_t GetTile(int x, int y, int z);
+	void UnloadAll() override;
 
-	//accessors
-	int GetX() const { return x; }
-	int GetY() const { return y; }
-private:
-	const int x;
-	const int y;
+	std::string SetDirectory(std::string s) { return directory = s; }
+	std::string GetDirectory() { return directory; }
 
-	type_t tiles[REGION_WIDTH][REGION_HEIGHT][REGION_DEPTH];
+	lua_State* SetLuaState(lua_State* L) { return luaState = L; }
+	lua_State* GetLuaState() { return luaState; }
+protected:
+	std::string directory;
+	lua_State* luaState = nullptr;
 };
 
 #endif

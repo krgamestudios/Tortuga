@@ -1,5 +1,5 @@
 #config
-INCLUDES+=. ../map ../utilities
+INCLUDES+=. ../packet ../../gameplay ../../map ../../utilities
 LIBS+=
 CXXFLAGS+=-std=c++11 $(addprefix -I,$(INCLUDES))
 
@@ -11,7 +11,7 @@ OBJDIR=obj
 OBJ+=$(addprefix $(OBJDIR)/,$(CXXSRC:.cpp=.o))
 
 #output
-OUTDIR=../..
+OUTDIR=../../..
 OUT=$(addprefix $(OUTDIR)/,libcommon.a)
 
 #targets

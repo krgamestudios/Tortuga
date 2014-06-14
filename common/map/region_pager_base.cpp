@@ -19,9 +19,12 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#include "region_pager.hpp"
+#include "region_pager_base.hpp"
 
 #include "utility.hpp"
+
+#include <stdexcept>
+#include <algorithm>
 
 Region::type_t RegionPagerBase::SetTile(int x, int y, int z, Region::type_t v) {
 	Region* ptr = GetRegion(x, y);
@@ -34,10 +37,6 @@ Region::type_t RegionPagerBase::GetTile(int x, int y, int z) {
 }
 
 Region* RegionPagerBase::GetRegion(int x, int y) {
-	//snap the coords
-	x = snapToBase(REGION_WIDTH, x);
-	y = snapToBase(REGION_HEIGHT, y);
-
 	//get the region by various means
 	Region* ptr = nullptr;
 	ptr = FindRegion(x, y);
@@ -48,20 +47,41 @@ Region* RegionPagerBase::GetRegion(int x, int y) {
 }
 
 Region* RegionPagerBase::FindRegion(int x, int y) {
-	//snap the coords
-	x = snapToBase(REGION_WIDTH, x);
-	y = snapToBase(REGION_HEIGHT, y);
-
 	//find the region
-	for (std::list<Region*>::iterator it = regionList.begin(); it != regionList.end(); it++) {
-		if ((*it)->GetX() == x && (*it)->GetY() == y) {
-			return *it;
-		}
-	}
+	std::list<Region>::iterator it = find_if(regionList.begin(), regionList.end(), [x, y](Region& region) -> bool {
+		return region.GetX() == x && region.GetY() == y;
+	});
+	return it != regionList.end() ? &(*it) : nullptr;
+}
+
+Region* RegionPagerBase::PushRegion(Region* const ptr) {
+	regionList.push_front(*ptr);
+	return &regionList.front();
+}
+
+Region* RegionPagerBase::LoadRegion(int x, int y) {
+	//TODO: load the region if possible
 	return nullptr;
 }
 
-Region* RegionPagerBase::PushRegion(Region* ptr) {
-	regionList.push_front(ptr);
-	return regionList.front();
+Region* RegionPagerBase::SaveRegion(int x, int y) {
+	//TODO: find & save the region
+	return nullptr;
+}
+
+Region* RegionPagerBase::CreateRegion(int x, int y) {
+	if (FindRegion(x, y)) {
+		throw(std::logic_error("Cannot overwrite an existing region"));
+	}
+	regionList.emplace_front(x, y);
+	return &regionList.front();
+}
+
+void RegionPagerBase::UnloadRegion(int x, int y) {
+	//custom loop, not FindRegion()
+	regionList.remove_if([x, y](Region& region) -> bool { return region.GetX() == x && region.GetY() == y; });
+}
+
+void RegionPagerBase::UnloadAll() {
+	regionList.clear();
 }

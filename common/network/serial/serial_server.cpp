@@ -19,20 +19,24 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef SERIAL_HPP_
-#define SERIAL_HPP_
+#include "serial.hpp"
 
-#include "serial_packet.hpp"
+#include "serial_util.hpp"
 
-/* NOTE: Keep the PACKET_BUFFER_SIZE up to date
- * NOTE: REGION_CONTENT is currently the largest type of packet
- *  map content: REGION_WIDTH * REGION_HEIGHT * REGION_DEPTH * sizoeof(region::type_t)
- *  map format: sizeof(int) * 3
- *  metadata: sizeof(SerialPacket::Type)
-*/
-#define PACKET_BUFFER_SIZE REGION_WIDTH * REGION_HEIGHT * REGION_DEPTH * sizeof(Region::type_t) + sizeof(int) * 3 + sizeof(SerialPacket::Type)
+void serializeServer(ServerPacket* packet, void* buffer) {
+	SERIALIZE(buffer, &packet->type, sizeof(SerialPacketType));
 
-void serialize(SerialPacket* const, void* dest);
-void deserialize(SerialPacket* const, void* src);
+	//identify the server
+	SERIALIZE(buffer, &packet->name, PACKET_STRING_SIZE);
+	SERIALIZE(buffer, &packet->playerCount, sizeof(int));
+	SERIALIZE(buffer, &packet->version, sizeof(int));
+}
 
-#endif
+void deserializeServer(ServerPacket* packet, void* buffer) {
+	DESERIALIZE(buffer, &packet->type, sizeof(SerialPacketType));
+
+	//identify the server
+	DESERIALIZE(buffer, &packet->name, PACKET_STRING_SIZE);
+	DESERIALIZE(buffer, &packet->playerCount, sizeof(int));
+	DESERIALIZE(buffer, &packet->version, sizeof(int));
+}

@@ -19,33 +19,39 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef REGION_HPP_
-#define REGION_HPP_
+#ifndef ACCOUNTMANAGER_HPP_
+#define ACCOUNTMANAGER_HPP_
 
-constexpr int REGION_WIDTH = 20;
-constexpr int REGION_HEIGHT = 20;
-constexpr int REGION_DEPTH = 3;
+#include "account_data.hpp"
 
-class Region {
+#include "sqlite3/sqlite3.h"
+
+#include <map>
+
+class AccountManager {
 public:
-	typedef unsigned char type_t;
+	AccountManager() = default;
+	~AccountManager() { UnloadAll(); };
 
-	Region() = delete;
-	Region(int x, int y);
-	Region(Region const&);
-	~Region() = default;
+	//public access methods
+	int CreateAccount(std::string username, int clientIndex);
+	int LoadAccount(std::string username, int clientIndex);
+	int SaveAccount(int uid);
+	void UnloadAccount(int uid);
+	void DeleteAccount(int uid);
 
-	type_t SetTile(int x, int y, int z, type_t v);
-	type_t GetTile(int x, int y, int z);
+	void UnloadAll();
 
-	//accessors
-	int GetX() const { return x; }
-	int GetY() const { return y; }
+	//accessors and mutators
+	AccountData* GetAccount(int uid);
+	std::map<int, AccountData>* GetContainer();
+
+	sqlite3* SetDatabase(sqlite3* db);
+	sqlite3* GetDatabase();
+
 private:
-	const int x;
-	const int y;
-
-	type_t tiles[REGION_WIDTH][REGION_HEIGHT][REGION_DEPTH];
+	std::map<int, AccountData> accountMap;
+	sqlite3* database = nullptr;
 };
 
 #endif

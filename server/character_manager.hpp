@@ -19,17 +19,42 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef ROOMDATA_HPP_
-#define ROOMDATA_HPP_
+#ifndef CHARACTERMANAGER_HPP_
+#define CHARACTERMANAGER_HPP_
 
-struct RoomData {
-	enum class RoomType {
-		OVERWORLD,
-		RUINS,
-		TOWERS,
-		FORESTS,
-		CAVES,
-	};
+#include "character_data.hpp"
+
+#include "sqlite3/sqlite3.h"
+
+#include <map>
+#include <functional>
+
+class CharacterManager {
+public:
+	CharacterManager() = default;
+	~CharacterManager() { UnloadAll(); };
+
+	//public access methods
+	int CreateCharacter(int owner, std::string handle, std::string avatar);
+	int LoadCharacter(int owner, std::string handle, std::string avatar);
+	int SaveCharacter(int uid);
+	void UnloadCharacter(int uid);
+	void DeleteCharacter(int uid);
+
+	void UnloadCharacterIf(std::function<bool(std::map<int, CharacterData>::iterator)> f);
+
+	void UnloadAll();
+
+	//accessors and mutators
+	CharacterData* GetCharacter(int uid);
+	std::map<int, CharacterData>* GetContainer();
+
+	sqlite3* SetDatabase(sqlite3* db);
+	sqlite3* GetDatabase();
+
+private:
+	std::map<int, CharacterData> characterMap;
+	sqlite3* database = nullptr;
 };
 
 #endif

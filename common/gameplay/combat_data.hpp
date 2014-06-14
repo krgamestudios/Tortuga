@@ -35,24 +35,23 @@
 
 //std namespace
 #include <chrono>
-#include <list>
+#include <array>
 #include <utility>
 
-#define COMBAT_MAX_CHARACTER_COUNT 12
-#define COMBAT_MAX_ENEMY_COUNT 12
+#define COMBAT_MAX_CHARACTERS 12
+#define COMBAT_MAX_ENEMIES 12
 
 struct CombatData {
 	enum class Terrain {
-		//TODO: types of terrains
+		//TODO: types of combat terrains
 		NONE = 0,
 		GRASSLANDS,
 	};
 
 	typedef std::chrono::steady_clock Clock;
 
-	//combatants, point to the std::map's internal pairs
-	std::list<std::pair<const int, CharacterData>*> characterList;
-	std::list<std::pair<const int, EnemyData>*> enemyList;
+	std::array<CharacterData, COMBAT_MAX_CHARACTERS> characterArray;
+	std::array<EnemyData, COMBAT_MAX_ENEMIES> enemyArray;
 
 	//world interaction
 	int mapIndex = 0;

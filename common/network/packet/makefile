@@ -1,6 +1,6 @@
 #config
-INCLUDES+=. ../common/gameplay ../common/map ../common/network ../common/network/packet ../common/network/serial ../common/utilities
-LIBS+=../libcommon.a -lSDL_net -lwsock32 -liphlpapi -lmingw32 -lSDLmain -lSDL -llua -lsqlite3
+INCLUDES+=. ../../gameplay ../../map ../../utilities
+LIBS+=
 CXXFLAGS+=-std=c++11 $(addprefix -I,$(INCLUDES))
 
 #source
@@ -11,12 +11,12 @@ OBJDIR=obj
 OBJ+=$(addprefix $(OBJDIR)/,$(CXXSRC:.cpp=.o))
 
 #output
-OUTDIR=../out
-OUT=$(addprefix $(OUTDIR)/,server)
+OUTDIR=../../..
+OUT=$(addprefix $(OUTDIR)/,libcommon.a)
 
 #targets
 all: $(OBJ) $(OUT)
-	$(CXX) $(CXXFLAGS) -o $(OUT) $(OBJ) $(LIBS)
+	ar -crs $(OUT) $(OBJ)
 
 $(OBJ): | $(OBJDIR)
 

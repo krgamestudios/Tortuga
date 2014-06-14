@@ -1,4 +1,4 @@
-/* Copyright: (c) Kayne Ruse 2014
+/* Copyright: (c) Kayne Ruse 2013, 2014
  * 
  * This software is provided 'as-is', without any express or implied
  * warranty. In no event will the authors be held liable for any damages
@@ -19,60 +19,35 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef CHARACTERDATA_HPP_
-#define CHARACTERDATA_HPP_
+#ifndef CHARACTERPACKET_HPP_
+#define CHARACTERPACKET_HPP_
+
+#include "serial_packet_base.hpp"
 
 #include "vector2.hpp"
 #include "statistics.hpp"
 
-//graphics
-#ifdef GRAPHICS
- #include "sprite_sheet.hpp"
-#endif
+struct CharacterPacket : SerialPacketBase {
+	//identify the character
+	int characterIndex;
+	char handle[PACKET_STRING_SIZE];
+	char avatar[PACKET_STRING_SIZE];
 
-//std namespace
-#include <string>
-#include <cmath>
+	//the owner
+	int accountIndex;
 
-//the speeds that the characters move
-constexpr double CHARACTER_WALKING_SPEED = 140.0;
-constexpr double CHARACTER_WALKING_MOD = 1.0/sqrt(2.0);
+	//location
+	int roomIndex;
+	Vector2 origin;
+	Vector2 motion;
 
-struct CharacterData {
-	//metadata
-	int owner;
-	std::string handle;
-	std::string avatar;
-
-	//world position
-	int roomIndex = 0;
-	Vector2 origin = {0.0,0.0};
-	Vector2 motion = {0.0,0.0};
-	Vector2 bounds = {0.0,0.0};
-
-	//base statistics
+	//gameplay
 	Statistics stats;
 
 	//TODO: equipment
 	//TODO: items
 	//TODO: buffs
 	//TODO: debuffs
-
-	//methods
-	void Update(double delta);
-#ifdef GRAPHICS
-	void DrawTo(SDL_Surface* const, int camX, int camY);
-	void CorrectSprite();
-#endif
-
-	//active gameplay members
-	//NOTE: these are lost when unloaded
-#ifdef GRAPHICS
-	SpriteSheet sprite;
-#endif
-	bool inCombat = false;
-	int atbGauge = 0;
-	//TODO: stored command
 };
 
 #endif

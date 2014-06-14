@@ -19,33 +19,24 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef REGION_HPP_
-#define REGION_HPP_
+#include "serial.hpp"
 
-constexpr int REGION_WIDTH = 20;
-constexpr int REGION_HEIGHT = 20;
-constexpr int REGION_DEPTH = 3;
+#include "serial_util.hpp"
 
-class Region {
-public:
-	typedef unsigned char type_t;
+void serializeClient(ClientPacket* packet, void* buffer) {
+	SERIALIZE(buffer, &packet->type, sizeof(SerialPacketType));
 
-	Region() = delete;
-	Region(int x, int y);
-	Region(Region const&);
-	~Region() = default;
+	SERIALIZE(buffer, &packet->clientIndex, sizeof(int));
+	SERIALIZE(buffer, &packet->accountIndex, sizeof(int));
+	SERIALIZE(buffer, &packet->username, PACKET_STRING_SIZE);
+//	SERIALIZE(buffer, &packet->password, PACKET_STRING_SIZE);
+}
 
-	type_t SetTile(int x, int y, int z, type_t v);
-	type_t GetTile(int x, int y, int z);
+void deserializeClient(ClientPacket* packet, void* buffer) {
+	DESERIALIZE(buffer, &packet->type, sizeof(SerialPacketType));
 
-	//accessors
-	int GetX() const { return x; }
-	int GetY() const { return y; }
-private:
-	const int x;
-	const int y;
-
-	type_t tiles[REGION_WIDTH][REGION_HEIGHT][REGION_DEPTH];
-};
-
-#endif
+	DESERIALIZE(buffer, &packet->clientIndex, sizeof(int));
+	DESERIALIZE(buffer, &packet->accountIndex, sizeof(int));
+	DESERIALIZE(buffer, &packet->username, PACKET_STRING_SIZE);
+//	DESERIALIZE(buffer, &packet->password, PACKET_STRING_SIZE);
+}

@@ -23,7 +23,7 @@ CREATE TABLE IF NOT EXISTS Characters (
 	birth timestamp NOT NULL DEFAULT (datetime()),
 
 	--position
-	mapIndex		INTEGER DEFAULT 0,
+	roomIndex	INTEGER DEFAULT 0,
 	originX		INTEGER DEFAULT 0,
 	originY		INTEGER DEFAULT 0,
 

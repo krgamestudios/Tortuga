@@ -85,12 +85,12 @@ void InCombat::FrameStart() {
 }
 
 void InCombat::Update(double delta) {
-	SerialPacket packet;
-
-	//suck in all waiting packets
-	while(network.Receive(&packet)) {
-		HandlePacket(packet);
+	//suck in and process all waiting packets
+	SerialPacket* packetBuffer = static_cast<SerialPacket*>(malloc(MAX_PACKET_SIZE));
+	while(network.Receive(packetBuffer)) {
+		HandlePacket(packetBuffer);
 	}
+	free(static_cast<void*>(packetBuffer));
 
 	//TODO: more
 }
@@ -154,19 +154,19 @@ void InCombat::KeyUp(SDL_KeyboardEvent const& key) {
 //Network handlers
 //-------------------------
 
-void InCombat::HandlePacket(SerialPacket packet) {
-	switch(packet.meta.type) {
-		case SerialPacket::Type::DISCONNECT:
-			HandleDisconnect(packet);
+void InCombat::HandlePacket(SerialPacket* const argPacket) {
+	switch(argPacket->type) {
+		case SerialPacketType::DISCONNECT:
+			HandleDisconnect(argPacket);
 		break;
 		//handle errors
 		default:
-			throw(std::runtime_error(std::string() + "Unknown SerialPacket::Type encountered in InCombat: " + to_string_custom(int(packet.meta.type))));
+			throw(std::runtime_error(std::string() + "Unknown SerialPacketType encountered in InCombat: " + to_string_custom(static_cast<int>(argPacket->type)) ));
 		break;
 	}
 }
 
-void InCombat::HandleDisconnect(SerialPacket) {
+void InCombat::HandleDisconnect(SerialPacket* const) {
 	SetNextScene(SceneList::RESTART);
 }
 
@@ -177,52 +177,56 @@ void InCombat::HandleDisconnect(SerialPacket) {
 //-------------------------
 
 void InCombat::RequestSynchronize() {
-	SerialPacket packet;
+	ClientPacket newPacket;
 
 	//request a sync
-	packet.meta.type = SerialPacket::Type::SYNCHRONIZE;
-	packet.clientInfo.clientIndex = clientIndex;
-	packet.clientInfo.accountIndex = accountIndex;
-	packet.clientInfo.characterIndex = characterIndex;
+	newPacket.type = SerialPacketType::SYNCHRONIZE;
+	newPacket.clientIndex = clientIndex;
+	newPacket.accountIndex = accountIndex;
 
-	network.SendTo(Channels::SERVER, &packet);
+	network.SendTo(Channels::SERVER, &newPacket);
 }
 
 void InCombat::SendPlayerUpdate() {
-	SerialPacket packet;
+	CharacterPacket newPacket;
 
 	//pack the packet
-	packet.meta.type = SerialPacket::Type::CHARACTER_UPDATE;
-	packet.characterInfo.clientIndex = clientIndex;
-	packet.characterInfo.accountIndex = accountIndex;
-	packet.characterInfo.characterIndex = characterIndex;
-//	packet.characterInfo.position = localCharacter->position;
-//	packet.characterInfo.motion = localCharacter->motion;
-	//TODO: stats
+	newPacket.type = SerialPacketType::CHARACTER_UPDATE;
 
-	network.SendTo(Channels::SERVER, &packet);
+	newPacket.characterIndex = characterIndex;
+	//handle, avatar
+	newPacket.accountIndex = accountIndex;
+//	newPacket.roomIndex = localCharacter->roomIndex;
+//	newPacket.origin = localCharacter->origin;
+//	newPacket.motion = localCharacter->motion;
+//	newPacket.stats = localCharacter->stats;
+
+	//TODO: equipment
+	//TODO: items
+	//TODO: buffs
+	//TODO: debuffs
+
+	network.SendTo(Channels::SERVER, &newPacket);
 }
 
 void InCombat::RequestDisconnect() {
-	SerialPacket packet;
+	ClientPacket newPacket;
 
 	//send a disconnect request
-	packet.meta.type = SerialPacket::Type::DISCONNECT;
-	packet.clientInfo.clientIndex = clientIndex;
-	packet.clientInfo.accountIndex = accountIndex;
-	packet.clientInfo.characterIndex = characterIndex;
+	newPacket.type = SerialPacketType::DISCONNECT;
+	newPacket.clientIndex = clientIndex;
+	newPacket.accountIndex = accountIndex;
 
-	network.SendTo(Channels::SERVER, &packet);
+	network.SendTo(Channels::SERVER, &newPacket);
 }
 
 void InCombat::RequestShutdown() {
-	SerialPacket packet;
+	ClientPacket newPacket;
 
 	//send a shutdown request
-	packet.meta.type = SerialPacket::Type::SHUTDOWN;
-	packet.clientInfo.clientIndex = clientIndex;
-	packet.clientInfo.accountIndex = accountIndex;
-	packet.clientInfo.characterIndex = characterIndex;
+	newPacket.type = SerialPacketType::SHUTDOWN;
+	newPacket.clientIndex = clientIndex;
+	newPacket.accountIndex = accountIndex;
 
-	network.SendTo(Channels::SERVER, &packet);
+	network.SendTo(Channels::SERVER, &newPacket);
 }

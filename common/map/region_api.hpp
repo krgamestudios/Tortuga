@@ -19,33 +19,12 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef REGION_HPP_
-#define REGION_HPP_
+#ifndef REGIONAPI_HPP_
+#define REGIONAPI_HPP_
 
-constexpr int REGION_WIDTH = 20;
-constexpr int REGION_HEIGHT = 20;
-constexpr int REGION_DEPTH = 3;
+#include "lua/lua.hpp"
 
-class Region {
-public:
-	typedef unsigned char type_t;
-
-	Region() = delete;
-	Region(int x, int y);
-	Region(Region const&);
-	~Region() = default;
-
-	type_t SetTile(int x, int y, int z, type_t v);
-	type_t GetTile(int x, int y, int z);
-
-	//accessors
-	int GetX() const { return x; }
-	int GetY() const { return y; }
-private:
-	const int x;
-	const int y;
-
-	type_t tiles[REGION_WIDTH][REGION_HEIGHT][REGION_DEPTH];
-};
+#define LUA_REGIONLIBNAME "region"
+LUAMOD_API int luaopen_regionapi(lua_State* L);
 
 #endif

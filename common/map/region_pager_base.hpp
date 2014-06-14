@@ -19,30 +19,38 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef MAPALLOCATOR_HPP_
-#define MAPALLOCATOR_HPP_
+#ifndef REGIONPAGERBASE_HPP_
+#define REGIONPAGERBASE_HPP_
 
 #include "region.hpp"
 
-#include "lua/lua.hpp"
+#include <list>
 
-class BlankAllocator {
+class RegionPagerBase {
 public:
-	void Create(Region** const, int x, int y);
-	void Unload(Region* const);
-private:
-	//
-};
+	RegionPagerBase() = default;
+	virtual ~RegionPagerBase() { UnloadAll(); };
 
-class LuaAllocator {
-public:
-	void Create(Region** const, int x, int y);
-	void Unload(Region* const);
+	//tile manipulation
+	virtual Region::type_t SetTile(int x, int y, int z, Region::type_t v);
+	virtual Region::type_t GetTile(int x, int y, int z);
 
-	lua_State* SetLuaState(lua_State* L) { return state = L; }
-	lua_State* GetLuaState() { return state; }
-private:
-	lua_State* state = nullptr;
+	//region manipulation
+	virtual Region* GetRegion(int x, int y);
+	virtual Region* FindRegion(int x, int y);
+	virtual Region* PushRegion(Region* const);
+
+	virtual Region* LoadRegion(int x, int y);
+	virtual Region* SaveRegion(int x, int y);
+	virtual Region* CreateRegion(int x, int y);
+	virtual void UnloadRegion(int x, int y);
+
+	virtual void UnloadAll();
+
+	//accessors & mutators
+	std::list<Region>* GetContainer() { return &regionList; }
+protected:
+	std::list<Region> regionList;
 };
 
 #endif

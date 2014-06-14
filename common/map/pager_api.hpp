@@ -19,12 +19,12 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef MAPAPI_HPP_
-#define MAPAPI_HPP_
+#ifndef PAGERAPI_HPP_
+#define PAGERAPI_HPP_
 
 #include "lua/lua.hpp"
 
-#define LUA_MAPLIBNAME "map"
-LUAMOD_API int luaopen_mapapi(lua_State* L);
+#define LUA_PAGERLIBNAME "pager"
+LUAMOD_API int luaopen_pagerapi(lua_State* L);
 
 #endif

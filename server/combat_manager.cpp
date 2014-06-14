@@ -19,33 +19,36 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef REGION_HPP_
-#define REGION_HPP_
+#include "combat_manager.hpp"
 
-constexpr int REGION_WIDTH = 20;
-constexpr int REGION_HEIGHT = 20;
-constexpr int REGION_DEPTH = 3;
+//-------------------------
+//public access methods
+//-------------------------
 
-class Region {
-public:
-	typedef unsigned char type_t;
+//TODO
 
-	Region() = delete;
-	Region(int x, int y);
-	Region(Region const&);
-	~Region() = default;
+//-------------------------
+//accessors and mutators
+//-------------------------
 
-	type_t SetTile(int x, int y, int z, type_t v);
-	type_t GetTile(int x, int y, int z);
+CombatData* CombatManager::GetCombat(int uid) {
+	std::map<int, CombatData>::iterator it = combatMap.find(uid);
 
-	//accessors
-	int GetX() const { return x; }
-	int GetY() const { return y; }
-private:
-	const int x;
-	const int y;
+	if (it == combatMap.end()) {
+		return nullptr;
+	}
 
-	type_t tiles[REGION_WIDTH][REGION_HEIGHT][REGION_DEPTH];
-};
+	return &it->second;
+}
 
-#endif
+std::map<int, CombatData>* CombatManager::GetContainer() {
+	return &combatMap;
+}
+
+lua_State* CombatManager::SetLuaState(lua_State* L) {
+	return luaState = L;
+}
+
+lua_State* CombatManager::GetLuaState() {
+	return luaState;
+}

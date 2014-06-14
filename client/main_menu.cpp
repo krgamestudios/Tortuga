@@ -53,6 +53,9 @@ MainMenu::MainMenu(ConfigUtility* const argConfig):
 	startButton.SetText("Start");
 	optionsButton.SetText("Options");
 	quitButton.SetText("Quit");
+
+	//debug
+	//
 }
 
 MainMenu::~MainMenu() {

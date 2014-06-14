@@ -19,33 +19,39 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef REGION_HPP_
-#define REGION_HPP_
+#ifndef ROOMMANAGER_HPP_
+#define ROOMMANAGER_HPP_
 
-constexpr int REGION_WIDTH = 20;
-constexpr int REGION_HEIGHT = 20;
-constexpr int REGION_DEPTH = 3;
+#include "room_data.hpp"
 
-class Region {
+#include "lua/lua.hpp"
+
+#include <map>
+
+#define ROOM_MANAGER_PSEUDOINDEX "RoomManager"
+
+class RoomManager {
 public:
-	typedef unsigned char type_t;
+	RoomManager() = default;
+	~RoomManager() = default;
 
-	Region() = delete;
-	Region(int x, int y);
-	Region(Region const&);
-	~Region() = default;
+	//public access methods
+	RoomData* CreateRoom(int uid);
+	RoomData* UnloadRoom(int uid);
 
-	type_t SetTile(int x, int y, int z, type_t v);
-	type_t GetTile(int x, int y, int z);
+	RoomData* GetRoom(int uid);
+	RoomData* FindRoom(int uid);
+	RoomData* PushRoom(int uid, RoomData*);
 
-	//accessors
-	int GetX() const { return x; }
-	int GetY() const { return y; }
+	//accessors and mutators
+	std::map<int, RoomData*>* GetContainer() { return &roomMap; }
+
+	lua_State* SetLuaState(lua_State* L) { return luaState = L; }
+	lua_State* GetLuaState() { return luaState; }
+
 private:
-	const int x;
-	const int y;
-
-	type_t tiles[REGION_WIDTH][REGION_HEIGHT][REGION_DEPTH];
+	std::map<int, RoomData*> roomMap;
+	lua_State* luaState = nullptr;
 };
 
 #endif

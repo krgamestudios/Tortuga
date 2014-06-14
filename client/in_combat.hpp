@@ -73,8 +73,8 @@ protected:
 	void KeyUp(SDL_KeyboardEvent const&);
 
 	//Network handlers
-	void HandlePacket(SerialPacket);
-	void HandleDisconnect(SerialPacket);
+	void HandlePacket(SerialPacket* const);
+	void HandleDisconnect(SerialPacket* const);
 	//TODO: more network handlers
 
 	//Server control

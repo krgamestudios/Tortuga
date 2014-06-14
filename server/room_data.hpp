@@ -19,33 +19,27 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef REGION_HPP_
-#define REGION_HPP_
+#ifndef ROOMDATA_HPP_
+#define ROOMDATA_HPP_
 
-constexpr int REGION_WIDTH = 20;
-constexpr int REGION_HEIGHT = 20;
-constexpr int REGION_DEPTH = 3;
+//map system
+#include "region_pager_lua.hpp"
 
-class Region {
-public:
-	typedef unsigned char type_t;
+struct RoomData {
+	enum class RoomType {
+		OVERWORLD = 0,
+		RUINS = 1,
+		TOWERS = 2,
+		FORESTS = 3,
+		CAVE = 4,
+	};
 
-	Region() = delete;
-	Region(int x, int y);
-	Region(Region const&);
-	~Region() = default;
+	//members
+	RegionPagerLua pager;
+	RoomType type;
 
-	type_t SetTile(int x, int y, int z, type_t v);
-	type_t GetTile(int x, int y, int z);
-
-	//accessors
-	int GetX() const { return x; }
-	int GetY() const { return y; }
-private:
-	const int x;
-	const int y;
-
-	type_t tiles[REGION_WIDTH][REGION_HEIGHT][REGION_DEPTH];
+	//TODO: collision map
+	//TODO: NPCs?
 };
 
 #endif
