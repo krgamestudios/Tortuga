@@ -128,7 +128,7 @@ void InWorld::RenderFrame() {
 }
 
 void InWorld::Render(SDL_Surface* const screen) {
-	//draw the map0
+	//draw the map
 	for (std::list<Region>::iterator it = regionPager.GetContainer()->begin(); it != regionPager.GetContainer()->end(); it++) {
 		tileSheet.DrawRegionTo(screen, &(*it), camera.x, camera.y);
 	}
@@ -185,6 +185,7 @@ void InWorld::KeyDown(SDL_KeyboardEvent const& key) {
 		case SDLK_LEFT:
 			if (localCharacter) {
 				localCharacter->motion.x -= CHARACTER_WALKING_SPEED;
+				localCharacter->CorrectSprite();
 				SendPlayerUpdate();
 			}
 		break;
@@ -192,6 +193,7 @@ void InWorld::KeyDown(SDL_KeyboardEvent const& key) {
 		case SDLK_RIGHT:
 			if (localCharacter) {
 				localCharacter->motion.x += CHARACTER_WALKING_SPEED;
+				localCharacter->CorrectSprite();
 				SendPlayerUpdate();
 			}
 		break;
@@ -199,6 +201,7 @@ void InWorld::KeyDown(SDL_KeyboardEvent const& key) {
 		case SDLK_UP:
 			if (localCharacter) {
 				localCharacter->motion.y -= CHARACTER_WALKING_SPEED;
+				localCharacter->CorrectSprite();
 				SendPlayerUpdate();
 			}
 		break;
@@ -206,6 +209,7 @@ void InWorld::KeyDown(SDL_KeyboardEvent const& key) {
 		case SDLK_DOWN:
 			if (localCharacter) {
 				localCharacter->motion.y += CHARACTER_WALKING_SPEED;
+				localCharacter->CorrectSprite();
 				SendPlayerUpdate();
 			}
 		break;
@@ -218,6 +222,7 @@ void InWorld::KeyUp(SDL_KeyboardEvent const& key) {
 		case SDLK_LEFT:
 			if (localCharacter) {
 				localCharacter->motion.x += CHARACTER_WALKING_SPEED;
+				localCharacter->CorrectSprite();
 				SendPlayerUpdate();
 			}
 		break;
@@ -225,6 +230,7 @@ void InWorld::KeyUp(SDL_KeyboardEvent const& key) {
 		case SDLK_RIGHT:
 			if (localCharacter) {
 				localCharacter->motion.x -= CHARACTER_WALKING_SPEED;
+				localCharacter->CorrectSprite();
 				SendPlayerUpdate();
 			}
 		break;
@@ -232,6 +238,7 @@ void InWorld::KeyUp(SDL_KeyboardEvent const& key) {
 		case SDLK_UP:
 			if (localCharacter) {
 				localCharacter->motion.y += CHARACTER_WALKING_SPEED;
+				localCharacter->CorrectSprite();
 				SendPlayerUpdate();
 			}
 		break;
@@ -239,6 +246,7 @@ void InWorld::KeyUp(SDL_KeyboardEvent const& key) {
 		case SDLK_DOWN:
 			if (localCharacter) {
 				localCharacter->motion.y -= CHARACTER_WALKING_SPEED;
+				localCharacter->CorrectSprite();
 				SendPlayerUpdate();
 			}
 		break;
@@ -297,7 +305,8 @@ void InWorld::HandleCharacterNew(CharacterPacket* const argPacket) {
 	character.CorrectSprite();
 
 	//catch this client's player object
-	if (argPacket->characterIndex == characterIndex && !localCharacter) {
+	if (argPacket->accountIndex == accountIndex && !localCharacter) {
+		characterIndex = argPacket->characterIndex;
 		localCharacter = &character;
 
 		//setup the camera

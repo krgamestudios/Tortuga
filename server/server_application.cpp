@@ -29,9 +29,6 @@
 #include <iostream>
 #include <string>
 
-using std::cout;
-using std::endl;
-
 //-------------------------
 //public methods
 //-------------------------
@@ -244,8 +241,6 @@ void ServerApplication::HandleBroadcastRequest(SerialPacket* const argPacket) {
 }
 
 void ServerApplication::HandleJoinRequest(ClientPacket* const argPacket) {
-	cout << "Attempting connection: " << argPacket->username << endl;
-
 	//create the new client
 	ClientData newClient;
 	newClient.address = argPacket->srcAddress;
@@ -273,7 +268,6 @@ void ServerApplication::HandleJoinRequest(ClientPacket* const argPacket) {
 }
 
 void ServerApplication::HandleDisconnect(ClientPacket* const argPacket) {
-	cout << "Trying to disconnect account " << argPacket->accountIndex << endl;
 	//TODO: authenticate who is disconnecting/kicking
 
 	//forward to the specified client
@@ -287,10 +281,8 @@ void ServerApplication::HandleDisconnect(ClientPacket* const argPacket) {
 	characterMgr.UnloadCharacterIf([&](std::map<int, CharacterData>::iterator it) -> bool {
 		if (argPacket->accountIndex == it->second.owner) {
 			PumpCharacterUnload(it->first);
-			cout << "Deleting character " << it->first << endl;
 			return true;
 		}
-		cout << "Not deleting character " << it->first << endl;
 		return false;
 	});
 
