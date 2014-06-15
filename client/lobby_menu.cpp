@@ -224,7 +224,7 @@ void LobbyMenu::HandleBroadcastResponse(ServerPacket* const argPacket) {
 	server.playerCount = argPacket->playerCount;
 	server.version = argPacket->version;
 
-	//NOTE: Check compatibility here
+	//Checking compatibility
 	server.compatible = server.version == NETWORK_VERSION;
 
 	//push

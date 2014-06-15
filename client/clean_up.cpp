@@ -19,7 +19,7 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#include "restart.hpp"
+#include "clean_up.hpp"
 
 #include "channels.hpp"
 
@@ -29,7 +29,7 @@
 //Public access members
 //-------------------------
 
-Restart::Restart(
+CleanUp::CleanUp(
 	ConfigUtility* const argConfig,
 	UDPNetworkUtility* const argNetwork,
 	int* const argClientIndex,
@@ -77,7 +77,7 @@ Restart::Restart(
 	startTick = std::chrono::steady_clock::now();
 }
 
-Restart::~Restart() {
+CleanUp::~CleanUp() {
 	//
 }
 
@@ -85,7 +85,7 @@ Restart::~Restart() {
 //Frame loop
 //-------------------------
 
-void Restart::Update(double delta) {
+void CleanUp::Update(double delta) {
 	if (std::chrono::steady_clock::now() - startTick > std::chrono::duration<int>(10)) {
 		QuitEvent();
 	}
@@ -94,14 +94,14 @@ void Restart::Update(double delta) {
 	while(network.Receive());
 }
 
-void Restart::RenderFrame() {
+void CleanUp::RenderFrame() {
 	SDL_FillRect(GetScreen(), 0, 0);
 	Render(GetScreen());
 	SDL_Flip(GetScreen());
 	fps.Calculate();
 }
 
-void Restart::Render(SDL_Surface* const screen) {
+void CleanUp::Render(SDL_Surface* const screen) {
 	backButton.DrawTo(screen);
 	font.DrawStringTo("You have been disconnected.", screen, 50, 30);
 }
@@ -110,28 +110,28 @@ void Restart::Render(SDL_Surface* const screen) {
 //Event handlers
 //-------------------------
 
-void Restart::QuitEvent() {
+void CleanUp::QuitEvent() {
 	SetNextScene(SceneList::QUIT);
 }
 
-void Restart::MouseMotion(SDL_MouseMotionEvent const& motion) {
+void CleanUp::MouseMotion(SDL_MouseMotionEvent const& motion) {
 	backButton.MouseMotion(motion);
 }
 
-void Restart::MouseButtonDown(SDL_MouseButtonEvent const& button) {
+void CleanUp::MouseButtonDown(SDL_MouseButtonEvent const& button) {
 	backButton.MouseButtonDown(button);
 }
 
-void Restart::MouseButtonUp(SDL_MouseButtonEvent const& button) {
+void CleanUp::MouseButtonUp(SDL_MouseButtonEvent const& button) {
 	if (backButton.MouseButtonUp(button) == Button::State::HOVER) {
 		SetNextScene(SceneList::MAINMENU);
 	}
 }
 
-void Restart::KeyDown(SDL_KeyboardEvent const& key) {
+void CleanUp::KeyDown(SDL_KeyboardEvent const& key) {
 	//
 }
 
-void Restart::KeyUp(SDL_KeyboardEvent const& key) {
+void CleanUp::KeyUp(SDL_KeyboardEvent const& key) {
 	//
 }

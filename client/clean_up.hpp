@@ -19,8 +19,8 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef RESTART_HPP_
-#define RESTART_HPP_
+#ifndef CLEANUP_HPP_
+#define CLEANUP_HPP_
 
 //network
 #include "udp_network_utility.hpp"
@@ -44,10 +44,10 @@
 //std namespace
 #include <chrono>
 
-class Restart : public BaseScene {
+class CleanUp : public BaseScene {
 public:
 	//Public access members
-	Restart(
+	CleanUp(
 		ConfigUtility* const argConfig,
 		UDPNetworkUtility* const argNetwork,
 		int* const argClientIndex,
@@ -57,7 +57,7 @@ public:
 		std::map<int, CharacterData>* argCharacterMap,
 		std::map<int, EnemyData>* argEnemyMap
 	);
-	~Restart();
+	~CleanUp();
 
 protected:
 	//Frame loop

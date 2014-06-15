@@ -277,7 +277,7 @@ void InWorld::HandlePacket(SerialPacket* const argPacket) {
 }
 
 void InWorld::HandleDisconnect(SerialPacket* const argPacket) {
-	SetNextScene(SceneList::RESTART);
+	SetNextScene(SceneList::CLEANUP);
 }
 
 void InWorld::HandleCharacterNew(CharacterPacket* const argPacket) {

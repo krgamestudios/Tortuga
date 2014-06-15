@@ -58,7 +58,7 @@ static const char* DELETE_CHARACTER = "DELETE FROM Characters WHERE uid = ?;";
 //Define the methods
 //-------------------------
 
-//TODO: default stats as a parameter? This would be good for differing beggining states or multiple classes
+//NOTE: default stats as a parameter would be good for different beggining states or multiple classes
 int CharacterManager::CreateCharacter(int owner, std::string handle, std::string avatar) {
 	//Create the character, failing if it exists
 	sqlite3_stmt* statement = nullptr;

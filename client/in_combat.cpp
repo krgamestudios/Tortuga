@@ -163,7 +163,7 @@ void InCombat::HandlePacket(SerialPacket* const argPacket) {
 }
 
 void InCombat::HandleDisconnect(SerialPacket* const) {
-	SetNextScene(SceneList::RESTART);
+	SetNextScene(SceneList::CLEANUP);
 }
 
 //TODO: more network handlers

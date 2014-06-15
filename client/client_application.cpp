@@ -37,7 +37,7 @@
 #include "lobby_menu.hpp"
 #include "in_world.hpp"
 #include "in_combat.hpp"
-#include "restart.hpp"
+#include "clean_up.hpp"
 
 //-------------------------
 //Public access members
@@ -132,8 +132,8 @@ void ClientApplication::LoadScene(SceneList sceneIndex) {
 		case SceneList::INCOMBAT:
 			activeScene = new InCombat(&config, &network, &clientIndex, &accountIndex, &characterIndex, &combatMap, &characterMap, &enemyMap);
 		break;
-		case SceneList::RESTART:
-			activeScene = new Restart(&config, &network, &clientIndex, &accountIndex, &characterIndex, &combatMap, &characterMap, &enemyMap);
+		case SceneList::CLEANUP:
+			activeScene = new CleanUp(&config, &network, &clientIndex, &accountIndex, &characterIndex, &combatMap, &characterMap, &enemyMap);
 		break;
 		default:
 			throw(std::logic_error("Failed to recognize the scene index"));
