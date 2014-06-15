@@ -45,10 +45,7 @@ void serializeCharacter(CharacterPacket* packet, void* buffer) {
 	serializeStatistics(&packet->stats, buffer);
 	buffer = reinterpret_cast<char*>(buffer) + sizeof(Statistics);
 
-	//TODO: equipment
-	//TODO: items
-	//TODO: buffs
-	//TODO: debuffs
+	//TODO: gameplay components: equipment, items, buffs, debuffs
 }
 
 void deserializeCharacter(CharacterPacket* packet, void* buffer) {
@@ -73,8 +70,5 @@ void deserializeCharacter(CharacterPacket* packet, void* buffer) {
 	deserializeStatistics(&packet->stats, buffer);
 	buffer = reinterpret_cast<char*>(buffer) + sizeof(Statistics);
 
-	//TODO: equipment
-	//TODO: items
-	//TODO: buffs
-	//TODO: debuffs
+	//TODO: gameplay components: equipment, items, buffs, debuffs
 }

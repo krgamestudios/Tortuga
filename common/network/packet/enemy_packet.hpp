@@ -33,12 +33,7 @@ struct EnemyPacket : SerialPacketBase {
 	//gameplay
 	Statistics stats;
 
-	//TODO: equipment
-	//TODO: items
-	//TODO: buffs
-	//TODO: debuffs
-
-	//TODO: rewards
+	//TODO: gameplay components: equipment, items, buffs, debuffs, rewards
 };
 
 #endif

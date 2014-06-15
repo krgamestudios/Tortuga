@@ -135,7 +135,7 @@ void InWorld::Render(SDL_Surface* const screen) {
 
 	//draw characters
 	for (auto& it : characterMap) {
-		//TODO: drawing order according to Y origin
+		//BUG: #29 drawing order according to Y origin
 		it.second.DrawTo(screen, camera.x, camera.y);
 	}
 
@@ -152,7 +152,7 @@ void InWorld::Render(SDL_Surface* const screen) {
 void InWorld::QuitEvent() {
 	//exit the game AND the server
 	RequestDisconnect();
-	SetNextScene(SceneList::MAINMENU);
+	SetNextScene(SceneList::QUIT);
 }
 
 void InWorld::MouseMotion(SDL_MouseMotionEvent const& motion) {
@@ -176,11 +176,6 @@ void InWorld::MouseButtonUp(SDL_MouseButtonEvent const& button) {
 
 void InWorld::KeyDown(SDL_KeyboardEvent const& key) {
 	switch(key.keysym.sym) {
-		case SDLK_ESCAPE: {
-			QuitEvent();
-		}
-		break;
-
 		//player movement
 		case SDLK_LEFT:
 			if (localCharacter) {
@@ -386,10 +381,7 @@ void InWorld::SendPlayerUpdate() {
 	newPacket.motion = localCharacter->motion;
 	newPacket.stats = localCharacter->stats;
 
-	//TODO: equipment
-	//TODO: items
-	//TODO: buffs
-	//TODO: debuffs
+	//TODO: gameplay components: equipment, items, buffs, debuffs
 
 	network.SendTo(Channels::SERVER, &newPacket);
 }

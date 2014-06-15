@@ -40,7 +40,7 @@ void serializeCombat(CombatPacket* packet, void* buffer) {
 	SERIALIZE(buffer, &packet->origin.x, sizeof(double));
 	SERIALIZE(buffer, &packet->origin.y, sizeof(double));
 
-	//TODO: rewards
+	//TODO: gameplay components: rewards
 }
 
 void deserializeCombat(CombatPacket* packet, void* buffer) {
@@ -60,5 +60,5 @@ void deserializeCombat(CombatPacket* packet, void* buffer) {
 	DESERIALIZE(buffer, &packet->origin.x, sizeof(double));
 	DESERIALIZE(buffer, &packet->origin.y, sizeof(double));
 
-	//TODO: rewards
+	//TODO: gameplay components: rewards
 }

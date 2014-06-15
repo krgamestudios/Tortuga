@@ -338,6 +338,7 @@ void ServerApplication::HandleRegionRequest(RegionPacket* const argPacket) {
 //-------------------------
 
 void ServerApplication::HandleCharacterNew(CharacterPacket* const argPacket) {
+	//BUG: #27 Characters can be created with an invalid account index
 	//NOTE: misnomer, try to load the character first
 	int characterIndex = characterMgr.LoadCharacter(argPacket->accountIndex, argPacket->handle, argPacket->avatar);
 
@@ -413,10 +414,7 @@ void ServerApplication::HandleCharacterUpdate(CharacterPacket* const argPacket) 
 
 	character->stats = argPacket->stats;
 
-	//TODO: equipment
-	//TODO: items
-	//TODO: buffs
-	//TODO: debuffs
+	//TODO: gameplay components: equipment, items, buffs, debuffs
 
 	PumpPacket(argPacket);
 }

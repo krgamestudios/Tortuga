@@ -8,6 +8,7 @@ This game is inspired by classic 2D RPGs, as well as more modern sandbox MMOs. T
 
 Tortuga's full documentation can be found in a separate branch, see [Tortuga/docs](https://github.com/Ratstail91/Tortuga/tree/docs).  
 For Tortuga's primary documentation, please read the [Tortuga Game Design Document](https://github.com/Ratstail91/Tortuga/blob/docs/Tortuga%20Game%20Design%20Document.docx?raw=true).  
+For a list of known bugs, see the [GitHub bug tracker](https://github.com/Ratstail91/Tortuga/issues).
 
 ## External Dependencies
 

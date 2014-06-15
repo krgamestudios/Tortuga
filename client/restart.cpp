@@ -90,9 +90,8 @@ void Restart::Update(double delta) {
 		QuitEvent();
 	}
 
-	while(network.Receive()) {
-		//EAT INCOMING PACKETS
-	}
+	//BUGFIX: Eat incoming packets
+	while(network.Receive());
 }
 
 void Restart::RenderFrame() {
@@ -112,7 +111,7 @@ void Restart::Render(SDL_Surface* const screen) {
 //-------------------------
 
 void Restart::QuitEvent() {
-	SetNextScene(SceneList::MAINMENU);
+	SetNextScene(SceneList::QUIT);
 }
 
 void Restart::MouseMotion(SDL_MouseMotionEvent const& motion) {
@@ -125,16 +124,12 @@ void Restart::MouseButtonDown(SDL_MouseButtonEvent const& button) {
 
 void Restart::MouseButtonUp(SDL_MouseButtonEvent const& button) {
 	if (backButton.MouseButtonUp(button) == Button::State::HOVER) {
-		QuitEvent();
+		SetNextScene(SceneList::MAINMENU);
 	}
 }
 
 void Restart::KeyDown(SDL_KeyboardEvent const& key) {
-	switch(key.keysym.sym) {
-		case SDLK_ESCAPE:
-			QuitEvent();
-			break;
-	}
+	//
 }
 
 void Restart::KeyUp(SDL_KeyboardEvent const& key) {

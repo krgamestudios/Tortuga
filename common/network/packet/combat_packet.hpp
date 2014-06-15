@@ -40,7 +40,7 @@ struct CombatPacket : SerialPacketBase {
 	int mapIndex;
 	Vector2 origin;
 
-	//TODO: rewards
+	//TODO: gameplay components: rewards
 };
 
 #endif

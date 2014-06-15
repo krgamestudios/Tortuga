@@ -2,11 +2,9 @@ TODO: rename restart scene to cleanup scene
 TODO: encapsulate the data structures
 TODO: Get the rooms working
 
-TODO: Rejection packets
 TODO: Authentication
 TODO: server is slaved to the client
 
-TODO: I need to keep the documentation up to date. Namely, the GDD is getting out of date.
 TODO: I completely forgot about status ailments
 TODO: Time delay for requesting region packets
 TODO: command line parameters overriding config.cfg settings

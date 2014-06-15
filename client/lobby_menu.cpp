@@ -69,6 +69,9 @@ LobbyMenu::LobbyMenu(
 
 	//set the server list's position
 	listBox = {300, 50, 200, font.GetCharH()};
+
+	//BUGFIX: Eat incoming packets
+	while(network.Receive());
 }
 
 LobbyMenu::~LobbyMenu() {
@@ -187,11 +190,7 @@ void LobbyMenu::MouseButtonUp(SDL_MouseButtonEvent const& button) {
 }
 
 void LobbyMenu::KeyDown(SDL_KeyboardEvent const& key) {
-	switch(key.keysym.sym) {
-		case SDLK_ESCAPE:
-			SetNextScene(SceneList::MAINMENU);
-		break;
-	}
+	//
 }
 
 void LobbyMenu::KeyUp(SDL_KeyboardEvent const& key) {

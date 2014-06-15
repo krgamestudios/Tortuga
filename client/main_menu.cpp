@@ -113,11 +113,7 @@ void MainMenu::MouseButtonUp(SDL_MouseButtonEvent const& button) {
 }
 
 void MainMenu::KeyDown(SDL_KeyboardEvent const& key) {
-	switch(key.keysym.sym) {
-		case SDLK_ESCAPE:
-			QuitEvent();
-		break;
-	}
+	//
 }
 
 void MainMenu::KeyUp(SDL_KeyboardEvent const& key) {

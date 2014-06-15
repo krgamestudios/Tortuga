@@ -123,7 +123,7 @@ void InCombat::Render(SDL_Surface* const screen) {
 void InCombat::QuitEvent() {
 	//exit the game AND the server
 	RequestDisconnect();
-	SetNextScene(SceneList::MAINMENU);
+	SetNextScene(SceneList::QUIT);
 }
 
 void InCombat::MouseMotion(SDL_MouseMotionEvent const& motion) {
@@ -139,11 +139,7 @@ void InCombat::MouseButtonUp(SDL_MouseButtonEvent const& button) {
 }
 
 void InCombat::KeyDown(SDL_KeyboardEvent const& key) {
-	switch(key.keysym.sym) {
-		case SDLK_ESCAPE:
-			QuitEvent();
-			break;
-	}
+	//
 }
 
 void InCombat::KeyUp(SDL_KeyboardEvent const& key) {
@@ -201,10 +197,7 @@ void InCombat::SendPlayerUpdate() {
 //	newPacket.motion = localCharacter->motion;
 //	newPacket.stats = localCharacter->stats;
 
-	//TODO: equipment
-	//TODO: items
-	//TODO: buffs
-	//TODO: debuffs
+	//TODO: gameplay components: equipment, items, buffs, debuffs
 
 	network.SendTo(Channels::SERVER, &newPacket);
 }

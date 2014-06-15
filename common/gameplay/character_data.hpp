@@ -53,10 +53,7 @@ struct CharacterData {
 	//base statistics
 	Statistics stats;
 
-	//TODO: equipment
-	//TODO: items
-	//TODO: buffs
-	//TODO: debuffs
+	//TODO: gameplay components: equipment, items, buffs, debuffs
 
 	//methods
 	void Update(double delta);

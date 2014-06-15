@@ -41,12 +41,7 @@ struct EnemyData {
 	//gameplay
 	Statistics stats;
 
-	//TODO: equipment
-	//TODO: items
-	//TODO: buffs
-	//TODO: debuffs
-
-	//TODO: rewards
+	//TODO: gameplay components: equipment, items, buffs, debuffs, rewards
 
 	//active gameplay members
 	//NOTE: these are lost when unloaded
