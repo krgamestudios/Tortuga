@@ -30,26 +30,21 @@
 //-------------------------
 
 double SimpleRNG::operator()(double x) {
-	x = x * seed * 345589144.0 + 1123581321.0;
-	return fmod(x, 21795.0);
+	return (x + seed) * 345589144.0 + 1123581321.0;
 };
 
 Vector2 PerlinNoise::Gradient(Vector2 pos) {
 	//could cache this result
-	double j = rng(pos.y*pos.y + pos.x * 144);
-	double i = rng(pos.x*pos.x + pos.y * 144);
-	Vector2 v(i, j);
+	double angle = rng(pos.x * pos.y + pos.y);
+	Vector2 v(cos(angle), sin(angle));
 	v.Normalize();
 	return v;
 }
 
-double PerlinNoise::Influcence(Vector2 gridPoint, Vector2 queryPoint) {
-	return ScalarProduct(Gradient(gridPoint), queryPoint - gridPoint);
-}
-
 double PerlinNoise::Noise(double x, double y, double width, double height) {
-	Vector2 point = {x, y};
+	Vector2 queryPoint = {x, y};
 
+	//calc the region's position
 	x = Snap(x, width);
 	y = Snap(y, height);
 
@@ -60,10 +55,10 @@ double PerlinNoise::Noise(double x, double y, double width, double height) {
 	Vector2 br = {x + width, y + height};
 
 	//influence equasion
-	double s = Influcence(tl, point);
-	double t = Influcence(tr, point);
-	double u = Influcence(bl, point);
-	double v = Influcence(br, point);
+	double s = ScalarProduct(Gradient(tl), queryPoint - tl);
+	double t = ScalarProduct(Gradient(tr), queryPoint - tr);
+	double u = ScalarProduct(Gradient(bl), queryPoint - bl);
+	double v = ScalarProduct(Gradient(br), queryPoint - br);
 
 	//get the noise
 	double a = s + Curve((t - s) / width);

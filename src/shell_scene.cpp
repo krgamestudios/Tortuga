@@ -21,6 +21,8 @@
 */
 #include "shell_scene.hpp"
 
+#include <iostream>
+
 //-------------------------
 //Public access members
 //-------------------------
@@ -31,19 +33,21 @@ void setPixel(SDL_Surface* const dest, int x, int y, int colour) {
 
 ShellScene::ShellScene() {
 	//test the generator
-	int width = 800;
-	int height = 600;
-	image.CreateSurface(width, height);
-
-	int white = SDL_MapRGB(image.GetSurface()->format, 255, 255, 255);
+	int width = 80;
+	int height = 80;
+	image.CreateSurface(GetScreen()->w, GetScreen()->h);
 
 	double mod;
-	for (int i = 0; i < width; i++) {
-		for (int j = 0; j < height; j++) {
+	int colour;
+	std::cout << "Beggining generation" << std::endl;
+	for (int i = 0; i < image.GetSurface()->w; i++) {
+		for (int j = 0; j < image.GetSurface()->h; j++) {
 			mod = generator.Noise(i, j, width, height);
-			setPixel(image.GetSurface(), i, j, white*mod);
+			colour = SDL_MapRGB(image.GetSurface()->format, 255*mod, 255*mod, 255*mod);
+			setPixel(image.GetSurface(), i, j, colour);
 		}
 	}
+	std::cout << "Finished generation" << std::endl;
 }
 
 ShellScene::~ShellScene() {
