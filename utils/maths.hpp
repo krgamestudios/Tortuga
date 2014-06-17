@@ -1,4 +1,4 @@
-/* Copyright: (c) Kayne Ruse 2013, 2014
+/* Copyright: (c) Kayne Ruse 2014
  * 
  * This software is provided 'as-is', without any express or implied
  * warranty. In no event will the authors be held liable for any damages
@@ -19,36 +19,18 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef SHELLSCENE_HPP_
-#define SHELLSCENE_HPP_
+#ifndef MATHS_HPP_
+#define MATHS_HPP_
 
-#include "base_scene.hpp"
+#include "vector2.hpp"
 
-#include "image.hpp"
+//param: 0 to 1 inclusive
+double curve(double);
 
-class ShellScene : public BaseScene {
-public:
-	//Public access members
-	ShellScene();
-	~ShellScene();
+//snap x to a grid of base
+double snap(double x, double base);
 
-protected:
-	//Frame loop
-	void FrameStart();
-	void Update(double delta);
-	void FrameEnd();
-	void Render(SDL_Surface* const);
-
-	//Event handlers
-	void MouseMotion(SDL_MouseMotionEvent const&);
-	void MouseButtonDown(SDL_MouseButtonEvent const&);
-	void MouseButtonUp(SDL_MouseButtonEvent const&);
-	void KeyDown(SDL_KeyboardEvent const&);
-	void KeyUp(SDL_KeyboardEvent const&);
-
-	//members
-//	PerlinNoise generator;
-	Image image;
-};
+//vector dot product
+double scalarProduct(Vector2, Vector2);
 
 #endif

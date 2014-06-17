@@ -1,5 +1,5 @@
 #config
-INCLUDES+=. ../perlin
+INCLUDES+=. ../utils
 LIBS+=../libcommon.a -lmingw32 -lSDLmain -lSDL
 CXXFLAGS+=-std=c++11 $(addprefix -I,$(INCLUDES))
 

@@ -1,4 +1,4 @@
-/* Copyright: (c) Kayne Ruse 2013, 2014
+/* Copyright: (c) Kayne Ruse 2014
  * 
  * This software is provided 'as-is', without any express or implied
  * warranty. In no event will the authors be held liable for any damages
@@ -19,36 +19,23 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef SHELLSCENE_HPP_
-#define SHELLSCENE_HPP_
+#ifndef SIMPLERNG_HPP_
+#define SIMPLERNG_HPP_
 
-#include "base_scene.hpp"
-
-#include "image.hpp"
-
-class ShellScene : public BaseScene {
+class SimpleRNG {
 public:
-	//Public access members
-	ShellScene();
-	~ShellScene();
+	SimpleRNG() = default;
+	SimpleRNG(int x) { SetSeed(x); }
 
-protected:
-	//Frame loop
-	void FrameStart();
-	void Update(double delta);
-	void FrameEnd();
-	void Render(SDL_Surface* const);
+	int SetSeed(int s) { return seed = s; }
+	int GetSeed() { return seed; }
 
-	//Event handlers
-	void MouseMotion(SDL_MouseMotionEvent const&);
-	void MouseButtonDown(SDL_MouseButtonEvent const&);
-	void MouseButtonUp(SDL_MouseButtonEvent const&);
-	void KeyDown(SDL_KeyboardEvent const&);
-	void KeyUp(SDL_KeyboardEvent const&);
+	int SimpleRNG::operator()(int x) {
+		return (x + seed) * 345589144 + 1123581321 + seed;
+	};
 
-	//members
-//	PerlinNoise generator;
-	Image image;
+private:
+	int seed = 8891;
 };
 
 #endif

@@ -1,0 +1,4 @@
+All terrain is grass by default
+
+produce a hightmap for the terrain
+

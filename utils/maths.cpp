@@ -19,40 +19,18 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef PERLINNOISE_HPP_
-#define PERLINNOISE_HPP_
+#include "maths.hpp"
 
-#include "vector2.hpp"
+double curve(double x) {
+	return 3.0 * pow(x, 2.0) - 2.0 * pow(x, 3.0);
+}
 
-class SimpleRNG {
-public:
-	SimpleRNG() = default;
-	SimpleRNG(double x) { SetSeed(x); }
+double snap(double x, double base) {
+	//snap to a grid (floating point version)
+	return floor(x / base) * base;
+}
 
-	double SetSeed(double s) { return seed = s; }
-	double GetSeed() { return seed; }
-
-	double operator()(double x);
-
-private:
-	double seed = 8891.0;
-};
-
-class PerlinNoise {
-public:
-	PerlinNoise() = default;
-	~PerlinNoise() = default;
-
-	Vector2 Gradient(Vector2);
-	double Influcence(Vector2 gridPoint, Vector2 queryPoint);
-
-	double Noise(double x, double y, double width, double height);
-private:
-	static inline double Curve(double x);
-	static inline double Snap(double x, double base);
-	static inline double ScalarProduct(Vector2 lhs, Vector2 rhs);
-
-	SimpleRNG rng;
-};
-
-#endif
+double scalarProduct(Vector2 lhs, Vector2 rhs) {
+	//the dot product
+	return lhs.x * rhs.x + lhs.y * rhs.y;
+}

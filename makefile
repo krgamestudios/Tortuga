@@ -10,7 +10,7 @@ export
 OUTDIR=out
 
 all: $(OUTDIR)
-	$(MAKE) -C perlin
+	$(MAKE) -C utils
 	$(MAKE) -C src
 
 $(OUTDIR):
