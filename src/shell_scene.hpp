@@ -24,6 +24,8 @@
 
 #include "base_scene.hpp"
 
+#include "map_generator.hpp"
+
 #include "image.hpp"
 
 class ShellScene : public BaseScene {
@@ -47,7 +49,7 @@ protected:
 	void KeyUp(SDL_KeyboardEvent const&);
 
 	//members
-//	PerlinNoise generator;
+	MapGenerator generator;
 	Image image;
 };
 

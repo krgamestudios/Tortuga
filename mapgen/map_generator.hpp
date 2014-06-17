@@ -19,27 +19,21 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#include "maths.hpp"
+#ifndef MAPGENERATOR_HPP_
+#define MAPGENERATOR_HPP_
 
-double curve(double x) {
-	return 3.0 * pow(x, 2.0) - 2.0 * pow(x, 3.0);
-}
+#include "simple_rng.hpp"
 
-double snap(double x, double base) {
-	//snap to a grid (floating point version)
-	return floor(x / base) * base;
-}
+class MapGenerator {
+public:
+	MapGenerator() = default;
+	~MapGenerator() = default;
 
-int snap(int x, int base) {
-	//snap to a grid (integer devision version)
-	if (x < 0) {
-		++x;
-		return x / base * base - base;
-	}
-	return x / base * base;
-}
+	int Noise(int x, int y, int width, int height);
+	int RawNoise(int x, int y);
 
-double scalarProduct(Vector2 lhs, Vector2 rhs) {
-	//the dot product
-	return lhs.x * rhs.x + lhs.y * rhs.y;
-}
+private:
+	SimpleRNG rng;
+};
+
+#endif

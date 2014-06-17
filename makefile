@@ -11,6 +11,7 @@ OUTDIR=out
 
 all: $(OUTDIR)
 	$(MAKE) -C utils
+	$(MAKE) -C mapgen
 	$(MAKE) -C src
 
 $(OUTDIR):

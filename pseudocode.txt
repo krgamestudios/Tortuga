@@ -1,4 +1,1 @@
-All terrain is grass by default
-
-produce a hightmap for the terrain
-
+All coordinates have a random value assigned to them

@@ -37,13 +37,13 @@ ShellScene::ShellScene() {
 	int height = 80;
 	image.CreateSurface(GetScreen()->w, GetScreen()->h);
 
-	double mod = 0.0;
+	int value = 0;
 	int colour = 0;
 	std::cout << "Beggining generation" << std::endl;
 	for (int i = 0; i < image.GetSurface()->w; i++) {
 		for (int j = 0; j < image.GetSurface()->h; j++) {
-//			mod = generator.Noise(i, j, width, height);
-			colour = SDL_MapRGB(image.GetSurface()->format, 255*mod, 255*mod, 255*mod);
+			value = generator.Noise(i, j, width, height);
+			colour = SDL_MapRGB(image.GetSurface()->format, value, value, value);
 			setPixel(image.GetSurface(), i, j, colour);
 		}
 	}

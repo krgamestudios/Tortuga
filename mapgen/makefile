@@ -1,6 +1,6 @@
 #config
-INCLUDES+=. ../utils ../mapgen
-LIBS+=../libcommon.a -lmingw32 -lSDLmain -lSDL
+INCLUDES+=. ../utils
+LIBS+=
 CXXFLAGS+=-std=c++11 $(addprefix -I,$(INCLUDES))
 
 #source
@@ -11,12 +11,12 @@ OBJDIR=obj
 OBJ+=$(addprefix $(OBJDIR)/,$(CXXSRC:.cpp=.o))
 
 #output
-OUTDIR=../out
-OUT=$(addprefix $(OUTDIR)/,shell)
+OUTDIR=..
+OUT=$(addprefix $(OUTDIR)/,libcommon.a)
 
 #targets
 all: $(OBJ) $(OUT)
-	$(CXX) $(CXXFLAGS) -o $(OUT) $(OBJ) $(LIBS)
+	ar -crs $(OUT) $(OBJ)
 
 $(OBJ): | $(OBJDIR)
 

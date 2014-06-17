@@ -24,18 +24,18 @@
 
 class SimpleRNG {
 public:
-	SimpleRNG() = default;
+	SimpleRNG() { SetSeed(8891); }
 	SimpleRNG(int x) { SetSeed(x); }
 
-	int SetSeed(int s) { return seed = s; }
+	int SetSeed(int s) { return seed = s & 0xFFFF; }
 	int GetSeed() { return seed; }
 
-	int SimpleRNG::operator()(int x) {
-		return (x + seed) * 345589144 + 1123581321 + seed;
+	int operator()(int x) {
+		return SetSeed((x + seed) * 11235 + 81321);
 	};
 
 private:
-	int seed = 8891;
+	int seed;
 };
 
 #endif

@@ -29,6 +29,7 @@ double curve(double);
 
 //snap x to a grid of base
 double snap(double x, double base);
+int snap(int x, int base);
 
 //vector dot product
 double scalarProduct(Vector2, Vector2);
