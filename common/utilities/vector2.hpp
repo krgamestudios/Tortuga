@@ -41,6 +41,11 @@ public:
 	double SquaredLength() const {
 		return x*x+y*y;
 	}
+	void Normalize() {
+		double l = Length();
+		x /= l;
+		y /= l;
+	}
 
 	//Arithmetic operators
 	Vector2 operator+(Vector2 v) const {
@@ -96,15 +101,6 @@ public:
 	template<typename T> bool operator==(T t) { return (x == t && y == t); }
 	template<typename T> bool operator!=(T t) { return (x != t || y != t); }
 };
-
-//non-member templates (flip the order)
-template<typename T> Vector2 operator+(T t, Vector2 v) { return v + t; }
-template<typename T> Vector2 operator-(T t, Vector2 v) { return v - t; }
-template<typename T> Vector2 operator*(T t, Vector2 v) { return v * t; }
-template<typename T> Vector2 operator/(T t, Vector2 v) { return v / t; }
-
-template<typename T> bool operator==(T t, Vector2 v) { return v == t; }
-template<typename T> bool operator!=(T t, Vector2 v) { return v != t; }
 
 //This is explicitly a POD
 static_assert(std::is_pod<Vector2>::value, "Vector2 is not a POD");
