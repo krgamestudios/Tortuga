@@ -19,22 +19,28 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef ROOMDATA_HPP_
-#define ROOMDATA_HPP_
+#include "room_mgr_api.hpp"
 
-//map system
-#include "map_type.hpp"
-#include "region_pager_lua.hpp"
-#include "base_generator.hpp"
+#include "room_manager.hpp"
+#include "room_data.hpp"
 
-struct RoomData {
-	//members
-	MapType type;
-	RegionPagerLua pager;
-	BaseGenerator* generator = nullptr;
+static int getRoom(lua_State* L) {
+	//get the room manager
+	lua_pushstring(L, ROOM_MANAGER_PSEUDOINDEX);
+	lua_gettable(L, LUA_REGISTRYINDEX);
+	RoomManager* roomMgr = reinterpret_cast<RoomManager*>(lua_touserdata(L, -1));
 
-	//TODO: collision map
-	//TODO: NPCs?
+	//push the room and return it
+	lua_pushlightuserdata(L, reinterpret_cast<void*>( roomMgr->GetRoom(lua_tointeger(L, -2)) ));
+	return 1;
+}
+
+static const luaL_Reg roommgrlib[] = {
+	{"getroom",getRoom},
+	{nullptr, nullptr}
 };
 
-#endif
+LUAMOD_API int luaopen_roommgrapi(lua_State* L) {
+	luaL_newlib(L, roommgrlib);
+	return 1;
+}

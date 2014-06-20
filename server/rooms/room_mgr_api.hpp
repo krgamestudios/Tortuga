@@ -19,22 +19,12 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef ROOMDATA_HPP_
-#define ROOMDATA_HPP_
+#ifndef ROOMMGRAPI_HPP_
+#define ROOMMGRAPI_HPP_
 
-//map system
-#include "map_type.hpp"
-#include "region_pager_lua.hpp"
-#include "base_generator.hpp"
+#include "lua/lua.hpp"
 
-struct RoomData {
-	//members
-	MapType type;
-	RegionPagerLua pager;
-	BaseGenerator* generator = nullptr;
-
-	//TODO: collision map
-	//TODO: NPCs?
-};
+#define LUA_ROOMMGRLIBNAME "roommgr"
+LUAMOD_API int luaopen_roommgrapi(lua_State* L);
 
 #endif

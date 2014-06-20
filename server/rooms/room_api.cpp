@@ -38,22 +38,11 @@ static int getRegionPager(lua_State* L) {
 	return 1;
 }
 
-//RoomManager only
-static int getRoom(lua_State* L) {
-	//get the room manager
-	lua_pushstring(L, ROOM_MANAGER_PSEUDOINDEX);
-	lua_gettable(L, LUA_REGISTRYINDEX);
-	RoomManager* roomMgr = reinterpret_cast<RoomManager*>(lua_touserdata(L, -1));
-
-	//push the room and return it
-	lua_pushlightuserdata(L, reinterpret_cast<void*>( roomMgr->GetRoom(lua_tointeger(L, -2)) ));
-	return 1;
-}
+//TODO: generators
 
 static const luaL_Reg roomlib[] = {
 	{"gettype",getType},
 	{"getregionpager",getRegionPager},
-	{"getroom",getRoom},
 	{nullptr, nullptr}
 };
 

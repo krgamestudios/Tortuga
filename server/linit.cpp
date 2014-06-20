@@ -39,6 +39,7 @@
 #include "region_api.hpp"
 #include "pager_api.hpp"
 #include "room_api.hpp"
+#include "room_mgr_api.hpp"
 #include "generator_api.hpp"
 
 //these libs are loaded by lua.c and are readily available to any Lua program
@@ -59,6 +60,7 @@ static const luaL_Reg loadedlibs[] = {
 	{LUA_REGIONLIBNAME, luaopen_regionapi},
 	{LUA_PAGERLIBNAME, luaopen_pagerapi},
 	{LUA_ROOMLIBNAME, luaopen_roomapi},
+	{LUA_ROOMMGRLIBNAME, luaopen_roommgrapi},
 	{LUA_GENERATORLIBNAME, luaopen_generatorapi},
 
 	{NULL, NULL}
