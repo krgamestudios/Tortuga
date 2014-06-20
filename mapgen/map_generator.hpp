@@ -24,13 +24,17 @@
 
 #include "simple_rng.hpp"
 
+#include "vector2.hpp"
+
 class MapGenerator {
 public:
 	MapGenerator() = default;
 	~MapGenerator() = default;
 
-	int Noise(int x, int y, int width, int height);
-	int RawNoise(int x, int y);
+	Vector2 RawNoise(Vector2 const&);
+	double Influence(Vector2 const& gridPoint, Vector2 const& queryPoint, double width, double height);
+	double ScaledNoise(double x, double y, double width, double height);
+	double ScaleOctave(double x, double y, double width, double height, double octave);
 
 private:
 	SimpleRNG rng;

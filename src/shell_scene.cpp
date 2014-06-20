@@ -27,27 +27,53 @@
 //Public access members
 //-------------------------
 
+static double max = 0;
+static double min = 0;
+
 void setPixel(SDL_Surface* const dest, int x, int y, int colour) {
 	*(static_cast<int*>(dest->pixels) + dest->w * y + x) = colour;
 }
 
+int convertToColour(SDL_PixelFormat* format, double x) {
+	//track the max value
+	max = x > max ? x : max;
+	min = x < min ? x : min;
+
+	if (x > 1) {
+		return SDL_MapRGB(format, 255, 0, 0);
+	}
+
+	if (x < 0) {
+		return SDL_MapRGB(format, 0, 255, 0);
+	}
+
+	if (x == 0) {
+		return SDL_MapRGB(format, 0, 0, 255);
+	}
+
+	return SDL_MapRGB(format, 255*x, 255*x, 255*x);
+}
+
 ShellScene::ShellScene() {
 	//test the generator
-	int width = 80;
-	int height = 80;
+	int width = 256;
+	int height = 256;
 	image.CreateSurface(GetScreen()->w, GetScreen()->h);
 
-	int value = 0;
-	int colour = 0;
+	double value;
+	int colour;
+
 	std::cout << "Beggining generation" << std::endl;
 	for (int i = 0; i < image.GetSurface()->w; i++) {
 		for (int j = 0; j < image.GetSurface()->h; j++) {
-			value = generator.Noise(i, j, width, height);
-			colour = SDL_MapRGB(image.GetSurface()->format, value, value, value);
+			value = generator.ScaleOctave(i, j, width, height, 8);
+			colour = convertToColour(image.GetSurface()->format, value);
 			setPixel(image.GetSurface(), i, j, colour);
 		}
 	}
 	std::cout << "Finished generation" << std::endl;
+	std::cout << "Max: " << max << std::endl;
+	std::cout << "Min: " << min << std::endl;
 }
 
 ShellScene::~ShellScene() {

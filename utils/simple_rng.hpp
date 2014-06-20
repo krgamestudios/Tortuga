@@ -22,20 +22,21 @@
 #ifndef SIMPLERNG_HPP_
 #define SIMPLERNG_HPP_
 
+//a simple, stateless, random number generator
 class SimpleRNG {
 public:
-	SimpleRNG() { SetSeed(8891); }
-	SimpleRNG(int x) { SetSeed(x); }
+	SimpleRNG() { SetSeed(8891.0); }
+	SimpleRNG(double x) { SetSeed(x); }
 
-	int SetSeed(int s) { return seed = s & 0xFFFF; }
-	int GetSeed() { return seed; }
+	double SetSeed(double s) { return seed = s; }
+	double GetSeed() { return seed; }
 
-	int operator()(int x) {
-		return SetSeed((x + seed) * 11235 + 81321);
+	double operator()(double x) {
+		return (x + seed) * 11235.0 + 81321.0;
 	};
 
 private:
-	int seed;
+	double seed;
 };
 
 #endif

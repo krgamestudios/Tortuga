@@ -21,70 +21,74 @@
 */
 #include "map_generator.hpp"
 
-#include "maths.hpp"
+#include "vector2.hpp"
 
 #include <cmath>
 
-//it's either this, or dealing with floating points
-struct Coord {
-	int x, y;
-};
+//-------------------------
+//Utility functions
+//-------------------------
 
-//std::abs() only uses floating points
-int absolute(int i) {
-	return i > 0 ? i : -i;
+//snap to a grid (floating point version)
+static double snap(double x, double base) {
+	return floor(x / base) * base;
 }
 
-//calculate how far away a query point is from a grid point
-Coord calcDist(Coord gridPoint, Coord queryPoint) {
-	int i = absolute(queryPoint.x - gridPoint.x);
-	int j = absolute(queryPoint.y - gridPoint.y);
-	return {i, j};
+//A.K.A.: the dot product
+static double scalarProduct(Vector2 lhs, Vector2 rhs) {
+	return lhs.x * rhs.x + lhs.y * rhs.y;
 }
 
-//calculate the amount of influence a distance will have within a certain sized area
-int calcInfluence(Coord dist, int width, int height) {
-	//inverted distance
-	Coord i = {width - dist.x, height - dist.y};
-	//essentially calculating the length
-	return sqrt(i.x*i.x + i.y*i.y);
+//curved interpolation
+static double curve(double x) {
+	//param: 0 to 1 inclusive
+	return 3.0 * pow(x, 2.0) - 2.0 * pow(x, 3.0);
 }
 
-//determine the scaled value from the grid point
-int calcScale(int influence, int gridValue, int pointValue) {
-	/* TODO
-	 * (influence / {width, height}.Length()) //percentage to interpolate
-	 * poingValue - gridValue //difference
-	 * return percentage * difference //scale
-	*/
-	return gridValue;
+//-------------------------
+//Public methods
+//-------------------------
+
+Vector2 MapGenerator::RawNoise(Vector2 const& gridPoint) {
+	double angle = rng(gridPoint.x * 0xffff + gridPoint.y);
+	Vector2 v = {cos(angle), sin(angle)};
+	v.Normalize();
+	return v;
 }
 
-int MapGenerator::Noise(int x, int y, int width, int height) {
-	Coord queryPoint = {x, y};
+double MapGenerator::Influence(Vector2 const& gridPoint, Vector2 const& queryPoint, double width, double height) {
+	//note: inverting the distance here, so the smaller the distance the more influence it has
+	Vector2 distance = queryPoint - gridPoint;
+	Vector2 inverted = {width - distance.x, height - distance.y};
+	double ret = scalarProduct(RawNoise(gridPoint), inverted);
+	return ret > 0 ? ret : -ret;
+}
+
+double MapGenerator::ScaledNoise(double x, double y, double width, double height) {
+	Vector2 queryPoint = {x, y};
 
 	//the "grid points"
-	Coord tl = {snap(x, width), snap(y, height)};
-	Coord tr = {tl.x + width, tl.y};
-	Coord bl = {tl.x, tl.y + height};
-	Coord br = {tl.x + width, tl.y + height};
+	Vector2 tl = {snap(x, width), snap(y, height)};
+	Vector2 tr = {tl.x + width, tl.y};
+	Vector2 bl = {tl.x, tl.y + height};
+	Vector2 br = {tl.x + width, tl.y + height};
 
-	//get the distance from the query, and subsequently the influence
-	int tlInfluence = calcInfluence(calcDist(tl, queryPoint), width, height);
-	int trInfluence = calcInfluence(calcDist(tr, queryPoint), width, height);
-	int blInfluence = calcInfluence(calcDist(bl, queryPoint), width, height);
-	int brInfluence = calcInfluence(calcDist(br, queryPoint), width, height);
+	//influence equasion
+	double s = Influence(tl, queryPoint, width, height);
+	double t = Influence(tr, queryPoint, width, height);
+	double u = Influence(bl, queryPoint, width, height);
+	double v = Influence(br, queryPoint, width, height);
 
-	//now combine the grid's values with the influence values
-	int tlScale = calcScale(tlInfluence, RawNoise(tl.x, tl.y), RawNoise(queryPoint.x, queryPoint.y));
-	int trScale = calcScale(trInfluence, RawNoise(tr.x, tr.y), RawNoise(queryPoint.x, queryPoint.y));
-	int blScale = calcScale(blInfluence, RawNoise(bl.x, bl.y), RawNoise(queryPoint.x, queryPoint.y));
-	int brScale = calcScale(brInfluence, RawNoise(br.x, br.y), RawNoise(queryPoint.x, queryPoint.y));
-
-	//Finally, apply each scale to the raw value, resulting in the height map
-	return tlScale + trScale + blScale + brScale + RawNoise(queryPoint.x, queryPoint.y);
+	//Finally, calc the value
+	double a = s + curve((t - s) / width);
+	double b = u + curve((v - u) / width);
+	return curve((b - a) / height);
 }
 
-int MapGenerator::RawNoise(int x, int y) {
-	return (x * 11235 + y * 81321 + 3455) % 256;
+double MapGenerator::ScaleOctave(double x, double y, double width, double height, double octave) {
+	double ret = 0;
+	if (octave > 1) {
+		ret += ScaleOctave(x, y, width/2, height/2, octave-1);
+	}
+	return ret / octave + ScaledNoise(x, y, width, height);
 }
