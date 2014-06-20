@@ -19,12 +19,20 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#include "overworld_generator.hpp"
+#ifndef FORESTSGENERATOR_HPP_
+#define FORESTSGENERATOR_HPP_
 
-OverworldGenerator::OverworldGenerator() {
-	//
-}
+#include "base_generator.hpp"
 
-OverworldGenerator::~OverworldGenerator() {
+#define FORESTS_GENERATOR_PSEUDOINDEX "ForestsGenerator"
+
+class ForestsGenerator : public BaseGenerator {
+public:
+	ForestsGenerator();
+	~ForestsGenerator();
+
+private:
 	//
-}
+};
+
+#endif

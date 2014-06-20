@@ -19,12 +19,17 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#include "overworld_generator.hpp"
+#include "base_generator.hpp"
 
-OverworldGenerator::OverworldGenerator() {
-	//
+BaseGenerator::BaseGenerator() {
+	for (int i = 0; i < MAP_WIDTH; i++) {
+		for (int j = 0; j < MAP_HEIGHT; j++) {
+			chunks[i][j].type = TerrainType::NONE;
+			chunks[i][j].mod = ChunkData::Moddable::CLEAR;
+		}
+	}
 }
 
-OverworldGenerator::~OverworldGenerator() {
+BaseGenerator::~BaseGenerator() {
 	//
 }

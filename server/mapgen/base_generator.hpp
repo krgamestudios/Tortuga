@@ -19,12 +19,30 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#include "overworld_generator.hpp"
+#ifndef BASEGENERATOR_HPP_
+#define BASEGENERATOR_HPP_
 
-OverworldGenerator::OverworldGenerator() {
-	//
-}
+#include "chunk_data.hpp"
 
-OverworldGenerator::~OverworldGenerator() {
-	//
-}
+#include "lua/lua.hpp"
+
+constexpr int MAP_WIDTH = 256;
+constexpr int MAP_HEIGHT = 256;
+
+class BaseGenerator {
+public:
+	BaseGenerator();
+	virtual ~BaseGenerator();
+
+	//accessors and mutators
+	virtual ChunkData* GetChunk(int x, int y) { return &chunks[x][y]; }
+
+	lua_State* SetLuaState(lua_State* L) { return luaState = L; }
+	lua_State* GetLuaState() { return luaState; }
+
+protected:
+	ChunkData chunks[MAP_WIDTH][MAP_HEIGHT];
+	lua_State* luaState = nullptr;
+};
+
+#endif

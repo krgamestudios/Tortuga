@@ -19,12 +19,15 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#include "overworld_generator.hpp"
+#ifndef MAPTYPE_HPP_
+#define MAPTYPE_HPP_
 
-OverworldGenerator::OverworldGenerator() {
-	//
-}
+enum class MapType {
+	OVERWORLD = 0,
+	RUINS = 1,
+	TOWERS = 2,
+	FORESTS = 3,
+	CAVES = 4,
+};
 
-OverworldGenerator::~OverworldGenerator() {
-	//
-}
+#endif

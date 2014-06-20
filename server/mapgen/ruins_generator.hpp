@@ -19,12 +19,20 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#include "overworld_generator.hpp"
+#ifndef RUINSGENERATOR_HPP_
+#define RUINSGENERATOR_HPP_
 
-OverworldGenerator::OverworldGenerator() {
-	//
-}
+#include "base_generator.hpp"
 
-OverworldGenerator::~OverworldGenerator() {
+#define RUINS_GENERATOR_PSEUDOINDEX "RuinsGenerator"
+
+class RuinsGenerator : public BaseGenerator {
+public:
+	RuinsGenerator();
+	~RuinsGenerator();
+
+private:
 	//
-}
+};
+
+#endif

@@ -19,12 +19,12 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#include "overworld_generator.hpp"
+#include "forests_generator.hpp"
 
-OverworldGenerator::OverworldGenerator() {
+ForestsGenerator::ForestsGenerator() {
 	//
 }
 
-OverworldGenerator::~OverworldGenerator() {
+ForestsGenerator::~ForestsGenerator() {
 	//
 }

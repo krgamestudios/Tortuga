@@ -23,7 +23,7 @@
 #define ENEMYFACTORYINTERFACE_HPP_
 
 #include "enemy_data.hpp"
-#include "room_data.hpp"
+#include "map_type.hpp"
 
 #include <list>
 
@@ -36,13 +36,14 @@ public:
 	virtual void Generate(std::list<EnemyData>* container) = 0;
 
 	//control the difficulty of the room
-	RoomData::RoomType SetType(RoomData::RoomType t) { return type = t; }
+	MapType SetType(MapType t) { return type = t; }
+	MapType GetType() { return type; }
+
 	int SetDifficulty(int d) { return difficulty = d; }
-	RoomData::RoomType GetType() { return type; }
 	int GetDifficulty() { return difficulty; }
 protected:
-	RoomData::RoomType type;
-	int difficulty;
+	MapType type;
+	int difficulty = 0;
 };
 
 #endif

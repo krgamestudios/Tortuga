@@ -19,12 +19,19 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#include "overworld_generator.hpp"
+#include "generator_api.hpp"
 
-OverworldGenerator::OverworldGenerator() {
-	//
+static int getGenerator(lua_State* L) {
+	//TODO: return a generator based on the given parameter
+	return 0;
 }
 
-OverworldGenerator::~OverworldGenerator() {
-	//
+static const luaL_Reg generatorlib[] = {
+	{"getgenerator", getGenerator},
+	{nullptr, nullptr}
+};
+
+LUAMOD_API int luaopen_generatorapi(lua_State* L) {
+	luaL_newlib(L, generatorlib);
+	return 1;
 }

@@ -19,12 +19,20 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#include "overworld_generator.hpp"
+#ifndef TOWERSGENERATOR_HPP_
+#define TOWERSGENERATOR_HPP_
 
-OverworldGenerator::OverworldGenerator() {
-	//
-}
+#include "base_generator.hpp"
 
-OverworldGenerator::~OverworldGenerator() {
+#define TOWERS_GENERATOR_PSEUDOINDEX "TowersGenerator"
+
+class TowersGenerator : public BaseGenerator {
+public:
+	TowersGenerator();
+	~TowersGenerator();
+
+private:
 	//
-}
+};
+
+#endif

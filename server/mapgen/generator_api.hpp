@@ -19,12 +19,13 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#include "overworld_generator.hpp"
+#ifndef GENERATORAPI_HPP_
+#define GENERATORAPI_HPP_
 
-OverworldGenerator::OverworldGenerator() {
-	//
-}
+#include "lua/lua.hpp"
 
-OverworldGenerator::~OverworldGenerator() {
-	//
-}
+#define LUA_GENERATORLIBNAME "generator"
+LUAMOD_API int luaopen_generatorapi(lua_State* L);
+
+
+#endif

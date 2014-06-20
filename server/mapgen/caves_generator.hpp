@@ -19,12 +19,20 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#include "overworld_generator.hpp"
+#ifndef CAVESGENERATOR_HPP_
+#define CAVESGENERATOR_HPP_
 
-OverworldGenerator::OverworldGenerator() {
-	//
-}
+#include "base_generator.hpp"
 
-OverworldGenerator::~OverworldGenerator() {
+#define CAVES_GENERATOR_PSEUDOINDEX "CavesGenerator"
+
+class CavesGenerator : public BaseGenerator {
+public:
+	CavesGenerator();
+	~CavesGenerator();
+
+private:
 	//
-}
+};
+
+#endif

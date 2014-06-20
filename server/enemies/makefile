@@ -1,5 +1,5 @@
 #config
-INCLUDES+=. ../rooms ../../common/gameplay ../../common/map ../../common/utilities
+INCLUDES+=. ../mapgen ../../common/gameplay ../../common/map ../../common/utilities
 LIBS+=
 CXXFLAGS+=-std=c++11 $(addprefix -I,$(INCLUDES))
 
