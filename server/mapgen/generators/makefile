@@ -1,5 +1,5 @@
 #config
-INCLUDES+=.
+INCLUDES+=. ..
 LIBS+=
 CXXFLAGS+=-std=c++11 $(addprefix -I,$(INCLUDES))
 
@@ -11,13 +11,12 @@ OBJDIR=obj
 OBJ+=$(addprefix $(OBJDIR)/,$(CXXSRC:.cpp=.o))
 
 #output
-OUTDIR=..
+OUTDIR=../..
 OUT=$(addprefix $(OUTDIR)/,server.a)
 
 #targets
 all: $(OBJ) $(OUT)
 	ar -crs $(OUT) $(OBJ)
-	$(MAKE) -C generators
 
 $(OBJ): | $(OBJDIR)
 

@@ -1,5 +1,5 @@
 #config
-INCLUDES+=. ../mapgen ../../common/map
+INCLUDES+=. ../mapgen ../mapgen/generators ../../common/map
 LIBS+=
 CXXFLAGS+=-std=c++11 $(addprefix -I,$(INCLUDES))
 
