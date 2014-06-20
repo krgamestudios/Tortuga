@@ -34,7 +34,8 @@ public:
 	Vector2 RawNoise(Vector2 const&);
 	double Influence(Vector2 const& gridPoint, Vector2 const& queryPoint, double width, double height);
 	double ScaledNoise(double x, double y, double width, double height);
-	double ScaleOctave(double x, double y, double width, double height, double octave);
+	double ScaledOctave(double x, double y, double width, double height, double octave);
+	double GetPixel(double x, double y, double width, double height, double octave);
 
 private:
 	SimpleRNG rng;

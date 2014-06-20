@@ -54,6 +54,31 @@ int convertToColour(SDL_PixelFormat* format, double x) {
 	return SDL_MapRGB(format, 255*x, 255*x, 255*x);
 }
 
+int convertToTerrain(SDL_PixelFormat* format, double x) {
+	//water
+	if (x < 0.4) {
+		return SDL_MapRGB(format, 0, 0, 255);
+	}
+	//sand
+	if (x < 0.5) {
+		return SDL_MapRGB(format, 255, 255, 0);
+	}
+	//grass
+	if (x < 0.6) {
+		return SDL_MapRGB(format, 0, 255, 0);
+	}
+	//forest
+	if (x < 0.8) {
+		return SDL_MapRGB(format, 0, 128, 0);
+	}
+	//snow
+	if (x < 0.8) {
+		return SDL_MapRGB(format, 255, 255, 255);
+	}
+	//dark snow
+	return SDL_MapRGB(format, 128, 128, 128);
+}
+
 ShellScene::ShellScene() {
 	//test the generator
 	int width = 256;
@@ -66,7 +91,7 @@ ShellScene::ShellScene() {
 	std::cout << "Beggining generation" << std::endl;
 	for (int i = 0; i < image.GetSurface()->w; i++) {
 		for (int j = 0; j < image.GetSurface()->h; j++) {
-			value = generator.ScaleOctave(i, j, width, height, 8);
+			value = generator.GetPixel(i, j, width, height, 8);
 			colour = convertToColour(image.GetSurface()->format, value);
 			setPixel(image.GetSurface(), i, j, colour);
 		}

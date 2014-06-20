@@ -45,6 +45,27 @@ static double curve(double x) {
 	return 3.0 * pow(x, 2.0) - 2.0 * pow(x, 3.0);
 }
 
+//fix the overflow
+static double curl(double x) {
+	if (x > 1.0) {
+		return -curl(x-1) +1;
+	}
+	if (x < 0.0) {
+		return curl(-x);
+	}
+	return x;
+}
+
+static double cut(double x) {
+	if (x > 1.0) {
+		return 1.0;
+	}
+	if (x < 0.0) {
+		return 0.0;
+	}
+	return x;
+}
+
 //-------------------------
 //Public methods
 //-------------------------
@@ -85,10 +106,15 @@ double MapGenerator::ScaledNoise(double x, double y, double width, double height
 	return curve((b - a) / height);
 }
 
-double MapGenerator::ScaleOctave(double x, double y, double width, double height, double octave) {
+double MapGenerator::ScaledOctave(double x, double y, double width, double height, double octave) {
 	double ret = 0;
 	if (octave > 1) {
-		ret += ScaleOctave(x, y, width/2, height/2, octave-1);
+		ret += ScaledOctave(x, y, width/2, height/2, octave-1);
 	}
 	return ret / octave + ScaledNoise(x, y, width, height);
+}
+
+double MapGenerator::GetPixel(double x, double y, double width, double height, double octave) {
+	//use this as a decorator function
+	return curl(ScaledOctave(x, y, width, height, octave));
 }
