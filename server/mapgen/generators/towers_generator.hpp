@@ -19,17 +19,20 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#include "overworld_generator.hpp"
+#ifndef TOWERSGENERATOR_HPP_
+#define TOWERSGENERATOR_HPP_
 
-OverworldGenerator::OverworldGenerator() {
-	for (int i = 0; i < OVERWORLD_WIDTH; i++) {
-		for (int j = 0; j < OVERWORLD_HEIGHT; j++) {
-			chunks[i][j].type = TerrainType::NONE;
-			chunks[i][j].mod = ChunkData::Moddable::CLEAR;
-		}
-	}
-}
+#include "base_generator.hpp"
 
-OverworldGenerator::~OverworldGenerator() {
+#define TOWERS_GENERATOR_PSEUDOINDEX "TowersGenerator"
+
+class TowersGenerator : public BaseGenerator {
+public:
+	TowersGenerator();
+	~TowersGenerator();
+
+private:
 	//
-}
+};
+
+#endif

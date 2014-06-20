@@ -19,30 +19,12 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef ENEMYFACTORYINTERFACE_HPP_
-#define ENEMYFACTORYINTERFACE_HPP_
+#ifndef ROOMMGRAPI_HPP_
+#define ROOMMGRAPI_HPP_
 
-#include "enemy_data.hpp"
-#include "room_data.hpp"
+#include "lua/lua.hpp"
 
-#include <list>
-
-//NOTE: Based on biome, world difficulty, etc.
-class EnemyFactoryInterface {
-public:
-	EnemyFactoryInterface() = default;
-	virtual ~EnemyFactoryInterface() = default;
-
-	virtual void Generate(std::list<EnemyData>* container) = 0;
-
-	//control the difficulty of the room
-	RoomData::RoomType SetType(RoomData::RoomType t) { return type = t; }
-	int SetDifficulty(int d) { return difficulty = d; }
-	RoomData::RoomType GetType() { return type; }
-	int GetDifficulty() { return difficulty; }
-protected:
-	RoomData::RoomType type;
-	int difficulty;
-};
+#define LUA_ROOMMGRLIBNAME "roommgr"
+LUAMOD_API int luaopen_roommgrapi(lua_State* L);
 
 #endif

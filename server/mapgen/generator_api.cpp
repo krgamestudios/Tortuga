@@ -19,27 +19,19 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef ROOMDATA_HPP_
-#define ROOMDATA_HPP_
+#include "generator_api.hpp"
 
-//map system
-#include "region_pager_lua.hpp"
+static int getGenerator(lua_State* L) {
+	//TODO: return a generator based on the given parameter
+	return 0;
+}
 
-struct RoomData {
-	enum class RoomType {
-		OVERWORLD = 0,
-		RUINS = 1,
-		TOWERS = 2,
-		FORESTS = 3,
-		CAVE = 4,
-	};
-
-	//members
-	RegionPagerLua pager;
-	RoomType type;
-
-	//TODO: collision map
-	//TODO: NPCs?
+static const luaL_Reg generatorlib[] = {
+	{"getgenerator", getGenerator},
+	{nullptr, nullptr}
 };
 
-#endif
+LUAMOD_API int luaopen_generatorapi(lua_State* L) {
+	luaL_newlib(L, generatorlib);
+	return 1;
+}

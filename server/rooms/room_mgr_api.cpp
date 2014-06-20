@@ -19,26 +19,11 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#include "room_api.hpp"
+#include "room_mgr_api.hpp"
 
 #include "room_manager.hpp"
 #include "room_data.hpp"
 
-static int getType(lua_State* L) {
-	RoomData* room = reinterpret_cast<RoomData*>(lua_touserdata(L, 1));
-	lua_pushinteger(L, static_cast<int>(room->type));
-	return 1;
-}
-
-//TODO: parameters
-
-static int getRegionPager(lua_State* L) {
-	RoomData* room = reinterpret_cast<RoomData*>(lua_touserdata(L, 1));
-	lua_pushlightuserdata(L, reinterpret_cast<void*>(&room->pager));
-	return 1;
-}
-
-//RoomManager only
 static int getRoom(lua_State* L) {
 	//get the room manager
 	lua_pushstring(L, ROOM_MANAGER_PSEUDOINDEX);
@@ -50,14 +35,12 @@ static int getRoom(lua_State* L) {
 	return 1;
 }
 
-static const luaL_Reg roomlib[] = {
-	{"gettype",getType},
-	{"getregionpager",getRegionPager},
+static const luaL_Reg roommgrlib[] = {
 	{"getroom",getRoom},
 	{nullptr, nullptr}
 };
 
-LUAMOD_API int luaopen_roomapi(lua_State* L) {
-	luaL_newlib(L, roomlib);
+LUAMOD_API int luaopen_roommgrapi(lua_State* L) {
+	luaL_newlib(L, roommgrlib);
 	return 1;
 }
