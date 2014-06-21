@@ -21,37 +21,64 @@
 */
 #include "room_manager.hpp"
 
+//the generator types
+#include "overworld_generator.hpp"
+#include "ruins_generator.hpp"
+#include "towers_generator.hpp"
+#include "forests_generator.hpp"
+#include "caves_generator.hpp"
+
 #include <stdexcept>
 
 //-------------------------
 //public access methods
 //-------------------------
 
-RoomData* RoomManager::CreateRoom(int uid) {
-	//don't overwrite existing rooms
-	std::map<int, RoomData*>::iterator it = roomMap.find(uid);
-	if (it != roomMap.end()) {
-		throw(std::runtime_error("Cannot overwrite an existing room"));
-	}
-	roomMap[uid] = new RoomData();
-	//TODO: create room in the API
+int RoomManager::CreateRoom(MapType mapType) {
+	//create the room
+	RoomData* newRoom = new RoomData();
+
+	//set the state
 	if (luaState) {
-		roomMap[uid]->pager.SetLuaState(luaState);
+		newRoom->pager.SetLuaState(luaState);
 	}
-	return roomMap[uid];
+
+	//create the generator
+	newRoom->generator = [mapType]() -> BaseGenerator* {
+		switch(mapType) {
+			case MapType::NONE: //use overworld as a default
+			case MapType::OVERWORLD: return new OverworldGenerator();
+			case MapType::RUINS: return new RuinsGenerator();
+			case MapType::TOWERS: return new TowersGenerator();
+			case MapType::FORESTS: return new ForestsGenerator();
+			case MapType::CAVES: return new CavesGenerator();
+		}
+		throw(std::runtime_error("Failed to set the room's generator"));
+	}();
+
+	//finish the routine
+	roomMap[counter] = newRoom;
+	return counter++;
 }
 
-RoomData* RoomManager::UnloadRoom(int uid) {
-	//TODO: unload room in the API
-	delete roomMap[uid];
+int RoomManager::UnloadRoom(int uid) {
+	RoomData* room = FindRoom(uid);
+	if (!room) {
+		return -1;
+	}
+
+	delete room->generator;
+	delete room;
 	roomMap.erase(uid);
+
+	return 0;
 }
 
 RoomData* RoomManager::GetRoom(int uid) {
 	RoomData* ptr = FindRoom(uid);
 	if (ptr) return ptr;
-	ptr = CreateRoom(uid);
-	return ptr;
+	int newIndex = CreateRoom(MapType::NONE);
+	return FindRoom(newIndex);
 }
 
 RoomData* RoomManager::FindRoom(int uid) {
@@ -62,11 +89,7 @@ RoomData* RoomManager::FindRoom(int uid) {
 	return it->second;
 }
 
-RoomData* RoomManager::PushRoom(int uid, RoomData* room) {
-	//unload existing rooms with this index
-	std::map<int, RoomData*>::iterator it = roomMap.find(uid);
-	if (it != roomMap.end()) {
-		UnloadRoom(uid);
-	}
-	roomMap[uid] = room;
+int RoomManager::PushRoom(RoomData* room) {
+	roomMap[counter] = room;
+	return counter++;
 }
