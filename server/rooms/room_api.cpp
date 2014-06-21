@@ -21,28 +21,25 @@
 */
 #include "room_api.hpp"
 
-#include "room_manager.hpp"
 #include "room_data.hpp"
 
-static int getType(lua_State* L) {
-	RoomData* room = reinterpret_cast<RoomData*>(lua_touserdata(L, 1));
-	lua_pushinteger(L, static_cast<int>(room->type));
-	return 1;
-}
-
-//TODO: parameters
-
-static int getRegionPager(lua_State* L) {
+static int getPager(lua_State* L) {
 	RoomData* room = reinterpret_cast<RoomData*>(lua_touserdata(L, 1));
 	lua_pushlightuserdata(L, reinterpret_cast<void*>(&room->pager));
 	return 1;
 }
 
-//TODO: generators
+static int getGenerator(lua_State* L) {
+	RoomData* room = reinterpret_cast<RoomData*>(lua_touserdata(L, 1));
+	lua_pushlightuserdata(L, reinterpret_cast<void*>(room->generator));
+	return 1;
+}
+
+//TODO: parameters
 
 static const luaL_Reg roomlib[] = {
-	{"gettype",getType},
-	{"getregionpager",getRegionPager},
+	{"getpager",getPager},
+	{"getgenerator",getGenerator},
 	{nullptr, nullptr}
 };
 

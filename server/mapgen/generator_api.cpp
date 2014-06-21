@@ -21,13 +21,55 @@
 */
 #include "generator_api.hpp"
 
-static int getGenerator(lua_State* L) {
-	//TODO: return a generator based on the given parameter
-	return 0;
+#include "base_generator.hpp"
+
+static int getMapType(lua_State* L) {
+	BaseGenerator* ptr = reinterpret_cast<BaseGenerator*>(lua_touserdata(L, 1));
+	switch(ptr->GetMapType()) {
+		case MapType::NONE:
+			lua_pushstring(L, "none");
+		break;
+		case MapType::OVERWORLD:
+			lua_pushstring(L, "overworld");
+		break;
+		case MapType::RUINS:
+			lua_pushstring(L, "ruins");
+		break;
+		case MapType::TOWERS:
+			lua_pushstring(L, "towers");
+		break;
+		case MapType::FORESTS:
+			lua_pushstring(L, "forests");
+		break;
+		case MapType::CAVES:
+			lua_pushstring(L, "caves");
+		break;
+	}
+	return 1;
+}
+
+static int getChunk(lua_State* L) {
+	BaseGenerator* ptr = reinterpret_cast<BaseGenerator*>(lua_touserdata(L, 1));
+	ChunkData* chunk = ptr->GetChunk(lua_tointeger(L, 2), lua_tointeger(L, 3));
+	lua_pushlightuserdata(L, reinterpret_cast<void*>(chunk));
+	return 1;
+}
+
+static int getMapWidth(lua_State* L) {
+	lua_pushinteger(L, MAP_WIDTH);
+	return 1;
+}
+
+static int getMapHeight(lua_State* L) {
+	lua_pushinteger(L, MAP_HEIGHT);
+	return 1;
 }
 
 static const luaL_Reg generatorlib[] = {
-	{"getgenerator", getGenerator},
+	{"gettype", getMapType},
+	{"getchunk", getChunk},
+	{"getmapwidth", getMapWidth},
+	{"getmapheight", getMapHeight},
 	{nullptr, nullptr}
 };
 

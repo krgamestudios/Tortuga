@@ -35,8 +35,33 @@ static int getRoom(lua_State* L) {
 	return 1;
 }
 
+static int createRoom(lua_State* L) {
+	//get the room manager
+	lua_pushstring(L, ROOM_MANAGER_PSEUDOINDEX);
+	lua_gettable(L, LUA_REGISTRYINDEX);
+	RoomManager* roomMgr = reinterpret_cast<RoomManager*>(lua_touserdata(L, -1));
+
+	//TODO: create room
+
+	return 0;
+}
+
+static int unloadRoom(lua_State* L) {
+	//get the room manager
+	lua_pushstring(L, ROOM_MANAGER_PSEUDOINDEX);
+	lua_gettable(L, LUA_REGISTRYINDEX);
+	RoomManager* roomMgr = reinterpret_cast<RoomManager*>(lua_touserdata(L, -1));
+
+	//unload the specified room
+	roomMgr->UnloadRoom(lua_tointeger(L, -2));
+
+	return 0;
+}
+
 static const luaL_Reg roommgrlib[] = {
 	{"getroom",getRoom},
+	{"createroom",createRoom},
+	{"unloadroom",unloadRoom},
 	{nullptr, nullptr}
 };
 
