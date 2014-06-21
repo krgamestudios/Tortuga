@@ -21,7 +21,8 @@
 */
 #include "base_generator.hpp"
 
-BaseGenerator::BaseGenerator() {
+BaseGenerator::BaseGenerator(MapType t) {
+	mapType = t;
 	for (int i = 0; i < MAP_WIDTH; i++) {
 		for (int j = 0; j < MAP_HEIGHT; j++) {
 			chunks[i][j].type = TerrainType::NONE;

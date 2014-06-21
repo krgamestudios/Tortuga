@@ -21,7 +21,7 @@
 */
 #include "overworld_generator.hpp"
 
-OverworldGenerator::OverworldGenerator() {
+OverworldGenerator::OverworldGenerator() : BaseGenerator(MapType::OVERWORLD) {
 	//
 }
 

@@ -24,8 +24,6 @@
 
 #include "base_generator.hpp"
 
-#define OVERWORLD_GENERATOR_PSEUDOINDEX "OverworldGenerator"
-
 class OverworldGenerator : public BaseGenerator {
 public:
 	OverworldGenerator();

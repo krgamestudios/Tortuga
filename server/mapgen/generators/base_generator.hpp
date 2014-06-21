@@ -22,6 +22,7 @@
 #ifndef BASEGENERATOR_HPP_
 #define BASEGENERATOR_HPP_
 
+#include "map_type.hpp"
 #include "chunk_data.hpp"
 
 #include "lua/lua.hpp"
@@ -31,17 +32,22 @@ constexpr int MAP_HEIGHT = 256;
 
 class BaseGenerator {
 public:
-	BaseGenerator();
 	virtual ~BaseGenerator();
 
 	//accessors and mutators
 	virtual ChunkData* GetChunk(int x, int y) { return &chunks[x][y]; }
 
+	MapType GetMapType() { return mapType; }
+
 	lua_State* SetLuaState(lua_State* L) { return luaState = L; }
 	lua_State* GetLuaState() { return luaState; }
 
 protected:
+	BaseGenerator() = delete;
+	BaseGenerator(MapType t);
+
 	ChunkData chunks[MAP_WIDTH][MAP_HEIGHT];
+	MapType mapType = MapType::NONE;
 	lua_State* luaState = nullptr;
 };
 

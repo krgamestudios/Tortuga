@@ -24,8 +24,6 @@
 
 #include "base_generator.hpp"
 
-#define RUINS_GENERATOR_PSEUDOINDEX "RuinsGenerator"
-
 class RuinsGenerator : public BaseGenerator {
 public:
 	RuinsGenerator();

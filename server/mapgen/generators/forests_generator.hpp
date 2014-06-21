@@ -24,8 +24,6 @@
 
 #include "base_generator.hpp"
 
-#define FORESTS_GENERATOR_PSEUDOINDEX "ForestsGenerator"
-
 class ForestsGenerator : public BaseGenerator {
 public:
 	ForestsGenerator();
