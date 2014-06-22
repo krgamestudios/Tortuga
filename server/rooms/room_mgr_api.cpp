@@ -39,6 +39,8 @@ static int getRoom(lua_State* L) {
 }
 
 static int createRoom(lua_State* L) {
+	//TODO: check parameter count for the glue functions
+
 	//get the room manager
 	lua_pushstring(L, ROOM_MANAGER_PSEUDOINDEX);
 	lua_gettable(L, LUA_REGISTRYINDEX);
