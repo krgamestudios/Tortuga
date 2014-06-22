@@ -43,6 +43,8 @@ public:
 	RoomData* FindRoom(int uid);
 	int PushRoom(RoomData*);
 
+	void UnloadAll();
+
 	//accessors and mutators
 	std::map<int, RoomData*>* GetContainer() { return &roomMap; }
 

@@ -157,7 +157,7 @@ void ServerApplication::Quit() {
 	characterMgr.UnloadAll();
 	//TODO: unload combats
 	//TODO: unload enemies
-	//TODO: unload rooms
+	roomMgr.UnloadAll();
 
 	//APIs
 	lua_close(luaState);

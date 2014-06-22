@@ -38,12 +38,7 @@ int RoomManager::CreateRoom(MapType mapType) {
 	//create the room
 	RoomData* newRoom = new RoomData();
 
-	//set the state
-	if (luaState) {
-		newRoom->pager.SetLuaState(luaState);
-	}
-
-	//create the generator
+	//create the generator, use a lambda because I'm lazy
 	newRoom->generator = [mapType]() -> BaseGenerator* {
 		switch(mapType) {
 			case MapType::NONE: //use overworld as a default
@@ -56,17 +51,47 @@ int RoomManager::CreateRoom(MapType mapType) {
 		throw(std::runtime_error("Failed to set the room's generator"));
 	}();
 
+	//set the state
+	if (luaState) {
+		newRoom->pager.SetLuaState(luaState);
+		newRoom->generator->SetLuaState(luaState);
+	}
+
+	//register the room
+	roomMap[counter++] = newRoom;
+
+	//TODO: pass the room's index to the lua hooks?
+
+	//API hook
+	lua_getglobal(luaState, "Room");
+	lua_getfield(luaState, -1, "OnCreate");
+	lua_pushlightuserdata(luaState, newRoom);
+	if (lua_pcall(luaState, 1, 0, 0) != LUA_OK) {
+		throw(std::runtime_error(std::string() + "Lua error: " + lua_tostring(luaState, -1) ));
+	}
+	lua_pop(luaState, 1);
+
 	//finish the routine
-	roomMap[counter] = newRoom;
-	return counter++;
+	return counter;
 }
 
 int RoomManager::UnloadRoom(int uid) {
+	//find the room
 	RoomData* room = FindRoom(uid);
 	if (!room) {
 		return -1;
 	}
 
+	//API hook
+	lua_getglobal(luaState, "Room");
+	lua_getfield(luaState, -1, "OnUnload");
+	lua_pushlightuserdata(luaState, room);
+	if (lua_pcall(luaState, 1, 0, 0) != LUA_OK) {
+		throw(std::runtime_error(std::string() + "Lua error: " + lua_tostring(luaState, -1) ));
+	}
+	lua_pop(luaState, 1);
+
+	//free the memory
 	delete room->generator;
 	delete room;
 	roomMap.erase(uid);
@@ -90,6 +115,22 @@ RoomData* RoomManager::FindRoom(int uid) {
 }
 
 int RoomManager::PushRoom(RoomData* room) {
-	roomMap[counter] = room;
-	return counter++;
+	roomMap[counter++] = room;
+	return counter;
+}
+
+void RoomManager::UnloadAll() {
+	lua_getglobal(luaState, "Room");
+
+	for (auto& it : roomMap) {
+		//API hook
+		lua_getfield(luaState, -1, "OnUnload");
+		lua_pushlightuserdata(luaState, it.second);
+		if (lua_pcall(luaState, 1, 0, 0) != LUA_OK) {
+			throw(std::runtime_error(std::string() + "Lua error: " + lua_tostring(luaState, -1) ));
+		}
+	}
+
+	lua_pop(luaState, 1);
+	roomMap.clear();
 }

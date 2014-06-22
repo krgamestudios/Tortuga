@@ -41,6 +41,7 @@ public:
 
 	void UnloadAll() override;
 
+	//accessors & mutators
 	std::string SetDirectory(std::string s) { return directory = s; }
 	std::string GetDirectory() { return directory; }
 
