@@ -34,7 +34,7 @@
 //public access methods
 //-------------------------
 
-int RoomManager::CreateRoom(MapType mapType) {
+RoomData* RoomManager::CreateRoom(MapType mapType) {
 	//create the room
 	RoomData* newRoom = new RoomData();
 
@@ -60,8 +60,6 @@ int RoomManager::CreateRoom(MapType mapType) {
 	//register the room
 	roomMap[counter++] = newRoom;
 
-	//TODO: pass the room's index to the lua hooks?
-
 	//API hook
 	lua_getglobal(luaState, "Room");
 	lua_getfield(luaState, -1, "OnCreate");
@@ -72,14 +70,14 @@ int RoomManager::CreateRoom(MapType mapType) {
 	lua_pop(luaState, 1);
 
 	//finish the routine
-	return counter;
+	return newRoom;
 }
 
-int RoomManager::UnloadRoom(int uid) {
+void RoomManager::UnloadRoom(int uid) {
 	//find the room
 	RoomData* room = FindRoom(uid);
 	if (!room) {
-		return -1;
+		return;
 	}
 
 	//API hook
@@ -95,15 +93,12 @@ int RoomManager::UnloadRoom(int uid) {
 	delete room->generator;
 	delete room;
 	roomMap.erase(uid);
-
-	return 0;
 }
 
 RoomData* RoomManager::GetRoom(int uid) {
 	RoomData* ptr = FindRoom(uid);
 	if (ptr) return ptr;
-	int newIndex = CreateRoom(MapType::NONE);
-	return FindRoom(newIndex);
+	return CreateRoom(MapType::NONE);
 }
 
 RoomData* RoomManager::FindRoom(int uid) {

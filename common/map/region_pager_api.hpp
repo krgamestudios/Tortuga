@@ -24,7 +24,7 @@
 
 #include "lua/lua.hpp"
 
-#define TORTUGA_REGION_PAGER_NAME "pager"
+#define TORTUGA_REGION_PAGER_NAME "RegionPager"
 LUAMOD_API int openRegionPagerAPI(lua_State* L);
 
 #endif

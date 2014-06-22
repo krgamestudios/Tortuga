@@ -21,6 +21,7 @@
 */
 #include "room_mgr_api.hpp"
 
+#include "room_api.hpp"
 #include "room_manager.hpp"
 #include "room_data.hpp"
 
@@ -54,10 +55,10 @@ static int createRoom(lua_State* L) {
 	}();
 
 	//create the room
-	int newIndex = roomMgr->CreateRoom(mapType);
+	RoomData* newRoom = roomMgr->CreateRoom(mapType);
 
-	//return the index
-	lua_pushinteger(L, newIndex);
+	//return the new room
+	lua_pushlightuserdata(L, newRoom);
 	return 1;
 }
 
