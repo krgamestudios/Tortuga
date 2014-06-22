@@ -73,14 +73,14 @@ static int unloadRoom(lua_State* L) {
 	return 0;
 }
 
-static const luaL_Reg roommgrlib[] = {
-	{"getroom",getRoom},
-	{"createroom",createRoom},
-	{"unloadroom",unloadRoom},
+static const luaL_Reg roomMgrLib[] = {
+	{"GetRoom",getRoom},
+	{"CreateRoom",createRoom},
+	{"UnloadRoom",unloadRoom},
 	{nullptr, nullptr}
 };
 
-LUAMOD_API int luaopen_roommgrapi(lua_State* L) {
-	luaL_newlib(L, roommgrlib);
+LUAMOD_API int openRoomMgrAPI(lua_State* L) {
+	luaL_newlib(L, roomMgrLib);
 	return 1;
 }

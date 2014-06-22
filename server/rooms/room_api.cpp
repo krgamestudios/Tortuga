@@ -35,15 +35,27 @@ static int getGenerator(lua_State* L) {
 	return 1;
 }
 
+static int onCreate(lua_State* L) {
+	//TODO: onCreate()
+	return 0;
+}
+
+static int onUnload(lua_State* L) {
+	//TODO: onUnload()
+	return 0;
+}
+
 //TODO: parameters
 
-static const luaL_Reg roomlib[] = {
-	{"getpager",getPager},
-	{"getgenerator",getGenerator},
+static const luaL_Reg roomLib[] = {
+	{"GetPager",getPager},
+	{"GetGenerator",getGenerator},
+	{"OnCreate", onCreate},
+	{"OnUnload", onUnload},
 	{nullptr, nullptr}
 };
 
-LUAMOD_API int luaopen_roomapi(lua_State* L) {
-	luaL_newlib(L, roomlib);
+LUAMOD_API int openRoomAPI(lua_State* L) {
+	luaL_newlib(L, roomLib);
 	return 1;
 }

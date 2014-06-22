@@ -65,15 +65,15 @@ static int getMapHeight(lua_State* L) {
 	return 1;
 }
 
-static const luaL_Reg generatorlib[] = {
-	{"gettype", getMapType},
-	{"getchunk", getChunk},
-	{"getmapwidth", getMapWidth},
-	{"getmapheight", getMapHeight},
+static const luaL_Reg generatorLib[] = {
+	{"GetMapType", getMapType},
+	{"GetChunk", getChunk},
+	{"GetMapWidth", getMapWidth},
+	{"GetMapHeight", getMapHeight},
 	{nullptr, nullptr}
 };
 
-LUAMOD_API int luaopen_generatorapi(lua_State* L) {
-	luaL_newlib(L, generatorlib);
+LUAMOD_API int openGeneratorAPI(lua_State* L) {
+	luaL_newlib(L, generatorLib);
 	return 1;
 }

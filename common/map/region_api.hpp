@@ -24,7 +24,7 @@
 
 #include "lua/lua.hpp"
 
-#define LUA_REGIONLIBNAME "region"
-LUAMOD_API int luaopen_regionapi(lua_State* L);
+#define TORTUGA_REGION_NAME "Region"
+LUAMOD_API int openRegionAPI(lua_State* L);
 
 #endif

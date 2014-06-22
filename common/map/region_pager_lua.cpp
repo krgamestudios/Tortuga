@@ -32,8 +32,8 @@ Region* RegionPagerLua::LoadRegion(int x, int y) {
 	regionList.emplace_front(x, y);
 
 	//API hook
-	lua_getglobal(luaState, "region");
-	lua_getfield(luaState, -1, "load");
+	lua_getglobal(luaState, "Region");
+	lua_getfield(luaState, -1, "OnLoad");
 	lua_pushlightuserdata(luaState, &regionList.front());
 	lua_pushstring(luaState, directory.c_str());
 	if (lua_pcall(luaState, 2, 1, 0) != LUA_OK) {
@@ -54,8 +54,8 @@ Region* RegionPagerLua::SaveRegion(int x, int y) {
 	Region* ptr = FindRegion(x, y);
 	if (ptr) {
 		//API hook
-		lua_getglobal(luaState, "region");
-		lua_getfield(luaState, -1, "save");
+		lua_getglobal(luaState, "Region");
+		lua_getfield(luaState, -1, "OnSave");
 		lua_pushlightuserdata(luaState, ptr);
 		lua_pushstring(luaState, directory.c_str());
 		if (lua_pcall(luaState, 2, 0, 0) != LUA_OK) {
@@ -75,8 +75,8 @@ Region* RegionPagerLua::CreateRegion(int x, int y) {
 	regionList.emplace_front(x, y);
 
 	//API hook
-	lua_getglobal(luaState, "region");
-	lua_getfield(luaState, -1, "create");
+	lua_getglobal(luaState, "Region");
+	lua_getfield(luaState, -1, "OnCreate");
 	lua_pushlightuserdata(luaState, &regionList.front());
 	//TODO: parameters
 	if (lua_pcall(luaState, 1, 0, 0) != LUA_OK) {
@@ -87,13 +87,13 @@ Region* RegionPagerLua::CreateRegion(int x, int y) {
 }
 
 void RegionPagerLua::UnloadRegion(int x, int y) {
-	lua_getglobal(luaState, "region");
+	lua_getglobal(luaState, "Region");
 
 	regionList.remove_if([&](Region& region) -> bool {
 		if (region.GetX() == x && region.GetY() == y) {
 
 			//API hook
-			lua_getfield(luaState, -1, "unload");
+			lua_getfield(luaState, -1, "OnUnload");
 			lua_pushlightuserdata(luaState, &region);
 			lua_pushstring(luaState, directory.c_str());
 			if (lua_pcall(luaState, 2, 0, 0) != LUA_OK) {
@@ -109,11 +109,11 @@ void RegionPagerLua::UnloadRegion(int x, int y) {
 }
 
 void RegionPagerLua::UnloadAll() {
-	lua_getglobal(luaState, "region");
+	lua_getglobal(luaState, "Region");
 
 	for (auto& it : regionList) {
 		//API hook
-		lua_getfield(luaState, -1, "unload");
+		lua_getfield(luaState, -1, "OnUnload");
 		lua_pushlightuserdata(luaState, &it);
 		lua_pushstring(luaState, directory.c_str());
 		if (lua_pcall(luaState, 2, 0, 0) != LUA_OK) {

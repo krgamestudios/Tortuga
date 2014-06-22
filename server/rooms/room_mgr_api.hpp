@@ -24,7 +24,7 @@
 
 #include "lua/lua.hpp"
 
-#define LUA_ROOMMGRLIBNAME "roommgr"
-LUAMOD_API int luaopen_roommgrapi(lua_State* L);
+#define TORTUGA_ROOM_MGR_NAME "RoomMgr"
+LUAMOD_API int openRoomMgrAPI(lua_State* L);
 
 #endif

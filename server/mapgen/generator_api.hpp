@@ -24,8 +24,7 @@
 
 #include "lua/lua.hpp"
 
-#define LUA_GENERATORLIBNAME "generator"
-LUAMOD_API int luaopen_generatorapi(lua_State* L);
-
+#define TORTUGA_GENRATOR_NAME "Generator"
+LUAMOD_API int openGeneratorAPI(lua_State* L);
 
 #endif
