@@ -24,8 +24,6 @@
 
 #include "base_generator.hpp"
 
-#define TOWERS_GENERATOR_PSEUDOINDEX "TowersGenerator"
-
 class TowersGenerator : public BaseGenerator {
 public:
 	TowersGenerator();

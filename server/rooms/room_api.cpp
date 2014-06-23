@@ -21,32 +21,41 @@
 */
 #include "room_api.hpp"
 
-#include "room_manager.hpp"
 #include "room_data.hpp"
 
-static int getType(lua_State* L) {
-	RoomData* room = reinterpret_cast<RoomData*>(lua_touserdata(L, 1));
-	lua_pushinteger(L, static_cast<int>(room->type));
-	return 1;
-}
-
-//TODO: parameters
-
-static int getRegionPager(lua_State* L) {
+static int getPager(lua_State* L) {
 	RoomData* room = reinterpret_cast<RoomData*>(lua_touserdata(L, 1));
 	lua_pushlightuserdata(L, reinterpret_cast<void*>(&room->pager));
 	return 1;
 }
 
-//TODO: generators
+static int getGenerator(lua_State* L) {
+	RoomData* room = reinterpret_cast<RoomData*>(lua_touserdata(L, 1));
+	lua_pushlightuserdata(L, reinterpret_cast<void*>(room->generator));
+	return 1;
+}
 
-static const luaL_Reg roomlib[] = {
-	{"gettype",getType},
-	{"getregionpager",getRegionPager},
+static int onCreate(lua_State* L) {
+	//TODO: onCreate()
+	return 0;
+}
+
+static int onUnload(lua_State* L) {
+	//TODO: onUnload()
+	return 0;
+}
+
+//TODO: parameters
+
+static const luaL_Reg roomLib[] = {
+	{"GetPager",getPager},
+	{"GetGenerator",getGenerator},
+	{"OnCreate", onCreate},
+	{"OnUnload", onUnload},
 	{nullptr, nullptr}
 };
 
-LUAMOD_API int luaopen_roomapi(lua_State* L) {
-	luaL_newlib(L, roomlib);
+LUAMOD_API int openRoomAPI(lua_State* L) {
+	luaL_newlib(L, roomLib);
 	return 1;
 }

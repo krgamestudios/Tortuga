@@ -29,7 +29,6 @@
 
 struct RoomData {
 	//members
-	MapType type;
 	RegionPagerLua pager;
 	BaseGenerator* generator = nullptr;
 

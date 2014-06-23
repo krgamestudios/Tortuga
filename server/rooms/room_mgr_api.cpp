@@ -21,8 +21,11 @@
 */
 #include "room_mgr_api.hpp"
 
+#include "room_api.hpp"
 #include "room_manager.hpp"
 #include "room_data.hpp"
+
+#include <string>
 
 static int getRoom(lua_State* L) {
 	//get the room manager
@@ -35,12 +38,52 @@ static int getRoom(lua_State* L) {
 	return 1;
 }
 
-static const luaL_Reg roommgrlib[] = {
-	{"getroom",getRoom},
+static int createRoom(lua_State* L) {
+	//TODO: check parameter count for the glue functions
+
+	//get the room manager
+	lua_pushstring(L, ROOM_MANAGER_PSEUDOINDEX);
+	lua_gettable(L, LUA_REGISTRYINDEX);
+	RoomManager* roomMgr = reinterpret_cast<RoomManager*>(lua_touserdata(L, -1));
+
+	//determine the specified room type
+	MapType mapType = [L]() -> MapType {
+		if (std::string("overworld") == lua_tostring(L, -2)) return MapType::OVERWORLD;
+		if (std::string("ruins") == lua_tostring(L, -2)) return MapType::RUINS;
+		if (std::string("towers") == lua_tostring(L, -2)) return MapType::TOWERS;
+		if (std::string("forests") == lua_tostring(L, -2)) return MapType::FORESTS;
+		if (std::string("caves") == lua_tostring(L, -2)) return MapType::CAVES;
+		return MapType::NONE;
+	}();
+
+	//create the room
+	RoomData* newRoom = roomMgr->CreateRoom(mapType);
+
+	//return the new room
+	lua_pushlightuserdata(L, newRoom);
+	return 1;
+}
+
+static int unloadRoom(lua_State* L) {
+	//get the room manager
+	lua_pushstring(L, ROOM_MANAGER_PSEUDOINDEX);
+	lua_gettable(L, LUA_REGISTRYINDEX);
+	RoomManager* roomMgr = reinterpret_cast<RoomManager*>(lua_touserdata(L, -1));
+
+	//unload the specified room
+	roomMgr->UnloadRoom(lua_tointeger(L, -2));
+
+	return 0;
+}
+
+static const luaL_Reg roomMgrLib[] = {
+	{"GetRoom",getRoom},
+	{"CreateRoom",createRoom},
+	{"UnloadRoom",unloadRoom},
 	{nullptr, nullptr}
 };
 
-LUAMOD_API int luaopen_roommgrapi(lua_State* L) {
-	luaL_newlib(L, roommgrlib);
+LUAMOD_API int openRoomMgrAPI(lua_State* L) {
+	luaL_newlib(L, roomMgrLib);
 	return 1;
 }

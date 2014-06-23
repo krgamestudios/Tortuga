@@ -64,43 +64,43 @@ static int getDepth(lua_State* L) {
 	return 1;
 }
 
-static int load(lua_State* L) {
-	//TODO: fill this
+static int onLoad(lua_State* L) {
+	//TODO: onLoad()
 	lua_pushboolean(L, false);
 	return 1;
 }
 
-static int save(lua_State* L) {
-	//TODO: fill this
+static int onSave(lua_State* L) {
+	//TODO: onSave()
 	return 0;
 }
 
-static int create(lua_State* L) {
-	//TODO: fill this
+static int onCreate(lua_State* L) {
+	//TODO: onCreate()
 	return 0;
 }
 
-static int unload(lua_State* L) {
-	//TODO: fill this
+static int onUnload(lua_State* L) {
+	//TODO: onUnload()
 	return 0;
 }
 
-static const luaL_Reg regionlib[] = {
-	{"settile",setTile},
-	{"gettile",getTile},
-	{"getx",getX},
-	{"gety",getY},
-	{"getwidth",getWidth},
-	{"getheight",getHeight},
-	{"getdepth",getDepth},
-	{"load",load},
-	{"save",save},
-	{"create",create},
-	{"unload",unload},
+static const luaL_Reg regionLib[] = {
+	{"SetTile",setTile},
+	{"GetTile",getTile},
+	{"GetX",getX},
+	{"GetY",getY},
+	{"GetWidth",getWidth},
+	{"GetHeight",getHeight},
+	{"GetDepth",getDepth},
+	{"OnLoad",onLoad},
+	{"OnSave",onSave},
+	{"OnCreate",onCreate},
+	{"OnUnload",onUnload},
 	{nullptr, nullptr}
 };
 
-LUAMOD_API int luaopen_regionapi(lua_State* L) {
-	luaL_newlib(L, regionlib);
+LUAMOD_API int openRegionAPI(lua_State* L) {
+	luaL_newlib(L, regionLib);
 	return 1;
 }

@@ -21,7 +21,7 @@
 */
 #include "caves_generator.hpp"
 
-CavesGenerator::CavesGenerator() {
+CavesGenerator::CavesGenerator() : BaseGenerator(MapType::CAVES) {
 	//
 }
 

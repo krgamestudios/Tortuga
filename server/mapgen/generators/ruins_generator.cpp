@@ -21,7 +21,7 @@
 */
 #include "ruins_generator.hpp"
 
-RuinsGenerator::RuinsGenerator() {
+RuinsGenerator::RuinsGenerator() : BaseGenerator(MapType::RUINS) {
 	//
 }
 

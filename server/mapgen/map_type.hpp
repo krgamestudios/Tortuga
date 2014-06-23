@@ -23,11 +23,12 @@
 #define MAPTYPE_HPP_
 
 enum class MapType {
-	OVERWORLD = 0,
-	RUINS = 1,
-	TOWERS = 2,
-	FORESTS = 3,
-	CAVES = 4,
+	NONE,
+	OVERWORLD,
+	RUINS,
+	TOWERS,
+	FORESTS,
+	CAVES,
 };
 
 #endif

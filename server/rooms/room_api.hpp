@@ -24,7 +24,7 @@
 
 #include "lua/lua.hpp"
 
-#define LUA_ROOMLIBNAME "room"
-LUAMOD_API int luaopen_roomapi(lua_State* L);
+#define TORTUGA_ROOM_NAME "Room"
+LUAMOD_API int openRoomAPI(lua_State* L);
 
 #endif

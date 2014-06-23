@@ -21,7 +21,7 @@
 */
 #include "towers_generator.hpp"
 
-TowersGenerator::TowersGenerator() {
+TowersGenerator::TowersGenerator() : BaseGenerator(MapType::TOWERS) {
 	//
 }
 

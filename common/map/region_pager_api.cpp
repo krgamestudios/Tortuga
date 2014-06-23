@@ -19,13 +19,15 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#include "pager_api.hpp"
+#include "region_pager_api.hpp"
 
 #include "region_pager_lua.hpp"
 #include "region.hpp"
 
 #include <stdexcept>
 #include <string>
+
+//DOCS: These functions are just wrappers for the RegionPagerLua class
 
 static int setTile(lua_State* L) {
 	RegionPagerLua* pager = reinterpret_cast<RegionPagerLua*>(lua_touserdata(L, 1));
@@ -63,94 +65,46 @@ static int getDirectory(lua_State* L) {
 }
 
 static int loadRegion(lua_State* L) {
-	//get the parameters
 	RegionPagerLua* pager = reinterpret_cast<RegionPagerLua*>(lua_touserdata(L, 1));
-	Region* region = pager->GetRegion(lua_tointeger(L, 2), lua_tointeger(L, 3));
-	std::string s = pager->GetDirectory();
-
-	//push the parameters
-	lua_getglobal(L, "region");
-	lua_getfield(L, -1, "load");
+	Region* region = pager->LoadRegion(lua_tointeger(L, 2), lua_tointeger(L, 3));
 	lua_pushlightuserdata(L, region);
-	lua_pushstring(L, s.c_str());
-
-	//call the method
-	if (lua_pcall(L, 2, 1, 0) != LUA_OK) {
-		throw(std::runtime_error(std::string() + "Lua error: " + lua_tostring(L, -1) ));
-	}
 	return 1;
 }
 
 static int saveRegion(lua_State* L) {
-	//get the parameters
 	RegionPagerLua* pager = reinterpret_cast<RegionPagerLua*>(lua_touserdata(L, 1));
-	Region* region = pager->GetRegion(lua_tointeger(L, 2), lua_tointeger(L, 3));
-	std::string s = pager->GetDirectory();
-
-	//push the parameters
-	lua_getglobal(L, "region");
-	lua_getfield(L, -1, "save");
+	Region* region = pager->SaveRegion(lua_tointeger(L, 2), lua_tointeger(L, 3));
 	lua_pushlightuserdata(L, region);
-	lua_pushstring(L, s.c_str());
-
-	//call the method
-	if (lua_pcall(L, 2, 0, 0) != LUA_OK) {
-		throw(std::runtime_error(std::string() + "Lua error: " + lua_tostring(L, -1) ));
-	}
-	return 0;
+	return 1;
 }
 
 static int createRegion(lua_State* L) {
-	//get the parameters
 	RegionPagerLua* pager = reinterpret_cast<RegionPagerLua*>(lua_touserdata(L, 1));
-	Region* region = pager->GetRegion(lua_tointeger(L, 2), lua_tointeger(L, 3));
-
-	//push the parameters
-	lua_getglobal(L, "region");
-	lua_getfield(L, -1, "create");
+	Region* region = pager->CreateRegion(lua_tointeger(L, 2), lua_tointeger(L, 3));
 	lua_pushlightuserdata(L, region);
-	//TODO: parameters
-
-	//call the method
-	if (lua_pcall(L, 1, 0, 0) != LUA_OK) {
-		throw(std::runtime_error(std::string() + "Lua error: " + lua_tostring(L, -1) ));
-	}
-	return 0;
+	return 1;
 }
 
 static int unloadRegion(lua_State* L) {
-	//get the parameters
 	RegionPagerLua* pager = reinterpret_cast<RegionPagerLua*>(lua_touserdata(L, 1));
-	Region* region = pager->GetRegion(lua_tointeger(L, 2), lua_tointeger(L, 3));
-	std::string s = pager->GetDirectory();
-
-	//push the parameters
-	lua_getglobal(L, "region");
-	lua_getfield(L, -1, "unload");
-	lua_pushlightuserdata(L, region);
-	lua_pushstring(L, s.c_str());
-
-	//call the method
-	if (lua_pcall(L, 2, 0, 0) != LUA_OK) {
-		throw(std::runtime_error(std::string() + "Lua error: " + lua_tostring(L, -1) ));
-	}
+	pager->UnloadRegion(lua_tointeger(L, 2), lua_tointeger(L, 3));
 	return 0;
 }
 
 static const luaL_Reg pagerlib[] = {
-	{"settile", setTile},
-	{"gettile", getTile},
-	{"getregion", getRegion},
-	{"setdirectory", setDirectory},
-	{"getdirectory", getDirectory},
-	{"loadregion", loadRegion},
-	{"saveregion", saveRegion},
-	{"createregion", createRegion},
-	{"unloadregion", unloadRegion},
+	{"SetTile", setTile},
+	{"GetTile", getTile},
+	{"GetRegion", getRegion},
+	{"SetDirectory", setDirectory},
+	{"GetDirectory", getDirectory},
+	{"LoadRegion", loadRegion},
+	{"SaveRegion", saveRegion},
+	{"CreateRegion", createRegion},
+	{"UnloadRegion", unloadRegion},
 	{nullptr, nullptr}
 };
 
-LUAMOD_API int luaopen_pagerapi(lua_State* L) {
+LUAMOD_API int openRegionPagerAPI(lua_State* L) {
 	luaL_newlib(L, pagerlib);
 	return 1;
 }

@@ -37,7 +37,7 @@
 #include "lua/lua.hpp"
 
 #include "region_api.hpp"
-#include "pager_api.hpp"
+#include "region_pager_api.hpp"
 #include "room_api.hpp"
 #include "room_mgr_api.hpp"
 #include "generator_api.hpp"
@@ -56,12 +56,12 @@ static const luaL_Reg loadedlibs[] = {
 	{LUA_MATHLIBNAME, luaopen_math},
 	{LUA_DBLIBNAME, luaopen_debug},
 
-	//custom libs
-	{LUA_REGIONLIBNAME, luaopen_regionapi},
-	{LUA_PAGERLIBNAME, luaopen_pagerapi},
-	{LUA_ROOMLIBNAME, luaopen_roomapi},
-	{LUA_ROOMMGRLIBNAME, luaopen_roommgrapi},
-	{LUA_GENERATORLIBNAME, luaopen_generatorapi},
+	//Tortuga's API
+	{TORTUGA_REGION_NAME, openRegionAPI},
+	{TORTUGA_REGION_PAGER_NAME, openRegionPagerAPI},
+	{TORTUGA_ROOM_NAME, openRoomAPI},
+	{TORTUGA_ROOM_MGR_NAME, openRoomMgrAPI},
+	{TORTUGA_GENRATOR_NAME, openGeneratorAPI},
 
 	{NULL, NULL}
 };

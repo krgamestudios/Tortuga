@@ -21,7 +21,7 @@
 */
 #include "forests_generator.hpp"
 
-ForestsGenerator::ForestsGenerator() {
+ForestsGenerator::ForestsGenerator() : BaseGenerator(MapType::FORESTS) {
 	//
 }
 

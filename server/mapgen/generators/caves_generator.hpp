@@ -24,8 +24,6 @@
 
 #include "base_generator.hpp"
 
-#define CAVES_GENERATOR_PSEUDOINDEX "CavesGenerator"
-
 class CavesGenerator : public BaseGenerator {
 public:
 	CavesGenerator();

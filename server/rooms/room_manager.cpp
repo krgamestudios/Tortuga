@@ -21,37 +21,85 @@
 */
 #include "room_manager.hpp"
 
+//the generator types
+#include "overworld_generator.hpp"
+#include "ruins_generator.hpp"
+#include "towers_generator.hpp"
+#include "forests_generator.hpp"
+#include "caves_generator.hpp"
+
 #include <stdexcept>
 
 //-------------------------
 //public access methods
 //-------------------------
 
-RoomData* RoomManager::CreateRoom(int uid) {
-	//don't overwrite existing rooms
-	std::map<int, RoomData*>::iterator it = roomMap.find(uid);
-	if (it != roomMap.end()) {
-		throw(std::runtime_error("Cannot overwrite an existing room"));
-	}
-	roomMap[uid] = new RoomData();
-	//TODO: create room in the API
+RoomData* RoomManager::CreateRoom(MapType mapType) {
+	//create the room
+	RoomData* newRoom = new RoomData();
+
+	//create the generator, use a lambda because I'm lazy
+	newRoom->generator = [mapType]() -> BaseGenerator* {
+		switch(mapType) {
+			//BUG: Not having a map type results in an overworld generator by default
+			case MapType::NONE:
+			case MapType::OVERWORLD: return new OverworldGenerator();
+			case MapType::RUINS: return new RuinsGenerator();
+			case MapType::TOWERS: return new TowersGenerator();
+			case MapType::FORESTS: return new ForestsGenerator();
+			case MapType::CAVES: return new CavesGenerator();
+		}
+		throw(std::runtime_error("Failed to set the room's generator"));
+	}();
+
+	//set the state
 	if (luaState) {
-		roomMap[uid]->pager.SetLuaState(luaState);
+		newRoom->pager.SetLuaState(luaState);
+		newRoom->generator->SetLuaState(luaState);
 	}
-	return roomMap[uid];
+
+	//register the room
+	roomMap[counter++] = newRoom;
+
+	//API hook
+	lua_getglobal(luaState, "Room");
+	lua_getfield(luaState, -1, "OnCreate");
+	lua_pushlightuserdata(luaState, newRoom);
+	if (lua_pcall(luaState, 1, 0, 0) != LUA_OK) {
+		throw(std::runtime_error(std::string() + "Lua error: " + lua_tostring(luaState, -1) ));
+	}
+	lua_pop(luaState, 1);
+
+	//finish the routine
+	return newRoom;
 }
 
-RoomData* RoomManager::UnloadRoom(int uid) {
-	//TODO: unload room in the API
-	delete roomMap[uid];
+void RoomManager::UnloadRoom(int uid) {
+	//find the room
+	RoomData* room = FindRoom(uid);
+	if (!room) {
+		return;
+	}
+
+	//API hook
+	lua_getglobal(luaState, "Room");
+	lua_getfield(luaState, -1, "OnUnload");
+	lua_pushlightuserdata(luaState, room);
+	if (lua_pcall(luaState, 1, 0, 0) != LUA_OK) {
+		throw(std::runtime_error(std::string() + "Lua error: " + lua_tostring(luaState, -1) ));
+	}
+	lua_pop(luaState, 1);
+
+	//free the memory
+	delete room->generator;
+	delete room;
 	roomMap.erase(uid);
 }
 
 RoomData* RoomManager::GetRoom(int uid) {
 	RoomData* ptr = FindRoom(uid);
 	if (ptr) return ptr;
-	ptr = CreateRoom(uid);
-	return ptr;
+	return CreateRoom(MapType::NONE);
 }
 
 RoomData* RoomManager::FindRoom(int uid) {
@@ -62,11 +110,23 @@ RoomData* RoomManager::FindRoom(int uid) {
 	return it->second;
 }
 
-RoomData* RoomManager::PushRoom(int uid, RoomData* room) {
-	//unload existing rooms with this index
-	std::map<int, RoomData*>::iterator it = roomMap.find(uid);
-	if (it != roomMap.end()) {
-		UnloadRoom(uid);
+int RoomManager::PushRoom(RoomData* room) {
+	roomMap[counter++] = room;
+	return counter;
+}
+
+void RoomManager::UnloadAll() {
+	lua_getglobal(luaState, "Room");
+
+	for (auto& it : roomMap) {
+		//API hook
+		lua_getfield(luaState, -1, "OnUnload");
+		lua_pushlightuserdata(luaState, it.second);
+		if (lua_pcall(luaState, 1, 0, 0) != LUA_OK) {
+			throw(std::runtime_error(std::string() + "Lua error: " + lua_tostring(luaState, -1) ));
+		}
 	}
-	roomMap[uid] = room;
+
+	lua_pop(luaState, 1);
+	roomMap.clear();
 }
