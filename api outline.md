@@ -1,56 +1,53 @@
+--TODO: each function needs to check it's parameter count
+--TODO: Set metatables
+--TODO: test
+
 --RoomManager interface
-roommgr.getroom(index)
-	return userdata
-roommgr.createroom(room[, {params}])
-	return userdata
-roommgr.unloadroom(room)
-	return nil
+RoomMgr.GetRoom(index)
+RoomMgr.CreateRoom([{params}])
+RoomMgr.UnloadRoom(index)
 
 
 --RoomData interface
-room.getpager(room)
-	return userdata
-room.getgenerator(room)
-	return userdata
+Room.GetPager()
+Room.GetGenerator()
+Room.OnCreate([{params}])
+Room.OnUnload()
 
-room.get{params}(room)
+Room.Get{params}()
 
 
 --RegionPager interface
-pager.settile(p, x, y, z, v)
-pager.gettile(p, x, y, z)
-pager.getregion(p, x, y)
-pager.setdirectory(p, directory)
-pager.getdirectory(p)
-pager.loadregion(p, x, y)
-pager.saveregion(p, x, y)
-pager.createregion(p, x, y[, {params}])
-pager.unloadregion(p, x, y)
+RegionPager.SetTile(x, y, z, v)
+RegionPager.GetTile(x, y, z)
+RegionPager.GetRegion(x, y)
+RegionPager.SetDirectory(directory)
+RegionPager.GetDirectory()
+RegionPager.LoadRegion(x, y)
+RegionPager.SaveRegion(x, y)
+RegionPager.CreateRegion(x, y[, {params}])
+RegionPager.UnloadRegion(x, y)
 
 
 --Region interface
-region.settile(r, x, y, z, v)
-region.gettile(r, x, y, z)
-region.getx(r)
-region.gety(r)
-region.getwidth()
-region.getheight()
-region.getdepth()
-region.load(r, directory)
-region.save(r, directory)
-region.create(r[, {params}])
-region.unload(r[, directory])
+Region.SetTile(x, y, z, v)
+Region.GetTile(x, y, z)
+Region.GetX()
+Region.GetY()
+Region.GetWidth()
+Region.GetHeight()
+Region.GetDepth()
+Region.OnLoad(directory)
+Region.OnSave(directory)
+Region.OnCreate([{params}])
+Region.OnUnload([directory])
 
 
 --*Generator interface
-generator.gettype(generator)
-	return string
-generator.getchunk(generator, x, y)
-	return userdata
-generator.getmapwidth()
-	return number
-generator.getmapheight()
-	return number
+Generator.GetMapType()
+Generator.GetChunk(x, y)
+Generator.GetMapWidth()
+Generator.GetMapHeight()
 
 
 --Chunk interface
