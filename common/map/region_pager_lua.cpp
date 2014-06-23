@@ -29,12 +29,12 @@ Region* RegionPagerLua::LoadRegion(int x, int y) {
 	//load the region if possible
 
 	//something to work on
-	regionList.emplace_front(x, y);
+	Region tmpRegion(x, y);
 
 	//API hook
 	lua_getglobal(luaState, "Region");
 	lua_getfield(luaState, -1, "OnLoad");
-	lua_pushlightuserdata(luaState, &regionList.front());
+	lua_pushlightuserdata(luaState, &tmpRegion);
 	lua_pushstring(luaState, directory.c_str());
 	if (lua_pcall(luaState, 2, 1, 0) != LUA_OK) {
 		throw(std::runtime_error(std::string() + "Lua error: " + lua_tostring(luaState, -1) ));
@@ -42,10 +42,10 @@ Region* RegionPagerLua::LoadRegion(int x, int y) {
 	//success or failure
 	if (!lua_toboolean(luaState, -1)) {
 		lua_pop(luaState, 2);
-		regionList.pop_front();
 		return nullptr;
 	}
 	lua_pop(luaState, 2);
+	regionList.push_front(tmpRegion);
 	return &regionList.front();
 }
 
@@ -72,18 +72,19 @@ Region* RegionPagerLua::CreateRegion(int x, int y) {
 	}
 
 	//something to work on
-	regionList.emplace_front(x, y);
+	Region tmpRegion(x, y);
 
 	//API hook
 	lua_getglobal(luaState, "Region");
 	lua_getfield(luaState, -1, "OnCreate");
-	lua_pushlightuserdata(luaState, &regionList.front());
+	lua_pushlightuserdata(luaState, &tmpRegion);
 	//TODO: parameters
 	if (lua_pcall(luaState, 1, 0, 0) != LUA_OK) {
 		throw(std::runtime_error(std::string() + "Lua error: " + lua_tostring(luaState, -1) ));
 	}
 	lua_pop(luaState, 1);
-	return &regionList.front();;
+	regionList.push_front(tmpRegion);
+	return &regionList.front();
 }
 
 void RegionPagerLua::UnloadRegion(int x, int y) {

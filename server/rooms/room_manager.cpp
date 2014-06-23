@@ -41,6 +41,8 @@ RoomData* RoomManager::CreateRoom(MapType mapType) {
 	//create the generator, use a lambda because I'm lazy
 	newRoom->generator = [mapType]() -> BaseGenerator* {
 		switch(mapType) {
+			//BUG: Not having a map type results in an overworld generator by default
+			case MapType::NONE:
 			case MapType::OVERWORLD: return new OverworldGenerator();
 			case MapType::RUINS: return new RuinsGenerator();
 			case MapType::TOWERS: return new TowersGenerator();
@@ -97,8 +99,7 @@ void RoomManager::UnloadRoom(int uid) {
 RoomData* RoomManager::GetRoom(int uid) {
 	RoomData* ptr = FindRoom(uid);
 	if (ptr) return ptr;
-	//TODO: proper Get() method
-	return nullptr;
+	return CreateRoom(MapType::NONE);
 }
 
 RoomData* RoomManager::FindRoom(int uid) {

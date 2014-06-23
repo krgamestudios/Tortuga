@@ -87,7 +87,7 @@ static int onUnload(lua_State* L) {
 
 static const luaL_Reg regionLib[] = {
 	{"SetTile",setTile},
-	{"SetTile",getTile},
+	{"GetTile",getTile},
 	{"GetX",getX},
 	{"GetY",getY},
 	{"GetWidth",getWidth},
