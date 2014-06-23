@@ -1,6 +1,7 @@
 TODO: encapsulate the data structures
 TODO: Get the rooms working
 
+TODO: make the whole thing more fault tolerant
 TODO: Authentication
 TODO: server is slaved to the client
 

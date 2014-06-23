@@ -19,12 +19,24 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef REGIONAPI_HPP_
-#define REGIONAPI_HPP_
+#ifndef SIMPLERNG_HPP_
+#define SIMPLERNG_HPP_
 
-#include "lua/lua.hpp"
+//a simple, stateless, random number generator
+class SimpleRNG {
+public:
+	SimpleRNG() { SetSeed(8891.0); }
+	SimpleRNG(double x) { SetSeed(x); }
 
-#define TORTUGA_REGION_NAME "Region"
-LUAMOD_API int openRegionAPI(lua_State* L);
+	double SetSeed(double s) { return seed = s; }
+	double GetSeed() { return seed; }
+
+	double operator()(double x) {
+		return (x + seed) * 11235.0 + 81321.0;
+	};
+
+private:
+	double seed;
+};
 
 #endif

@@ -19,12 +19,22 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef REGIONAPI_HPP_
-#define REGIONAPI_HPP_
+#ifndef TERRAINTYPE_HPP_
+#define TERRAINTYPE_HPP_
 
-#include "lua/lua.hpp"
+enum class TerrainType {
+	//default: something's wrong
+	NONE = 0,
 
-#define TORTUGA_REGION_NAME "Region"
-LUAMOD_API int openRegionAPI(lua_State* L);
+	//standard overworld
+	PLAINS,
+	GRASS,
+	DIRT,
+	SAND,
+	WATER,
+
+	//not used
+	LAST,
+};
 
 #endif

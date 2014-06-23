@@ -19,12 +19,18 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef REGIONAPI_HPP_
-#define REGIONAPI_HPP_
+#ifndef TOWERSGENERATOR_HPP_
+#define TOWERSGENERATOR_HPP_
 
-#include "lua/lua.hpp"
+#include "base_generator.hpp"
 
-#define TORTUGA_REGION_NAME "Region"
-LUAMOD_API int openRegionAPI(lua_State* L);
+class TowersGenerator : public BaseGenerator {
+public:
+	TowersGenerator();
+	~TowersGenerator();
+
+private:
+	//
+};
 
 #endif

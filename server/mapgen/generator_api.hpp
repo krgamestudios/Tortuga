@@ -19,12 +19,12 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef REGIONAPI_HPP_
-#define REGIONAPI_HPP_
+#ifndef GENERATORAPI_HPP_
+#define GENERATORAPI_HPP_
 
 #include "lua/lua.hpp"
 
-#define TORTUGA_REGION_NAME "Region"
-LUAMOD_API int openRegionAPI(lua_State* L);
+#define TORTUGA_GENRATOR_NAME "Generator"
+LUAMOD_API int openGeneratorAPI(lua_State* L);
 
 #endif

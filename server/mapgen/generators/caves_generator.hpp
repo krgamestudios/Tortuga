@@ -19,39 +19,18 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef ROOMMANAGER_HPP_
-#define ROOMMANAGER_HPP_
+#ifndef CAVESGENERATOR_HPP_
+#define CAVESGENERATOR_HPP_
 
-#include "room_data.hpp"
+#include "base_generator.hpp"
 
-#include "lua/lua.hpp"
-
-#include <map>
-
-#define ROOM_MANAGER_PSEUDOINDEX "RoomManager"
-
-class RoomManager {
+class CavesGenerator : public BaseGenerator {
 public:
-	RoomManager() = default;
-	~RoomManager() = default;
-
-	//public access methods
-	RoomData* CreateRoom(int uid);
-	RoomData* UnloadRoom(int uid);
-
-	RoomData* GetRoom(int uid);
-	RoomData* FindRoom(int uid);
-	RoomData* PushRoom(int uid, RoomData*);
-
-	//accessors and mutators
-	std::map<int, RoomData*>* GetContainer() { return &roomMap; }
-
-	lua_State* SetLuaState(lua_State* L) { return luaState = L; }
-	lua_State* GetLuaState() { return luaState; }
+	CavesGenerator();
+	~CavesGenerator();
 
 private:
-	std::map<int, RoomData*> roomMap;
-	lua_State* luaState = nullptr;
+	//
 };
 
 #endif

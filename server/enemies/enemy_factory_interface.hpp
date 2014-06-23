@@ -19,12 +19,31 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef REGIONAPI_HPP_
-#define REGIONAPI_HPP_
+#ifndef ENEMYFACTORYINTERFACE_HPP_
+#define ENEMYFACTORYINTERFACE_HPP_
 
-#include "lua/lua.hpp"
+#include "enemy_data.hpp"
+#include "map_type.hpp"
 
-#define TORTUGA_REGION_NAME "Region"
-LUAMOD_API int openRegionAPI(lua_State* L);
+#include <list>
+
+//NOTE: Based on biome, world difficulty, etc.
+class EnemyFactoryInterface {
+public:
+	EnemyFactoryInterface() = default;
+	virtual ~EnemyFactoryInterface() = default;
+
+	virtual void Generate(std::list<EnemyData>* container) = 0;
+
+	//control the difficulty of the room
+	MapType SetType(MapType t) { return type = t; }
+	MapType GetType() { return type; }
+
+	int SetDifficulty(int d) { return difficulty = d; }
+	int GetDifficulty() { return difficulty; }
+protected:
+	MapType type;
+	int difficulty = 0;
+};
 
 #endif

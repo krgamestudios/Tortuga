@@ -19,12 +19,12 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef PAGERAPI_HPP_
-#define PAGERAPI_HPP_
+#include "caves_generator.hpp"
 
-#include "lua/lua.hpp"
+CavesGenerator::CavesGenerator() : BaseGenerator(MapType::CAVES) {
+	//
+}
 
-#define LUA_PAGERLIBNAME "pager"
-LUAMOD_API int luaopen_pagerapi(lua_State* L);
-
-#endif
+CavesGenerator::~CavesGenerator() {
+	//
+}

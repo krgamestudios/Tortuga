@@ -19,12 +19,26 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef REGIONAPI_HPP_
-#define REGIONAPI_HPP_
+#ifndef CHUNKDATA_HPP_
+#define CHUNKDATA_HPP_
 
-#include "lua/lua.hpp"
+#include "terrain_type.hpp"
 
-#define TORTUGA_REGION_NAME "Region"
-LUAMOD_API int openRegionAPI(lua_State* L);
+#include <type_traits>
+
+struct ChunkData {
+	enum class Moddable {
+		LOCKED, //do not change
+		HARD, //minor changes
+		SOFT, //major changes
+		CLEAR, //untouched
+	};
+
+	TerrainType type;
+//	int fountainCount;
+	Moddable mod;
+};
+
+static_assert(std::is_pod<ChunkData>::value, "ChunkData is not a POD");
 
 #endif

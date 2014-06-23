@@ -19,12 +19,18 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef REGIONAPI_HPP_
-#define REGIONAPI_HPP_
+#ifndef RUINSGENERATOR_HPP_
+#define RUINSGENERATOR_HPP_
 
-#include "lua/lua.hpp"
+#include "base_generator.hpp"
 
-#define TORTUGA_REGION_NAME "Region"
-LUAMOD_API int openRegionAPI(lua_State* L);
+class RuinsGenerator : public BaseGenerator {
+public:
+	RuinsGenerator();
+	~RuinsGenerator();
+
+private:
+	//
+};
 
 #endif

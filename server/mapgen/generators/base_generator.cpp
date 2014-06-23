@@ -19,12 +19,18 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef REGIONAPI_HPP_
-#define REGIONAPI_HPP_
+#include "base_generator.hpp"
 
-#include "lua/lua.hpp"
+BaseGenerator::BaseGenerator(MapType t) {
+	mapType = t;
+	for (int i = 0; i < MAP_WIDTH; i++) {
+		for (int j = 0; j < MAP_HEIGHT; j++) {
+			chunks[i][j].type = TerrainType::NONE;
+			chunks[i][j].mod = ChunkData::Moddable::CLEAR;
+		}
+	}
+}
 
-#define TORTUGA_REGION_NAME "Region"
-LUAMOD_API int openRegionAPI(lua_State* L);
-
-#endif
+BaseGenerator::~BaseGenerator() {
+	//
+}

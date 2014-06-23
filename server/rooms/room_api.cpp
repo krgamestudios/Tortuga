@@ -19,27 +19,43 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef ROOMDATA_HPP_
-#define ROOMDATA_HPP_
+#include "room_api.hpp"
 
-//map system
-#include "region_pager_lua.hpp"
+#include "room_data.hpp"
 
-struct RoomData {
-	enum class RoomType {
-		OVERWORLD = 0,
-		RUINS = 1,
-		TOWERS = 2,
-		FORESTS = 3,
-		CAVE = 4,
-	};
+static int getPager(lua_State* L) {
+	RoomData* room = reinterpret_cast<RoomData*>(lua_touserdata(L, 1));
+	lua_pushlightuserdata(L, reinterpret_cast<void*>(&room->pager));
+	return 1;
+}
 
-	//members
-	RegionPagerLua pager;
-	RoomType type;
+static int getGenerator(lua_State* L) {
+	RoomData* room = reinterpret_cast<RoomData*>(lua_touserdata(L, 1));
+	lua_pushlightuserdata(L, reinterpret_cast<void*>(room->generator));
+	return 1;
+}
 
-	//TODO: collision map
-	//TODO: NPCs?
+static int onCreate(lua_State* L) {
+	//TODO: onCreate()
+	return 0;
+}
+
+static int onUnload(lua_State* L) {
+	//TODO: onUnload()
+	return 0;
+}
+
+//TODO: parameters
+
+static const luaL_Reg roomLib[] = {
+	{"GetPager",getPager},
+	{"GetGenerator",getGenerator},
+	{"OnCreate", onCreate},
+	{"OnUnload", onUnload},
+	{nullptr, nullptr}
 };
 
-#endif
+LUAMOD_API int openRoomAPI(lua_State* L) {
+	luaL_newlib(L, roomLib);
+	return 1;
+}

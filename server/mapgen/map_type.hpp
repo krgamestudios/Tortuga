@@ -19,12 +19,16 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef REGIONAPI_HPP_
-#define REGIONAPI_HPP_
+#ifndef MAPTYPE_HPP_
+#define MAPTYPE_HPP_
 
-#include "lua/lua.hpp"
-
-#define TORTUGA_REGION_NAME "Region"
-LUAMOD_API int openRegionAPI(lua_State* L);
+enum class MapType {
+	NONE,
+	OVERWORLD,
+	RUINS,
+	TOWERS,
+	FORESTS,
+	CAVES,
+};
 
 #endif

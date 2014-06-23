@@ -19,12 +19,12 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef REGIONAPI_HPP_
-#define REGIONAPI_HPP_
+#ifndef PAGERAPI_HPP_
+#define PAGERAPI_HPP_
 
 #include "lua/lua.hpp"
 
-#define TORTUGA_REGION_NAME "Region"
-LUAMOD_API int openRegionAPI(lua_State* L);
+#define TORTUGA_REGION_PAGER_NAME "RegionPager"
+LUAMOD_API int openRegionPagerAPI(lua_State* L);
 
 #endif

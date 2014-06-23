@@ -19,12 +19,21 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef REGIONAPI_HPP_
-#define REGIONAPI_HPP_
+#ifndef ROOMDATA_HPP_
+#define ROOMDATA_HPP_
 
-#include "lua/lua.hpp"
+//map system
+#include "map_type.hpp"
+#include "region_pager_lua.hpp"
+#include "base_generator.hpp"
 
-#define TORTUGA_REGION_NAME "Region"
-LUAMOD_API int openRegionAPI(lua_State* L);
+struct RoomData {
+	//members
+	RegionPagerLua pager;
+	BaseGenerator* generator = nullptr;
+
+	//TODO: collision map
+	//TODO: NPCs?
+};
 
 #endif

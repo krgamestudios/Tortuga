@@ -19,12 +19,12 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef REGIONAPI_HPP_
-#define REGIONAPI_HPP_
+#include "overworld_generator.hpp"
 
-#include "lua/lua.hpp"
+OverworldGenerator::OverworldGenerator() : BaseGenerator(MapType::OVERWORLD) {
+	//
+}
 
-#define TORTUGA_REGION_NAME "Region"
-LUAMOD_API int openRegionAPI(lua_State* L);
-
-#endif
+OverworldGenerator::~OverworldGenerator() {
+	//
+}

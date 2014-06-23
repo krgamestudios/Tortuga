@@ -19,12 +19,12 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef ROOMAPI_HPP_
-#define ROOMAPI_HPP_
+#include "ruins_generator.hpp"
 
-#include "lua/lua.hpp"
+RuinsGenerator::RuinsGenerator() : BaseGenerator(MapType::RUINS) {
+	//
+}
 
-#define LUA_ROOMLIBNAME "room"
-LUAMOD_API int luaopen_roomapi(lua_State* L);
-
-#endif
+RuinsGenerator::~RuinsGenerator() {
+	//
+}

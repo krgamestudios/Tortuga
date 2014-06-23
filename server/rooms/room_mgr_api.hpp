@@ -19,12 +19,12 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef REGIONAPI_HPP_
-#define REGIONAPI_HPP_
+#ifndef ROOMMGRAPI_HPP_
+#define ROOMMGRAPI_HPP_
 
 #include "lua/lua.hpp"
 
-#define TORTUGA_REGION_NAME "Region"
-LUAMOD_API int openRegionAPI(lua_State* L);
+#define TORTUGA_ROOM_MGR_NAME "RoomMgr"
+LUAMOD_API int openRoomMgrAPI(lua_State* L);
 
 #endif

@@ -19,30 +19,42 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef ENEMYFACTORYINTERFACE_HPP_
-#define ENEMYFACTORYINTERFACE_HPP_
+#ifndef ROOMMANAGER_HPP_
+#define ROOMMANAGER_HPP_
 
-#include "enemy_data.hpp"
 #include "room_data.hpp"
 
-#include <list>
+#include "lua/lua.hpp"
 
-//NOTE: Based on biome, world difficulty, etc.
-class EnemyFactoryInterface {
+#include <map>
+
+#define ROOM_MANAGER_PSEUDOINDEX "RoomManager"
+
+class RoomManager {
 public:
-	EnemyFactoryInterface() = default;
-	virtual ~EnemyFactoryInterface() = default;
+	RoomManager() = default;
+	~RoomManager() = default;
 
-	virtual void Generate(std::list<EnemyData>* container) = 0;
+	//public access methods
+	RoomData* CreateRoom(MapType);
+	void UnloadRoom(int uid);
 
-	//control the difficulty of the room
-	RoomData::RoomType SetType(RoomData::RoomType t) { return type = t; }
-	int SetDifficulty(int d) { return difficulty = d; }
-	RoomData::RoomType GetType() { return type; }
-	int GetDifficulty() { return difficulty; }
-protected:
-	RoomData::RoomType type;
-	int difficulty;
+	RoomData* GetRoom(int uid);
+	RoomData* FindRoom(int uid);
+	int PushRoom(RoomData*);
+
+	void UnloadAll();
+
+	//accessors and mutators
+	std::map<int, RoomData*>* GetContainer() { return &roomMap; }
+
+	lua_State* SetLuaState(lua_State* L) { return luaState = L; }
+	lua_State* GetLuaState() { return luaState; }
+
+private:
+	std::map<int, RoomData*> roomMap;
+	lua_State* luaState = nullptr;
+	int counter = 0;
 };
 
 #endif
