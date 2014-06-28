@@ -1,6 +1,5 @@
 --TODO: each function needs to check it's parameter count
 --TODO: Set metatables
---TODO: test
 
 --RoomManager interface
 RoomMgr.GetRoom(index)
