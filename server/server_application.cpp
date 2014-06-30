@@ -141,7 +141,8 @@ void ServerApplication::Proc() {
 			HandlePacket(packetBuffer);
 		}
 		//update the internals
-		//TODO: update the internals i.e. player positions
+		//BUG: #30 Update the internals i.e. player positions
+
 		//give the computer a break
 		SDL_Delay(10);
 	}
@@ -269,6 +270,16 @@ void ServerApplication::HandleJoinRequest(ClientPacket* const argPacket) {
 
 void ServerApplication::HandleDisconnect(ClientPacket* const argPacket) {
 	//TODO: authenticate who is disconnecting/kicking
+	/*Pseudocode:
+	if sender's account index -> client index -> address == sender's address then
+		continue
+	end
+	if sender's account index -> admin == true OR sender's account index -> mod == true then
+		continue
+	end
+	if neither of the above is true, then output a warning to the console, and return
+	*/
+
 
 	//forward to the specified client
 	network.SendTo(
@@ -296,6 +307,12 @@ void ServerApplication::HandleDisconnect(ClientPacket* const argPacket) {
 
 void ServerApplication::HandleShutdown(SerialPacket* const argPacket) {
 	//TODO: authenticate who is shutting the server down
+	/*Pseudocode:
+	if sender's account -> admin is not true then
+		print a warning
+		return
+	end
+	*/
 
 	//end the server
 	running = false;
@@ -399,15 +416,7 @@ void ServerApplication::HandleCharacterUpdate(CharacterPacket* const argPacket) 
 		return;
 	}
 
-	/* TODO: rewrite this design flaw, read more
-	 * Slaving the client to the server here is a terrible idea, instead there
-	 * needs to be a utility function to update and send the server-side character
-	 * to the clients.
-	 *
-	 * Other things to consider include functionality to reequip the character,
-	 * apply status effects and to change the stats as well. These should all be
-	 * handled server-side.
-	*/
+	//accept client-side logic
 	character->roomIndex = argPacket->roomIndex;
 	character->origin = argPacket->origin;
 	character->motion = argPacket->motion;

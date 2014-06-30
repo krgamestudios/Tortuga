@@ -38,6 +38,10 @@
 constexpr double CHARACTER_WALKING_SPEED = 140.0;
 constexpr double CHARACTER_WALKING_MOD = 1.0/sqrt(2.0);
 
+//the bounding boxes for the characters
+constexpr double CHARACTER_BOUNDS_WIDTH = 32.0;
+constexpr double CHARACTER_BOUNDS_HEIGHT = 32.0;
+
 struct CharacterData {
 	//metadata
 	int owner;
@@ -48,7 +52,6 @@ struct CharacterData {
 	int roomIndex = 0;
 	Vector2 origin = {0.0,0.0};
 	Vector2 motion = {0.0,0.0};
-	Vector2 bounds = {0.0,0.0};
 
 	//base statistics
 	Statistics stats;
@@ -65,6 +68,7 @@ struct CharacterData {
 	//active gameplay members
 	//NOTE: these are lost when unloaded
 #ifdef GRAPHICS
+	Vector2 bounds = {0.0,0.0};
 	SpriteSheet sprite;
 #endif
 	bool inCombat = false;

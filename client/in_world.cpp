@@ -24,9 +24,10 @@
 #include "channels.hpp"
 #include "utility.hpp"
 
+#include <stdexcept>
 #include <algorithm>
 #include <cmath>
-#include <stdexcept>
+#include <iostream>
 
 //-------------------------
 //Public access members
@@ -105,6 +106,8 @@ void InWorld::Update(double delta) {
 	for (auto& it : characterMap) {
 		it.second.Update(delta);
 	}
+
+	//TODO: Check collisions here
 
 	//update the camera
 	if(localCharacter) {
@@ -288,15 +291,20 @@ void InWorld::HandleCharacterNew(CharacterPacket* const argPacket) {
 	//create the character object
 	CharacterData& character = characterMap[argPacket->characterIndex];
 
-	//set the members
+	//fill out the character's members
 	character.handle = argPacket->handle;
 	character.avatar = argPacket->avatar;
+
 	character.sprite.LoadSurface(config["dir.sprites"] + character.avatar, 4, 4);
+	character.bounds = {CHARACTER_BOUNDS_WIDTH, CHARACTER_BOUNDS_HEIGHT};
+
 	character.roomIndex = argPacket->roomIndex;
 	character.origin = argPacket->origin;
 	character.motion = argPacket->motion;
+
 	character.stats = argPacket->stats;
 
+	//bookkeeping code
 	character.CorrectSprite();
 
 	//catch this client's player object
@@ -316,6 +324,7 @@ void InWorld::HandleCharacterNew(CharacterPacket* const argPacket) {
 
 void InWorld::HandleCharacterDelete(CharacterPacket* const argPacket) {
 	//TODO: authenticate when own character is being deleted (linked to a TODO in the server)
+
 	//catch this client's player object
 	if (argPacket->characterIndex == characterIndex) {
 		characterIndex = -1;
@@ -327,6 +336,7 @@ void InWorld::HandleCharacterDelete(CharacterPacket* const argPacket) {
 
 void InWorld::HandleCharacterUpdate(CharacterPacket* const argPacket) {
 	if (characterMap.find(argPacket->characterIndex) == characterMap.end()) {
+		std::cout << "Warning: HandleCharacterUpdate() is passing to HandleCharacterNew()" << std::endl;
 		HandleCharacterNew(argPacket);
 		return;
 	}
@@ -364,6 +374,8 @@ void InWorld::RequestSynchronize() {
 	newPacket.clientIndex = clientIndex;
 	newPacket.accountIndex = accountIndex;
 
+	//TODO: location, range for sync request
+
 	network.SendTo(Channels::SERVER, &newPacket);
 }
 
@@ -374,7 +386,7 @@ void InWorld::SendPlayerUpdate() {
 	newPacket.type = SerialPacketType::CHARACTER_UPDATE;
 
 	newPacket.characterIndex = characterIndex;
-	//handle, avatar
+	//NOTE: omitting the handle and avatar here
 	newPacket.accountIndex = accountIndex;
 	newPacket.roomIndex = localCharacter->roomIndex;
 	newPacket.origin = localCharacter->origin;
@@ -435,7 +447,7 @@ void InWorld::UpdateMap() {
 
 	//prune distant regions
 	for (std::list<Region>::iterator it = regionPager.GetContainer()->begin(); it != regionPager.GetContainer()->end(); /* EMPTY */) {
-		//check if the region is outside off this area
+		//check if the region is outside of this area
 		if (it->GetX() < xStart || it->GetX() > xEnd || it->GetY() < yStart || it->GetY() > yEnd) {
 
 			//clunky, but the alternative was time consuming

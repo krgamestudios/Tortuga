@@ -75,14 +75,12 @@ protected:
 	//Network handlers
 	void HandlePacket(SerialPacket* const);
 	void HandleDisconnect(SerialPacket* const);
-	//TODO: more network handlers
 
 	//Server control
 	void RequestSynchronize();
 	void SendPlayerUpdate();
 	void RequestDisconnect();
 	void RequestShutdown();
-	//TODO: more
 
 	//shared parameters
 	ConfigUtility& config;
