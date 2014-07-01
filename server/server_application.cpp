@@ -114,19 +114,22 @@ void ServerApplication::Init(int argc, char** argv) {
 	//-------------------------
 
 	//TODO: put these outputs into the client too
-#define OUTPUT_VAR(x) std::cout << "\t" << #x << ": " << x << std::endl;
+	//TODO: enable/disable these with a switch
+#define DEBUG_OUTPUT_VAR(x) std::cout << "\t" << #x << ": " << x << std::endl;
 
 	std::cout << "Internal sizes:" << std::endl;
 
-	OUTPUT_VAR(sizeof(Region::type_t));
-	OUTPUT_VAR(sizeof(Region));
-	OUTPUT_VAR(REGION_FORMAT);
-	OUTPUT_VAR(REGION_FOOTPRINT);
-	OUTPUT_VAR(COLLISION_FOOTPRINT);
-	OUTPUT_VAR(PACKET_BUFFER_SIZE);
-	OUTPUT_VAR(MAX_PACKET_SIZE);
+	DEBUG_OUTPUT_VAR(sizeof(Region::type_t));
+	DEBUG_OUTPUT_VAR(sizeof(Region));
+	DEBUG_OUTPUT_VAR(REGION_WIDTH);
+	DEBUG_OUTPUT_VAR(REGION_HEIGHT);
+	DEBUG_OUTPUT_VAR(REGION_DEPTH);
+	DEBUG_OUTPUT_VAR(REGION_SOLID);
+	DEBUG_OUTPUT_VAR(REGION_FOOTPRINT);
+	DEBUG_OUTPUT_VAR(PACKET_BUFFER_SIZE);
+	DEBUG_OUTPUT_VAR(MAX_PACKET_SIZE);
 
-#undef OUTPUT_VAR
+#undef DEBUG_OUTPUT_VAR
 
 	//-------------------------
 	//finalize the startup
