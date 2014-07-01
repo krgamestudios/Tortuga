@@ -30,7 +30,7 @@
 
 #include "SDL/SDL_net.h"
 
-constexpr int NETWORK_VERSION = 20140607;
+constexpr int NETWORK_VERSION = 20140701;
 constexpr int PACKET_STRING_SIZE = 100;
 
 struct SerialPacketBase {

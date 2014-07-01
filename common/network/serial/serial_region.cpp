@@ -49,6 +49,8 @@ void serializeRegionContent(RegionPacket* packet, void* buffer) {
 			}
 		}
 	}
+
+	//TODO: serialize collision map
 }
 
 void deserializeRegionFormat(RegionPacket* packet, void* buffer) {
@@ -80,4 +82,6 @@ void deserializeRegionContent(RegionPacket* packet, void* buffer) {
 			}
 		}
 	}
+
+	//TODO: deserialize collision map
 }

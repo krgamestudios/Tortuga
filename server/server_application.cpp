@@ -113,12 +113,20 @@ void ServerApplication::Init(int argc, char** argv) {
 	//debug output
 	//-------------------------
 
+	//TODO: put these outputs into the client too
+#define OUTPUT_VAR(x) std::cout << "\t" << #x << ": " << x << std::endl;
+
 	std::cout << "Internal sizes:" << std::endl;
-	std::cout << "\tTile Size: " << sizeof(Region::type_t) << std::endl;
-	std::cout << "\tRegion Format: " << REGION_WIDTH << ", " << REGION_HEIGHT << ", " << REGION_DEPTH << std::endl;
-	std::cout << "\tRegion Content Footprint: " << REGION_WIDTH * REGION_HEIGHT * REGION_DEPTH * sizeof(Region::type_t) << std::endl;
-	std::cout << "\tPACKET_BUFFER_SIZE: " << PACKET_BUFFER_SIZE << std::endl;
-	std::cout << "\tMAX_PACKET_SIZE: " << MAX_PACKET_SIZE << std::endl;
+
+	OUTPUT_VAR(sizeof(Region::type_t));
+	OUTPUT_VAR(sizeof(Region));
+	OUTPUT_VAR(REGION_FORMAT);
+	OUTPUT_VAR(REGION_FOOTPRINT);
+	OUTPUT_VAR(COLLISION_FOOTPRINT);
+	OUTPUT_VAR(PACKET_BUFFER_SIZE);
+	OUTPUT_VAR(MAX_PACKET_SIZE);
+
+#undef OUTPUT_VAR
 
 	//-------------------------
 	//finalize the startup

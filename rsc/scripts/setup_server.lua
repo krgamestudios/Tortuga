@@ -1,4 +1,4 @@
-print("Lua script check (./rsc)")
+print("Lua script check")
 
 --uber lazy declarations
 function square(x) return x*x end
@@ -33,10 +33,10 @@ end
 newRoom = RoomMgr.CreateRoom("overworld")
 pager = Room.GetPager(newRoom)
 regionTable = {
-	RegionPager.GetRegion(pager, 0, 0),
-	RegionPager.GetRegion(pager, 0, -20),
-	RegionPager.GetRegion(pager, -20, 0),
-	RegionPager.GetRegion(pager, -20, -20)
+	RegionPager.GetRegion(pager, Region.GetWidth() * 0, Region.GetHeight() * 0),
+	RegionPager.GetRegion(pager, Region.GetWidth() *-1, Region.GetHeight() * 0),
+	RegionPager.GetRegion(pager, Region.GetWidth() * 0, Region.GetHeight() *-1),
+	RegionPager.GetRegion(pager, Region.GetWidth() *-1, Region.GetHeight() *-1)
 }
 
 print("Finished the lua script")

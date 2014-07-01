@@ -22,8 +22,8 @@
 #ifndef REGION_HPP_
 #define REGION_HPP_
 
-constexpr int REGION_WIDTH = 20;
-constexpr int REGION_HEIGHT = 20;
+constexpr int REGION_WIDTH = 21;
+constexpr int REGION_HEIGHT = 21;
 constexpr int REGION_DEPTH = 3;
 
 class Region {
@@ -45,7 +45,7 @@ private:
 	const int x;
 	const int y;
 
-	type_t tiles[REGION_WIDTH][REGION_HEIGHT][REGION_DEPTH];
+	type_t tiles[REGION_WIDTH][REGION_HEIGHT][REGION_DEPTH+1];
 };
 
 #endif

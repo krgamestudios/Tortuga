@@ -85,6 +85,7 @@ static int onUnload(lua_State* L) {
 	return 0;
 }
 
+//TODO: wrappers for the collision map
 static const luaL_Reg regionLib[] = {
 	{"SetTile",setTile},
 	{"GetTile",getTile},

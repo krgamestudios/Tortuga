@@ -30,11 +30,11 @@ Region::Region(int argX, int argY): x(argX), y(argY) {
 	if (x != snapToBase(REGION_WIDTH, x) || y != snapToBase(REGION_HEIGHT, y)) {
 		throw(std::invalid_argument("Region location is off grid"));
 	}
-	memset(tiles, 0, REGION_WIDTH*REGION_HEIGHT*REGION_DEPTH*sizeof(type_t));
+	memset(tiles, 0, REGION_WIDTH*REGION_HEIGHT*(REGION_DEPTH+1)*sizeof(type_t));
 }
 
 Region::Region(Region const& rhs): x(rhs.x), y(rhs.y) {
-	memcpy(tiles, rhs.tiles, REGION_WIDTH*REGION_HEIGHT*REGION_DEPTH*sizeof(type_t));
+	memcpy(tiles, rhs.tiles, REGION_WIDTH*REGION_HEIGHT*(REGION_DEPTH+1)*sizeof(type_t));
 }
 
 Region::type_t Region::SetTile(int x, int y, int z, type_t v) {

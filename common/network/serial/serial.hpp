@@ -27,6 +27,8 @@
 #include "region.hpp"
 #include "statistics.hpp"
 
+#include <cmath>
+
 //Primary interface functions
 void serializePacket(SerialPacketBase*, void* dest);
 void deserializePacket(SerialPacketBase*, void* src);
@@ -53,13 +55,22 @@ void deserializeRegionContent(RegionPacket*, void*);
 void deserializeServer(ServerPacket*, void*);
 void deserializeStatistics(Statistics*, void*);
 
-/* DOCS: Keep the PACKET_BUFFER_SIZE up to date
+/* DOCS: Keep these macros, including PACKET_BUFFER_SIZE up to date
  * DOCS: REGION_CONTENT is currently the largest type of packet, read more
- *  map content: REGION_WIDTH * REGION_HEIGHT * REGION_DEPTH * sizoeof(region::type_t)
- *  map format: sizeof(int) * 3
- *  metadata: sizeof(SerialPacket::Type)
+ * REGION_FORMAT
+ *     This is the space for the region's metadata; the X and Y position, the map index and the SerialPacketType
+ * REGION_FOOTPRINT
+ *     This is the theoretical size of the map's tile data in memory, but it doesn't take the collision map into account
+ * COLLISION_FOOTPRINT
+ *     This is the space in the packet for the collision map, stored as a bit array
+ * PACKET_BUFFER_SIZE
+ *     This is the tital size of the packet being sent between the server and the clients
 */
 
-constexpr int PACKET_BUFFER_SIZE = REGION_WIDTH * REGION_HEIGHT * REGION_DEPTH * sizeof(Region::type_t) + sizeof(int) * 3 + sizeof(SerialPacketType);
+constexpr int REGION_FORMAT = sizeof(int) * 3 + sizeof(SerialPacketType);
+constexpr int REGION_FOOTPRINT = REGION_WIDTH * REGION_HEIGHT * REGION_DEPTH * sizeof(Region::type_t);
+constexpr int COLLISION_FOOTPRINT = ceil(REGION_WIDTH * REGION_HEIGHT / 8.0);
+
+constexpr int PACKET_BUFFER_SIZE = REGION_FORMAT + REGION_FOOTPRINT + COLLISION_FOOTPRINT;
 
 #endif
