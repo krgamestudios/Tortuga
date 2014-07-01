@@ -37,6 +37,20 @@ static int getTile(lua_State* L) {
 	return 1;
 }
 
+static int setSolid(lua_State* L) {
+	Region* region = reinterpret_cast<Region*>(lua_touserdata(L, 1));
+	bool ret = region->SetSolid(lua_tointeger(L, 2)-1, lua_tointeger(L, 3)-1, lua_toboolean(L, 4));
+	lua_pushboolean(L, ret);
+	return 1;
+}
+
+static int getSolid(lua_State* L) {
+	Region* region = reinterpret_cast<Region*>(lua_touserdata(L, 1));
+	bool ret = region->GetSolid(lua_tointeger(L, 2)-1, lua_tointeger(L, 3)-1);
+	lua_pushboolean(L, ret);
+	return 1;
+}
+
 static int getX(lua_State* L) {
 	Region* region = reinterpret_cast<Region*>(lua_touserdata(L, 1));
 	lua_pushinteger(L, region->GetX());
@@ -85,9 +99,12 @@ static int onUnload(lua_State* L) {
 	return 0;
 }
 
+//TODO: wrappers for the collision map
 static const luaL_Reg regionLib[] = {
 	{"SetTile",setTile},
 	{"GetTile",getTile},
+	{"SetSolid",setSolid},
+	{"GetSolid",getSolid},
 	{"GetX",getX},
 	{"GetY",getY},
 	{"GetWidth",getWidth},

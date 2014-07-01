@@ -1,4 +1,4 @@
-print("Lua script check (./rsc)")
+print("Lua script check")
 
 --uber lazy declarations
 function square(x) return x*x end
@@ -19,10 +19,13 @@ Region.OnCreate = function(region)
 	local ret = Region.hcOnCreate(region) --best practices
 	for i = 1, Region.GetWidth() do
 		for j = 1, Region.GetHeight() do
-			if distance(0, 0, i + Region.GetX(region) -1, j + Region.GetY(region) -1) > 10 then
-				Region.SetTile(region, i, j, 1, water)
-			else
+			local dist = distance(0, 0, i + Region.GetX(region) -1, j + Region.GetY(region) -1)
+			if dist < 10 then
 				Region.SetTile(region, i, j, 1, plains)
+			elseif dist < 12 then
+				Region.SetTile(region, i, j, 1, sand)
+			else
+				Region.SetTile(region, i, j, 1, water)
 			end
 		end
 	end
@@ -33,10 +36,10 @@ end
 newRoom = RoomMgr.CreateRoom("overworld")
 pager = Room.GetPager(newRoom)
 regionTable = {
-	RegionPager.GetRegion(pager, 0, 0),
-	RegionPager.GetRegion(pager, 0, -20),
-	RegionPager.GetRegion(pager, -20, 0),
-	RegionPager.GetRegion(pager, -20, -20)
+	RegionPager.GetRegion(pager, Region.GetWidth() * 0, Region.GetHeight() * 0),
+	RegionPager.GetRegion(pager, Region.GetWidth() *-1, Region.GetHeight() * 0),
+	RegionPager.GetRegion(pager, Region.GetWidth() * 0, Region.GetHeight() *-1),
+	RegionPager.GetRegion(pager, Region.GetWidth() *-1, Region.GetHeight() *-1)
 }
 
 print("Finished the lua script")

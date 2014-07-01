@@ -43,6 +43,20 @@ static int getTile(lua_State* L) {
 	return 1;
 }
 
+static int setSolid(lua_State* L) {
+	RegionPagerLua* pager = reinterpret_cast<RegionPagerLua*>(lua_touserdata(L, 1));
+	bool ret = pager->SetSolid(lua_tointeger(L, 2), lua_tointeger(L, 3), lua_toboolean(L, 4));
+	lua_pushboolean(L, ret);
+	return 1;
+}
+
+static int getSolid(lua_State* L) {
+	RegionPagerLua* pager = reinterpret_cast<RegionPagerLua*>(lua_touserdata(L, 1));
+	bool ret = pager->GetSolid(lua_tointeger(L, 2), lua_tointeger(L, 3));
+	lua_pushboolean(L, ret);
+	return 1;
+}
+
 static int getRegion(lua_State* L) {
 	RegionPagerLua* pager = reinterpret_cast<RegionPagerLua*>(lua_touserdata(L, 1));
 	Region* region = pager->GetRegion(lua_tointeger(L, 2), lua_tointeger(L, 3));
@@ -94,6 +108,8 @@ static int unloadRegion(lua_State* L) {
 static const luaL_Reg pagerlib[] = {
 	{"SetTile", setTile},
 	{"GetTile", getTile},
+	{"SetSolid", setSolid},
+	{"GetSolid", getSolid},
 	{"GetRegion", getRegion},
 	{"SetDirectory", setDirectory},
 	{"GetDirectory", getDirectory},

@@ -53,13 +53,15 @@ void deserializeRegionContent(RegionPacket*, void*);
 void deserializeServer(ServerPacket*, void*);
 void deserializeStatistics(Statistics*, void*);
 
-/* DOCS: Keep the PACKET_BUFFER_SIZE up to date
- * DOCS: REGION_CONTENT is currently the largest type of packet, read more
- *  map content: REGION_WIDTH * REGION_HEIGHT * REGION_DEPTH * sizoeof(region::type_t)
- *  map format: sizeof(int) * 3
- *  metadata: sizeof(SerialPacket::Type)
+/* DOCS: Keep PACKET_BUFFER_SIZE up to date
+ * DOCS: SerialPacketType::REGION_CONTENT is currently the largest type of packet, read more
+ * The metadata used are:
+ *     SerialPacketType
+ *     room index
+ *     X & Y positon
+ * The rest is taken up by the Regions's content.
 */
 
-constexpr int PACKET_BUFFER_SIZE = REGION_WIDTH * REGION_HEIGHT * REGION_DEPTH * sizeof(Region::type_t) + sizeof(int) * 3 + sizeof(SerialPacketType);
+constexpr int PACKET_BUFFER_SIZE = sizeof(SerialPacketType) + sizeof(int) * 3 + REGION_FOOTPRINT;
 
 #endif

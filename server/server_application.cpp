@@ -113,12 +113,23 @@ void ServerApplication::Init(int argc, char** argv) {
 	//debug output
 	//-------------------------
 
+	//TODO: put these outputs into the client too
+	//TODO: enable/disable these with a switch
+#define DEBUG_OUTPUT_VAR(x) std::cout << "\t" << #x << ": " << x << std::endl;
+
 	std::cout << "Internal sizes:" << std::endl;
-	std::cout << "\tTile Size: " << sizeof(Region::type_t) << std::endl;
-	std::cout << "\tRegion Format: " << REGION_WIDTH << ", " << REGION_HEIGHT << ", " << REGION_DEPTH << std::endl;
-	std::cout << "\tRegion Content Footprint: " << REGION_WIDTH * REGION_HEIGHT * REGION_DEPTH * sizeof(Region::type_t) << std::endl;
-	std::cout << "\tPACKET_BUFFER_SIZE: " << PACKET_BUFFER_SIZE << std::endl;
-	std::cout << "\tMAX_PACKET_SIZE: " << MAX_PACKET_SIZE << std::endl;
+
+	DEBUG_OUTPUT_VAR(sizeof(Region::type_t));
+	DEBUG_OUTPUT_VAR(sizeof(Region));
+	DEBUG_OUTPUT_VAR(REGION_WIDTH);
+	DEBUG_OUTPUT_VAR(REGION_HEIGHT);
+	DEBUG_OUTPUT_VAR(REGION_DEPTH);
+	DEBUG_OUTPUT_VAR(REGION_SOLID_FOOTPRINT);
+	DEBUG_OUTPUT_VAR(REGION_FOOTPRINT);
+	DEBUG_OUTPUT_VAR(PACKET_BUFFER_SIZE);
+	DEBUG_OUTPUT_VAR(MAX_PACKET_SIZE);
+
+#undef DEBUG_OUTPUT_VAR
 
 	//-------------------------
 	//finalize the startup
@@ -141,7 +152,8 @@ void ServerApplication::Proc() {
 			HandlePacket(packetBuffer);
 		}
 		//update the internals
-		//TODO: update the internals i.e. player positions
+		//BUG: #30 Update the internals i.e. player positions
+
 		//give the computer a break
 		SDL_Delay(10);
 	}
@@ -269,6 +281,16 @@ void ServerApplication::HandleJoinRequest(ClientPacket* const argPacket) {
 
 void ServerApplication::HandleDisconnect(ClientPacket* const argPacket) {
 	//TODO: authenticate who is disconnecting/kicking
+	/*Pseudocode:
+	if sender's account index -> client index -> address == sender's address then
+		continue
+	end
+	if sender's account index -> admin == true OR sender's account index -> mod == true then
+		continue
+	end
+	if neither of the above is true, then output a warning to the console, and return
+	*/
+
 
 	//forward to the specified client
 	network.SendTo(
@@ -296,6 +318,12 @@ void ServerApplication::HandleDisconnect(ClientPacket* const argPacket) {
 
 void ServerApplication::HandleShutdown(SerialPacket* const argPacket) {
 	//TODO: authenticate who is shutting the server down
+	/*Pseudocode:
+	if sender's account -> admin is not true then
+		print a warning
+		return
+	end
+	*/
 
 	//end the server
 	running = false;
@@ -399,15 +427,7 @@ void ServerApplication::HandleCharacterUpdate(CharacterPacket* const argPacket) 
 		return;
 	}
 
-	/* TODO: rewrite this design flaw, read more
-	 * Slaving the client to the server here is a terrible idea, instead there
-	 * needs to be a utility function to update and send the server-side character
-	 * to the clients.
-	 *
-	 * Other things to consider include functionality to reequip the character,
-	 * apply status effects and to change the stats as well. These should all be
-	 * handled server-side.
-	*/
+	//accept client-side logic
 	character->roomIndex = argPacket->roomIndex;
 	character->origin = argPacket->origin;
 	character->motion = argPacket->motion;

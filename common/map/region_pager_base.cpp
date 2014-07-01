@@ -36,6 +36,16 @@ Region::type_t RegionPagerBase::GetTile(int x, int y, int z) {
 	return ptr->GetTile(x - ptr->GetX(), y - ptr->GetY(), z);
 }
 
+bool RegionPagerBase::SetSolid(int x, int y, int b) {
+	Region* ptr = GetRegion(x, y);
+	return ptr->SetSolid(x - ptr->GetX(), y - ptr->GetY(), b);
+}
+
+bool RegionPagerBase::GetSolid(int x, int y) {
+	Region* ptr = GetRegion(x, y);
+	return ptr->GetSolid(x - ptr->GetX(), y - ptr->GetY());
+}
+
 Region* RegionPagerBase::GetRegion(int x, int y) {
 	//get the region by various means
 	Region* ptr = nullptr;

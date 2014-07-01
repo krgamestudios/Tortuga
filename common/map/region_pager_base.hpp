@@ -35,6 +35,10 @@ public:
 	virtual Region::type_t SetTile(int x, int y, int z, Region::type_t v);
 	virtual Region::type_t GetTile(int x, int y, int z);
 
+	//solid manipulation
+	virtual bool SetSolid(int x, int y, int b);
+	virtual bool GetSolid(int x, int y);
+
 	//region manipulation
 	virtual Region* GetRegion(int x, int y);
 	virtual Region* FindRegion(int x, int y);
