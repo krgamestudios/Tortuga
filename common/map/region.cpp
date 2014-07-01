@@ -35,6 +35,7 @@ Region::Region(int argX, int argY): x(argX), y(argY) {
 
 Region::Region(Region const& rhs): x(rhs.x), y(rhs.y) {
 	memcpy(tiles, rhs.tiles, REGION_WIDTH*REGION_HEIGHT*REGION_DEPTH*sizeof(type_t));
+	solid = rhs.solid;
 }
 
 Region::type_t Region::SetTile(int x, int y, int z, type_t v) {

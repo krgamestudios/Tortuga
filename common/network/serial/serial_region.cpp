@@ -40,7 +40,7 @@ void serializeRegionContent(RegionPacket* packet, void* buffer) {
 	SERIALIZE(buffer, &packet->x, sizeof(int));
 	SERIALIZE(buffer, &packet->y, sizeof(int));
 
-	//content
+	//tiles
 	for (register int i = 0; i < REGION_WIDTH; i++) {
 		for (register int j = 0; j < REGION_HEIGHT; j++) {
 			for (register int k = 0; k < REGION_DEPTH; k++) {
@@ -50,7 +50,8 @@ void serializeRegionContent(RegionPacket* packet, void* buffer) {
 		}
 	}
 
-	//TODO: serialize collision map
+	//solids
+	SERIALIZE(buffer, packet->region->GetSolidBitset(), REGION_SOLID_FOOTPRINT);
 }
 
 void deserializeRegionFormat(RegionPacket* packet, void* buffer) {
@@ -73,7 +74,7 @@ void deserializeRegionContent(RegionPacket* packet, void* buffer) {
 	//an object to work on
 	packet->region = new Region(packet->x, packet->y);
 
-	//content
+	//tiles
 	for (register int i = 0; i < REGION_WIDTH; i++) {
 		for (register int j = 0; j < REGION_HEIGHT; j++) {
 			for (register int k = 0; k < REGION_DEPTH; k++) {
@@ -83,5 +84,6 @@ void deserializeRegionContent(RegionPacket* packet, void* buffer) {
 		}
 	}
 
-	//TODO: deserialize collision map
+	//solids
+	DESERIALIZE(buffer, packet->region->GetSolidBitset(), REGION_SOLID_FOOTPRINT);
 }

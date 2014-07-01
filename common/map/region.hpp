@@ -26,12 +26,12 @@
 #include <cmath>
 
 //the region's storage format
-constexpr int REGION_WIDTH = 21;
-constexpr int REGION_HEIGHT = 21;
+constexpr int REGION_WIDTH = 20;
+constexpr int REGION_HEIGHT = 20;
 constexpr int REGION_DEPTH = 3;
 
 //the size of the solid map
-constexpr int REGION_SOLID = ceil(REGION_WIDTH * REGION_HEIGHT / 8.0);
+constexpr int REGION_SOLID_FOOTPRINT = ceil(REGION_WIDTH * REGION_HEIGHT / 8.0);
 
 class Region {
 public:
@@ -51,15 +51,17 @@ public:
 	//accessors
 	int GetX() const { return x; }
 	int GetY() const { return y; }
+
+	std::bitset<REGION_WIDTH*REGION_HEIGHT>* GetSolidBitset() { return &solid; }
 private:
 	const int x;
 	const int y;
 
 	type_t tiles[REGION_WIDTH][REGION_HEIGHT][REGION_DEPTH];
-	std::bitset<REGION_SOLID> solid;
+	std::bitset<REGION_WIDTH*REGION_HEIGHT> solid;
 };
 
 //the memory footprint of the tile and solid data; not including any metadata
-constexpr int REGION_FOOTPRINT = REGION_WIDTH * REGION_HEIGHT * REGION_DEPTH * sizeof(Region::type_t) + REGION_SOLID;
+constexpr int REGION_FOOTPRINT = REGION_WIDTH * REGION_HEIGHT * REGION_DEPTH * sizeof(Region::type_t) + REGION_SOLID_FOOTPRINT;
 
 #endif
