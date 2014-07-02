@@ -75,6 +75,7 @@ void RoomManager::UnloadRoom(int uid) {
 
 RoomData* RoomManager::GetRoom(int uid) {
 	return FindRoom(uid);
+	//TODO: expand this to auto-create the room
 }
 
 RoomData* RoomManager::FindRoom(int uid) {

@@ -21,8 +21,11 @@
 */
 #include "server_application.hpp"
 
-#include "sql_utility.hpp"
+//for PACKET_BUFFER_SIZE
 #include "serial.hpp"
+
+//utility functions
+#include "sql_utility.hpp"
 #include "utility.hpp"
 
 #include <stdexcept>
@@ -80,9 +83,7 @@ void ServerApplication::Init(int argc, char** argv) {
 	accountMgr.SetDatabase(database);
 	characterMgr.SetDatabase(database);
 
-	combatMgr.SetLuaState(luaState);
 	roomMgr.SetLuaState(luaState);
-	enemyMgr.SetLuaState(luaState);
 
 	std::cout << "Internal managers set" << std::endl;
 
@@ -356,12 +357,6 @@ void ServerApplication::HandleRegionRequest(RegionPacket* const argPacket) {
 }
 
 //-------------------------
-//combat management
-//-------------------------
-
-//TODO: combat management
-
-//-------------------------
 //Character Management
 //-------------------------
 
@@ -438,12 +433,6 @@ void ServerApplication::HandleCharacterUpdate(CharacterPacket* const argPacket) 
 
 	PumpPacket(argPacket);
 }
-
-//-------------------------
-//enemy management
-//-------------------------
-
-//TODO: enemy management
 
 //-------------------------
 //mismanagement

@@ -22,25 +22,14 @@
 #ifndef CHARACTERDATA_HPP_
 #define CHARACTERDATA_HPP_
 
+//components
+#include "character_defines.hpp"
 #include "vector2.hpp"
 #include "statistics.hpp"
-
-//graphics
-#ifdef GRAPHICS
- #include "sprite_sheet.hpp"
-#endif
 
 //std namespace
 #include <string>
 #include <cmath>
-
-//the speeds that the characters move
-constexpr double CHARACTER_WALKING_SPEED = 140.0;
-constexpr double CHARACTER_WALKING_MOD = 1.0/sqrt(2.0);
-
-//the bounding boxes for the characters
-constexpr double CHARACTER_BOUNDS_WIDTH = 32.0;
-constexpr double CHARACTER_BOUNDS_HEIGHT = 32.0;
 
 struct CharacterData {
 	//metadata
@@ -58,19 +47,8 @@ struct CharacterData {
 
 	//TODO: gameplay components: equipment, items, buffs, debuffs
 
-	//methods
-	void Update(double delta);
-#ifdef GRAPHICS
-	void DrawTo(SDL_Surface* const, int camX, int camY);
-	void CorrectSprite();
-#endif
-
 	//active gameplay members
 	//NOTE: these are lost when unloaded
-#ifdef GRAPHICS
-	Vector2 bounds = {0.0,0.0};
-	SpriteSheet sprite;
-#endif
 	bool inCombat = false;
 	int atbGauge = 0;
 	//TODO: stored command

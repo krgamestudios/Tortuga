@@ -34,7 +34,7 @@
 #include <string>
 #include <cmath>
 
-//TODO: encapsulate this
+//TODO: encapsulate this and the server version
 struct CharacterData {
 	//metadata
 	int owner;
