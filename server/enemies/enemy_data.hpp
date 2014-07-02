@@ -1,4 +1,4 @@
-/* Copyright: (c) Kayne Ruse 2013, 2014
+/* Copyright: (c) Kayne Ruse 2014
  * 
  * This software is provided 'as-is', without any express or implied
  * warranty. In no event will the authors be held liable for any damages
@@ -19,28 +19,29 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef COMBATPACKET_HPP_
-#define COMBATPACKET_HPP_
+#ifndef ENEMYDATA_HPP_
+#define ENEMYDATA_HPP_
 
-#include "serial_packet_base.hpp"
+#include "vector2.hpp"
+#include "statistics.hpp"
 
-#include "combat_defines.hpp"
+//std namespace
+#include <string>
 
-struct CombatPacket : SerialPacketBase {
-	//identify the combat instance
-	int combatIndex;
-	int difficulty;
-	TerrainType terrainType;
+struct EnemyData {
+	//metadata
+	std::string handle;
+	std::string avatar;
 
-	//combatants
-	int characterArray[COMBAT_MAX_CHARACTERS];
-	int enemyArray[COMBAT_MAX_ENEMIES];
+	//gameplay
+	Statistics stats;
 
-	//location
-	int mapIndex;
-	Vector2 origin;
+	//TODO: gameplay components: equipment, items, buffs, debuffs, rewards
 
-	//TODO: gameplay components: rewards
+	//active gameplay members
+	//NOTE: these are lost when unloaded
+	int tableIndex;
+	int atbGauge = 0;
 };
 
 #endif

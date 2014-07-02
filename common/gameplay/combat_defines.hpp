@@ -19,39 +19,15 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef ENEMYDATA_HPP_
-#define ENEMYDATA_HPP_
+#ifndef COMBATDEFINES_HPP_
+#define COMBATDEFINES_HPP_
 
-#include "vector2.hpp"
-#include "statistics.hpp"
+#define COMBAT_MAX_CHARACTERS 16
+#define COMBAT_MAX_ENEMIES 16
 
-//graphics
-#ifdef GRAPHICS
- #include "sprite_sheet.hpp"
-#endif
-
-//std namespace
-#include <string>
-
-struct EnemyData {
-	//metadata
-	std::string handle;
-	std::string avatar;
-
-	//gameplay
-	Statistics stats;
-
-	//TODO: gameplay components: equipment, items, buffs, debuffs, rewards
-
-	//active gameplay members
-	//NOTE: these are lost when unloaded
-#ifdef GRAPHICS
-	SpriteSheet sprite;
-	Vector2 origin = {0.0,0.0};
-	Vector2 bounds = {0.0,0.0};
-#endif
-	int tableIndex;
-	int atbGauge = 0;
+enum class TerrainType {
+	NONE = 0,
+	GRASSLANDS,
 };
 
 #endif

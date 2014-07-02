@@ -1,4 +1,4 @@
-/* Copyright: (c) Kayne Ruse 2013, 2014
+/* Copyright: (c) Kayne Ruse 2014
  * 
  * This software is provided 'as-is', without any express or implied
  * warranty. In no event will the authors be held liable for any damages
@@ -19,28 +19,43 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef COMBATPACKET_HPP_
-#define COMBATPACKET_HPP_
+#include "character_data.hpp"
 
-#include "serial_packet_base.hpp"
+void CharacterData::Update(double delta) {
+	if (motion.x && motion.y) {
+		origin += motion * delta * CHARACTER_WALKING_MOD;
+	}
+	else if (motion != 0) {
+		origin += motion * delta;
+	}
+	sprite.Update(delta);
+}
 
-#include "combat_defines.hpp"
+void CharacterData::DrawTo(SDL_Surface* const dest, int camX, int camY) {
+	sprite.DrawTo(dest, origin.x - camX, origin.y - camY);
+}
 
-struct CombatPacket : SerialPacketBase {
-	//identify the combat instance
-	int combatIndex;
-	int difficulty;
-	TerrainType terrainType;
+void CharacterData::CorrectSprite() {
+	//NOTE: These must correspond to the sprite sheet in use
+	if (motion.y > 0) {
+		sprite.SetYIndex(0);
+	}
+	else if (motion.y < 0) {
+		sprite.SetYIndex(1);
+	}
+	else if (motion.x > 0) {
+		sprite.SetYIndex(3);
+	}
+	else if (motion.x < 0) {
+		sprite.SetYIndex(2);
+	}
 
-	//combatants
-	int characterArray[COMBAT_MAX_CHARACTERS];
-	int enemyArray[COMBAT_MAX_ENEMIES];
-
-	//location
-	int mapIndex;
-	Vector2 origin;
-
-	//TODO: gameplay components: rewards
-};
-
-#endif
+	//animation
+	if (motion != 0) {
+		sprite.SetDelay(0.1);
+	}
+	else {
+		sprite.SetDelay(0);
+		sprite.SetXIndex(0);
+	}
+}

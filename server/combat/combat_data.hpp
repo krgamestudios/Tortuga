@@ -19,13 +19,34 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#include "character_data.hpp"
-#include "combat_data.hpp"
-#include "enemy_data.hpp"
-#include "statistics.hpp"
+#ifndef COMBATDATA_HPP_
+#define COMBATDATA_HPP_
 
-/* DOCS: Sanity check, read more
- * Since most/all of the files in this directory are header files, I've created
- * this source file as a "sanity check", to ensure that the above header files
- * are written correctly via make.
-*/
+#include "vector2.hpp"
+#include "combat_defines.hpp"
+
+//gameplay members
+#include "character_data.hpp"
+#include "enemy_data.hpp"
+
+//std namespace
+#include <chrono>
+#include <array>
+#include <utility>
+
+struct CombatData {
+	typedef std::chrono::steady_clock Clock;
+
+	std::array<CharacterData, COMBAT_MAX_CHARACTERS> characterArray;
+	std::array<EnemyData, COMBAT_MAX_ENEMIES> enemyArray;
+
+	//world interaction
+	int mapIndex = 0;
+	Vector2 origin = {0.0,0.0};
+	Vector2 bounds = {0.0,0.0};
+
+	//time interval
+	Clock::time_point lastTick = Clock::now();
+};
+
+#endif

@@ -1,7 +1,7 @@
 #config
 INCLUDES+=. ../common/gameplay ../common/graphics ../common/map ../common/network ../common/network/packet ../common/network/serial ../common/ui ../common/utilities
 LIBS+=../libcommon.a -lSDL_net -lwsock32 -liphlpapi -lmingw32 -lSDLmain -lSDL -llua
-CXXFLAGS+=-std=c++11 $(addprefix -I,$(INCLUDES)) -DGRAPHICS
+CXXFLAGS+=-std=c++11 $(addprefix -I,$(INCLUDES))
 
 #source
 CXXSRC=$(wildcard *.cpp)
