@@ -27,7 +27,6 @@
 using namespace std;
 
 int main(int argc, char** argv) {
-	cout << "Beginning client" << endl;
 	try {
 		ClientApplication app;
 		app.Init(argc, argv);
@@ -38,6 +37,5 @@ int main(int argc, char** argv) {
 		cerr << "Fatal exception thrown: " << e.what() << endl;
 		return 1;
 	}
-	cout << "Clean exit" << endl;
 	return 0;
 }
