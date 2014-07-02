@@ -1,6 +1,6 @@
 #config
-INCLUDES+=. scenes ../common/gameplay ../common/graphics ../common/map ../common/network ../common/network/packet ../common/network/serial ../common/ui ../common/utilities
-LIBS+=client.a ../libcommon.a -lSDL_net -lwsock32 -liphlpapi -lmingw32 -lSDLmain -lSDL -llua
+INCLUDES+=. .. ../../common/gameplay ../../common/graphics ../../common/map ../../common/network ../../common/network/packet ../../common/network/serial ../../common/ui ../../common/utilities
+LIBS+=
 CXXFLAGS+=-std=c++11 $(addprefix -I,$(INCLUDES))
 
 #source
@@ -11,13 +11,12 @@ OBJDIR=obj
 OBJ+=$(addprefix $(OBJDIR)/,$(CXXSRC:.cpp=.o))
 
 #output
-OUTDIR=../out
-OUT=$(addprefix $(OUTDIR)/,client)
+OUTDIR=..
+OUT=$(addprefix $(OUTDIR)/,client.a)
 
 #targets
 all: $(OBJ) $(OUT)
-	$(MAKE) -C scenes
-	$(CXX) $(CXXFLAGS) -o $(OUT) $(OBJ) $(LIBS)
+	ar -crs $(OUT) $(OBJ)
 
 $(OBJ): | $(OBJDIR)
 

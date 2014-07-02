@@ -28,6 +28,7 @@
 //std namespace
 #include <string>
 
+//NOTE: This is a placeholder, since it'd break to client too much to remove it
 struct EnemyData {
 	//metadata
 	std::string handle;

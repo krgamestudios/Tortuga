@@ -34,6 +34,7 @@
 #include <array>
 #include <utility>
 
+//NOTE: This is a placeholder, since it'd break to client too much to remove it
 struct CombatData {
 	typedef std::chrono::steady_clock Clock;
 
