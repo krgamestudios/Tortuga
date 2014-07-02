@@ -38,9 +38,9 @@
 
 void ServerApplication::Init(int argc, char** argv) {
 	//NOTE: I might need to rearrange the init process so that lua & SQL can interact with the map system as needed.
-	std::cout << "Beginning startup" << std::endl;
+	std::cout << "Beginning " << argv[0] << std::endl;
 
-	//initial setup
+	//load the prerequisites
 	config.Load("rsc\\config.cfg");
 
 	//-------------------------
@@ -114,7 +114,6 @@ void ServerApplication::Init(int argc, char** argv) {
 	//debug output
 	//-------------------------
 
-	//TODO: put these outputs into the client too
 	//TODO: enable/disable these with a switch
 #define DEBUG_OUTPUT_VAR(x) std::cout << "\t" << #x << ": " << x << std::endl;
 
@@ -179,7 +178,7 @@ void ServerApplication::Quit() {
 	SDLNet_Quit();
 	SDL_Quit();
 
-	std::cout << "Shutdown finished" << std::endl;
+	std::cout << "Clean exit" << std::endl;
 }
 
 //-------------------------
