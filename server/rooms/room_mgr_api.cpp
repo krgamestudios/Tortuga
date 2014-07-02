@@ -46,18 +46,8 @@ static int createRoom(lua_State* L) {
 	lua_gettable(L, LUA_REGISTRYINDEX);
 	RoomManager* roomMgr = reinterpret_cast<RoomManager*>(lua_touserdata(L, -1));
 
-	//determine the specified room type
-	MapType mapType = [L]() -> MapType {
-		if (std::string("overworld") == lua_tostring(L, -2)) return MapType::OVERWORLD;
-		if (std::string("ruins") == lua_tostring(L, -2)) return MapType::RUINS;
-		if (std::string("towers") == lua_tostring(L, -2)) return MapType::TOWERS;
-		if (std::string("forests") == lua_tostring(L, -2)) return MapType::FORESTS;
-		if (std::string("caves") == lua_tostring(L, -2)) return MapType::CAVES;
-		return MapType::NONE;
-	}();
-
 	//create the room
-	RoomData* newRoom = roomMgr->CreateRoom(mapType);
+	RoomData* newRoom = roomMgr->CreateRoom();
 
 	//return the new room
 	lua_pushlightuserdata(L, newRoom);

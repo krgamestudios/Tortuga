@@ -22,6 +22,8 @@
 #ifndef CHARACTERDEFINES_HPP_
 #define CHARACTERDEFINES_HPP_
 
+#include <cmath>
+
 //the speeds that the characters move
 constexpr double CHARACTER_WALKING_SPEED = 140.0;
 constexpr double CHARACTER_WALKING_MOD = 1.0/sqrt(2.0);

@@ -21,41 +21,19 @@
 */
 #include "room_manager.hpp"
 
-//the generator types
-#include "overworld_generator.hpp"
-#include "ruins_generator.hpp"
-#include "towers_generator.hpp"
-#include "forests_generator.hpp"
-#include "caves_generator.hpp"
-
 #include <stdexcept>
 
 //-------------------------
 //public access methods
 //-------------------------
 
-RoomData* RoomManager::CreateRoom(MapType mapType) {
+RoomData* RoomManager::CreateRoom() {
 	//create the room
 	RoomData* newRoom = new RoomData();
-
-	//create the generator, use a lambda because I'm lazy
-	newRoom->generator = [mapType]() -> BaseGenerator* {
-		switch(mapType) {
-			//BUG: Not having a map type results in an overworld generator by default
-			case MapType::NONE:
-			case MapType::OVERWORLD: return new OverworldGenerator();
-			case MapType::RUINS: return new RuinsGenerator();
-			case MapType::TOWERS: return new TowersGenerator();
-			case MapType::FORESTS: return new ForestsGenerator();
-			case MapType::CAVES: return new CavesGenerator();
-		}
-		throw(std::runtime_error("Failed to set the room's generator"));
-	}();
 
 	//set the state
 	if (luaState) {
 		newRoom->pager.SetLuaState(luaState);
-		newRoom->generator->SetLuaState(luaState);
 	}
 
 	//register the room
@@ -91,15 +69,12 @@ void RoomManager::UnloadRoom(int uid) {
 	lua_pop(luaState, 1);
 
 	//free the memory
-	delete room->generator;
 	delete room;
 	roomMap.erase(uid);
 }
 
 RoomData* RoomManager::GetRoom(int uid) {
-	RoomData* ptr = FindRoom(uid);
-	if (ptr) return ptr;
-	return CreateRoom(MapType::NONE);
+	return FindRoom(uid);
 }
 
 RoomData* RoomManager::FindRoom(int uid) {

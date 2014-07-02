@@ -28,6 +28,7 @@
 enum class TerrainType {
 	NONE = 0,
 	GRASSLANDS,
+	//etc.
 };
 
 #endif

@@ -19,18 +19,29 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef CAVESGENERATOR_HPP_
-#define CAVESGENERATOR_HPP_
+#ifndef ENEMYDATA_HPP_
+#define ENEMYDATA_HPP_
 
-#include "base_generator.hpp"
+#include "vector2.hpp"
+#include "statistics.hpp"
 
-class CavesGenerator : public BaseGenerator {
-public:
-	CavesGenerator();
-	~CavesGenerator();
+//std namespace
+#include <string>
 
-private:
-	//
+struct EnemyData {
+	//metadata
+	std::string handle;
+	std::string avatar;
+
+	//gameplay
+	Statistics stats;
+
+	//TODO: gameplay components: equipment, items, buffs, debuffs, rewards
+
+	//active gameplay members
+	//NOTE: these are lost when unloaded
+	int tableIndex;
+	int atbGauge = 0;
 };
 
 #endif

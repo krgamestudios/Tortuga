@@ -20,7 +20,6 @@ all: $(OBJ) $(OUT)
 	$(MAKE) -C characters
 	$(MAKE) -C combat
 	$(MAKE) -C enemies
-	$(MAKE) -C mapgen
 	$(MAKE) -C rooms
 	$(CXX) $(CXXFLAGS) -o $(OUT) $(OBJ) $(LIBS)
 
