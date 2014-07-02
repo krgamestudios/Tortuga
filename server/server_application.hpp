@@ -22,12 +22,10 @@
 #ifndef SERVERAPPLICATION_HPP_
 #define SERVERAPPLICATION_HPP_
 
-//server specific stuff
+//server specific stuff, mostly managers
+#include "client_data.hpp"
 #include "account_manager.hpp"
 #include "character_manager.hpp"
-#include "client_data.hpp"
-#include "combat_manager.hpp"
-#include "enemy_manager.hpp"
 #include "room_manager.hpp"
 
 //common utilities
@@ -67,16 +65,10 @@ private:
 	//map management
 	void HandleRegionRequest(RegionPacket* const);
 
-	//combat management
-	//TODO: combat management
-
 	//character management
 	void HandleCharacterNew(CharacterPacket* const);
 	void HandleCharacterDelete(CharacterPacket* const);
 	void HandleCharacterUpdate(CharacterPacket* const);
-
-	//enemy management
-	//TODO: enemy management
 
 	//mismanagement
 	void HandleSynchronize(ClientPacket* const);
@@ -99,8 +91,6 @@ private:
 	//managers
 	AccountManager accountMgr;
 	CharacterManager characterMgr;
-	CombatManager combatMgr;
-	EnemyManager enemyMgr;
 	RoomManager roomMgr;
 
 	//misc

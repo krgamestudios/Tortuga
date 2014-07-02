@@ -19,18 +19,34 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef FORESTSGENERATOR_HPP_
-#define FORESTSGENERATOR_HPP_
+#ifndef COMBATDATA_HPP_
+#define COMBATDATA_HPP_
 
-#include "base_generator.hpp"
+#include "vector2.hpp"
+#include "combat_defines.hpp"
 
-class ForestsGenerator : public BaseGenerator {
-public:
-	ForestsGenerator();
-	~ForestsGenerator();
+//gameplay members
+#include "character_data.hpp"
+#include "enemy_data.hpp"
 
-private:
-	//
+//std namespace
+#include <chrono>
+#include <array>
+#include <utility>
+
+struct CombatData {
+	typedef std::chrono::steady_clock Clock;
+
+	std::array<CharacterData, COMBAT_MAX_CHARACTERS> characterArray;
+	std::array<EnemyData, COMBAT_MAX_ENEMIES> enemyArray;
+
+	//world interaction
+	int mapIndex = 0;
+	Vector2 origin = {0.0,0.0};
+	Vector2 bounds = {0.0,0.0};
+
+	//time interval
+	Clock::time_point lastTick = Clock::now();
 };
 
 #endif

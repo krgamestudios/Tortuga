@@ -19,12 +19,39 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#include "ruins_generator.hpp"
+#ifndef CHARACTERDATA_HPP_
+#define CHARACTERDATA_HPP_
 
-RuinsGenerator::RuinsGenerator() : BaseGenerator(MapType::RUINS) {
-	//
-}
+//components
+#include "character_defines.hpp"
+#include "vector2.hpp"
+#include "statistics.hpp"
 
-RuinsGenerator::~RuinsGenerator() {
-	//
-}
+//std namespace
+#include <string>
+#include <cmath>
+
+struct CharacterData {
+	//metadata
+	int owner;
+	std::string handle;
+	std::string avatar;
+
+	//world position
+	int roomIndex = 0;
+	Vector2 origin = {0.0,0.0};
+	Vector2 motion = {0.0,0.0};
+
+	//base statistics
+	Statistics stats;
+
+	//TODO: gameplay components: equipment, items, buffs, debuffs
+
+	//active gameplay members
+	//NOTE: these are lost when unloaded
+	bool inCombat = false;
+	int atbGauge = 0;
+	//TODO: stored command
+};
+
+#endif

@@ -23,14 +23,11 @@
 #define ROOMDATA_HPP_
 
 //map system
-#include "map_type.hpp"
 #include "region_pager_lua.hpp"
-#include "base_generator.hpp"
 
 struct RoomData {
 	//members
 	RegionPagerLua pager;
-	BaseGenerator* generator = nullptr;
 
 	//TODO: collision map
 	//TODO: NPCs?

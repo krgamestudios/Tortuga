@@ -21,8 +21,11 @@
 */
 #include "server_application.hpp"
 
-#include "sql_utility.hpp"
+//for PACKET_BUFFER_SIZE
 #include "serial.hpp"
+
+//utility functions
+#include "sql_utility.hpp"
 #include "utility.hpp"
 
 #include <stdexcept>
@@ -35,9 +38,9 @@
 
 void ServerApplication::Init(int argc, char** argv) {
 	//NOTE: I might need to rearrange the init process so that lua & SQL can interact with the map system as needed.
-	std::cout << "Beginning startup" << std::endl;
+	std::cout << "Beginning " << argv[0] << std::endl;
 
-	//initial setup
+	//load the prerequisites
 	config.Load("rsc\\config.cfg");
 
 	//-------------------------
@@ -80,9 +83,7 @@ void ServerApplication::Init(int argc, char** argv) {
 	accountMgr.SetDatabase(database);
 	characterMgr.SetDatabase(database);
 
-	combatMgr.SetLuaState(luaState);
 	roomMgr.SetLuaState(luaState);
-	enemyMgr.SetLuaState(luaState);
 
 	std::cout << "Internal managers set" << std::endl;
 
@@ -113,7 +114,6 @@ void ServerApplication::Init(int argc, char** argv) {
 	//debug output
 	//-------------------------
 
-	//TODO: put these outputs into the client too
 	//TODO: enable/disable these with a switch
 #define DEBUG_OUTPUT_VAR(x) std::cout << "\t" << #x << ": " << x << std::endl;
 
@@ -178,7 +178,7 @@ void ServerApplication::Quit() {
 	SDLNet_Quit();
 	SDL_Quit();
 
-	std::cout << "Shutdown finished" << std::endl;
+	std::cout << "Clean exit" << std::endl;
 }
 
 //-------------------------
@@ -356,12 +356,6 @@ void ServerApplication::HandleRegionRequest(RegionPacket* const argPacket) {
 }
 
 //-------------------------
-//combat management
-//-------------------------
-
-//TODO: combat management
-
-//-------------------------
 //Character Management
 //-------------------------
 
@@ -438,12 +432,6 @@ void ServerApplication::HandleCharacterUpdate(CharacterPacket* const argPacket) 
 
 	PumpPacket(argPacket);
 }
-
-//-------------------------
-//enemy management
-//-------------------------
-
-//TODO: enemy management
 
 //-------------------------
 //mismanagement

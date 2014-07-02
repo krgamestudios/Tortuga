@@ -1,7 +1,7 @@
 #config
-INCLUDES+=. ../utilities ../graphics
+INCLUDES+=.
 LIBS+=
-CXXFLAGS+=-std=c++11 $(addprefix -I,$(INCLUDES)) -DGRAPHICS
+CXXFLAGS+=-std=c++11 $(addprefix -I,$(INCLUDES))
 
 #source
 CXXSRC=$(wildcard *.cpp)

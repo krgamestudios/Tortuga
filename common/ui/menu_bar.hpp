@@ -36,6 +36,7 @@
  * This class needs a rewrite.
 */
 
+//TODO: This thing is fucking terrible, fix it and the button class
 class MenuBar {
 public:
 	MenuBar() = default;

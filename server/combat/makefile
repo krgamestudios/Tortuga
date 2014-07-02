@@ -1,5 +1,5 @@
 #config
-INCLUDES+=. ../../common/gameplay ../../common/utilities
+INCLUDES+=. ../../common/gameplay ../../common/utilities ../characters ../enemies
 LIBS+=
 CXXFLAGS+=-std=c++11 $(addprefix -I,$(INCLUDES))
 

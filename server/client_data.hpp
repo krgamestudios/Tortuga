@@ -26,6 +26,7 @@
 
 struct ClientData {
 	IPaddress address = {0,0};
+	//TODO: ping system?
 };
 
 #endif

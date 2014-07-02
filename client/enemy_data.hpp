@@ -19,18 +19,30 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef TOWERSGENERATOR_HPP_
-#define TOWERSGENERATOR_HPP_
+#ifndef ENEMYDATA_HPP_
+#define ENEMYDATA_HPP_
 
-#include "base_generator.hpp"
+#include "vector2.hpp"
+#include "statistics.hpp"
 
-class TowersGenerator : public BaseGenerator {
-public:
-	TowersGenerator();
-	~TowersGenerator();
+//std namespace
+#include <string>
 
-private:
-	//
+//NOTE: This is a placeholder, since it'd break to client too much to remove it
+struct EnemyData {
+	//metadata
+	std::string handle;
+	std::string avatar;
+
+	//gameplay
+	Statistics stats;
+
+	//TODO: gameplay components: equipment, items, buffs, debuffs, rewards
+
+	//active gameplay members
+	//NOTE: these are lost when unloaded
+	int tableIndex;
+	int atbGauge = 0;
 };
 
 #endif

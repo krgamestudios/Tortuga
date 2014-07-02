@@ -19,24 +19,53 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef ENEMYFACTORYGENERIC_HPP_
-#define ENEMYFACTORYGENERIC_HPP_
+#ifndef CHARACTERDATA_HPP_
+#define CHARACTERDATA_HPP_
 
-#include "enemy_factory_interface.hpp"
+//components
+#include "character_defines.hpp"
+#include "vector2.hpp"
+#include "statistics.hpp"
 
-#include "enemy_data.hpp"
+//graphics
+#include "sprite_sheet.hpp"
 
-#include <list>
+//std namespace
+#include <string>
+#include <cmath>
 
-//DOCS: Not really intended for use, but rather for copying and tweaking
-class EnemyFactoryGeneric : public EnemyFactoryInterface {
-public:
-	EnemyFactoryGeneric();
-	~EnemyFactoryGeneric() noexcept override;
+//TODO: encapsulate this and the server version
+struct CharacterData {
+	//metadata
+	int owner;
+	std::string handle;
+	std::string avatar;
 
-	void Generate(std::list<EnemyData>* container) override;
-private:
-	//TODO: hold the parameters specified by the room
+	//members
+	SpriteSheet sprite;
+
+	//world position
+	int roomIndex = 0;
+	Vector2 origin = {0.0,0.0};
+	Vector2 motion = {0.0,0.0};
+	Vector2 bounds = {0.0,0.0};
+
+	//base statistics
+	Statistics stats;
+
+	//TODO: gameplay components: equipment, items, buffs, debuffs
+
+	//methods
+	void Update(double delta);
+
+	void DrawTo(SDL_Surface* const, int camX, int camY);
+	void CorrectSprite();
+
+	//active gameplay members
+	//NOTE: these are lost when unloaded
+	bool inCombat = false;
+	int atbGauge = 0;
+	//TODO: stored command
 };
 
 #endif

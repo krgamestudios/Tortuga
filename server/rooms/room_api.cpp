@@ -29,12 +29,6 @@ static int getPager(lua_State* L) {
 	return 1;
 }
 
-static int getGenerator(lua_State* L) {
-	RoomData* room = reinterpret_cast<RoomData*>(lua_touserdata(L, 1));
-	lua_pushlightuserdata(L, reinterpret_cast<void*>(room->generator));
-	return 1;
-}
-
 static int onCreate(lua_State* L) {
 	//TODO: onCreate()
 	return 0;
@@ -49,7 +43,6 @@ static int onUnload(lua_State* L) {
 
 static const luaL_Reg roomLib[] = {
 	{"GetPager",getPager},
-	{"GetGenerator",getGenerator},
 	{"OnCreate", onCreate},
 	{"OnUnload", onUnload},
 	{nullptr, nullptr}

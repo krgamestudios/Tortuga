@@ -24,13 +24,13 @@
 
 #include "serial_packet_base.hpp"
 
-#include "combat_data.hpp"
+#include "combat_defines.hpp"
 
 struct CombatPacket : SerialPacketBase {
 	//identify the combat instance
 	int combatIndex;
 	int difficulty;
-	CombatData::Terrain terrainType;
+	TerrainType terrainType;
 
 	//combatants
 	int characterArray[COMBAT_MAX_CHARACTERS];

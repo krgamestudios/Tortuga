@@ -19,36 +19,16 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef BASEGENERATOR_HPP_
-#define BASEGENERATOR_HPP_
+#ifndef COMBATDEFINES_HPP_
+#define COMBATDEFINES_HPP_
 
-#include "map_type.hpp"
-#include "chunk_data.hpp"
+#define COMBAT_MAX_CHARACTERS 16
+#define COMBAT_MAX_ENEMIES 16
 
-#include "lua/lua.hpp"
-
-constexpr int MAP_WIDTH = 256;
-constexpr int MAP_HEIGHT = 256;
-
-class BaseGenerator {
-public:
-	virtual ~BaseGenerator();
-
-	//accessors and mutators
-	virtual ChunkData* GetChunk(int x, int y) { return &chunks[x][y]; }
-
-	MapType GetMapType() { return mapType; }
-
-	lua_State* SetLuaState(lua_State* L) { return luaState = L; }
-	lua_State* GetLuaState() { return luaState; }
-
-protected:
-	BaseGenerator() = delete;
-	BaseGenerator(MapType t);
-
-	ChunkData chunks[MAP_WIDTH][MAP_HEIGHT];
-	MapType mapType = MapType::NONE;
-	lua_State* luaState = nullptr;
+enum class TerrainType {
+	NONE = 0,
+	GRASSLANDS,
+	//etc.
 };
 
 #endif
