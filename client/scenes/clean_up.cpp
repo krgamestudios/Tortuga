@@ -35,18 +35,14 @@ CleanUp::CleanUp(
 	int* const argClientIndex,
 	int* const argAccountIndex,
 	int* const argCharacterIndex,
-	std::map<int, CombatData>* argCombatMap,
-	std::map<int, CharacterData>* argCharacterMap,
-	std::map<int, EnemyData>* argEnemyMap
+	CharacterMap* argCharacterMap
 	):
 	config(*argConfig),
 	network(*argNetwork),
 	clientIndex(*argClientIndex),
 	accountIndex(*argAccountIndex),
 	characterIndex(*argCharacterIndex),
-	combatMap(*argCombatMap),
-	characterMap(*argCharacterMap),
-	enemyMap(*argEnemyMap)
+	characterMap(*argCharacterMap)
 {
 	//setup the utility objects
 	image.LoadSurface(config["dir.interface"] + "button_menu.bmp");
@@ -69,9 +65,9 @@ CleanUp::CleanUp(
 	clientIndex = -1;
 	accountIndex = -1;
 	characterIndex = -1;
-	combatMap.clear();
+//	combatMap.clear();
 	characterMap.clear();
-	enemyMap.clear();
+//	enemyMap.clear();
 
 	//auto return
 	startTick = std::chrono::steady_clock::now();

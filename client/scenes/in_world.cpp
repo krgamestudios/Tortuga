@@ -39,15 +39,13 @@ InWorld::InWorld(
 	int* const argClientIndex,
 	int* const argAccountIndex,
 	int* const argCharacterIndex,
-	std::map<int, CombatData>* argCombatMap,
-	std::map<int, CharacterData>* argCharacterMap
+	CharacterMap* argCharacterMap
 	):
 	config(*argConfig),
 	network(*argNetwork),
 	clientIndex(*argClientIndex),
 	accountIndex(*argAccountIndex),
 	characterIndex(*argCharacterIndex),
-	combatMap(*argCombatMap),
 	characterMap(*argCharacterMap)
 {
 	//setup the utility objects
@@ -111,8 +109,8 @@ void InWorld::Update(double delta) {
 
 	//update the camera
 	if(localCharacter) {
-		camera.x = localCharacter->origin.x - camera.marginX;
-		camera.y = localCharacter->origin.y - camera.marginY;
+		camera.x = localCharacter->GetOrigin().x - camera.marginX;
+		camera.y = localCharacter->GetOrigin().y - camera.marginY;
 	}
 
 	//check the map
@@ -178,77 +176,60 @@ void InWorld::MouseButtonUp(SDL_MouseButtonEvent const& button) {
 }
 
 void InWorld::KeyDown(SDL_KeyboardEvent const& key) {
-	switch(key.keysym.sym) {
-		//player movement
-		case SDLK_LEFT:
-			if (localCharacter) {
-				localCharacter->motion.x -= CHARACTER_WALKING_SPEED;
-				localCharacter->CorrectSprite();
-				SendPlayerUpdate();
-			}
-		break;
-
-		case SDLK_RIGHT:
-			if (localCharacter) {
-				localCharacter->motion.x += CHARACTER_WALKING_SPEED;
-				localCharacter->CorrectSprite();
-				SendPlayerUpdate();
-			}
-		break;
-
-		case SDLK_UP:
-			if (localCharacter) {
-				localCharacter->motion.y -= CHARACTER_WALKING_SPEED;
-				localCharacter->CorrectSprite();
-				SendPlayerUpdate();
-			}
-		break;
-
-		case SDLK_DOWN:
-			if (localCharacter) {
-				localCharacter->motion.y += CHARACTER_WALKING_SPEED;
-				localCharacter->CorrectSprite();
-				SendPlayerUpdate();
-			}
-		break;
+	if (!localCharacter) {
+		return;
 	}
+
+	//player movement
+	Vector2 motion = localCharacter->GetMotion();
+	switch(key.keysym.sym) {
+		case SDLK_LEFT:
+			motion.x -= CHARACTER_WALKING_SPEED;
+		break;
+		case SDLK_RIGHT:
+			motion.x += CHARACTER_WALKING_SPEED;
+		break;
+		case SDLK_UP:
+			motion.y -= CHARACTER_WALKING_SPEED;
+		break;
+		case SDLK_DOWN:
+			motion.y += CHARACTER_WALKING_SPEED;
+		break;
+		default:
+			return;
+	}
+	localCharacter->SetMotion(motion);
+	localCharacter->CorrectSprite();
+	SendPlayerUpdate();
 }
 
 void InWorld::KeyUp(SDL_KeyboardEvent const& key) {
-	switch(key.keysym.sym) {
-		//player movement
-		case SDLK_LEFT:
-			if (localCharacter) {
-				localCharacter->motion.x += CHARACTER_WALKING_SPEED;
-				localCharacter->CorrectSprite();
-				SendPlayerUpdate();
-			}
-		break;
-
-		case SDLK_RIGHT:
-			if (localCharacter) {
-				localCharacter->motion.x -= CHARACTER_WALKING_SPEED;
-				localCharacter->CorrectSprite();
-				SendPlayerUpdate();
-			}
-		break;
-
-		case SDLK_UP:
-			if (localCharacter) {
-				localCharacter->motion.y += CHARACTER_WALKING_SPEED;
-				localCharacter->CorrectSprite();
-				SendPlayerUpdate();
-			}
-		break;
-
-		case SDLK_DOWN:
-			if (localCharacter) {
-				localCharacter->motion.y -= CHARACTER_WALKING_SPEED;
-				localCharacter->CorrectSprite();
-				SendPlayerUpdate();
-			}
-		break;
+	if (!localCharacter) {
+		return;
 	}
+
+	//player movement
+	Vector2 motion = localCharacter->GetMotion();
+	switch(key.keysym.sym) {
+		//NOTE: The use of min/max here are to prevent awkward movements
+		case SDLK_LEFT:
+			motion.x = std::min(motion.x + CHARACTER_WALKING_SPEED, 0.0);
+		break;
+		case SDLK_RIGHT:
+			motion.x = std::max(motion.x - CHARACTER_WALKING_SPEED, 0.0);
+		break;
+		case SDLK_UP:
+			motion.y = std::min(motion.y + CHARACTER_WALKING_SPEED, 0.0);
+		break;
+		case SDLK_DOWN:
+			motion.y = std::max(motion.y - CHARACTER_WALKING_SPEED, 0.0);
+		break;
+		default:
+			return;
+	}
+	localCharacter->SetMotion(motion);
+	localCharacter->CorrectSprite();
+	SendPlayerUpdate();
 }
 
 //-------------------------
@@ -289,36 +270,35 @@ void InWorld::HandleCharacterNew(CharacterPacket* const argPacket) {
 	}
 
 	//create the character object
-	CharacterData& character = characterMap[argPacket->characterIndex];
+	Character& newCharacter = characterMap[argPacket->characterIndex];
 
 	//fill out the character's members
-	character.handle = argPacket->handle;
-	character.avatar = argPacket->avatar;
+	newCharacter.SetHandle(argPacket->handle);
+	newCharacter.SetAvatar(argPacket->avatar);
 
-	character.sprite.LoadSurface(config["dir.sprites"] + character.avatar, 4, 4);
-	character.bounds = {CHARACTER_BOUNDS_WIDTH, CHARACTER_BOUNDS_HEIGHT};
+	newCharacter.GetSprite()->LoadSurface(config["dir.sprites"] + newCharacter.GetAvatar(), 4, 4);
 
-	character.roomIndex = argPacket->roomIndex;
-	character.origin = argPacket->origin;
-	character.motion = argPacket->motion;
+	newCharacter.SetOrigin(argPacket->origin);
+	newCharacter.SetMotion(argPacket->motion);
 
-	character.stats = argPacket->stats;
+	(*newCharacter.GetStats()) = argPacket->stats;
 
 	//bookkeeping code
-	character.CorrectSprite();
+	newCharacter.CorrectSprite();
 
 	//catch this client's player object
 	if (argPacket->accountIndex == accountIndex && !localCharacter) {
 		characterIndex = argPacket->characterIndex;
-		localCharacter = &character;
+		localCharacter = &newCharacter;
 
 		//setup the camera
+		//TODO: move this?
 		camera.width = GetScreen()->w;
 		camera.height = GetScreen()->h;
 
 		//center on the player's character
-		camera.marginX = (GetScreen()->w / 2 - localCharacter->sprite.GetImage()->GetClipW() / 2);
-		camera.marginY = (GetScreen()->h / 2 - localCharacter->sprite.GetImage()->GetClipH() / 2);
+		camera.marginX = (GetScreen()->w / 2 - localCharacter->GetSprite()->GetImage()->GetClipW() / 2);
+		camera.marginY = (GetScreen()->h / 2 - localCharacter->GetSprite()->GetImage()->GetClipH() / 2);
 	}
 }
 
@@ -341,13 +321,12 @@ void InWorld::HandleCharacterUpdate(CharacterPacket* const argPacket) {
 		return;
 	}
 
-	CharacterData& character = characterMap[argPacket->characterIndex];
+	Character& character = characterMap[argPacket->characterIndex];
 
 	//other characters moving
 	if (argPacket->characterIndex != characterIndex) {
-		character.roomIndex = argPacket->roomIndex;
-		character.origin = argPacket->origin;
-		character.motion = argPacket->motion;
+		character.SetOrigin(argPacket->origin);
+		character.SetMotion(argPacket->motion);
 		character.CorrectSprite();
 	}
 }
@@ -388,10 +367,10 @@ void InWorld::SendPlayerUpdate() {
 	newPacket.characterIndex = characterIndex;
 	//NOTE: omitting the handle and avatar here
 	newPacket.accountIndex = accountIndex;
-	newPacket.roomIndex = localCharacter->roomIndex;
-	newPacket.origin = localCharacter->origin;
-	newPacket.motion = localCharacter->motion;
-	newPacket.stats = localCharacter->stats;
+	newPacket.roomIndex = 0; //TODO: room index
+	newPacket.origin = localCharacter->GetOrigin();
+	newPacket.motion = localCharacter->GetMotion();
+	newPacket.stats = *localCharacter->GetStats();
 
 	//TODO: gameplay components: equipment, items, buffs, debuffs
 

@@ -19,35 +19,43 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef COMBATDATA_HPP_
-#define COMBATDATA_HPP_
+#include "character.hpp"
 
-#include "vector2.hpp"
-#include "combat_defines.hpp"
+void Character::Update(double delta) {
+	if (motion.x && motion.y) {
+		origin += motion * delta * CHARACTER_WALKING_MOD;
+	}
+	else if (motion != 0) {
+		origin += motion * delta;
+	}
+	sprite.Update(delta);
+}
 
-//gameplay members
-#include "character_data.hpp"
-#include "enemy_data.hpp"
+void Character::DrawTo(SDL_Surface* const dest, int camX, int camY) {
+	sprite.DrawTo(dest, origin.x - camX, origin.y - camY);
+}
 
-//std namespace
-#include <chrono>
-#include <array>
-#include <utility>
+void Character::CorrectSprite() {
+	//NOTE: These must correspond to the sprite sheet in use
+	if (motion.y > 0) {
+		sprite.SetYIndex(0);
+	}
+	else if (motion.y < 0) {
+		sprite.SetYIndex(1);
+	}
+	else if (motion.x > 0) {
+		sprite.SetYIndex(3);
+	}
+	else if (motion.x < 0) {
+		sprite.SetYIndex(2);
+	}
 
-//NOTE: This is a placeholder, since it'd break to client too much to remove it
-struct CombatData {
-	typedef std::chrono::steady_clock Clock;
-
-	std::array<CharacterData, COMBAT_MAX_CHARACTERS> characterArray;
-	std::array<EnemyData, COMBAT_MAX_ENEMIES> enemyArray;
-
-	//world interaction
-	int mapIndex = 0;
-	Vector2 origin = {0.0,0.0};
-	Vector2 bounds = {0.0,0.0};
-
-	//time interval
-	Clock::time_point lastTick = Clock::now();
-};
-
-#endif
+	//animation
+	if (motion != 0) {
+		sprite.SetDelay(0.1);
+	}
+	else {
+		sprite.SetDelay(0);
+		sprite.SetXIndex(0);
+	}
+}
