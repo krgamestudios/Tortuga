@@ -22,7 +22,6 @@
 #include "in_world.hpp"
 
 #include "utility.hpp"
-#include "check_bounds.hpp"
 
 #include "region_pager_api.hpp"
 #include "tile_sheet_api.hpp"
@@ -83,6 +82,10 @@ InWorld::InWorld(lua_State* L): lua(L) {
 
 	//entities
 	character.GetSprite()->LoadSurface(sprites + "elliot2.bmp", 4, 4);
+	character.SetBoundingBox({0, 0,
+		character.GetSprite()->GetImage()->GetClipW(),
+		character.GetSprite()->GetImage()->GetClipH()
+	});
 
 	//setup the camera
 	camera.margin.x = GetScreen()->w / 2 - character.GetSprite()->GetImage()->GetClipW() / 2;
@@ -128,8 +131,10 @@ void InWorld::Update(double delta) {
 				continue;
 			}
 
-			if (checkOverlap(character.GetOrigin(), character.GetBounds(), wallPoint, {32.0, 32.0})) {
-				std::cout << "1";
+			if ( (character.GetOrigin() + character.GetBoundingBox()).CheckOverlap(wallPoint + BoundingBox{0,0,32,32})) {
+				character.SetOrigin(character.GetOrigin() - (character.GetMotion() * delta));
+				character.SetMotion({0,0});
+				character.CorrectSprite();
 			}
 		}
 	}

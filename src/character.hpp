@@ -24,6 +24,7 @@
 
 //components
 #include "vector2.hpp"
+#include "bounding_box.hpp"
 
 //graphics
 #include "sprite_sheet.hpp"
@@ -34,10 +35,6 @@
 //the speeds that the characters move
 constexpr double CHARACTER_WALKING_SPEED = 140.0;
 constexpr double CHARACTER_WALKING_MOD = 1.0/sqrt(2.0);
-
-//the bounding boxes for the characters
-constexpr double CHARACTER_BOUNDS_WIDTH = 32.0;
-constexpr double CHARACTER_BOUNDS_HEIGHT = 32.0;
 
 class Character {
 public:
@@ -56,8 +53,8 @@ public:
 	Vector2 GetOrigin() const { return origin; }
 	Vector2 SetMotion(Vector2 v) { return motion = v; }
 	Vector2 GetMotion() const { return motion; }
-	Vector2 SetBounds(Vector2 v) { return bounds = v; }
-	Vector2 GetBounds() const { return bounds; }
+	BoundingBox SetBoundingBox(BoundingBox b) { return bounds = b; }
+	BoundingBox GetBoundingBox() const { return bounds; }
 
 private:
 	//graphics
@@ -66,7 +63,7 @@ private:
 	//position
 	Vector2 origin = {0.0,0.0};
 	Vector2 motion = {0.0,0.0};
-	Vector2 bounds = {CHARACTER_BOUNDS_WIDTH,CHARACTER_BOUNDS_HEIGHT};
+	BoundingBox bounds;
 };
 
 #endif
