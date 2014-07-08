@@ -1,7 +1,7 @@
 #config
-INCLUDES+=. ../common/gameplay ../common/graphics ../common/map ../common/network ../common/network/packet ../common/network/serial ../common/ui ../common/utilities
-LIBS+=../libcommon.a -lSDL_net -lwsock32 -liphlpapi -lmingw32 -lSDLmain -lSDL -llua
-CXXFLAGS+=-std=c++11 $(addprefix -I,$(INCLUDES)) -DGRAPHICS
+INCLUDES+=. scenes ../common/gameplay ../common/graphics ../common/map ../common/network ../common/network/packet ../common/network/serial ../common/ui ../common/utilities
+LIBS+=client.a ../libcommon.a -lSDL_net -lwsock32 -liphlpapi -lmingw32 -lSDLmain -lSDL -llua
+CXXFLAGS+=-std=c++11 $(addprefix -I,$(INCLUDES))
 
 #source
 CXXSRC=$(wildcard *.cpp)
@@ -16,6 +16,7 @@ OUT=$(addprefix $(OUTDIR)/,client)
 
 #targets
 all: $(OBJ) $(OUT)
+	$(MAKE) -C scenes
 	$(CXX) $(CXXFLAGS) -o $(OUT) $(OBJ) $(LIBS)
 
 $(OBJ): | $(OBJDIR)

@@ -19,12 +19,34 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#include "ruins_generator.hpp"
+#ifndef COMBATDATA_HPP_
+#define COMBATDATA_HPP_
 
-RuinsGenerator::RuinsGenerator() : BaseGenerator(MapType::RUINS) {
-	//
-}
+#include "vector2.hpp"
+#include "combat_defines.hpp"
 
-RuinsGenerator::~RuinsGenerator() {
-	//
-}
+//gameplay members
+#include "character_data.hpp"
+#include "enemy_data.hpp"
+
+//std namespace
+#include <chrono>
+#include <array>
+#include <utility>
+
+struct CombatData {
+	typedef std::chrono::steady_clock Clock;
+
+	std::array<CharacterData, COMBAT_MAX_CHARACTERS> characterArray;
+	std::array<EnemyData, COMBAT_MAX_ENEMIES> enemyArray;
+
+	//world interaction
+	int mapIndex = 0;
+	Vector2 origin = {0.0,0.0};
+	Vector2 bounds = {0.0,0.0};
+
+	//time interval
+	Clock::time_point lastTick = Clock::now();
+};
+
+#endif

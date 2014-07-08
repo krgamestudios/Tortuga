@@ -40,7 +40,6 @@
 #include "region_pager_api.hpp"
 #include "room_api.hpp"
 #include "room_mgr_api.hpp"
-#include "generator_api.hpp"
 
 //these libs are loaded by lua.c and are readily available to any Lua program
 static const luaL_Reg loadedlibs[] = {
@@ -61,7 +60,6 @@ static const luaL_Reg loadedlibs[] = {
 	{TORTUGA_REGION_PAGER_NAME, openRegionPagerAPI},
 	{TORTUGA_ROOM_NAME, openRoomAPI},
 	{TORTUGA_ROOM_MGR_NAME, openRoomMgrAPI},
-	{TORTUGA_GENRATOR_NAME, openGeneratorAPI},
 
 	{NULL, NULL}
 };

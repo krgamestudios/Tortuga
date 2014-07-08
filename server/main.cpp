@@ -21,15 +21,12 @@
 */
 #include "server_application.hpp"
 
-#include "SDL/SDL.h"
-
 #include <stdexcept>
 #include <iostream>
 
 using namespace std;
 
 int main(int argc, char** argv) {
-	cout << "Beginning server" << endl;
 	try {
 		ServerApplication app;
 		app.Init(argc, argv);
@@ -37,9 +34,8 @@ int main(int argc, char** argv) {
 		app.Quit();
 	}
 	catch(exception& e) {
-		cerr << "Fatal error: " << e.what() << endl;
+		cerr << "Fatal exception thrown: " << e.what() << endl;
 		return 1;
 	}
-	cout << "Clean exit" << endl;
 	return 0;
 }

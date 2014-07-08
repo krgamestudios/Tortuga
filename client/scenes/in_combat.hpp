@@ -34,9 +34,7 @@
 #include "config_utility.hpp"
 #include "frame_rate.hpp"
 
-#include "combat_data.hpp"
-#include "character_data.hpp"
-#include "enemy_data.hpp"
+#include "character.hpp"
 
 //client
 #include "base_scene.hpp"
@@ -50,9 +48,7 @@ public:
 		int* const argClientIndex,
 		int* const argAccountIndex,
 		int* const argCharacterIndex,
-		std::map<int, CombatData>* argCombatMap,
-		std::map<int, CharacterData>* argCharacterMap,
-		std::map<int, EnemyData>* argEnemyMap
+		CharacterMap* argCharacterMap
 	);
 	~InCombat();
 
@@ -75,14 +71,12 @@ protected:
 	//Network handlers
 	void HandlePacket(SerialPacket* const);
 	void HandleDisconnect(SerialPacket* const);
-	//TODO: more network handlers
 
 	//Server control
 	void RequestSynchronize();
 	void SendPlayerUpdate();
 	void RequestDisconnect();
 	void RequestShutdown();
-	//TODO: more
 
 	//shared parameters
 	ConfigUtility& config;
@@ -90,9 +84,7 @@ protected:
 	int& clientIndex;
 	int& accountIndex;
 	int& characterIndex;
-	std::map<int, CombatData>& combatMap;
-	std::map<int, CharacterData>& characterMap;
-	std::map<int, EnemyData>& enemyMap;
+	CharacterMap& characterMap;
 
 	//graphics
 	//TODO: graphics

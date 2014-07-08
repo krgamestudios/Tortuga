@@ -19,12 +19,17 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#include "caves_generator.hpp"
+#ifndef CHARACTERDEFINES_HPP_
+#define CHARACTERDEFINES_HPP_
 
-CavesGenerator::CavesGenerator() : BaseGenerator(MapType::CAVES) {
-	//
-}
+#include <cmath>
 
-CavesGenerator::~CavesGenerator() {
-	//
-}
+//the speeds that the characters move
+constexpr double CHARACTER_WALKING_SPEED = 140.0;
+constexpr double CHARACTER_WALKING_MOD = 1.0/sqrt(2.0);
+
+//the bounding boxes for the characters
+constexpr double CHARACTER_BOUNDS_WIDTH = 32.0;
+constexpr double CHARACTER_BOUNDS_HEIGHT = 32.0;
+
+#endif

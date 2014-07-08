@@ -35,6 +35,7 @@ Region::Region(int argX, int argY): x(argX), y(argY) {
 
 Region::Region(Region const& rhs): x(rhs.x), y(rhs.y) {
 	memcpy(tiles, rhs.tiles, REGION_WIDTH*REGION_HEIGHT*REGION_DEPTH*sizeof(type_t));
+	solid = rhs.solid;
 }
 
 Region::type_t Region::SetTile(int x, int y, int z, type_t v) {
@@ -43,4 +44,12 @@ Region::type_t Region::SetTile(int x, int y, int z, type_t v) {
 
 Region::type_t Region::GetTile(int x, int y, int z) {
 	return tiles[x][y][z];
+}
+
+bool Region::SetSolid(int x, int y, bool b) {
+	return solid[x * REGION_WIDTH + y] = b;
+}
+
+bool Region::GetSolid(int x, int y) {
+	return solid[x * REGION_WIDTH + y];
 }

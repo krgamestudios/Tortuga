@@ -19,18 +19,16 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef TOWERSGENERATOR_HPP_
-#define TOWERSGENERATOR_HPP_
+#ifndef COMBATDEFINES_HPP_
+#define COMBATDEFINES_HPP_
 
-#include "base_generator.hpp"
+#define COMBAT_MAX_CHARACTERS 16
+#define COMBAT_MAX_ENEMIES 16
 
-class TowersGenerator : public BaseGenerator {
-public:
-	TowersGenerator();
-	~TowersGenerator();
-
-private:
-	//
+enum class TerrainType {
+	NONE = 0,
+	GRASSLANDS,
+	//etc.
 };
 
 #endif

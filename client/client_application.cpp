@@ -25,6 +25,7 @@
 
 #include <stdexcept>
 #include <chrono>
+#include <iostream>
 
 //-------------------------
 //Scene headers
@@ -44,24 +45,71 @@
 //-------------------------
 
 void ClientApplication::Init(int argc, char** argv) {
+	std::cout << "Beginning " << argv[0] << std::endl;
+
 	//load the prerequisites
 	config.Load("rsc\\config.cfg");
+
+	//-------------------------
+	//Initialize the APIs
+	//-------------------------
 
 	//initialize SDL
 	if (SDL_Init(SDL_INIT_VIDEO)) {
 		throw(std::runtime_error("Failed to initialize SDL"));
 	}
-	int w = config.Int("client.screen.w");
-	int h = config.Int("client.screen.h");
-	int f = config.Bool("client.screen.f") ? SDL_HWSURFACE|SDL_DOUBLEBUF|SDL_FULLSCREEN : SDL_HWSURFACE|SDL_DOUBLEBUF;
-
-	BaseScene::SetScreen(w ? w : 800, h ? h : 600, 0, f);
+	std::cout << "Initialized SDL" << std::endl;
 
 	//initialize SDL_net
 	if (SDLNet_Init()) {
 		throw(std::runtime_error("Failed to initialize SDL_net"));
 	}
 	network.Open(0);
+	std::cout << "Initialized SDL_net" << std::endl;
+
+	//-------------------------
+	//Setup the screen
+	//-------------------------
+
+	int w = config.Int("client.screen.w");
+	int h = config.Int("client.screen.h");
+	int f = config.Bool("client.screen.f") ? SDL_HWSURFACE|SDL_DOUBLEBUF|SDL_FULLSCREEN : SDL_HWSURFACE|SDL_DOUBLEBUF;
+
+	BaseScene::SetScreen(w ? w : 800, h ? h : 600, 0, f);
+	std::cout << "Initialized the screen" << std::endl;
+
+	//-------------------------
+	//debug output
+	//-------------------------
+
+	//TODO: enable/disable these with a switch
+#define DEBUG_OUTPUT_VAR(x) std::cout << "\t" << #x << ": " << x << std::endl;
+
+	std::cout << "Internal sizes:" << std::endl;
+
+	DEBUG_OUTPUT_VAR(sizeof(Region::type_t));
+	DEBUG_OUTPUT_VAR(sizeof(Region));
+	DEBUG_OUTPUT_VAR(REGION_WIDTH);
+	DEBUG_OUTPUT_VAR(REGION_HEIGHT);
+	DEBUG_OUTPUT_VAR(REGION_DEPTH);
+	DEBUG_OUTPUT_VAR(REGION_SOLID_FOOTPRINT);
+	DEBUG_OUTPUT_VAR(REGION_FOOTPRINT);
+	DEBUG_OUTPUT_VAR(PACKET_BUFFER_SIZE);
+	DEBUG_OUTPUT_VAR(MAX_PACKET_SIZE);
+
+#undef DEBUG_OUTPUT_VAR
+
+	//-------------------------
+	//finalize the startup
+	//-------------------------
+
+	std::cout << "Startup completed successfully" << std::endl;
+
+	//-------------------------
+	//debugging
+	//-------------------------
+
+	//...
 }
 
 void ClientApplication::Proc() {
@@ -100,9 +148,11 @@ void ClientApplication::Proc() {
 }
 
 void ClientApplication::Quit() {
+	std::cout << "Shutting down" << std::endl;
 	network.Close();
 	SDLNet_Quit();
 	SDL_Quit();
+	std::cout << "Clean exit" << std::endl;
 }
 
 //-------------------------
@@ -127,13 +177,13 @@ void ClientApplication::LoadScene(SceneList sceneIndex) {
 			activeScene = new LobbyMenu(&config, &network, &clientIndex, &accountIndex);
 		break;
 		case SceneList::INWORLD:
-			activeScene = new InWorld(&config, &network, &clientIndex, &accountIndex, &characterIndex, &combatMap, &characterMap);
+			activeScene = new InWorld(&config, &network, &clientIndex, &accountIndex, &characterIndex, &characterMap);
 		break;
 		case SceneList::INCOMBAT:
-			activeScene = new InCombat(&config, &network, &clientIndex, &accountIndex, &characterIndex, &combatMap, &characterMap, &enemyMap);
+			activeScene = new InCombat(&config, &network, &clientIndex, &accountIndex, &characterIndex, &characterMap);
 		break;
 		case SceneList::CLEANUP:
-			activeScene = new CleanUp(&config, &network, &clientIndex, &accountIndex, &characterIndex, &combatMap, &characterMap, &enemyMap);
+			activeScene = new CleanUp(&config, &network, &clientIndex, &accountIndex, &characterIndex, &characterMap);
 		break;
 		default:
 			throw(std::logic_error("Failed to recognize the scene index"));

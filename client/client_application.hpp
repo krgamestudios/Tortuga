@@ -27,9 +27,7 @@
 
 #include "config_utility.hpp"
 #include "udp_network_utility.hpp"
-#include "character_data.hpp"
-#include "combat_data.hpp"
-#include "enemy_data.hpp"
+#include "character.hpp"
 
 #include <map>
 
@@ -56,9 +54,7 @@ private:
 	int accountIndex = -1;
 	int characterIndex = -1;
 
-	std::map<int, CombatData> combatMap;
-	std::map<int, CharacterData> characterMap;
-	std::map<int, EnemyData> enemyMap;
+	CharacterMap characterMap;
 };
 
 #endif

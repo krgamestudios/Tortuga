@@ -29,7 +29,7 @@ void serializeCombat(CombatPacket* packet, void* buffer) {
 	//identify the combat instance
 	SERIALIZE(buffer, &packet->combatIndex, sizeof(int));
 	SERIALIZE(buffer, &packet->difficulty, sizeof(int));
-	SERIALIZE(buffer, &packet->terrainType, sizeof(CombatData::Terrain));
+	SERIALIZE(buffer, &packet->terrainType, sizeof(TerrainType));
 
 	//combatants
 	SERIALIZE(buffer, &packet->characterArray, sizeof(int) * COMBAT_MAX_CHARACTERS);
@@ -49,7 +49,7 @@ void deserializeCombat(CombatPacket* packet, void* buffer) {
 	//identify the combat instance
 	DESERIALIZE(buffer, &packet->combatIndex, sizeof(int));
 	DESERIALIZE(buffer, &packet->difficulty, sizeof(int));
-	DESERIALIZE(buffer, &packet->terrainType, sizeof(CombatData::Terrain));
+	DESERIALIZE(buffer, &packet->terrainType, sizeof(TerrainType));
 
 	//combatants
 	DESERIALIZE(buffer, &packet->characterArray, sizeof(int) * COMBAT_MAX_CHARACTERS);

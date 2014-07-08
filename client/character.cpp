@@ -19,39 +19,43 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef ENEMYDATA_HPP_
-#define ENEMYDATA_HPP_
+#include "character.hpp"
 
-#include "vector2.hpp"
-#include "statistics.hpp"
+void Character::Update(double delta) {
+	if (motion.x && motion.y) {
+		origin += motion * delta * CHARACTER_WALKING_MOD;
+	}
+	else if (motion != 0) {
+		origin += motion * delta;
+	}
+	sprite.Update(delta);
+}
 
-//graphics
-#ifdef GRAPHICS
- #include "sprite_sheet.hpp"
-#endif
+void Character::DrawTo(SDL_Surface* const dest, int camX, int camY) {
+	sprite.DrawTo(dest, origin.x - camX, origin.y - camY);
+}
 
-//std namespace
-#include <string>
+void Character::CorrectSprite() {
+	//NOTE: These must correspond to the sprite sheet in use
+	if (motion.y > 0) {
+		sprite.SetYIndex(0);
+	}
+	else if (motion.y < 0) {
+		sprite.SetYIndex(1);
+	}
+	else if (motion.x > 0) {
+		sprite.SetYIndex(3);
+	}
+	else if (motion.x < 0) {
+		sprite.SetYIndex(2);
+	}
 
-struct EnemyData {
-	//metadata
-	std::string handle;
-	std::string avatar;
-
-	//gameplay
-	Statistics stats;
-
-	//TODO: gameplay components: equipment, items, buffs, debuffs, rewards
-
-	//active gameplay members
-	//NOTE: these are lost when unloaded
-#ifdef GRAPHICS
-	SpriteSheet sprite;
-	Vector2 origin = {0.0,0.0};
-	Vector2 bounds = {0.0,0.0};
-#endif
-	int tableIndex;
-	int atbGauge = 0;
-};
-
-#endif
+	//animation
+	if (motion != 0) {
+		sprite.SetDelay(0.1);
+	}
+	else {
+		sprite.SetDelay(0);
+		sprite.SetXIndex(0);
+	}
+}

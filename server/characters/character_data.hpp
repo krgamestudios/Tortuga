@@ -19,18 +19,39 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef CAVESGENERATOR_HPP_
-#define CAVESGENERATOR_HPP_
+#ifndef CHARACTERDATA_HPP_
+#define CHARACTERDATA_HPP_
 
-#include "base_generator.hpp"
+//components
+#include "character_defines.hpp"
+#include "vector2.hpp"
+#include "statistics.hpp"
 
-class CavesGenerator : public BaseGenerator {
-public:
-	CavesGenerator();
-	~CavesGenerator();
+//std namespace
+#include <string>
+#include <cmath>
 
-private:
-	//
+struct CharacterData {
+	//metadata
+	int owner;
+	std::string handle;
+	std::string avatar;
+
+	//world position
+	int roomIndex = 0;
+	Vector2 origin = {0.0,0.0};
+	Vector2 motion = {0.0,0.0};
+
+	//base statistics
+	Statistics stats;
+
+	//TODO: gameplay components: equipment, items, buffs, debuffs
+
+	//active gameplay members
+	//NOTE: these are lost when unloaded
+	bool inCombat = false;
+	int atbGauge = 0;
+	//TODO: stored command
 };
 
 #endif
