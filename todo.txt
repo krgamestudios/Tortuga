@@ -1,0 +1,2 @@
+Remove as many exceptions as possible; the code can handle that.
+Glue functions need to check their parameter counts.
