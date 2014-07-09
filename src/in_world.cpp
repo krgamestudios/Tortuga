@@ -117,21 +117,22 @@ void InWorld::Update(double delta) {
 	//update the entities
 	character.Update(delta);
 
-	//check for collisions
-	for (int i = -6; i < 6; ++i) {
-		for (int j = -6; j < 6; ++j) {
-			Vector2 wallPoint = {
-				snapToBase(32.0, character.GetOrigin().x),
-				snapToBase(32.0, character.GetOrigin().y)
-			};
-			wallPoint.x += i * 32;
-			wallPoint.y += j * 32;
+	//check for collisions with the map
+	BoundingBox wallBounds = {0, 0, tileSheet.GetTileW(), tileSheet.GetTileH()};
+	const int xCount = character.GetBoundingBox().w / wallBounds.w + 1;
+	const int yCount = character.GetBoundingBox().h / wallBounds.h + 1;
 
-			if (!pager.GetSolid(wallPoint.x / 32.0, wallPoint.y / 32.0)) {
+	for (int i = -1; i <= xCount; ++i) {
+		for (int j = -1; j <= yCount; ++j) {
+			//set the wall's position
+			wallBounds.x = wallBounds.w * i + snapToBase((double)wallBounds.w, character.GetOrigin().x);
+			wallBounds.y = wallBounds.h * j + snapToBase((double)wallBounds.h, character.GetOrigin().y);
+
+			if (!pager.GetSolid(wallBounds.x / wallBounds.w, wallBounds.y / wallBounds.h)) {
 				continue;
 			}
 
-			if ( (character.GetOrigin() + character.GetBoundingBox()).CheckOverlap(wallPoint + BoundingBox{0,0,32,32})) {
+			if ((character.GetOrigin() + character.GetBoundingBox()).CheckOverlap(wallBounds)) {
 				character.SetOrigin(character.GetOrigin() - (character.GetMotion() * delta));
 				character.SetMotion({0,0});
 				character.CorrectSprite();
