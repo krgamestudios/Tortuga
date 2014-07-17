@@ -43,6 +43,8 @@ public:
 	}
 	void Normalize() {
 		double l = Length();
+		if (l == 0)
+			throw(std::domain_error("Divide by zero"));
 		x /= l;
 		y /= l;
 	}
