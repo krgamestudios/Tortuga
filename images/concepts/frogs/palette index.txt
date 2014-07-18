@@ -1,0 +1,12 @@
+The palette is extracted from the frog images. It's only meant as areference, and can change later. Hot pink (255, 0, 255) is used to fill the gaps.
+
+[blank], mid highlight, high highlight
+low base, mid base, high base
+[blank], mid shadow, high shadow
+inner cheek
+tongue outline, tongue shadow, tongue base
+leather shadow, leather base, leather hightlight
+wood shadow, wood base, wood highlight
+sharp shadow, sharp base, [blank]
+dull shadow, dull base, [blank]
+frog outline, metal outline, wood outline
