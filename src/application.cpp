@@ -21,6 +21,8 @@
 */
 #include "application.hpp"
 
+#include "timer.hpp"
+
 #include <stdexcept>
 #include <chrono>
 #include <iostream>
@@ -118,6 +120,8 @@ void Application::Proc() {
 		//update the current time
 		realTime = Clock::now();
 
+		Timer runTimer("run");
+
 		//simulate game time
 		while (simTime < realTime) {
 			//call each user defined function
@@ -125,8 +129,18 @@ void Application::Proc() {
 			simTime += delta;
 		}
 
+		runTimer.Stop();
+
+		Timer renderTimer("render");
+
 		//draw the game to the screen
 		activeScene->RenderFrame();
+
+		renderTimer.Stop();
+
+		//debugging output
+//		std::cout << runTimer << std::endl;
+//		std::cout << renderTimer << std::endl;
 	}
 
 	UnloadScene();

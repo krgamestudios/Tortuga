@@ -21,6 +21,8 @@
 */
 #include "in_world.hpp"
 
+#include "timer.hpp"
+
 #include "utility.hpp"
 
 #include "region_pager_api.hpp"

@@ -1,6 +1,6 @@
 #config
-INCLUDES+=. debugging graphics map ui utilities
-LIBS+=libcommon.a -lmingw32 -lSDLmain -lSDL -llua
+INCLUDES+=.
+LIBS+=
 CXXFLAGS+=-std=c++11 $(addprefix -I,$(INCLUDES))
 
 #source
@@ -11,17 +11,12 @@ OBJDIR=obj
 OBJ+=$(addprefix $(OBJDIR)/,$(CXXSRC:.cpp=.o))
 
 #output
-OUTDIR=../out
-OUT=$(addprefix $(OUTDIR)/,jam)
+OUTDIR=..
+OUT=$(addprefix $(OUTDIR)/,libcommon.a)
 
 #targets
 all: $(OBJ) $(OUT)
-	$(MAKE) -C debugging
-	$(MAKE) -C graphics
-	$(MAKE) -C map
-	$(MAKE) -C ui
-	$(MAKE) -C utilities
-	$(CXX) $(CXXFLAGS) -o $(OUT) $(OBJ) $(LIBS)
+	ar -crs $(OUT) $(OBJ)
 
 $(OBJ): | $(OBJDIR)
 
