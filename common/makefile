@@ -1,4 +1,5 @@
 all:
+	$(MAKE) -C debugging
 	$(MAKE) -C gameplay
 	$(MAKE) -C graphics
 	$(MAKE) -C map

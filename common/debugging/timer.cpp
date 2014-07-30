@@ -1,4 +1,4 @@
-/* Copyright: (c) Kayne Ruse 2013, 2014
+/* Copyright: (c) Kayne Ruse 2014
  * 
  * This software is provided 'as-is', without any express or implied
  * warranty. In no event will the authors be held liable for any damages
@@ -19,19 +19,11 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef UTILITY_HPP_
-#define UTILITY_HPP_
+#include "timer.hpp"
 
-#include <string>
-
-int snapToBase(int base, int x);
-double snapToBase(double base, double x);
-
-std::string truncatePath(std::string pathname);
-
-//fixing known bugs in g++
-std::string to_string_custom(int i);
-
-int to_integer_custom(std::string);
-
-#endif
+std::ostream& operator<<(std::ostream& os, Timer& t) {
+	os << t.GetName() << ": ";
+	os << std::chrono::duration_cast<std::chrono::nanoseconds>(t.GetTime()).count();
+	os << "ns";
+	return os;
+}
