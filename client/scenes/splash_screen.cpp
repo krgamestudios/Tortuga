@@ -21,14 +21,21 @@
 */
 #include "splash_screen.hpp"
 
+#include <string>
+
 //-------------------------
 //Public access members
 //-------------------------
 
-SplashScreen::SplashScreen(ConfigUtility* const argConfig):
-	config(*argConfig)
-{
-	logo.LoadSurface(config["dir.logos"] + "krstudios.bmp");
+SplashScreen::SplashScreen(lua_State* L): lua(L) {
+	//get the config info
+	lua_getglobal(lua, "config");
+	lua_getfield(lua, -1, "dir");
+	lua_getfield(lua, -1, "logos");
+	std::string logos = lua_tostring(lua, -1);
+	lua_pop(lua, 3);
+
+	logo.LoadSurface(logos + "krstudios.bmp");
 	startTick = std::chrono::steady_clock::now();
 }
 

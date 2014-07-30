@@ -1,4 +1,4 @@
-/* Copyright: (c) Kayne Ruse 2013, 2014
+/* Copyright: (c) Kayne Ruse 2014
  * 
  * This software is provided 'as-is', without any express or implied
  * warranty. In no event will the authors be held liable for any damages
@@ -19,42 +19,36 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef CONFIGUTILITY_HPP_
-#define CONFIGUTILITY_HPP_
+#ifndef TILESHEET_HPP_
+#define TILESHEET_HPP_
 
-#include <map>
+#include "region.hpp"
+
+#include "image.hpp"
+
 #include <string>
 
-class ConfigUtility {
+class TileSheet {
 public:
-	ConfigUtility() = default;
-	ConfigUtility(std::string s) { Load(s); }
+	TileSheet() = default;
+	TileSheet(std::string f, int w, int h) { Load(f, w, h); }
+	~TileSheet() = default;
 
-	void Load(std::string fname);
+	void Load(std::string fname, int tileWidth, int tileHeight);
+	void Unload();
 
-	//convert to a type
-	std::string& String(std::string);
-	int Integer(std::string);
-	double Double(std::string);
-	bool Boolean(std::string);
+	void DrawTileTo(SDL_Surface* const dest, int x, int y, Region::type_t tile);
+	void DrawRegionTo(SDL_Surface* const dest, Region* const region, int camX, int camY);
 
-	//shorthand
-	std::string& operator[](std::string s) {
-		return String(s);
-	}
-	int Int(std::string s) {
-		return Integer(s);
-	}
-	bool Bool(std::string s) {
-		return Boolean(s);
-	}
-
-	//OO breaker
-	std::map<std::string, std::string>* GetMap() {
-		return &table;
-	}
+	//accessors
+	Image* GetImage() { return &image; }
+	int GetXCount() { return xCount; }
+	int GetYCount() { return yCount; }
+	int GetTileW() { return image.GetClipW(); }
+	int GetTileH() { return image.GetClipH(); }
 private:
-	std::map<std::string, std::string> table;
+	Image image;
+	int xCount = 0, yCount = 0;
 };
 
 #endif

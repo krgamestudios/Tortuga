@@ -48,6 +48,60 @@ InWorld::InWorld(
 	characterIndex(*argCharacterIndex),
 	characterMap(*argCharacterMap)
 {
+	//register the pager
+	lua_pushstring(lua, TORTUGA_REGION_PAGER_PSEUDO_INDEX);
+	lua_pushlightuserdata(lua, &pager);
+	lua_settable(L, LUA_REGISTRYINDEX);
+
+	//register the tilesheet
+	lua_pushstring(lua, TORTUGA_TILE_SHEET_PSEUDO_INDEX);
+	lua_pushlightuserdata(lua, &tileSheet);
+	lua_settable(L, LUA_REGISTRYINDEX);
+
+	//setup the component objecrs
+	pager.SetLuaState(lua);
+
+	//get the config info
+	lua_getglobal(lua, "config");
+	lua_getfield(lua, -1, "dir");
+	lua_getfield(lua, -1, "fonts");
+	std::string fonts = lua_tostring(lua, -1);
+	lua_getfield(lua, -2, "interface");
+	std::string interface = lua_tostring(lua, -1);
+	lua_getfield(lua, -3, "sprites");
+	std::string sprites = lua_tostring(lua, -1);
+	lua_getfield(lua, -4, "scripts");
+	std::string scripts = lua_tostring(lua, -1);
+	lua_pop(lua, 6);
+
+	//run the additional scripts
+	if (luaL_dofile(lua, (scripts + "in_world.lua").c_str())) {
+		throw(std::runtime_error(std::string() + "Failed to run in_world.lua: " + lua_tostring(lua, -1) ));
+	}
+
+	//setup the utility objects
+	buttonImage.LoadSurface(interface + "button_menu.bmp");
+	buttonImage.SetClipH(buttonImage.GetClipH()/3);
+	font.LoadSurface(fonts + "pk_white_8.bmp");
+
+	//pass the utility objects
+	backButton.SetImage(&buttonImage);
+	backButton.SetFont(&font);
+
+	//set the button positions
+	backButton.SetX(50);
+	backButton.SetY(50 + buttonImage.GetClipH() * 0);
+
+	//set the button texts
+	backButton.SetText("Back");
+
+	//entities
+	character.GetSprite()->LoadSurface(sprites + "elliot2.bmp", 4, 4);
+	character.SetBoundingBox({0, 0,
+		character.GetSprite()->GetImage()->GetClipW(),
+		character.GetSprite()->GetImage()->GetClipH()
+	});
+//-------------------------
 	//setup the utility objects
 	buttonImage.LoadSurface(config["dir.interface"] + "button_menu.bmp");
 	buttonImage.SetClipH(buttonImage.GetClipH()/3);
@@ -81,7 +135,13 @@ InWorld::InWorld(
 }
 
 InWorld::~InWorld() {
-	//
+	//unregister the map components
+	lua_pushstring(lua, TORTUGA_REGION_PAGER_PSEUDO_INDEX);
+	lua_pushstring(lua, TORTUGA_TILE_SHEET_PSEUDO_INDEX);
+	lua_pushnil(lua);
+	lua_settable(lua, LUA_REGISTRYINDEX);
+	lua_pushnil(lua);
+	lua_settable(lua, LUA_REGISTRYINDEX);
 }
 
 //-------------------------
@@ -106,6 +166,28 @@ void InWorld::Update(double delta) {
 	}
 
 	//TODO: Check collisions here
+	//check for collisions with the map
+	BoundingBox wallBounds = {0, 0, tileSheet.GetTileW(), tileSheet.GetTileH()};
+	const int xCount = character.GetBoundingBox().w / wallBounds.w + 1;
+	const int yCount = character.GetBoundingBox().h / wallBounds.h + 1;
+
+	for (int i = -1; i <= xCount; ++i) {
+		for (int j = -1; j <= yCount; ++j) {
+			//set the wall's position
+			wallBounds.x = wallBounds.w * i + snapToBase((double)wallBounds.w, character.GetOrigin().x);
+			wallBounds.y = wallBounds.h * j + snapToBase((double)wallBounds.h, character.GetOrigin().y);
+
+			if (!pager.GetSolid(wallBounds.x / wallBounds.w, wallBounds.y / wallBounds.h)) {
+				continue;
+			}
+
+			if ((character.GetOrigin() + character.GetBoundingBox()).CheckOverlap(wallBounds)) {
+				character.SetOrigin(character.GetOrigin() - (character.GetMotion() * delta));
+				character.SetMotion({0,0});
+				character.CorrectSprite();
+			}
+		}
+	}
 
 	//update the camera
 	if(localCharacter) {

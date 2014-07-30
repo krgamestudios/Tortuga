@@ -24,10 +24,14 @@
 #include "region_pager_lua.hpp"
 #include "region.hpp"
 
-#include <stdexcept>
 #include <string>
 
-//DOCS: These functions are just wrappers for the RegionPagerLua class
+static int getRegionPager(lua_State* L) {
+	lua_pushstring(L, TORTUGA_REGION_PAGER_PSEUDO_INDEX);
+	lua_gettable(L, LUA_REGISTRYINDEX);
+}
+
+//DOCS: These glue functions simply wrap RegionPagerLua's methods
 
 static int setTile(lua_State* L) {
 	RegionPagerLua* pager = reinterpret_cast<RegionPagerLua*>(lua_touserdata(L, 1));
@@ -64,20 +68,6 @@ static int getRegion(lua_State* L) {
 	return 1;
 }
 
-static int setDirectory(lua_State* L) {
-	RegionPagerLua* pager = reinterpret_cast<RegionPagerLua*>(lua_touserdata(L, 1));
-	std::string s = pager->SetDirectory(lua_tostring(L, 2));
-	lua_pushstring(L, s.c_str());
-	return 1;
-}
-
-static int getDirectory(lua_State* L) {
-	RegionPagerLua* pager = reinterpret_cast<RegionPagerLua*>(lua_touserdata(L, 1));
-	std::string s = pager->GetDirectory();
-	lua_pushstring(L, s.c_str());
-	return 1;
-}
-
 static int loadRegion(lua_State* L) {
 	RegionPagerLua* pager = reinterpret_cast<RegionPagerLua*>(lua_touserdata(L, 1));
 	Region* region = pager->LoadRegion(lua_tointeger(L, 2), lua_tointeger(L, 3));
@@ -105,14 +95,13 @@ static int unloadRegion(lua_State* L) {
 	return 0;
 }
 
-static const luaL_Reg pagerlib[] = {
+static const luaL_Reg regionPagerLib[] = {
+	{"GetRegionPager", getRegionPager},
 	{"SetTile", setTile},
 	{"GetTile", getTile},
 	{"SetSolid", setSolid},
 	{"GetSolid", getSolid},
 	{"GetRegion", getRegion},
-	{"SetDirectory", setDirectory},
-	{"GetDirectory", getDirectory},
 	{"LoadRegion", loadRegion},
 	{"SaveRegion", saveRegion},
 	{"CreateRegion", createRegion},
@@ -121,6 +110,6 @@ static const luaL_Reg pagerlib[] = {
 };
 
 LUAMOD_API int openRegionPagerAPI(lua_State* L) {
-	luaL_newlib(L, pagerlib);
+	luaL_newlib(L, regionPagerLib);
 	return 1;
 }

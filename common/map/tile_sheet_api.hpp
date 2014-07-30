@@ -19,36 +19,13 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef TILESHEET_HPP_
-#define TILESHEET_HPP_
+#ifndef TILESHEETAPI_HPP_
+#define TILESHEETAPI_HPP_
 
-#include "region.hpp"
+#include "lua/lua.hpp"
 
-#include "image.hpp"
-
-#include <string>
-
-class TileSheet {
-public:
-	TileSheet() = default;
-	TileSheet(std::string f, int x, int y) { Load(f, x, y); }
-	~TileSheet() = default;
-
-	void Load(std::string fname, int XCount, int YCount);
-	void Unload();
-
-	void DrawTo(SDL_Surface* const dest, int x, int y, Region::type_t tile);
-	void DrawRegionTo(SDL_Surface* const dest, Region* const region, int camX, int camY);
-
-	//accessors
-	Image* GetImage() { return &image; }
-	int GetXCount() { return XCount; }
-	int GetYCount() { return YCount; }
-	int GetTileW() { return image.GetClipW(); }
-	int GetTileH() { return image.GetClipH(); }
-private:
-	Image image;
-	int XCount = 0, YCount = 0;
-};
+#define TORTUGA_TILE_SHEET_PSEUDO_INDEX "TileSheetPseudoIndex"
+#define TORTUGA_TILE_SHEET_NAME "TileSheet"
+LUAMOD_API int openTileSheetAPI(lua_State* L);
 
 #endif

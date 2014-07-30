@@ -24,15 +24,16 @@
 
 #include "base_scene.hpp"
 
-#include "config_utility.hpp"
 #include "image.hpp"
+
+#include "lua/lua.hpp"
 
 #include <chrono>
 
 class SplashScreen : public BaseScene {
 public:
 	//Public access members
-	SplashScreen(ConfigUtility* const);
+	SplashScreen(lua_State* L);
 	~SplashScreen();
 
 protected:
@@ -41,7 +42,7 @@ protected:
 	void Render(SDL_Surface* const);
 
 	//shared parameters
-	ConfigUtility& config;
+	lua_State* lua = nullptr;
 
 	//members
 	std::chrono::steady_clock::time_point startTick;

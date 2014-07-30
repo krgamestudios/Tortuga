@@ -47,9 +47,6 @@
 void ClientApplication::Init(int argc, char** argv) {
 	std::cout << "Beginning " << argv[0] << std::endl;
 
-	//load the prerequisites
-	config.Load("rsc\\config.cfg");
-
 	//-------------------------
 	//Initialize the APIs
 	//-------------------------
@@ -67,9 +64,37 @@ void ClientApplication::Init(int argc, char** argv) {
 	network.Open(0);
 	std::cout << "Initialized SDL_net" << std::endl;
 
+	//initialize lua
+	lua = luaL_newstate();
+	if (!lua) {
+		throw(std::runtime_error("Failed to initialize lua"));
+	}
+	luaL_openlibs(lua);
+	std::cout << "Initialized lua" << std::endl;
+
+	if (luaL_dofile(lua, "rsc\\setup.lua")) {
+		throw(std::runtime_error("Failed to initialize lua's startup script"));
+	}
+	std::cout << "Initialized lua's setup script" << std::endl;
+
 	//-------------------------
 	//Setup the screen
 	//-------------------------
+
+	lua_getglobal(lua, "config");
+	lua_getfield(lua, 1, "screen");
+	lua_getfield(lua, 2, "width");
+	lua_getfield(lua, 2, "height");
+	lua_getfield(lua, 2, "fullscreen");
+
+	int w = lua_tointeger(lua, 3);
+	int h = lua_tointeger(lua, 4);
+	int f = lua_toboolean(lua, 5);
+
+	lua_pop(lua, 5);
+
+	BaseScene::SetScreen(w ? w : 800, h ? h : 600, 0, f ? SDL_HWSURFACE|SDL_DOUBLEBUF|SDL_FULLSCREEN : SDL_HWSURFACE|SDL_DOUBLEBUF);
+	std::cout << "Initialized the screen" << std::endl;
 
 	int w = config.Int("client.screen.w");
 	int h = config.Int("client.screen.h");
@@ -149,6 +174,7 @@ void ClientApplication::Proc() {
 
 void ClientApplication::Quit() {
 	std::cout << "Shutting down" << std::endl;
+	lua_close(lua);
 	network.Close();
 	SDLNet_Quit();
 	SDL_Quit();

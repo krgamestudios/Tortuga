@@ -25,7 +25,7 @@
 //components
 #include "character_defines.hpp"
 #include "vector2.hpp"
-#include "statistics.hpp"
+#include "bounding_box.hpp"
 
 //graphics
 #include "sprite_sheet.hpp"
@@ -46,9 +46,6 @@ public:
 	void CorrectSprite();
 	SpriteSheet* GetSprite() { return &sprite; }
 
-	//gameplay
-	Statistics* GetStats() { return &stats; }
-
 	//accessors and mutators
 
 	//metadata
@@ -64,17 +61,12 @@ public:
 	Vector2 GetOrigin() const { return origin; }
 	Vector2 SetMotion(Vector2 v) { return motion = v; }
 	Vector2 GetMotion() const { return motion; }
-	Vector2 SetBounds(Vector2 v) { return bounds = v; }
-	Vector2 GetBounds() const { return bounds; }
+	BoundingBox SetBoundingBox(BoundingBox b) { return bounds = b; }
+	BoundingBox GetBoundingBox() const { return bounds; }
 
 private:
 	//graphics
 	SpriteSheet sprite;
-
-	//base statistics
-	Statistics stats;
-
-	//TODO: gameplay components: equipment, items, buffs, debuffs
 
 	//metadata
 	int owner;
@@ -84,7 +76,7 @@ private:
 	//position
 	Vector2 origin = {0.0,0.0};
 	Vector2 motion = {0.0,0.0};
-	Vector2 bounds = {CHARACTER_BOUNDS_WIDTH,CHARACTER_BOUNDS_HEIGHT};
+	BoundingBox bounds;
 };
 
 //tmp

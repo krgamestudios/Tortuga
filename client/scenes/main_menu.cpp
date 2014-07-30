@@ -25,13 +25,20 @@
 //Public access members
 //-------------------------
 
-MainMenu::MainMenu(ConfigUtility* const argConfig):
-	config(*argConfig)
-{
+MainMenu::MainMenu(lua_State* L): lua(L) {
+	//get the config info
+	lua_getglobal(lua, "config");
+	lua_getfield(lua, -1, "dir");
+	lua_getfield(lua, -1, "interface");
+	std::string interface = lua_tostring(lua, -1);
+	lua_getfield(lua, -2, "fonts");
+	std::string fonts = lua_tostring(lua, -1);
+	lua_pop(lua, 4);
+
 	//setup the utility objects
-	image.LoadSurface(config["dir.interface"] + "button_menu.bmp");
+	image.LoadSurface(interface + "button_menu.bmp");
 	image.SetClipH(image.GetClipH()/3);
-	font.LoadSurface(config["dir.fonts"] + "pk_white_8.bmp");
+	font.LoadSurface(fonts + "pk_white_8.bmp");
 
 	//pass the utility objects
 	startButton.SetImage(&image);
@@ -102,7 +109,7 @@ void MainMenu::MouseButtonDown(SDL_MouseButtonEvent const& button) {
 
 void MainMenu::MouseButtonUp(SDL_MouseButtonEvent const& button) {
 	if (startButton.MouseButtonUp(button) == Button::State::HOVER) {
-		SetNextScene(SceneList::LOBBYMENU);
+		SetNextScene(SceneList::INWORLD);
 	}
 	if (optionsButton.MouseButtonUp(button) == Button::State::HOVER) {
 		SetNextScene(SceneList::OPTIONSMENU);

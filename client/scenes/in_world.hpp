@@ -22,26 +22,28 @@
 #ifndef INWORLD_HPP_
 #define INWORLD_HPP_
 
-//maps
-#include "region_pager_base.hpp"
+//map stuff
+#include "tile_sheet.hpp"
+#include "region_pager_lua.hpp"
 
 //networking
 #include "udp_network_utility.hpp"
 
-//graphics
+//graphics & ui
 #include "image.hpp"
 #include "raster_font.hpp"
 #include "button.hpp"
-#include "tile_sheet.hpp"
 
-//common
-#include "config_utility.hpp"
+//utilities
 #include "frame_rate.hpp"
-
-#include "character.hpp"
+#include "timer.hpp"
 
 //client
 #include "base_scene.hpp"
+#include "character.hpp"
+
+//APIs
+#include "lua/lua.hpp"
 
 //STL
 #include <map>
@@ -93,6 +95,7 @@ protected:
 	//utilities
 	void UpdateMap();
 
+	//TODO: Streamline this with lua
 	//shared parameters
 	ConfigUtility& config;
 	UDPNetworkUtility& network;
@@ -114,10 +117,11 @@ protected:
 	Button shutDownButton;
 	//TODO: Review the camera
 	struct {
-		int x = 0, y = 0;
-		int width = 0, height = 0;
-		int marginX = 0, marginY = 0;
-	} camera;
+		struct {
+			int x, y;
+		}origin, margin;
+	}camera;
+
 	FrameRate fps;
 
 	//game

@@ -47,6 +47,9 @@ bool RegionPagerBase::GetSolid(int x, int y) {
 }
 
 Region* RegionPagerBase::GetRegion(int x, int y) {
+	x = snapToBase(REGION_WIDTH, x);
+	y = snapToBase(REGION_HEIGHT, y);
+
 	//get the region by various means
 	Region* ptr = nullptr;
 	ptr = FindRegion(x, y);

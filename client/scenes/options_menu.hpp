@@ -24,16 +24,17 @@
 
 #include "base_scene.hpp"
 
-#include "config_utility.hpp"
 #include "image.hpp"
 #include "raster_font.hpp"
 #include "button.hpp"
+
+#include "lua/lua.hpp"
 
 //TODO: The options screen needs to be USED
 class OptionsMenu : public BaseScene {
 public:
 	//Public access members
-	OptionsMenu(ConfigUtility* const);
+	OptionsMenu(lua_State* L);
 	~OptionsMenu();
 
 protected:
@@ -51,7 +52,7 @@ protected:
 	void KeyUp(SDL_KeyboardEvent const&);
 
 	//shared parameters
-	ConfigUtility& config;
+	lua_State* lua = nullptr;
 
 	//members
 	Image image;

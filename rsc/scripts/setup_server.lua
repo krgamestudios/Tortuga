@@ -32,14 +32,4 @@ Region.OnCreate = function(region)
 	return ret
 end
 
---Get some regions
-newRoom = RoomMgr.CreateRoom("overworld")
-pager = Room.GetPager(newRoom)
-regionTable = {
-	RegionPager.GetRegion(pager, Region.GetWidth() * 0, Region.GetHeight() * 0),
-	RegionPager.GetRegion(pager, Region.GetWidth() *-1, Region.GetHeight() * 0),
-	RegionPager.GetRegion(pager, Region.GetWidth() * 0, Region.GetHeight() *-1),
-	RegionPager.GetRegion(pager, Region.GetWidth() *-1, Region.GetHeight() *-1)
-}
-
 print("Finished the lua script")

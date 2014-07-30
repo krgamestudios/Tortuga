@@ -24,15 +24,16 @@
 
 #include "base_scene.hpp"
 
-#include "config_utility.hpp"
 #include "image.hpp"
 #include "raster_font.hpp"
 #include "button.hpp"
 
+#include "lua/lua.hpp"
+
 class MainMenu : public BaseScene {
 public:
 	//Public access members
-	MainMenu(ConfigUtility* const);
+	MainMenu(lua_State* L);
 	~MainMenu();
 
 protected:
@@ -50,7 +51,7 @@ protected:
 	void KeyUp(SDL_KeyboardEvent const&);
 
 	//shared parameters
-	ConfigUtility& config;
+	lua_State* lua = nullptr;
 
 	//members
 	Image image;
