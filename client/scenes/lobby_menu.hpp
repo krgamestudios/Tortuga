@@ -28,11 +28,13 @@
 #include "button.hpp"
 
 //utilities
-#include "config_utility.hpp"
 #include "udp_network_utility.hpp"
 
 //client
 #include "base_scene.hpp"
+
+//APIs
+#include "lua/lua.hpp"
 
 //STL
 #include <vector>
@@ -40,12 +42,7 @@
 class LobbyMenu : public BaseScene {
 public:
 	//Public access members
-	LobbyMenu(
-		ConfigUtility* const argConfig,
-		UDPNetworkUtility* const argNetwork,
-		int* const argClientIndex,
-		int* const argAccountIndex
-	);
+	LobbyMenu(lua_State*, UDPNetworkUtility&);
 	~LobbyMenu();
 
 protected:
@@ -68,10 +65,8 @@ protected:
 	void HandleJoinResponse(ClientPacket* const);
 
 	//shared parameters
-	ConfigUtility& config;
+	lua_State* lua = nullptr;
 	UDPNetworkUtility& network;
-	int& clientIndex;
-	int& accountIndex;
 
 	//members
 	Image image;
@@ -92,7 +87,7 @@ protected:
 	std::vector<ServerInformation> serverInfo;
 
 	//a terrible hack, forgive me
-	//I'd love a proper gui system for this
+	//TODO: I'd love a proper gui system for this
 	SDL_Rect listBox;
 	ServerInformation* selection = nullptr;
 };

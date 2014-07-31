@@ -30,21 +30,25 @@
 //Public access members
 //-------------------------
 
-LobbyMenu::LobbyMenu(
-	ConfigUtility* const argConfig,
-	UDPNetworkUtility* const argNetwork,
-	int* const argClientIndex,
-	int* const argAccountIndex
-	):
-	config(*argConfig),
-	network(*argNetwork),
-	clientIndex(*argClientIndex),
-	accountIndex(*argAccountIndex)
+LobbyMenu::LobbyMenu(lua_State* L, UDPNetworkUtility& aNetwork):
+	lua(L),
+	network(aNetwork)
 {
+	//get the config info
+	lua_getglobal(lua, "config");
+	lua_getfield(lua, -1, "dir");
+	lua_getfield(lua, -1, "interface");
+	lua_getfield(lua, -2, "fonts");
+
+	std::string interfaceDir = lua_tostring(lua, -2);
+	std::string fontsDir = lua_tostring(lua, -1);
+
+	lua_pop(lua, 4);
+
 	//setup the utility objects
-	image.LoadSurface(config["dir.interface"] + "button_menu.bmp");
+	image.LoadSurface(interfaceDir + "button_menu.bmp");
 	image.SetClipH(image.GetClipH()/3);
-	font.LoadSurface(config["dir.fonts"] + "pk_white_8.bmp");
+	font.LoadSurface(fontsDir + "pk_white_8.bmp");
 
 	//pass the utility objects
 	search.SetImage(&image);
@@ -88,11 +92,11 @@ void LobbyMenu::FrameStart() {
 
 void LobbyMenu::Update(double delta) {
 	//suck in and process all waiting packets
-	SerialPacket* packetBuffer = static_cast<SerialPacket*>(malloc(MAX_PACKET_SIZE));
+	SerialPacket* packetBuffer = new SerialPacket();
 	while(network.Receive(packetBuffer)) {
 		HandlePacket(packetBuffer);
 	}
-	free(static_cast<void*>(packetBuffer));
+	delete packetBuffer;
 }
 
 void LobbyMenu::FrameEnd() {
@@ -148,26 +152,44 @@ void LobbyMenu::MouseButtonDown(SDL_MouseButtonEvent const& button) {
 }
 
 void LobbyMenu::MouseButtonUp(SDL_MouseButtonEvent const& button) {
+	//prep
+	lua_getglobal(lua, "config");
+
 	if (search.MouseButtonUp(button) == Button::State::HOVER) {
+		//get the set parameters
+		lua_getfield(lua, -1, "server");
+		lua_getfield(lua, -1, "host");
+		lua_getfield(lua, -2, "port");
+
 		//broadcast to the network, or a specific server
 		SerialPacket packet;
 		packet.type = SerialPacketType::BROADCAST_REQUEST;
-		network.SendTo(config["server.host"].c_str(), config.Int("server.port"), &packet);
+		network.SendTo(lua_tostring(lua, -2), lua_tointeger(lua, -1), &packet);
 
 		//reset the server list
 		serverInfo.clear();
 		selection = nullptr;
+
+		//clear the parameters
+		lua_pop(lua, 3);
 	}
 
 	else if (join.MouseButtonUp(button) == Button::State::HOVER && selection != nullptr && selection->compatible) {
+		//get the parameters
+		lua_getfield(lua, -1, "client");
+		lua_getfield(lua, -1, "username");
+
 		//pack the packet
 		ClientPacket packet;
 		packet.type = SerialPacketType::JOIN_REQUEST;
-		strncpy(packet.username, config["client.username"].c_str(), PACKET_STRING_SIZE);
+		strncpy(packet.username, lua_tostring(lua, -1), PACKET_STRING_SIZE);
 
 		//join the selected server
 		network.SendTo(&selection->address, &packet);
 		selection = nullptr;
+
+		//clear the parameters
+		lua_pop(lua, 2);
 	}
 
 	else if (back.MouseButtonUp(button) == Button::State::HOVER) {
@@ -187,6 +209,9 @@ void LobbyMenu::MouseButtonUp(SDL_MouseButtonEvent const& button) {
 	else {
 		selection = nullptr;
 	}
+
+	//clear the parameters
+	lua_pop(lua, 1);
 }
 
 void LobbyMenu::KeyDown(SDL_KeyboardEvent const& key) {
@@ -204,10 +229,10 @@ void LobbyMenu::KeyUp(SDL_KeyboardEvent const& key) {
 void LobbyMenu::HandlePacket(SerialPacket* const argPacket) {
 		switch(argPacket->type) {
 		case SerialPacketType::BROADCAST_RESPONSE:
-			HandleBroadcastResponse(static_cast<ServerPacket*>(argPacket));
+			HandleBroadcastResponse(dynamic_cast<ServerPacket*>(argPacket));
 		break;
 		case SerialPacketType::JOIN_RESPONSE:
-			HandleJoinResponse(static_cast<ClientPacket*>(argPacket));
+			HandleJoinResponse(dynamic_cast<ClientPacket*>(argPacket));
 		break;
 		//handle errors
 		default:
@@ -232,16 +257,25 @@ void LobbyMenu::HandleBroadcastResponse(ServerPacket* const argPacket) {
 }
 
 void LobbyMenu::HandleJoinResponse(ClientPacket* const argPacket) {
-	clientIndex = argPacket->clientIndex;
-	accountIndex = argPacket->accountIndex;
+	lua_getglobal(lua, "config");
+	lua_getfield(lua, -1, "client");
+	lua_getfield(lua, -1, "handle");
+	lua_getfield(lua, -2, "avatar");
+
+	lua_pushinteger(lua, argPacket->clientIndex);
+	lua_pushinteger(lua, argPacket->accountIndex);
+	lua_setfield(lua, -5, "accountIndex");
+	lua_setfield(lua, -4, "clientIndex");
 	network.Bind(&argPacket->srcAddress, Channels::SERVER);
 	SetNextScene(SceneList::INWORLD);
 
 	//send this player's character info
 	CharacterPacket newPacket;
 	newPacket.type = SerialPacketType::CHARACTER_NEW;
-	strncpy(newPacket.handle, config["client.handle"].c_str(), PACKET_STRING_SIZE);
-	strncpy(newPacket.avatar, config["client.avatar"].c_str(), PACKET_STRING_SIZE);
-	newPacket.accountIndex = accountIndex;
+	strncpy(newPacket.handle, lua_tostring(lua, -2), PACKET_STRING_SIZE);
+	strncpy(newPacket.avatar, lua_tostring(lua, -1), PACKET_STRING_SIZE);
+	newPacket.accountIndex = argPacket->accountIndex;
 	network.SendTo(Channels::SERVER, &newPacket);
+
+	lua_pop(lua, 4);
 }
