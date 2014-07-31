@@ -26,6 +26,7 @@
 #include <stdexcept>
 
 void ConfigUtility::Load(std::string fname) {
+	//TODO: recursive rerouting?
 	std::ifstream is(fname);
 
 	if (!is.is_open()) {

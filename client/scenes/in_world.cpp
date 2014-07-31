@@ -71,7 +71,8 @@ InWorld::InWorld(
 
 	//load the tilesheet
 	//TODO: add the tilesheet to the map system?
-	tileSheet.Load(config["dir.tilesets"] + "terrain.bmp", 12, 15);
+	//TODO: Tile size and tile sheet should be loaded elsewhere
+	tileSheet.Load(config["dir.tilesets"] + "terrain.bmp", 32, 32);
 
 	//request a sync
 	RequestSynchronize();
