@@ -25,25 +25,26 @@
 #include <fstream>
 #include <stdexcept>
 
-using namespace std;
-
-void ConfigUtility::Load(string fname) {
-	ifstream is(fname);
+void ConfigUtility::Load(std::string fname) {
+	//TODO: recursive rerouting?
+	std::ifstream is(fname);
 
 	if (!is.is_open()) {
-		throw(runtime_error("Failed to open config file"));
+		throw(std::runtime_error("Failed to open config file"));
 	}
 
-	string key, val;
+	std::string key, val;
 
-	for (;;) { //forever
+	while(true) { //forever
 		//eat whitespace
-		while(isspace(is.peek()))
+		while(isspace(is.peek())) {
 			is.ignore();
+		}
 
 		//end of file
-		if (is.eof())
+		if (is.eof()) {
 			break;
+		}
 
 		//skip comment lines
 		if (is.peek() == '#') {
@@ -64,7 +65,7 @@ void ConfigUtility::Load(string fname) {
 		while(key.size() && isspace(*(key.end()-1))) key.erase(key.end() - 1);
 		while(val.size() && isspace(*(val.end()-1))) val.erase(val.end() - 1);
 
-		//allow empty/wiped values
+		//disallow empty/wiped values
 		if (key.size() == 0) {
 			continue;
 		}

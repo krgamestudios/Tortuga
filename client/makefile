@@ -1,5 +1,5 @@
 #config
-INCLUDES+=. scenes ../common/gameplay ../common/graphics ../common/map ../common/network ../common/network/packet ../common/network/serial ../common/ui ../common/utilities
+INCLUDES+=. scenes ../common/debugging ../common/gameplay ../common/graphics ../common/map ../common/network ../common/network/packet ../common/network/serial ../common/ui ../common/utilities
 LIBS+=client.a ../libcommon.a -lSDL_net -lwsock32 -liphlpapi -lmingw32 -lSDLmain -lSDL -llua
 CXXFLAGS+=-std=c++11 $(addprefix -I,$(INCLUDES))
 

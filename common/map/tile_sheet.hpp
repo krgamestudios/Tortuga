@@ -1,4 +1,4 @@
-/* Copyright: (c) Kayne Ruse 2013, 2014
+/* Copyright: (c) Kayne Ruse 2014
  * 
  * This software is provided 'as-is', without any express or implied
  * warranty. In no event will the authors be held liable for any damages
@@ -19,19 +19,36 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef UTILITY_HPP_
-#define UTILITY_HPP_
+#ifndef TILESHEET_HPP_
+#define TILESHEET_HPP_
+
+#include "region.hpp"
+
+#include "image.hpp"
 
 #include <string>
 
-int snapToBase(int base, int x);
-double snapToBase(double base, double x);
+class TileSheet {
+public:
+	TileSheet() = default;
+	TileSheet(std::string f, int w, int h) { Load(f, w, h); }
+	~TileSheet() = default;
 
-std::string truncatePath(std::string pathname);
+	void Load(std::string fname, int tileWidth, int tileHeight);
+	void Unload();
 
-//fixing known bugs in g++
-std::string to_string_custom(int i);
+	void DrawTileTo(SDL_Surface* const dest, int x, int y, Region::type_t tile);
+	void DrawRegionTo(SDL_Surface* const dest, Region* const region, int camX, int camY);
 
-int to_integer_custom(std::string);
+	//accessors
+	Image* GetImage() { return &image; }
+	int GetXCount() { return xCount; }
+	int GetYCount() { return yCount; }
+	int GetTileW() { return image.GetClipW(); }
+	int GetTileH() { return image.GetClipH(); }
+private:
+	Image image;
+	int xCount = 0, yCount = 0;
+};
 
 #endif
