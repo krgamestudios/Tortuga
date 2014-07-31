@@ -72,61 +72,71 @@ void ClientApplication::Init(int argc, char** argv) {
 	luaL_openlibs(lua);
 	std::cout << "Initialized lua" << std::endl;
 
+	//run the setup script
 	if (luaL_dofile(lua, "rsc\\setup.lua")) {
 		throw(std::runtime_error("Failed to initialize lua's startup script"));
 	}
 	std::cout << "Initialized lua's setup script" << std::endl;
 
+	//place the config table onto the stack
+	lua_getglobal(lua, "config");
+
 	//-------------------------
 	//Setup the screen
 	//-------------------------
 
-	lua_getglobal(lua, "config");
-	lua_getfield(lua, 1, "screen");
-	lua_getfield(lua, 2, "width");
-	lua_getfield(lua, 2, "height");
-	lua_getfield(lua, 2, "fullscreen");
+	//get each field
+	lua_getfield(lua, -1, "client");
+	lua_getfield(lua, -1, "screen");
+	lua_getfield(lua, -1, "width");
+	lua_getfield(lua, -2, "height");
+	lua_getfield(lua, -3, "fullscreen");
 
-	int w = lua_tointeger(lua, 3);
-	int h = lua_tointeger(lua, 4);
-	int f = lua_toboolean(lua, 5);
+	int w = lua_tointeger(lua, -3);
+	int h = lua_tointeger(lua, -2);
+	int f = lua_toboolean(lua, -1);
 
+	//pop the screen members
 	lua_pop(lua, 5);
 
-	BaseScene::SetScreen(w ? w : 800, h ? h : 600, 0, f ? SDL_HWSURFACE|SDL_DOUBLEBUF|SDL_FULLSCREEN : SDL_HWSURFACE|SDL_DOUBLEBUF);
-	std::cout << "Initialized the screen" << std::endl;
-
-	int w = config.Int("client.screen.w");
-	int h = config.Int("client.screen.h");
-	int f = config.Bool("client.screen.f") ? SDL_HWSURFACE|SDL_DOUBLEBUF|SDL_FULLSCREEN : SDL_HWSURFACE|SDL_DOUBLEBUF;
-
-	BaseScene::SetScreen(w ? w : 800, h ? h : 600, 0, f);
+	BaseScene::SetScreen(w ? w : 800, h ? h : 600, 0, f ?
+		SDL_HWSURFACE|SDL_DOUBLEBUF|SDL_FULLSCREEN :
+		SDL_HWSURFACE|SDL_DOUBLEBUF);
 	std::cout << "Initialized the screen" << std::endl;
 
 	//-------------------------
 	//debug output
 	//-------------------------
 
-	//TODO: enable/disable these with a switch
+	lua_getfield(lua, -1, "debug");
+
+	if (lua_toboolean(lua, -1)) {
 #define DEBUG_OUTPUT_VAR(x) std::cout << "\t" << #x << ": " << x << std::endl;
 
-	std::cout << "Internal sizes:" << std::endl;
+		std::cout << "Internal sizes:" << std::endl;
 
-	DEBUG_OUTPUT_VAR(sizeof(Region::type_t));
-	DEBUG_OUTPUT_VAR(sizeof(Region));
-	DEBUG_OUTPUT_VAR(REGION_WIDTH);
-	DEBUG_OUTPUT_VAR(REGION_HEIGHT);
-	DEBUG_OUTPUT_VAR(REGION_DEPTH);
-	DEBUG_OUTPUT_VAR(REGION_SOLID_FOOTPRINT);
-	DEBUG_OUTPUT_VAR(REGION_FOOTPRINT);
-	DEBUG_OUTPUT_VAR(PACKET_BUFFER_SIZE);
-	DEBUG_OUTPUT_VAR(MAX_PACKET_SIZE);
+		DEBUG_OUTPUT_VAR(sizeof(Region::type_t));
+		DEBUG_OUTPUT_VAR(sizeof(Region));
+		DEBUG_OUTPUT_VAR(REGION_WIDTH);
+		DEBUG_OUTPUT_VAR(REGION_HEIGHT);
+		DEBUG_OUTPUT_VAR(REGION_DEPTH);
+		DEBUG_OUTPUT_VAR(REGION_SOLID_FOOTPRINT);
+		DEBUG_OUTPUT_VAR(REGION_FOOTPRINT);
+		DEBUG_OUTPUT_VAR(PACKET_BUFFER_SIZE);
+		DEBUG_OUTPUT_VAR(MAX_PACKET_SIZE);
 
 #undef DEBUG_OUTPUT_VAR
+	}
+
+	//pop the debug value
+	lua_pop(lua, 1);
 
 	//-------------------------
 	//finalize the startup
 	//-------------------------
+
+	//pop the config table
+	lua_pop(lua, 1);
 
 	std::cout << "Startup completed successfully" << std::endl;
 
@@ -191,25 +201,25 @@ void ClientApplication::LoadScene(SceneList sceneIndex) {
 		//add scene creation calls here
 		case SceneList::FIRST:
 		case SceneList::SPLASHSCREEN:
-			activeScene = new SplashScreen(&config);
+			activeScene = new SplashScreen(lua);
 		break;
 		case SceneList::MAINMENU:
-			activeScene = new MainMenu(&config);
+			activeScene = new MainMenu(lua);
 		break;
 		case SceneList::OPTIONSMENU:
-			activeScene = new OptionsMenu(&config);
+			activeScene = new OptionsMenu(lua);
 		break;
 		case SceneList::LOBBYMENU:
-			activeScene = new LobbyMenu(&config, &network, &clientIndex, &accountIndex);
+			activeScene = new LobbyMenu(lua, network, characterMap);
 		break;
 		case SceneList::INWORLD:
-			activeScene = new InWorld(&config, &network, &clientIndex, &accountIndex, &characterIndex, &characterMap);
+			activeScene = new InWorld(lua, network, characterMap);
 		break;
 		case SceneList::INCOMBAT:
-			activeScene = new InCombat(&config, &network, &clientIndex, &accountIndex, &characterIndex, &characterMap);
+			activeScene = new InCombat(lua, network, characterMap);
 		break;
 		case SceneList::CLEANUP:
-			activeScene = new CleanUp(&config, &network, &clientIndex, &accountIndex, &characterIndex, &characterMap);
+			activeScene = new CleanUp(lua, network, characterMap);
 		break;
 		default:
 			throw(std::logic_error("Failed to recognize the scene index"));

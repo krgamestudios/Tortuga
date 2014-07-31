@@ -33,7 +33,12 @@ config = {
 		},
 		username = "Kayne",
 		handle = "Ratstail91",
-		avatar = "elliot2.bmp"
+		avatar = "elliot2.bmp",
+
+		--NOTE: these generally go here
+--		clientIndex
+--		accountIndex
+--		characterIndex
 	},
 
 	--server specific stuff

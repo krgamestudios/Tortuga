@@ -15,6 +15,7 @@ Out/
 *.o
 *.a
 *.exe
+*.diff
 
 #Shell files
 *.bat
