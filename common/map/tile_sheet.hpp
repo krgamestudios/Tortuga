@@ -19,12 +19,36 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef REGIONPAGERAPI_HPP_
-#define REGIONPAGERAPI_HPP_
+#ifndef TILESHEET_HPP_
+#define TILESHEET_HPP_
 
-#include "lua/lua.hpp"
+#include "region.hpp"
 
-#define TORTUGA_REGION_PAGER_NAME "RegionPager"
-LUAMOD_API int openRegionPagerAPI(lua_State* L);
+#include "image.hpp"
+
+#include <string>
+
+class TileSheet {
+public:
+	TileSheet() = default;
+	TileSheet(std::string f, int w, int h) { Load(f, w, h); }
+	~TileSheet() = default;
+
+	void Load(std::string fname, int tileWidth, int tileHeight);
+	void Unload();
+
+	void DrawTileTo(SDL_Surface* const dest, int x, int y, Region::type_t tile);
+	void DrawRegionTo(SDL_Surface* const dest, Region* const region, int camX, int camY);
+
+	//accessors
+	Image* GetImage() { return &image; }
+	int GetXCount() { return xCount; }
+	int GetYCount() { return yCount; }
+	int GetTileW() { return image.GetClipW(); }
+	int GetTileH() { return image.GetClipH(); }
+private:
+	Image image;
+	int xCount = 0, yCount = 0;
+};
 
 #endif
