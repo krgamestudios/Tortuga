@@ -38,6 +38,7 @@
 
 #include "region_api.hpp"
 #include "region_pager_api.hpp"
+#include "tile_sheet_api.hpp"
 #include "room_api.hpp"
 #include "room_mgr_api.hpp"
 
@@ -58,6 +59,7 @@ static const luaL_Reg loadedlibs[] = {
 	//Tortuga's API
 	{TORTUGA_REGION_NAME, openRegionAPI},
 	{TORTUGA_REGION_PAGER_NAME, openRegionPagerAPI},
+	{TORTUGA_TILE_SHEET_NAME, openTileSheetAPI},
 	{TORTUGA_ROOM_NAME, openRoomAPI},
 	{TORTUGA_ROOM_MGR_NAME, openRoomMgrAPI},
 
