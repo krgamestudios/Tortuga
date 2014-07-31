@@ -11,7 +11,7 @@ OBJDIR=obj
 OBJ+=$(addprefix $(OBJDIR)/,$(CXXSRC:.cpp=.o))
 
 #output
-OUTDIR=..
+OUTDIR=../..
 OUT=$(addprefix $(OUTDIR)/,libcommon.a)
 
 #targets
