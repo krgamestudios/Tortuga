@@ -39,15 +39,9 @@ public:
 	bool Boolean(std::string);
 
 	//shorthand
-	std::string& operator[](std::string s) {
-		return String(s);
-	}
-	int Int(std::string s) {
-		return Integer(s);
-	}
-	bool Bool(std::string s) {
-		return Boolean(s);
-	}
+	inline std::string& operator[](std::string s) { return String(s); }
+	inline int Int(std::string s) { return Integer(s); }
+	inline bool Bool(std::string s) { return Boolean(s); }
 
 	//OO breaker
 	std::map<std::string, std::string>* GetMap() {
