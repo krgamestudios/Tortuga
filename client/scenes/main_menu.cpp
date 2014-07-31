@@ -30,15 +30,17 @@ MainMenu::MainMenu(lua_State* L): lua(L) {
 	lua_getglobal(lua, "config");
 	lua_getfield(lua, -1, "dir");
 	lua_getfield(lua, -1, "interface");
-	std::string interface = lua_tostring(lua, -1);
 	lua_getfield(lua, -2, "fonts");
-	std::string fonts = lua_tostring(lua, -1);
+
+	std::string interfaceDir = lua_tostring(lua, -2);
+	std::string fontsDir = lua_tostring(lua, -1);
+
 	lua_pop(lua, 4);
 
 	//setup the utility objects
-	image.LoadSurface(interface + "button_menu.bmp");
+	image.LoadSurface(interfaceDir + "button_menu.bmp");
 	image.SetClipH(image.GetClipH()/3);
-	font.LoadSurface(fonts + "pk_white_8.bmp");
+	font.LoadSurface(fontsDir + "pk_white_8.bmp");
 
 	//pass the utility objects
 	startButton.SetImage(&image);
@@ -114,7 +116,8 @@ void MainMenu::MouseButtonUp(SDL_MouseButtonEvent const& button) {
 	if (optionsButton.MouseButtonUp(button) == Button::State::HOVER) {
 		SetNextScene(SceneList::OPTIONSMENU);
 	}
-	if (quitButton.MouseButtonUp(button) == Button::State::HOVER) {
+	if (quitButton.MouseButtonUp(button) == Button::State::HOVER &&
+		button.button & SDL_BUTTON_LMASK) {
 		QuitEvent();
 	}
 }

@@ -171,7 +171,7 @@ void ClientApplication::Proc() {
 		//simulate game time
 		while (simTime < realTime) {
 			//call each user defined function
-			activeScene->RunFrame(double(delta.count()) / std::chrono::duration<int, std::milli>::period::den);
+			activeScene->RunFrame(constexpr(double(delta.count()) / std::chrono::duration<int, std::milli>::period::den));
 			simTime += delta;
 		}
 

@@ -29,25 +29,43 @@
 //Public access members
 //-------------------------
 
-CleanUp::CleanUp(
-	ConfigUtility* const argConfig,
-	UDPNetworkUtility* const argNetwork,
-	int* const argClientIndex,
-	int* const argAccountIndex,
-	int* const argCharacterIndex,
-	CharacterMap* argCharacterMap
-	):
-	config(*argConfig),
-	network(*argNetwork),
-	clientIndex(*argClientIndex),
-	accountIndex(*argAccountIndex),
-	characterIndex(*argCharacterIndex),
-	characterMap(*argCharacterMap)
+CleanUp::CleanUp(lua_State* L, UDPNetworkUtility& aNetwork, CharacterMap& aCharacterMap):
+	lua(L),
+	network(aNetwork),
+	characterMap(aCharacterMap)
 {
+	//get the config table
+	lua_getglobal(lua, "config");
+
+	//TODO: I need to figure out an alternative to loading these over and over again
+	//get the directories
+	lua_getfield(lua, -1, "dir");
+	lua_getfield(lua, -1, "interface");
+	lua_getfield(lua, -2, "fonts");
+
+	std::string interfaceDir = lua_tostring(lua, -2);
+	std::string fontsDir = lua_tostring(lua, -1);
+
+	lua_pop(lua, 3);
+
+	//clear the indicies
+	lua_getfield(lua, -1, "client");
+
+	lua_pushnil(lua);
+	lua_pushnil(lua);
+	lua_pushnil(lua);
+
+	lua_setfield(lua, -4, "clientIndex");
+	lua_setfield(lua, -3, "accountIndex");
+	lua_setfield(lua, -2, "characterIndex");
+
+	//pop the remaining objects from the stack
+	lua_pop(lua, 2);
+
 	//setup the utility objects
-	image.LoadSurface(config["dir.interface"] + "button_menu.bmp");
+	image.LoadSurface(interfaceDir + "button_menu.bmp");
 	image.SetClipH(image.GetClipH()/3);
-	font.LoadSurface(config["dir.fonts"] + "pk_white_8.bmp");
+	font.LoadSurface(fontsDir + "pk_white_8.bmp");
 
 	//pass the utility objects
 	backButton.SetImage(&image);
@@ -62,12 +80,7 @@ CleanUp::CleanUp(
 
 	//full reset
 	network.Unbind(Channels::SERVER);
-	clientIndex = -1;
-	accountIndex = -1;
-	characterIndex = -1;
-//	combatMap.clear();
 	characterMap.clear();
-//	enemyMap.clear();
 
 	//auto return
 	startTick = std::chrono::steady_clock::now();
@@ -83,7 +96,7 @@ CleanUp::~CleanUp() {
 
 void CleanUp::Update(double delta) {
 	if (std::chrono::steady_clock::now() - startTick > std::chrono::duration<int>(10)) {
-		QuitEvent();
+		SetNextScene(SceneList::MAINMENU);
 	}
 
 	//BUGFIX: Eat incoming packets
@@ -119,7 +132,8 @@ void CleanUp::MouseButtonDown(SDL_MouseButtonEvent const& button) {
 }
 
 void CleanUp::MouseButtonUp(SDL_MouseButtonEvent const& button) {
-	if (backButton.MouseButtonUp(button) == Button::State::HOVER) {
+	if (backButton.MouseButtonUp(button) == Button::State::HOVER &&
+		button.button & SDL_BUTTON_LMASK) {
 		SetNextScene(SceneList::MAINMENU);
 	}
 }

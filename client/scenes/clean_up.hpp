@@ -25,19 +25,18 @@
 //network
 #include "udp_network_utility.hpp"
 
-//graphics
+//graphics & ui
 #include "image.hpp"
 #include "raster_font.hpp"
 #include "button.hpp"
-
-//common
-#include "config_utility.hpp"
 #include "frame_rate.hpp"
-
-#include "character.hpp"
 
 //client
 #include "base_scene.hpp"
+#include "character.hpp"
+
+//APIs
+#include "lua/lua.hpp"
 
 //std namespace
 #include <chrono>
@@ -45,14 +44,7 @@
 class CleanUp : public BaseScene {
 public:
 	//Public access members
-	CleanUp(
-		ConfigUtility* const argConfig,
-		UDPNetworkUtility* const argNetwork,
-		int* const argClientIndex,
-		int* const argAccountIndex,
-		int* const argCharacterIndex,
-		CharacterMap* argCharacterMap
-	);
+	CleanUp(lua_State*, UDPNetworkUtility&, CharacterMap&);
 	~CleanUp();
 
 protected:
@@ -70,18 +62,13 @@ protected:
 	void KeyUp(SDL_KeyboardEvent const&);
 
 	//shared parameters
-	ConfigUtility& config;
+	lua_State* lua = nullptr;
 	UDPNetworkUtility& network;
-	int& clientIndex;
-	int& accountIndex;
-	int& characterIndex;
 	CharacterMap& characterMap;
 
-	//graphics
+	//graphics & ui
 	Image image;
 	RasterFont font;
-
-	//UI
 	Button backButton;
 	FrameRate fps;
 
