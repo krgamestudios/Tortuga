@@ -33,15 +33,17 @@ int main(int argc, char** argv) {
 	try {
 		//create the singletons
 		ConfigUtility::Create();
+		ServerApplication::Create();
 
 		//call the server's routines
-		ServerApplication app;
+		ServerApplication& app = ServerApplication::GetSingleton();
 		app.Init(argc, argv);
 		app.Proc();
 		app.Quit();
 
 		//delete the singletons
 		ConfigUtility::Delete();
+		ServerApplication::Delete();
 	}
 	catch(exception& e) {
 		cerr << "Fatal exception thrown: " << e.what() << endl;

@@ -31,6 +31,7 @@
 //common utilities
 #include "udp_network_utility.hpp"
 #include "config_utility.hpp"
+#include "singleton.hpp"
 
 //APIs
 #include "lua/lua.hpp"
@@ -42,17 +43,19 @@
 #include <string>
 
 //The main application class
-class ServerApplication {
+class ServerApplication: public Singleton<ServerApplication> {
 public:
 	//public methods
-	ServerApplication() = default;
-	~ServerApplication() = default;
-
 	void Init(int argc, char** argv);
 	void Proc();
 	void Quit();
 
 private:
+	friend Singleton<ServerApplication>;
+
+	ServerApplication() = default;
+	~ServerApplication() = default;
+
 	//handle incoming traffic
 	void HandlePacket(SerialPacket* const);
 

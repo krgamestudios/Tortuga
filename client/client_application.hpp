@@ -28,18 +28,23 @@
 #include "udp_network_utility.hpp"
 #include "character.hpp"
 
+#include "singleton.hpp"
+
 #include <map>
 
-class ClientApplication {
+class ClientApplication: public Singleton<ClientApplication> {
 public:
-	ClientApplication() = default;
-	~ClientApplication() = default;
-
+	//public methods
 	void Init(int argc, char** argv);
 	void Proc();
 	void Quit();
 
 private:
+	friend Singleton<ClientApplication>;
+
+	ClientApplication() = default;
+	~ClientApplication() = default;
+
 	//Private access members
 	void LoadScene(SceneList sceneIndex);
 	void UnloadScene();
