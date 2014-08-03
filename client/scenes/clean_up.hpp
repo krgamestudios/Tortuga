@@ -31,7 +31,6 @@
 #include "button.hpp"
 
 //common
-#include "config_utility.hpp"
 #include "frame_rate.hpp"
 
 #include "character.hpp"
@@ -46,7 +45,6 @@ class CleanUp : public BaseScene {
 public:
 	//Public access members
 	CleanUp(
-		ConfigUtility* const argConfig,
 		UDPNetworkUtility* const argNetwork,
 		int* const argClientIndex,
 		int* const argAccountIndex,
@@ -70,7 +68,6 @@ protected:
 	void KeyUp(SDL_KeyboardEvent const&);
 
 	//shared parameters
-	ConfigUtility& config;
 	UDPNetworkUtility& network;
 	int& clientIndex;
 	int& accountIndex;

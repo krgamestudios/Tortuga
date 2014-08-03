@@ -23,6 +23,7 @@
 
 #include "channels.hpp"
 #include "utility.hpp"
+#include "config_utility.hpp"
 
 #include <stdexcept>
 #include <algorithm>
@@ -34,20 +35,20 @@
 //-------------------------
 
 InWorld::InWorld(
-	ConfigUtility* const argConfig,
 	UDPNetworkUtility* const argNetwork,
 	int* const argClientIndex,
 	int* const argAccountIndex,
 	int* const argCharacterIndex,
 	CharacterMap* argCharacterMap
 	):
-	config(*argConfig),
 	network(*argNetwork),
 	clientIndex(*argClientIndex),
 	accountIndex(*argAccountIndex),
 	characterIndex(*argCharacterIndex),
 	characterMap(*argCharacterMap)
 {
+	ConfigUtility& config = ConfigUtility::GetSingleton();
+
 	//setup the utility objects
 	buttonImage.LoadSurface(config["dir.interface"] + "button_menu.bmp");
 	buttonImage.SetClipH(buttonImage.GetClipH()/3);
@@ -302,7 +303,7 @@ void InWorld::HandleCharacterNew(CharacterPacket* const argPacket) {
 	newCharacter.SetHandle(argPacket->handle);
 	newCharacter.SetAvatar(argPacket->avatar);
 
-	newCharacter.GetSprite()->LoadSurface(config["dir.sprites"] + newCharacter.GetAvatar(), 4, 4);
+	newCharacter.GetSprite()->LoadSurface(ConfigUtility::GetSingleton()["dir.sprites"] + newCharacter.GetAvatar(), 4, 4);
 
 	newCharacter.SetOrigin(argPacket->origin);
 	newCharacter.SetMotion(argPacket->motion);

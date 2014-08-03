@@ -83,7 +83,7 @@ private:
 	sqlite3* database = nullptr;
 	lua_State* luaState = nullptr;
 	UDPNetworkUtility network;
-	ConfigUtility config;
+	ConfigUtility& config = ConfigUtility::GetSingleton();
 
 	//simple tables
 	std::map<int, ClientData> clientMap;

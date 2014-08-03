@@ -35,7 +35,6 @@
 #include "tile_sheet.hpp"
 
 //common
-#include "config_utility.hpp"
 #include "frame_rate.hpp"
 
 #include "character.hpp"
@@ -50,7 +49,6 @@ class InWorld : public BaseScene {
 public:
 	//Public access members
 	InWorld(
-		ConfigUtility* const argConfig,
 		UDPNetworkUtility* const argNetwork,
 		int* const argClientIndex,
 		int* const argAccountIndex,
@@ -94,7 +92,6 @@ protected:
 	void UpdateMap();
 
 	//shared parameters
-	ConfigUtility& config;
 	UDPNetworkUtility& network;
 	int& clientIndex;
 	int& accountIndex;

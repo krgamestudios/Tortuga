@@ -22,6 +22,7 @@
 #include "clean_up.hpp"
 
 #include "channels.hpp"
+#include "config_utility.hpp"
 
 #include <stdexcept>
 
@@ -30,20 +31,20 @@
 //-------------------------
 
 CleanUp::CleanUp(
-	ConfigUtility* const argConfig,
 	UDPNetworkUtility* const argNetwork,
 	int* const argClientIndex,
 	int* const argAccountIndex,
 	int* const argCharacterIndex,
 	CharacterMap* argCharacterMap
 	):
-	config(*argConfig),
 	network(*argNetwork),
 	clientIndex(*argClientIndex),
 	accountIndex(*argAccountIndex),
 	characterIndex(*argCharacterIndex),
 	characterMap(*argCharacterMap)
 {
+	ConfigUtility& config = ConfigUtility::GetSingleton();
+
 	//setup the utility objects
 	image.LoadSurface(config["dir.interface"] + "button_menu.bmp");
 	image.SetClipH(image.GetClipH()/3);

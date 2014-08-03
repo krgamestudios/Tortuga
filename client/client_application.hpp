@@ -25,7 +25,6 @@
 #include "scene_list.hpp"
 #include "base_scene.hpp"
 
-#include "config_utility.hpp"
 #include "udp_network_utility.hpp"
 #include "character.hpp"
 
@@ -48,7 +47,6 @@ private:
 	BaseScene* activeScene = nullptr;
 
 	//shared parameters
-	ConfigUtility config;
 	UDPNetworkUtility network;
 	int clientIndex = -1;
 	int accountIndex = -1;

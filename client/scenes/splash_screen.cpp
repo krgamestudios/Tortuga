@@ -21,14 +21,14 @@
 */
 #include "splash_screen.hpp"
 
+#include "config_utility.hpp"
+
 //-------------------------
 //Public access members
 //-------------------------
 
-SplashScreen::SplashScreen(ConfigUtility* const argConfig):
-	config(*argConfig)
-{
-	logo.LoadSurface(config["dir.logos"] + "krstudios.bmp");
+SplashScreen::SplashScreen() {
+	logo.LoadSurface(ConfigUtility::GetSingleton()["dir.logos"] + "krstudios.bmp");
 	startTick = std::chrono::steady_clock::now();
 }
 
