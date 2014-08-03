@@ -1,4 +1,4 @@
-/* Copyright: (c) Kayne Ruse 2013, 2014
+/* Copyright: (c) Kayne Ruse 2014
  * 
  * This software is provided 'as-is', without any express or implied
  * warranty. In no event will the authors be held liable for any damages
@@ -19,33 +19,36 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#include "splash_screen.hpp"
+#ifndef TIMER_HPP_
+#define TIMER_HPP_
 
-#include "config_utility.hpp"
+#include <chrono>
+#include <string>
+#include <ostream>
 
-//-------------------------
-//Public access members
-//-------------------------
+class Timer {
+public:
+	typedef std::chrono::high_resolution_clock Clock;
 
-SplashScreen::SplashScreen() {
-	logo.LoadSurface(ConfigUtility::GetSingleton()["dir.logos"] + "krstudios.bmp");
-	startTick = std::chrono::steady_clock::now();
-}
+	Timer();
+	Timer(std::string s);
+	~Timer() = default;
 
-SplashScreen::~SplashScreen() {
-	//
-}
+	inline void Start();
+	inline void Stop();
 
-//-------------------------
-//Frame loop
-//-------------------------
+	//accessors and mutators
+	Clock::duration GetTime() { return timeSpan; }
 
-void SplashScreen::Update(double delta) {
-	if (std::chrono::steady_clock::now() - startTick > std::chrono::duration<int>(1)) {
-		SetNextScene(SceneList::MAINMENU);
-	}
-}
+	std::string SetName(std::string s) { return name = s; }
+	std::string GetName() { return name; }
 
-void SplashScreen::Render(SDL_Surface* const screen) {
-	logo.DrawTo(screen, (screen->w - logo.GetClipW()) / 2, (screen->h - logo.GetClipH()) / 2);
-}
+private:
+	std::string name;
+	Clock::time_point start;
+	Clock::duration timeSpan;
+};
+
+std::ostream& operator<<(std::ostream& os, Timer& t);
+
+#endif

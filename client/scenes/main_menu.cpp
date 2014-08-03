@@ -21,13 +21,15 @@
 */
 #include "main_menu.hpp"
 
+#include "config_utility.hpp"
+
 //-------------------------
 //Public access members
 //-------------------------
 
-MainMenu::MainMenu(ConfigUtility* const argConfig):
-	config(*argConfig)
-{
+MainMenu::MainMenu() {
+	ConfigUtility& config = ConfigUtility::GetSingleton();
+
 	//setup the utility objects
 	image.LoadSurface(config["dir.interface"] + "button_menu.bmp");
 	image.SetClipH(image.GetClipH()/3);
@@ -101,6 +103,7 @@ void MainMenu::MouseButtonDown(SDL_MouseButtonEvent const& button) {
 }
 
 void MainMenu::MouseButtonUp(SDL_MouseButtonEvent const& button) {
+	//TODO: Buttons should only register as "selected" when the left button is used
 	if (startButton.MouseButtonUp(button) == Button::State::HOVER) {
 		SetNextScene(SceneList::LOBBYMENU);
 	}

@@ -23,6 +23,7 @@
 
 #include "channels.hpp"
 #include "utility.hpp"
+#include "config_utility.hpp"
 
 #include <stdexcept>
 #include <algorithm>
@@ -34,20 +35,20 @@
 //-------------------------
 
 InWorld::InWorld(
-	ConfigUtility* const argConfig,
 	UDPNetworkUtility* const argNetwork,
 	int* const argClientIndex,
 	int* const argAccountIndex,
 	int* const argCharacterIndex,
 	CharacterMap* argCharacterMap
 	):
-	config(*argConfig),
 	network(*argNetwork),
 	clientIndex(*argClientIndex),
 	accountIndex(*argAccountIndex),
 	characterIndex(*argCharacterIndex),
 	characterMap(*argCharacterMap)
 {
+	ConfigUtility& config = ConfigUtility::GetSingleton();
+
 	//setup the utility objects
 	buttonImage.LoadSurface(config["dir.interface"] + "button_menu.bmp");
 	buttonImage.SetClipH(buttonImage.GetClipH()/3);
@@ -71,7 +72,8 @@ InWorld::InWorld(
 
 	//load the tilesheet
 	//TODO: add the tilesheet to the map system?
-	tileSheet.Load(config["dir.tilesets"] + "terrain.bmp", 12, 15);
+	//TODO: Tile size and tile sheet should be loaded elsewhere
+	tileSheet.Load(config["dir.tilesets"] + "terrain.bmp", 32, 32);
 
 	//request a sync
 	RequestSynchronize();
@@ -105,16 +107,41 @@ void InWorld::Update(double delta) {
 		it.second.Update(delta);
 	}
 
-	//TODO: Check collisions here
-
-	//update the camera
-	if(localCharacter) {
-		camera.x = localCharacter->GetOrigin().x - camera.marginX;
-		camera.y = localCharacter->GetOrigin().y - camera.marginY;
-	}
-
 	//check the map
 	UpdateMap();
+
+	//skip the rest
+	if (!localCharacter) {
+		return;
+	}
+
+	//check for collisions with the map
+	BoundingBox wallBounds = {0, 0, tileSheet.GetTileW(), tileSheet.GetTileH()};
+	const int xCount = localCharacter->GetBounds().w / wallBounds.w + 1;
+	const int yCount = localCharacter->GetBounds().h / wallBounds.h + 1;
+
+	for (int i = -1; i <= xCount; ++i) {
+		for (int j = -1; j <= yCount; ++j) {
+			//set the wall's position
+			wallBounds.x = wallBounds.w * i + snapToBase((double)wallBounds.w, localCharacter->GetOrigin().x);
+			wallBounds.y = wallBounds.h * j + snapToBase((double)wallBounds.h, localCharacter->GetOrigin().y);
+
+			if (!regionPager.GetSolid(wallBounds.x / wallBounds.w, wallBounds.y / wallBounds.h)) {
+				continue;
+			}
+
+			if ((localCharacter->GetOrigin() + localCharacter->GetBounds()).CheckOverlap(wallBounds)) {
+				localCharacter->SetOrigin(localCharacter->GetOrigin() - (localCharacter->GetMotion() * delta));
+				localCharacter->SetMotion({0,0});
+				localCharacter->CorrectSprite();
+				SendPlayerUpdate();
+			}
+		}
+	}
+
+	//update the camera
+	camera.x = localCharacter->GetOrigin().x - camera.marginX;
+	camera.y = localCharacter->GetOrigin().y - camera.marginY;
 }
 
 void InWorld::FrameEnd() {
@@ -276,10 +303,11 @@ void InWorld::HandleCharacterNew(CharacterPacket* const argPacket) {
 	newCharacter.SetHandle(argPacket->handle);
 	newCharacter.SetAvatar(argPacket->avatar);
 
-	newCharacter.GetSprite()->LoadSurface(config["dir.sprites"] + newCharacter.GetAvatar(), 4, 4);
+	newCharacter.GetSprite()->LoadSurface(ConfigUtility::GetSingleton()["dir.sprites"] + newCharacter.GetAvatar(), 4, 4);
 
 	newCharacter.SetOrigin(argPacket->origin);
 	newCharacter.SetMotion(argPacket->motion);
+	newCharacter.SetBounds({0, 16, 32, 32}); //TODO: magic numbers, fix this
 
 	(*newCharacter.GetStats()) = argPacket->stats;
 

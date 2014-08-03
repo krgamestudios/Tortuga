@@ -23,6 +23,7 @@
 
 #include "channels.hpp"
 #include "utility.hpp"
+#include "config_utility.hpp"
 
 #include <stdexcept>
 
@@ -31,14 +32,12 @@
 //-------------------------
 
 InCombat::InCombat(
-	ConfigUtility* const argConfig,
 	UDPNetworkUtility* const argNetwork,
 	int* const argClientIndex,
 	int* const argAccountIndex,
 	int* const argCharacterIndex,
 	CharacterMap* argCharacterMap
 	):
-	config(*argConfig),
 	network(*argNetwork),
 	clientIndex(*argClientIndex),
 	accountIndex(*argAccountIndex),

@@ -19,24 +19,27 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef SIMPLERNG_HPP_
-#define SIMPLERNG_HPP_
+#include "timer.hpp"
 
-//a simple, stateless, random number generator
-class SimpleRNG {
-public:
-	SimpleRNG() { SetSeed(8891.0); }
-	SimpleRNG(double x) { SetSeed(x); }
+Timer::Timer(): start(Timer::Clock::now()) {
+	//
+}
 
-	double SetSeed(double s) { return seed = s; }
-	double GetSeed() { return seed; }
+Timer::Timer(std::string s): name(s), start(Timer::Clock::now()) {
+	//
+}
 
-	double operator()(double x) {
-		return (x + seed) * 11235.0 + 81321.0;
-	};
+void Timer::Start() {
+	start = Clock::now();
+}
 
-private:
-	double seed;
-};
+void Timer::Stop() {
+	timeSpan = Clock::now() - start;
+}
 
-#endif
+std::ostream& operator<<(std::ostream& os, Timer& t) {
+	os << t.GetName() << ": ";
+	os << std::chrono::duration_cast<std::chrono::milliseconds>(t.GetTime()).count();
+	os << "ms";
+	return os;
+}

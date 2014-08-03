@@ -25,6 +25,7 @@
 //components
 #include "character_defines.hpp"
 #include "vector2.hpp"
+#include "bounding_box.hpp"
 #include "statistics.hpp"
 
 //graphics
@@ -64,8 +65,8 @@ public:
 	Vector2 GetOrigin() const { return origin; }
 	Vector2 SetMotion(Vector2 v) { return motion = v; }
 	Vector2 GetMotion() const { return motion; }
-	Vector2 SetBounds(Vector2 v) { return bounds = v; }
-	Vector2 GetBounds() const { return bounds; }
+	BoundingBox SetBounds(BoundingBox b) { return bounds = b; }
+	BoundingBox GetBounds() { return bounds; }
 
 private:
 	//graphics
@@ -84,7 +85,7 @@ private:
 	//position
 	Vector2 origin = {0.0,0.0};
 	Vector2 motion = {0.0,0.0};
-	Vector2 bounds = {CHARACTER_BOUNDS_WIDTH,CHARACTER_BOUNDS_HEIGHT};
+	BoundingBox bounds;
 };
 
 //tmp

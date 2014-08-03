@@ -22,6 +22,7 @@
 #include "client_application.hpp"
 
 #include "serial.hpp"
+#include "config_utility.hpp"
 
 #include <stdexcept>
 #include <chrono>
@@ -48,6 +49,7 @@ void ClientApplication::Init(int argc, char** argv) {
 	std::cout << "Beginning " << argv[0] << std::endl;
 
 	//load the prerequisites
+	ConfigUtility& config = ConfigUtility::GetSingleton();
 	config.Load("rsc\\config.cfg");
 
 	//-------------------------
@@ -165,25 +167,25 @@ void ClientApplication::LoadScene(SceneList sceneIndex) {
 		//add scene creation calls here
 		case SceneList::FIRST:
 		case SceneList::SPLASHSCREEN:
-			activeScene = new SplashScreen(&config);
+			activeScene = new SplashScreen();
 		break;
 		case SceneList::MAINMENU:
-			activeScene = new MainMenu(&config);
+			activeScene = new MainMenu();
 		break;
 		case SceneList::OPTIONSMENU:
-			activeScene = new OptionsMenu(&config);
+			activeScene = new OptionsMenu();
 		break;
 		case SceneList::LOBBYMENU:
-			activeScene = new LobbyMenu(&config, &network, &clientIndex, &accountIndex);
+			activeScene = new LobbyMenu(&network, &clientIndex, &accountIndex);
 		break;
 		case SceneList::INWORLD:
-			activeScene = new InWorld(&config, &network, &clientIndex, &accountIndex, &characterIndex, &characterMap);
+			activeScene = new InWorld(&network, &clientIndex, &accountIndex, &characterIndex, &characterMap);
 		break;
 		case SceneList::INCOMBAT:
-			activeScene = new InCombat(&config, &network, &clientIndex, &accountIndex, &characterIndex, &characterMap);
+			activeScene = new InCombat(&network, &clientIndex, &accountIndex, &characterIndex, &characterMap);
 		break;
 		case SceneList::CLEANUP:
-			activeScene = new CleanUp(&config, &network, &clientIndex, &accountIndex, &characterIndex, &characterMap);
+			activeScene = new CleanUp(&network, &clientIndex, &accountIndex, &characterIndex, &characterMap);
 		break;
 		default:
 			throw(std::logic_error("Failed to recognize the scene index"));

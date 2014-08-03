@@ -24,7 +24,6 @@
 
 #include "base_scene.hpp"
 
-#include "config_utility.hpp"
 #include "image.hpp"
 #include "raster_font.hpp"
 #include "button.hpp"
@@ -33,7 +32,7 @@
 class OptionsMenu : public BaseScene {
 public:
 	//Public access members
-	OptionsMenu(ConfigUtility* const);
+	OptionsMenu();
 	~OptionsMenu();
 
 protected:
@@ -49,9 +48,6 @@ protected:
 	void MouseButtonUp(SDL_MouseButtonEvent const&);
 	void KeyDown(SDL_KeyboardEvent const&);
 	void KeyUp(SDL_KeyboardEvent const&);
-
-	//shared parameters
-	ConfigUtility& config;
 
 	//members
 	Image image;

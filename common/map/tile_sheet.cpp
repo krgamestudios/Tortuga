@@ -21,24 +21,24 @@
 */
 #include "tile_sheet.hpp"
 
-void TileSheet::Load(std::string fname, int xc, int yc) {
-	XCount = xc;
-	YCount = yc;
+void TileSheet::Load(std::string fname, int tileWidth, int tileHeight) {
 	image.LoadSurface(fname);
-	image.SetClipW(image.GetClipW()/XCount);
-	image.SetClipH(image.GetClipH()/YCount);
+	image.SetClipW(tileWidth);
+	image.SetClipH(tileHeight);
+	xCount = image.GetSurface()->w / image.GetClipW();
+	yCount = image.GetSurface()->h / image.GetClipH();
 }
 
 void TileSheet::Unload() {
 	image.FreeSurface();
-	XCount = YCount = 0;
+	xCount = yCount = 0;
 }
 
-void TileSheet::DrawTo(SDL_Surface* const dest, int x, int y, Region::type_t tile) {
+void TileSheet::DrawTileTo(SDL_Surface* const dest, int x, int y, Region::type_t tile) {
 	//0 is invisible
 	if (tile == 0) return;
-	image.SetClipX((tile-1) % XCount * image.GetClipW());
-	image.SetClipY((tile-1) / XCount * image.GetClipH());
+	image.SetClipX((tile-1) % xCount * image.GetClipW());
+	image.SetClipY((tile-1) / xCount * image.GetClipH());
 	image.DrawTo(dest, x, y);
 }
 
@@ -50,8 +50,8 @@ void TileSheet::DrawRegionTo(SDL_Surface* const dest, Region* const region, int 
 				tile = region->GetTile(i, j, k);
 				//0 is invisible
 				if (tile == 0) continue;
-				image.SetClipX((tile-1) % XCount * image.GetClipW());
-				image.SetClipY((tile-1) / XCount * image.GetClipH());
+				image.SetClipX((tile-1) % xCount * image.GetClipW());
+				image.SetClipY((tile-1) / xCount * image.GetClipH());
 				image.DrawTo(dest,
 					(region->GetX() + i) * image.GetClipW() - camX,
 					(region->GetY() + j) * image.GetClipH() - camY);

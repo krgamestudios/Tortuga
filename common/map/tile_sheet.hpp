@@ -1,4 +1,4 @@
-/* Copyright: (c) Kayne Ruse 2013, 2014
+/* Copyright: (c) Kayne Ruse 2014
  * 
  * This software is provided 'as-is', without any express or implied
  * warranty. In no event will the authors be held liable for any damages
@@ -19,33 +19,36 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#include "splash_screen.hpp"
+#ifndef TILESHEET_HPP_
+#define TILESHEET_HPP_
 
-#include "config_utility.hpp"
+#include "region.hpp"
 
-//-------------------------
-//Public access members
-//-------------------------
+#include "image.hpp"
 
-SplashScreen::SplashScreen() {
-	logo.LoadSurface(ConfigUtility::GetSingleton()["dir.logos"] + "krstudios.bmp");
-	startTick = std::chrono::steady_clock::now();
-}
+#include <string>
 
-SplashScreen::~SplashScreen() {
-	//
-}
+class TileSheet {
+public:
+	TileSheet() = default;
+	TileSheet(std::string f, int w, int h) { Load(f, w, h); }
+	~TileSheet() = default;
 
-//-------------------------
-//Frame loop
-//-------------------------
+	void Load(std::string fname, int tileWidth, int tileHeight);
+	void Unload();
 
-void SplashScreen::Update(double delta) {
-	if (std::chrono::steady_clock::now() - startTick > std::chrono::duration<int>(1)) {
-		SetNextScene(SceneList::MAINMENU);
-	}
-}
+	void DrawTileTo(SDL_Surface* const dest, int x, int y, Region::type_t tile);
+	void DrawRegionTo(SDL_Surface* const dest, Region* const region, int camX, int camY);
 
-void SplashScreen::Render(SDL_Surface* const screen) {
-	logo.DrawTo(screen, (screen->w - logo.GetClipW()) / 2, (screen->h - logo.GetClipH()) / 2);
-}
+	//accessors
+	Image* GetImage() { return &image; }
+	int GetXCount() { return xCount; }
+	int GetYCount() { return yCount; }
+	int GetTileW() { return image.GetClipW(); }
+	int GetTileH() { return image.GetClipH(); }
+private:
+	Image image;
+	int xCount = 0, yCount = 0;
+};
+
+#endif

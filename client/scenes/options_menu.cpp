@@ -21,13 +21,15 @@
 */
 #include "options_menu.hpp"
 
+#include "config_utility.hpp"
+
 //-------------------------
 //Public access members
 //-------------------------
 
-OptionsMenu::OptionsMenu(ConfigUtility* const argConfig):
-	config(*argConfig)
-{
+OptionsMenu::OptionsMenu() {
+	ConfigUtility& config = ConfigUtility::GetSingleton();
+
 	//setup the utility objects
 	image.LoadSurface(config["dir.interface"] + "button_menu.bmp");
 	image.SetClipH(image.GetClipH()/3);

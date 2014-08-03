@@ -31,7 +31,6 @@
 #include "button.hpp"
 
 //common
-#include "config_utility.hpp"
 #include "frame_rate.hpp"
 
 #include "character.hpp"
@@ -43,7 +42,6 @@ class InCombat : public BaseScene {
 public:
 	//Public access members
 	InCombat(
-		ConfigUtility* const argConfig,
 		UDPNetworkUtility* const argNetwork,
 		int* const argClientIndex,
 		int* const argAccountIndex,
@@ -79,7 +77,6 @@ protected:
 	void RequestShutdown();
 
 	//shared parameters
-	ConfigUtility& config;
 	UDPNetworkUtility& network;
 	int& clientIndex;
 	int& accountIndex;

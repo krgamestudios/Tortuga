@@ -21,6 +21,9 @@
 */
 #include "client_application.hpp"
 
+//singletons
+#include "config_utility.hpp"
+
 #include <stdexcept>
 #include <iostream>
 
@@ -28,10 +31,19 @@ using namespace std;
 
 int main(int argc, char** argv) {
 	try {
-		ClientApplication app;
+		//create the singletons
+		ClientApplication::Create();
+		ConfigUtility::Create();
+
+		//call the server's routines
+		ClientApplication& app = ClientApplication::GetSingleton();
 		app.Init(argc, argv);
 		app.Proc();
 		app.Quit();
+
+		//delete the singletons
+		ConfigUtility::Delete();
+		ClientApplication::Delete();
 	}
 	catch(exception& e) {
 		cerr << "Fatal exception thrown: " << e.what() << endl;

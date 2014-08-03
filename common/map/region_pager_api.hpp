@@ -19,8 +19,8 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef PAGERAPI_HPP_
-#define PAGERAPI_HPP_
+#ifndef REGIONPAGERAPI_HPP_
+#define REGIONPAGERAPI_HPP_
 
 #include "lua/lua.hpp"
 

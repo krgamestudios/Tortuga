@@ -42,14 +42,10 @@ public:
 	void UnloadAll() override;
 
 	//accessors & mutators
-	std::string SetDirectory(std::string s) { return directory = s; }
-	std::string GetDirectory() { return directory; }
-
-	lua_State* SetLuaState(lua_State* L) { return luaState = L; }
-	lua_State* GetLuaState() { return luaState; }
+	lua_State* SetLuaState(lua_State* L) { return lua = L; }
+	lua_State* GetLuaState() { return lua; }
 protected:
-	std::string directory;
-	lua_State* luaState = nullptr;
+	lua_State* lua = nullptr;
 };
 
 #endif

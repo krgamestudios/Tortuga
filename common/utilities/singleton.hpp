@@ -1,4 +1,4 @@
-/* Copyright: (c) Kayne Ruse 2013, 2014
+/* Copyright: (c) Kayne Ruse 2014
  * 
  * This software is provided 'as-is', without any express or implied
  * warranty. In no event will the authors be held liable for any damages
@@ -19,33 +19,45 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#include "splash_screen.hpp"
+#ifndef SINGLETON_HPP_
+#define SINGLETON_HPP_
 
-#include "config_utility.hpp"
+#include <stdexcept>
 
-//-------------------------
-//Public access members
-//-------------------------
-
-SplashScreen::SplashScreen() {
-	logo.LoadSurface(ConfigUtility::GetSingleton()["dir.logos"] + "krstudios.bmp");
-	startTick = std::chrono::steady_clock::now();
-}
-
-SplashScreen::~SplashScreen() {
-	//
-}
-
-//-------------------------
-//Frame loop
-//-------------------------
-
-void SplashScreen::Update(double delta) {
-	if (std::chrono::steady_clock::now() - startTick > std::chrono::duration<int>(1)) {
-		SetNextScene(SceneList::MAINMENU);
+template<typename T>
+class Singleton {
+public:
+	static T& GetSingleton() {
+		if (!ptr) {
+			throw(std::logic_error("This singleton has not been created"));
+		}
+		return *ptr;
 	}
-}
+	static void Create() {
+		if (ptr) {
+			throw(std::logic_error("This singleton has already been created"));
+		}
+		ptr = new T();
+	}
+	static void Delete() {
+		if (!ptr) {
+			throw(std::logic_error("A non-existant singleton cannot be deleted"));
+		}
+		delete ptr;
+		ptr = nullptr;
+	}
 
-void SplashScreen::Render(SDL_Surface* const screen) {
-	logo.DrawTo(screen, (screen->w - logo.GetClipW()) / 2, (screen->h - logo.GetClipH()) / 2);
-}
+protected:
+	Singleton() = default;
+	Singleton(Singleton const&) = default;
+	Singleton(Singleton&&) = default;
+	~Singleton() = default;
+
+private:
+	static T* ptr;
+};
+
+template<typename T>
+T* Singleton<T>::ptr = nullptr;
+
+#endif

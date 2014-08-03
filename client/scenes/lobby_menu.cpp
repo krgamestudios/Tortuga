@@ -31,12 +31,10 @@
 //-------------------------
 
 LobbyMenu::LobbyMenu(
-	ConfigUtility* const argConfig,
 	UDPNetworkUtility* const argNetwork,
 	int* const argClientIndex,
 	int* const argAccountIndex
 	):
-	config(*argConfig),
 	network(*argNetwork),
 	clientIndex(*argClientIndex),
 	accountIndex(*argAccountIndex)

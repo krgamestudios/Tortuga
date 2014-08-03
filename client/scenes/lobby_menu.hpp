@@ -41,7 +41,6 @@ class LobbyMenu : public BaseScene {
 public:
 	//Public access members
 	LobbyMenu(
-		ConfigUtility* const argConfig,
 		UDPNetworkUtility* const argNetwork,
 		int* const argClientIndex,
 		int* const argAccountIndex
@@ -68,7 +67,7 @@ protected:
 	void HandleJoinResponse(ClientPacket* const);
 
 	//shared parameters
-	ConfigUtility& config;
+	ConfigUtility& config = ConfigUtility::GetSingleton();
 	UDPNetworkUtility& network;
 	int& clientIndex;
 	int& accountIndex;
