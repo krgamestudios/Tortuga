@@ -30,15 +30,15 @@ class Timer {
 public:
 	typedef std::chrono::high_resolution_clock Clock;
 
-	Timer() = default;
-	Timer(std::string s) : name(s), start(Clock::now()) {};
+	Timer();
+	Timer(std::string s);
 	~Timer() = default;
 
-	inline void Start() { start = Clock::now(); }
-	inline void Stop() { time = Clock::now() - start; }
+	inline void Start();
+	inline void Stop();
 
 	//accessors and mutators
-	Clock::duration GetTime() { return time; }
+	Clock::duration GetTime() { return timeSpan; }
 
 	std::string SetName(std::string s) { return name = s; }
 	std::string GetName() { return name; }
@@ -46,7 +46,7 @@ public:
 private:
 	std::string name;
 	Clock::time_point start;
-	Clock::duration time;
+	Clock::duration timeSpan;
 };
 
 std::ostream& operator<<(std::ostream& os, Timer& t);

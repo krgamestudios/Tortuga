@@ -22,14 +22,13 @@
 #ifndef CONFIGUTILITY_HPP_
 #define CONFIGUTILITY_HPP_
 
+#include "singleton.hpp"
+
 #include <map>
 #include <string>
 
-class ConfigUtility {
+class ConfigUtility : public Singleton<ConfigUtility> {
 public:
-	ConfigUtility() = default;
-	ConfigUtility(std::string s) { Load(s); }
-
 	void Load(std::string fname);
 
 	//convert to a type
@@ -39,16 +38,21 @@ public:
 	bool Boolean(std::string);
 
 	//shorthand
-	inline std::string& operator[](std::string s) { return String(s); }
+	inline std::string& operator[](std::string s) { return configMap[s]; }
 	inline int Int(std::string s) { return Integer(s); }
 	inline bool Bool(std::string s) { return Boolean(s); }
 
-	//OO breaker
-	std::map<std::string, std::string>* GetMap() {
-		return &table;
-	}
 private:
-	std::map<std::string, std::string> table;
+	typedef std::map<std::string, std::string> table_t;
+
+	friend Singleton<ConfigUtility>;
+
+	ConfigUtility() = default;
+	~ConfigUtility() = default;
+
+	table_t Read(std::string fname);
+
+	table_t configMap;
 };
 
 #endif

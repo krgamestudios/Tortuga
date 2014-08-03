@@ -26,11 +26,22 @@
 #include <stdexcept>
 
 void ConfigUtility::Load(std::string fname) {
-	//TODO: recursive rerouting?
+	//clear the stored configuration
+	configMap.clear();
+	//pass to the recursive method
+	configMap = Read(fname);
+}
+
+ConfigUtility::table_t ConfigUtility::Read(std::string fname) {
+	//read in and return this file's data
+	table_t retTable;
 	std::ifstream is(fname);
 
 	if (!is.is_open()) {
-		throw(std::runtime_error("Failed to open config file"));
+		std::string msg;
+		msg += "Failed to open a config file: ";
+		msg += fname;
+		throw(std::runtime_error(msg));
 	}
 
 	std::string key, val;
@@ -71,35 +82,48 @@ void ConfigUtility::Load(std::string fname) {
 		}
 
 		//save the pair
-		table[key] = val;
+		retTable[key] = val;
 	}
 
 	is.close();
+
+	//load in any subordinate config files
+	//TODO: Possibility of nesting config levels?
+	if (retTable.find("config.next") != retTable.end()) {
+		table_t subTable = Read(retTable["config.next"]);
+		retTable.insert(subTable.begin(), subTable.end());
+	}
+
+	return retTable;
 }
 
+//-------------------------
+//Convert to a type
+//-------------------------
+
 std::string& ConfigUtility::String(std::string s) {
-	return table[s];
+	return configMap[s];
 }
 
 int ConfigUtility::Integer(std::string s) {
-	std::map<std::string, std::string>::iterator it = table.find(s);
-	if (it == table.end()) {
+	table_t::iterator it = configMap.find(s);
+	if (it == configMap.end()) {
 		return 0;
 	}
 	return atoi(it->second.c_str());
 }
 
 double ConfigUtility::Double(std::string s) {
-	std::map<std::string, std::string>::iterator it = table.find(s);
-	if (it == table.end()) {
+	table_t::iterator it = configMap.find(s);
+	if (it == configMap.end()) {
 		return 0.0;
 	}
 	return atof(it->second.c_str());
 }
 
 bool ConfigUtility::Boolean(std::string s) {
-	std::map<std::string, std::string>::iterator it = table.find(s);
-	if (it == table.end()) {
+	table_t::iterator it = configMap.find(s);
+	if (it == configMap.end()) {
 		return false;
 	}
 	return it->second == "true";

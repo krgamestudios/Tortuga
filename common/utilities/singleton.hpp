@@ -19,27 +19,45 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#include "timer.hpp"
+#ifndef SINGLETON_HPP_
+#define SINGLETON_HPP_
 
-Timer::Timer(): start(Timer::Clock::now()) {
-	//
-}
+#include <stdexcept>
 
-Timer::Timer(std::string s): name(s), start(Timer::Clock::now()) {
-	//
-}
+template<typename T>
+class Singleton {
+public:
+	static T& GetSingleton() {
+		if (!ptr) {
+			throw(std::logic_error("This singleton has not been created"));
+		}
+		return *ptr;
+	}
+	static void Create() {
+		if (ptr) {
+			throw(std::logic_error("This singleton has already been created"));
+		}
+		ptr = new T();
+	}
+	static void Delete() {
+		if (!ptr) {
+			throw(std::logic_error("A non-existant singleton cannot be deleted"));
+		}
+		delete ptr;
+		ptr = nullptr;
+	}
 
-void Timer::Start() {
-	start = Clock::now();
-}
+protected:
+	Singleton() = default;
+	Singleton(Singleton const&) = default;
+	Singleton(Singleton&&) = default;
+	~Singleton() = default;
 
-void Timer::Stop() {
-	timeSpan = Clock::now() - start;
-}
+private:
+	static T* ptr;
+};
 
-std::ostream& operator<<(std::ostream& os, Timer& t) {
-	os << t.GetName() << ": ";
-	os << std::chrono::duration_cast<std::chrono::milliseconds>(t.GetTime()).count();
-	os << "ms";
-	return os;
-}
+template<typename T>
+T* Singleton<T>::ptr = nullptr;
+
+#endif
