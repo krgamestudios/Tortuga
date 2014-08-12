@@ -28,8 +28,10 @@
 constexpr double CHARACTER_WALKING_SPEED = 140.0;
 constexpr double CHARACTER_WALKING_MOD = 1.0/sqrt(2.0);
 
-//the bounding boxes for the characters
-constexpr double CHARACTER_BOUNDS_WIDTH = 32.0;
-constexpr double CHARACTER_BOUNDS_HEIGHT = 32.0;
+//the bounds for the character objects, mapped to the default sprites
+constexpr int CHARACTER_BOUNDS_X = 0;
+constexpr int CHARACTER_BOUNDS_Y = 16;
+constexpr int CHARACTER_BOUNDS_WIDTH = 32;
+constexpr int CHARACTER_BOUNDS_HEIGHT = 32;
 
 #endif

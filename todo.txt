@@ -1,6 +1,8 @@
 TODO: encapsulate the data structures
+TODO: The server's managers should be singletons too
 TODO: Get the rooms working
 TODO: A proper logging system
+TODO: Move the statistics into their own SQL table, instead of duplicating the structure a dozen times
 
 TODO: make the whole thing more fault tolerant
 TODO: Authentication

@@ -312,7 +312,12 @@ void InWorld::HandleCharacterNew(CharacterPacket* const argPacket) {
 
 	newCharacter.SetOrigin(argPacket->origin);
 	newCharacter.SetMotion(argPacket->motion);
-	newCharacter.SetBounds({0, 16, 32, 32}); //TODO: magic numbers, fix this
+	newCharacter.SetBounds({
+		CHARACTER_BOUNDS_X,
+		CHARACTER_BOUNDS_Y,
+		CHARACTER_BOUNDS_WIDTH,
+		CHARACTER_BOUNDS_HEIGHT
+	});
 
 	(*newCharacter.GetStats()) = argPacket->stats;
 
