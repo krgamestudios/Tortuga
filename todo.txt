@@ -1,5 +1,6 @@
 TODO: encapsulate the data structures
 TODO: Get the rooms working
+TODO: A proper logging system
 
 TODO: make the whole thing more fault tolerant
 TODO: Authentication

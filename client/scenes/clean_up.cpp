@@ -124,7 +124,11 @@ void CleanUp::MouseButtonUp(SDL_MouseButtonEvent const& button) {
 }
 
 void CleanUp::KeyDown(SDL_KeyboardEvent const& key) {
-	//
+	switch(key.keysym.sym) {
+		case SDLK_ESCAPE:
+			SetNextScene(SceneList::MAINMENU);
+		break;
+	}
 }
 
 void CleanUp::KeyUp(SDL_KeyboardEvent const& key) {

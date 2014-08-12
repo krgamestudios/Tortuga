@@ -32,6 +32,7 @@ public:
 	int w, h;
 
 	BoundingBox() = default;
+	BoundingBox(int i, int j): x(i), y(j), w(0), h(0) {};
 	BoundingBox(int i, int j, int k, int l): x(i), y(j), w(k), h(l) {};
 	~BoundingBox() = default;
 	BoundingBox& operator=(BoundingBox const&) = default;
@@ -62,7 +63,7 @@ public:
 };
 
 //This is explicitly a POD
-static_assert(std::is_pod<Vector2>::value, "BoundingBox is not a POD");
+static_assert(std::is_pod<BoundingBox>::value, "BoundingBox is not a POD");
 
 #include "vector2.hpp"
 

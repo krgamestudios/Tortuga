@@ -205,6 +205,13 @@ void InWorld::KeyDown(SDL_KeyboardEvent const& key) {
 		return;
 	}
 
+	//hotkeys
+	switch(key.keysym.sym) {
+		case SDLK_ESCAPE:
+			RequestDisconnect();
+		break;
+	}
+
 	//player movement
 	Vector2 motion = localCharacter->GetMotion();
 	switch(key.keysym.sym) {
