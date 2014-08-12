@@ -31,27 +31,41 @@
 #include <string>
 #include <cmath>
 
-struct CharacterData {
-	//metadata
-	int owner;
-	std::string handle;
-	std::string avatar;
+class CharacterData {
+public:
+	CharacterData();
+	~CharacterData();
+
+	//location and movement
+	int SetRoomIndex(int i) { return roomIndex = i; }
+	Vector2 SetOrigin(Vector2 v) { return origin = v; }
+	Vector2 SetMotion(Vector2 v) { return motion = v; }
+
+	int GetRoomIndex() { return roomIndex; }
+	Vector2 GetOrigin() { return origin; }
+	Vector2 GetMotion() { return motion; }
+
+	//accessors and mutators
+	Statistics* GetBaseStats() { return &baseStats; }
+
+	//database stuff
+	int GetOwner() { return owner; }
+	std::string GetHandle() { return handle; }
+	std::string GetAvatar() { return avatar; }
+
+private:
+	friend class CharacterManager;
 
 	//world position
 	int roomIndex = 0;
 	Vector2 origin = {0.0,0.0};
 	Vector2 motion = {0.0,0.0};
 
-	//base statistics
-	Statistics stats;
+	Statistics baseStats;
 
-	//TODO: gameplay components: equipment, items, buffs, debuffs
-
-	//active gameplay members
-	//NOTE: these are lost when unloaded
-	bool inCombat = false;
-	int atbGauge = 0;
-	//TODO: stored command
+	int owner;
+	std::string handle;
+	std::string avatar;
 };
 
 #endif
