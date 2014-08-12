@@ -35,13 +35,11 @@
 //-------------------------
 
 InWorld::InWorld(
-	UDPNetworkUtility* const argNetwork,
 	int* const argClientIndex,
 	int* const argAccountIndex,
 	int* const argCharacterIndex,
 	CharacterMap* argCharacterMap
 	):
-	network(*argNetwork),
 	clientIndex(*argClientIndex),
 	accountIndex(*argAccountIndex),
 	characterIndex(*argCharacterIndex),
@@ -205,6 +203,13 @@ void InWorld::MouseButtonUp(SDL_MouseButtonEvent const& button) {
 void InWorld::KeyDown(SDL_KeyboardEvent const& key) {
 	if (!localCharacter) {
 		return;
+	}
+
+	//hotkeys
+	switch(key.keysym.sym) {
+		case SDLK_ESCAPE:
+			RequestDisconnect();
+		break;
 	}
 
 	//player movement

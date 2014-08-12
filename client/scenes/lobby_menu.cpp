@@ -30,12 +30,7 @@
 //Public access members
 //-------------------------
 
-LobbyMenu::LobbyMenu(
-	UDPNetworkUtility* const argNetwork,
-	int* const argClientIndex,
-	int* const argAccountIndex
-	):
-	network(*argNetwork),
+LobbyMenu::LobbyMenu(int* const argClientIndex, int* const argAccountIndex):
 	clientIndex(*argClientIndex),
 	accountIndex(*argAccountIndex)
 {
@@ -70,6 +65,9 @@ LobbyMenu::LobbyMenu(
 
 	//BUGFIX: Eat incoming packets
 	while(network.Receive());
+
+	//Initial broadcast
+	SendBroadcastRequest();
 }
 
 LobbyMenu::~LobbyMenu() {
@@ -109,7 +107,10 @@ void LobbyMenu::Render(SDL_Surface* const screen) {
 	for (int i = 0; i < serverInfo.size(); i++) {
 		//draw the selected server's highlight
 		if (selection == &serverInfo[i]) {
-			SDL_Rect r = listBox;
+			SDL_Rect r = {
+				(Sint16)listBox.x, (Sint16)listBox.y,
+				(Uint16)listBox.w, (Uint16)listBox.h
+			};
 			r.y += i * listBox.h;
 			SDL_FillRect(screen, &r, SDL_MapRGB(screen->format, 255, 127, 39));
 		}
@@ -147,39 +148,19 @@ void LobbyMenu::MouseButtonDown(SDL_MouseButtonEvent const& button) {
 
 void LobbyMenu::MouseButtonUp(SDL_MouseButtonEvent const& button) {
 	if (search.MouseButtonUp(button) == Button::State::HOVER) {
-		//broadcast to the network, or a specific server
-		SerialPacket packet;
-		packet.type = SerialPacketType::BROADCAST_REQUEST;
-		network.SendTo(config["server.host"].c_str(), config.Int("server.port"), &packet);
-
-		//reset the server list
-		serverInfo.clear();
-		selection = nullptr;
+		SendBroadcastRequest();
 	}
-
 	else if (join.MouseButtonUp(button) == Button::State::HOVER && selection != nullptr && selection->compatible) {
-		//pack the packet
-		ClientPacket packet;
-		packet.type = SerialPacketType::JOIN_REQUEST;
-		strncpy(packet.username, config["client.username"].c_str(), PACKET_STRING_SIZE);
-
-		//join the selected server
-		network.SendTo(&selection->address, &packet);
-		selection = nullptr;
+		SendJoinRequest();
 	}
-
 	else if (back.MouseButtonUp(button) == Button::State::HOVER) {
 		SetNextScene(SceneList::MAINMENU);
 	}
 
-	else if (
-		//has the user selected a server on the list?
-		//TODO: replace with regular collision checker
-		button.x > listBox.x &&
-		button.x < listBox.x + listBox.w &&
-		button.y > listBox.y &&
-		button.y < listBox.y + listBox.h * serverInfo.size()
-		) {
+	//has the user selected a server on the list?
+	BoundingBox tmpBox = listBox;
+	tmpBox.h *= serverInfo.size();
+	if (tmpBox.CheckOverlap({button.x, button.y})) {
 		selection = &serverInfo[(button.y - listBox.y)/listBox.h];
 	}
 	else {
@@ -188,7 +169,11 @@ void LobbyMenu::MouseButtonUp(SDL_MouseButtonEvent const& button) {
 }
 
 void LobbyMenu::KeyDown(SDL_KeyboardEvent const& key) {
-	//
+	switch(key.keysym.sym) {
+		case SDLK_ESCAPE:
+			SetNextScene(SceneList::MAINMENU);
+		break;
+	}
 }
 
 void LobbyMenu::KeyUp(SDL_KeyboardEvent const& key) {
@@ -242,4 +227,30 @@ void LobbyMenu::HandleJoinResponse(ClientPacket* const argPacket) {
 	strncpy(newPacket.avatar, config["client.avatar"].c_str(), PACKET_STRING_SIZE);
 	newPacket.accountIndex = accountIndex;
 	network.SendTo(Channels::SERVER, &newPacket);
+}
+
+//-------------------------
+//server control
+//-------------------------
+
+void LobbyMenu::SendBroadcastRequest() {
+	//broadcast to the network, or a specific server
+		SerialPacket packet;
+		packet.type = SerialPacketType::BROADCAST_REQUEST;
+		network.SendTo(config["server.host"].c_str(), config.Int("server.port"), &packet);
+
+		//reset the server list
+		serverInfo.clear();
+		selection = nullptr;
+}
+
+void LobbyMenu::SendJoinRequest() {
+	//pack the packet
+		ClientPacket packet;
+		packet.type = SerialPacketType::JOIN_REQUEST;
+		strncpy(packet.username, config["client.username"].c_str(), PACKET_STRING_SIZE);
+
+		//join the selected server
+		network.SendTo(&selection->address, &packet);
+		selection = nullptr;
 }

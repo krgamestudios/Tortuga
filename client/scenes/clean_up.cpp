@@ -31,13 +31,11 @@
 //-------------------------
 
 CleanUp::CleanUp(
-	UDPNetworkUtility* const argNetwork,
 	int* const argClientIndex,
 	int* const argAccountIndex,
 	int* const argCharacterIndex,
 	CharacterMap* argCharacterMap
 	):
-	network(*argNetwork),
 	clientIndex(*argClientIndex),
 	accountIndex(*argAccountIndex),
 	characterIndex(*argCharacterIndex),
@@ -126,7 +124,11 @@ void CleanUp::MouseButtonUp(SDL_MouseButtonEvent const& button) {
 }
 
 void CleanUp::KeyDown(SDL_KeyboardEvent const& key) {
-	//
+	switch(key.keysym.sym) {
+		case SDLK_ESCAPE:
+			SetNextScene(SceneList::MAINMENU);
+		break;
+	}
 }
 
 void CleanUp::KeyUp(SDL_KeyboardEvent const& key) {

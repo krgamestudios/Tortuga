@@ -26,6 +26,7 @@
 #include "image.hpp"
 #include "raster_font.hpp"
 #include "button.hpp"
+#include "bounding_box.hpp"
 
 //utilities
 #include "config_utility.hpp"
@@ -40,11 +41,7 @@
 class LobbyMenu : public BaseScene {
 public:
 	//Public access members
-	LobbyMenu(
-		UDPNetworkUtility* const argNetwork,
-		int* const argClientIndex,
-		int* const argAccountIndex
-	);
+	LobbyMenu(int* const argClientIndex, int* const argAccountIndex);
 	~LobbyMenu();
 
 protected:
@@ -66,9 +63,13 @@ protected:
 	void HandleBroadcastResponse(ServerPacket* const);
 	void HandleJoinResponse(ClientPacket* const);
 
+	//server control
+	void SendBroadcastRequest();
+	void SendJoinRequest();
+
 	//shared parameters
 	ConfigUtility& config = ConfigUtility::GetSingleton();
-	UDPNetworkUtility& network;
+	UDPNetworkUtility& network = UDPNetworkUtility::GetSingleton();
 	int& clientIndex;
 	int& accountIndex;
 
@@ -90,9 +91,9 @@ protected:
 
 	std::vector<ServerInformation> serverInfo;
 
-	//a terrible hack, forgive me
+	//NOTE: a terrible hack
 	//I'd love a proper gui system for this
-	SDL_Rect listBox;
+	BoundingBox listBox;
 	ServerInformation* selection = nullptr;
 };
 

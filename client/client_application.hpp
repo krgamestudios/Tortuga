@@ -52,7 +52,6 @@ private:
 	BaseScene* activeScene = nullptr;
 
 	//shared parameters
-	UDPNetworkUtility network;
 	int clientIndex = -1;
 	int accountIndex = -1;
 	int characterIndex = -1;

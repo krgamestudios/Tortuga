@@ -38,7 +38,7 @@
 #include "options_menu.hpp"
 #include "lobby_menu.hpp"
 #include "in_world.hpp"
-#include "in_combat.hpp"
+//#include "in_combat.hpp"
 #include "clean_up.hpp"
 
 //-------------------------
@@ -66,7 +66,7 @@ void ClientApplication::Init(int argc, char** argv) {
 	if (SDLNet_Init()) {
 		throw(std::runtime_error("Failed to initialize SDL_net"));
 	}
-	network.Open(0);
+	UDPNetworkUtility::GetSingleton().Open(0);
 	std::cout << "Initialized SDL_net" << std::endl;
 
 	//-------------------------
@@ -151,7 +151,7 @@ void ClientApplication::Proc() {
 
 void ClientApplication::Quit() {
 	std::cout << "Shutting down" << std::endl;
-	network.Close();
+	UDPNetworkUtility::GetSingleton().Close();
 	SDLNet_Quit();
 	SDL_Quit();
 	std::cout << "Clean exit" << std::endl;
@@ -176,16 +176,16 @@ void ClientApplication::LoadScene(SceneList sceneIndex) {
 			activeScene = new OptionsMenu();
 		break;
 		case SceneList::LOBBYMENU:
-			activeScene = new LobbyMenu(&network, &clientIndex, &accountIndex);
+			activeScene = new LobbyMenu(&clientIndex, &accountIndex);
 		break;
 		case SceneList::INWORLD:
-			activeScene = new InWorld(&network, &clientIndex, &accountIndex, &characterIndex, &characterMap);
+			activeScene = new InWorld(&clientIndex, &accountIndex, &characterIndex, &characterMap);
 		break;
-		case SceneList::INCOMBAT:
-			activeScene = new InCombat(&network, &clientIndex, &accountIndex, &characterIndex, &characterMap);
-		break;
+//		case SceneList::INCOMBAT:
+//			activeScene = new InCombat(&clientIndex, &accountIndex, &characterIndex, &characterMap);
+//		break;
 		case SceneList::CLEANUP:
-			activeScene = new CleanUp(&network, &clientIndex, &accountIndex, &characterIndex, &characterMap);
+			activeScene = new CleanUp(&clientIndex, &accountIndex, &characterIndex, &characterMap);
 		break;
 		default:
 			throw(std::logic_error("Failed to recognize the scene index"));

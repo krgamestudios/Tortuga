@@ -1,17 +1,13 @@
 TODO: encapsulate the data structures
 TODO: Get the rooms working
+TODO: A proper logging system
 
 TODO: make the whole thing more fault tolerant
 TODO: Authentication
 TODO: server is slaved to the client
 
-TODO: I completely forgot about status ailments
 TODO: Time delay for requesting region packets
 TODO: command line parameters overriding config.cfg settings
-
---Battle System--
-
-TODO
 
 --Requirements--
 

@@ -85,7 +85,7 @@ private:
 	//APIs and utilities
 	sqlite3* database = nullptr;
 	lua_State* luaState = nullptr;
-	UDPNetworkUtility network;
+	UDPNetworkUtility& network = UDPNetworkUtility::GetSingleton();
 	ConfigUtility& config = ConfigUtility::GetSingleton();
 
 	//simple tables

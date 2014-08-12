@@ -45,7 +45,6 @@ class CleanUp : public BaseScene {
 public:
 	//Public access members
 	CleanUp(
-		UDPNetworkUtility* const argNetwork,
 		int* const argClientIndex,
 		int* const argAccountIndex,
 		int* const argCharacterIndex,
@@ -68,7 +67,7 @@ protected:
 	void KeyUp(SDL_KeyboardEvent const&);
 
 	//shared parameters
-	UDPNetworkUtility& network;
+	UDPNetworkUtility& network = UDPNetworkUtility::GetSingleton();
 	int& clientIndex;
 	int& accountIndex;
 	int& characterIndex;

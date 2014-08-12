@@ -23,6 +23,7 @@
 
 //singletons
 #include "config_utility.hpp"
+#include "udp_network_utility.hpp"
 
 #include <stdexcept>
 #include <iostream>
@@ -33,17 +34,21 @@ int main(int argc, char** argv) {
 	try {
 		//create the singletons
 		ConfigUtility::Create();
-		ServerApplication::Create();
+		UDPNetworkUtility::Create();
 
 		//call the server's routines
+		ServerApplication::Create();
 		ServerApplication& app = ServerApplication::GetSingleton();
+
 		app.Init(argc, argv);
 		app.Proc();
 		app.Quit();
 
+		ServerApplication::Delete();
+
 		//delete the singletons
 		ConfigUtility::Delete();
-		ServerApplication::Delete();
+		UDPNetworkUtility::Delete();
 	}
 	catch(exception& e) {
 		cerr << "Fatal exception thrown: " << e.what() << endl;

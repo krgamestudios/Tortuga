@@ -49,7 +49,6 @@ class InWorld : public BaseScene {
 public:
 	//Public access members
 	InWorld(
-		UDPNetworkUtility* const argNetwork,
 		int* const argClientIndex,
 		int* const argAccountIndex,
 		int* const argCharacterIndex,
@@ -92,7 +91,7 @@ protected:
 	void UpdateMap();
 
 	//shared parameters
-	UDPNetworkUtility& network;
+	UDPNetworkUtility& network = UDPNetworkUtility::GetSingleton();
 	int& clientIndex;
 	int& accountIndex;
 	int& characterIndex;
