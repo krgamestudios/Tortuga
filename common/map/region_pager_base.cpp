@@ -91,8 +91,9 @@ Region* RegionPagerBase::CreateRegion(int x, int y) {
 }
 
 void RegionPagerBase::UnloadRegion(int x, int y) {
-	//custom loop, not FindRegion()
-	regionList.remove_if([x, y](Region& region) -> bool { return region.GetX() == x && region.GetY() == y; });
+	regionList.remove_if([x, y](Region& region) -> bool {
+		return region.GetX() == x && region.GetY() == y;
+	});
 }
 
 void RegionPagerBase::UnloadAll() {
