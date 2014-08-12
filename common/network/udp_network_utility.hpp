@@ -22,15 +22,15 @@
 #ifndef UDPNETWORKUTILITY_HPP_
 #define UDPNETWORKUTILITY_HPP_
 
+//common
+#include "serial_packet.hpp"
+#include "singleton.hpp"
+
+//APIs
 #include "SDL/SDL_net.h"
 
-#include "serial_packet.hpp"
-
-class UDPNetworkUtility {
+class UDPNetworkUtility : public Singleton<UDPNetworkUtility> {
 public:
-	UDPNetworkUtility() = default;
-	~UDPNetworkUtility() = default;
-
 	void Open(int port);
 	void Close();
 
@@ -65,6 +65,11 @@ public:
 		return socket;
 	}
 private:
+	friend Singleton<UDPNetworkUtility>;
+
+	UDPNetworkUtility() = default;
+	~UDPNetworkUtility() = default;
+
 	UDPsocket socket = nullptr;
 	UDPpacket* packet = nullptr;
 };

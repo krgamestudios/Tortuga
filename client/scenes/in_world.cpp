@@ -35,13 +35,11 @@
 //-------------------------
 
 InWorld::InWorld(
-	UDPNetworkUtility* const argNetwork,
 	int* const argClientIndex,
 	int* const argAccountIndex,
 	int* const argCharacterIndex,
 	CharacterMap* argCharacterMap
 	):
-	network(*argNetwork),
 	clientIndex(*argClientIndex),
 	accountIndex(*argAccountIndex),
 	characterIndex(*argCharacterIndex),

@@ -40,11 +40,7 @@
 class LobbyMenu : public BaseScene {
 public:
 	//Public access members
-	LobbyMenu(
-		UDPNetworkUtility* const argNetwork,
-		int* const argClientIndex,
-		int* const argAccountIndex
-	);
+	LobbyMenu(int* const argClientIndex, int* const argAccountIndex);
 	~LobbyMenu();
 
 protected:
@@ -68,7 +64,7 @@ protected:
 
 	//shared parameters
 	ConfigUtility& config = ConfigUtility::GetSingleton();
-	UDPNetworkUtility& network;
+	UDPNetworkUtility& network = UDPNetworkUtility::GetSingleton();
 	int& clientIndex;
 	int& accountIndex;
 

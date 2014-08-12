@@ -30,12 +30,7 @@
 //Public access members
 //-------------------------
 
-LobbyMenu::LobbyMenu(
-	UDPNetworkUtility* const argNetwork,
-	int* const argClientIndex,
-	int* const argAccountIndex
-	):
-	network(*argNetwork),
+LobbyMenu::LobbyMenu(int* const argClientIndex, int* const argAccountIndex):
 	clientIndex(*argClientIndex),
 	accountIndex(*argAccountIndex)
 {
