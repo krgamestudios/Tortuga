@@ -19,12 +19,12 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef ROOMMGRAPI_HPP_
-#define ROOMMGRAPI_HPP_
+#ifndef ROOMMANAGERAPI_HPP_
+#define ROOMMANAGERAPI_HPP_
 
 #include "lua/lua.hpp"
 
-#define TORTUGA_ROOM_MGR_NAME "RoomMgr"
-LUAMOD_API int openRoomMgrAPI(lua_State* L);
+#define TORTUGA_ROOM_MANAGER_NAME "RoomManager"
+LUAMOD_API int openRoomManagerAPI(lua_State* L);
 
 #endif

@@ -36,7 +36,7 @@ public:
 	~RoomManager() = default;
 
 	//public access methods
-	RoomData* CreateRoom();
+	int CreateRoom();
 	void UnloadRoom(int uid);
 
 	RoomData* GetRoom(int uid);
