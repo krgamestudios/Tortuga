@@ -34,7 +34,7 @@ end
 
 --Get some regions
 --BUG: The server fails without this
-newRoom = RoomMgr.CreateRoom("overworld")
+newRoom = RoomManager.CreateRoom()
 pager = Room.GetPager(newRoom)
 regionTable = {
 	RegionPager.GetRegion(pager, Region.GetWidth() * 0, Region.GetHeight() * 0),

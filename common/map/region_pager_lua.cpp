@@ -21,6 +21,7 @@
 */
 #include "region_pager_lua.hpp"
 
+#include "region_api.hpp"
 #include "utility.hpp"
 
 #include <stdexcept>
@@ -32,7 +33,7 @@ Region* RegionPagerLua::LoadRegion(int x, int y) {
 	Region tmpRegion(x, y);
 
 	//API hook
-	lua_getglobal(lua, "Region");
+	lua_getglobal(lua, TORTUGA_REGION_NAME);
 	lua_getfield(lua, -1, "Load");
 	lua_pushlightuserdata(lua, &tmpRegion);
 	if (lua_pcall(lua, 1, 1, 0) != LUA_OK) {
@@ -53,7 +54,7 @@ Region* RegionPagerLua::SaveRegion(int x, int y) {
 	Region* ptr = FindRegion(x, y);
 	if (ptr) {
 		//API hook
-		lua_getglobal(lua, "Region");
+		lua_getglobal(lua, TORTUGA_REGION_NAME);
 		lua_getfield(lua, -1, "Save");
 		lua_pushlightuserdata(lua, ptr);
 		if (lua_pcall(lua, 1, 0, 0) != LUA_OK) {
@@ -73,7 +74,7 @@ Region* RegionPagerLua::CreateRegion(int x, int y) {
 	Region tmpRegion(x, y);
 
 	//API hook
-	lua_getglobal(lua, "Region");
+	lua_getglobal(lua, TORTUGA_REGION_NAME);
 	lua_getfield(lua, -1, "Create");
 	lua_pushlightuserdata(lua, &tmpRegion);
 	//TODO: parameters
@@ -86,7 +87,7 @@ Region* RegionPagerLua::CreateRegion(int x, int y) {
 }
 
 void RegionPagerLua::UnloadRegion(int x, int y) {
-	lua_getglobal(lua, "Region");
+	lua_getglobal(lua, TORTUGA_REGION_NAME);
 
 	regionList.remove_if([&](Region& region) -> bool {
 		if (region.GetX() == x && region.GetY() == y) {
@@ -107,7 +108,7 @@ void RegionPagerLua::UnloadRegion(int x, int y) {
 }
 
 void RegionPagerLua::UnloadAll() {
-	lua_getglobal(lua, "Region");
+	lua_getglobal(lua, TORTUGA_REGION_NAME);
 
 	for (auto& it : regionList) {
 		//API hook
