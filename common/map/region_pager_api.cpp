@@ -90,16 +90,55 @@ static int unloadRegion(lua_State* L) {
 	return 0;
 }
 
+static int setOnLoad(lua_State* L) {
+	RegionPagerLua* pager = reinterpret_cast<RegionPagerLua*>(lua_touserdata(L, 1));
+	luaL_unref(L, LUA_REGISTRYINDEX, pager->GetLoadReference());
+	pager->SetLoadReference(luaL_ref(L, LUA_REGISTRYINDEX));
+	return 0;
+}
+
+static int setOnSave(lua_State* L) {
+	RegionPagerLua* pager = reinterpret_cast<RegionPagerLua*>(lua_touserdata(L, 1));
+	luaL_unref(L, LUA_REGISTRYINDEX, pager->GetSaveReference());
+	pager->SetSaveReference(luaL_ref(L, LUA_REGISTRYINDEX));
+	return 0;
+}
+
+static int setOnCreate(lua_State* L) {
+	RegionPagerLua* pager = reinterpret_cast<RegionPagerLua*>(lua_touserdata(L, 1));
+	luaL_unref(L, LUA_REGISTRYINDEX, pager->GetCreateReference());
+	pager->SetCreateReference(luaL_ref(L, LUA_REGISTRYINDEX));
+	return 0;
+}
+
+static int setOnUnload(lua_State* L) {
+	RegionPagerLua* pager = reinterpret_cast<RegionPagerLua*>(lua_touserdata(L, 1));
+	luaL_unref(L, LUA_REGISTRYINDEX, pager->GetUnloadReference());
+	pager->SetUnloadReference(luaL_ref(L, LUA_REGISTRYINDEX));
+	return 0;
+}
+
 static const luaL_Reg regionPagerLib[] = {
+	//curry
 	{"SetTile", setTile},
 	{"GetTile", getTile},
 	{"SetSolid", setSolid},
 	{"GetSolid", getSolid},
+
+	//access and control
 	{"GetRegion", getRegion},
 	{"LoadRegion", loadRegion},
 	{"SaveRegion", saveRegion},
 	{"CreateRegion", createRegion},
 	{"UnloadRegion", unloadRegion},
+
+	//triggers
+	{"SetOnLoad",setOnLoad},
+	{"SetOnSave",setOnSave},
+	{"SetOnCreate",setOnCreate},
+	{"SetOnUnload",setOnUnload},
+
+	//sentinel
 	{nullptr, nullptr}
 };
 
