@@ -33,8 +33,8 @@
 
 class CharacterData {
 public:
-	CharacterData();
-	~CharacterData();
+	CharacterData() = default;
+	~CharacterData() = default;
 
 	//location and movement
 	int SetRoomIndex(int i) { return roomIndex = i; }

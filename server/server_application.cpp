@@ -291,17 +291,16 @@ void ServerApplication::HandleDisconnect(ClientPacket* const argPacket) {
 	if neither of the above is true, then output a warning to the console, and return
 	*/
 
-
 	//forward to the specified client
 	network.SendTo(
-		&clientMap[ accountMgr.GetAccount(argPacket->accountIndex)->clientIndex ].address,
+		&clientMap[ accountMgr.GetAccount(argPacket->accountIndex)->GetClientIndex() ].address,
 		static_cast<SerialPacket*>(argPacket)
 	);
 
 	//save and unload this account's characters
 	//pump the unload message to all remaining clients
 	characterMgr.UnloadCharacterIf([&](std::map<int, CharacterData>::iterator it) -> bool {
-		if (argPacket->accountIndex == it->second.owner) {
+		if (argPacket->accountIndex == it->second.GetOwner()) {
 			PumpCharacterUnload(it->first);
 			return true;
 		}
@@ -309,7 +308,7 @@ void ServerApplication::HandleDisconnect(ClientPacket* const argPacket) {
 	});
 
 	//erase the in-memory stuff
-	clientMap.erase(accountMgr.GetAccount(argPacket->accountIndex)->clientIndex);
+	clientMap.erase(accountMgr.GetAccount(argPacket->accountIndex)->GetClientIndex());
 	accountMgr.UnloadAccount(argPacket->accountIndex);
 
 	//finished this routine
@@ -349,7 +348,7 @@ void ServerApplication::HandleRegionRequest(RegionPacket* const argPacket) {
 	newPacket.x = argPacket->x;
 	newPacket.y = argPacket->y;
 
-	newPacket.region = roomMgr.GetRoom(argPacket->roomIndex)->pager.GetRegion(argPacket->x, argPacket->y);
+	newPacket.region = roomMgr.GetRoom(argPacket->roomIndex)->GetPager()->GetRegion(argPacket->x, argPacket->y);
 
 	//send the content
 	network.SendTo(&argPacket->srcAddress, static_cast<SerialPacket*>(&newPacket));
@@ -422,11 +421,11 @@ void ServerApplication::HandleCharacterUpdate(CharacterPacket* const argPacket) 
 	}
 
 	//accept client-side logic
-	character->roomIndex = argPacket->roomIndex;
-	character->origin = argPacket->origin;
-	character->motion = argPacket->motion;
+	character->SetRoomIndex(argPacket->roomIndex);
+	character->SetOrigin(argPacket->origin);
+	character->SetMotion(argPacket->motion);
 
-	character->stats = argPacket->stats;
+	*character->GetBaseStats() = argPacket->stats;
 
 	//TODO: gameplay components: equipment, items, buffs, debuffs
 
@@ -485,11 +484,11 @@ void ServerApplication::CopyCharacterToPacket(CharacterPacket* const packet, int
 
 	//TODO: keep this up to date when the character changes
 	packet->characterIndex = characterIndex;
-	strncpy(packet->handle, character->handle.c_str(), PACKET_STRING_SIZE);
-	strncpy(packet->avatar, character->avatar.c_str(), PACKET_STRING_SIZE);
-	packet->accountIndex = character->owner;
-	packet->roomIndex = character->roomIndex;
-	packet->origin = character->origin;
-	packet->motion = character->motion;
-	packet->stats = character->stats;
+	strncpy(packet->handle, character->GetHandle().c_str(), PACKET_STRING_SIZE);
+	strncpy(packet->avatar, character->GetAvatar().c_str(), PACKET_STRING_SIZE);
+	packet->accountIndex = character->GetOwner();
+	packet->roomIndex = character->GetRoomIndex();
+	packet->origin = character->GetOrigin();
+	packet->motion = character->GetMotion();
+	packet->stats = *character->GetBaseStats();
 }
