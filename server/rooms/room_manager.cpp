@@ -32,11 +32,7 @@
 int RoomManager::CreateRoom() {
 	//create the room
 	RoomData* newRoom = new RoomData();
-
-	//set the state
-	if (luaState) {
-		newRoom->pager.SetLuaState(luaState);
-	}
+	newRoom->pager.SetLuaState(luaState);
 
 	//register the room
 	roomMap[counter] = newRoom;

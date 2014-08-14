@@ -30,16 +30,15 @@ static int getPager(lua_State* L) {
 }
 
 static int create(lua_State* L) {
-	//TODO: create()
+	//EMPTY
+	//NOTE: This can be used to set defaults for the pager
 	return 0;
 }
 
 static int unload(lua_State* L) {
-	//TODO: unload()
+	//EMPTY
 	return 0;
 }
-
-//TODO: parameters
 
 static const luaL_Reg roomLib[] = {
 	{"GetPager",getPager},
