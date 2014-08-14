@@ -59,10 +59,10 @@ public:
 protected:
 	lua_State* lua = nullptr;
 
-	int loadRef;
-	int saveRef;
-	int createRef;
-	int unloadRef;
+	int loadRef = LUA_NOREF;
+	int saveRef = LUA_NOREF;
+	int createRef = LUA_NOREF;
+	int unloadRef = LUA_NOREF;
 };
 
 #endif
