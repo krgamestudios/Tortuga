@@ -24,15 +24,35 @@
 
 #include <string>
 
-struct AccountData {
+class AccountData {
+public:
+	AccountData() = default;
+	~AccountData() = default;
+
+	//accessors and mutators
+	int SetClientIndex(int i) { return clientIndex = i; }
+	int GetClientIndex() { return clientIndex; }
+
+	std::string SetUsername(std::string s) { return username = s; }
+	std::string GetUsername() { return username; }
+
+	//database stuff
+	bool GetBlackListed() { return blackListed; }
+	bool GetWhiteListed() { return whiteListed; }
+	bool GetModerator() { return mod; }
+	bool GetAdministrator() { return admin; }
+
+private:
+	friend class AccountManager;
+
+	int clientIndex;
 	std::string username;
 	//TODO: password
+
 	bool blackListed = false;
 	bool whiteListed = true;
 	bool mod = false;
 	bool admin = false;
-
-	int clientIndex;
 };
 
 #endif

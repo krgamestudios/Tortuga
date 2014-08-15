@@ -19,11 +19,9 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#include "room_mgr_api.hpp"
+#include "room_manager_api.hpp"
 
-#include "room_api.hpp"
 #include "room_manager.hpp"
-#include "room_data.hpp"
 
 #include <string>
 
@@ -47,10 +45,12 @@ static int createRoom(lua_State* L) {
 	RoomManager* roomMgr = reinterpret_cast<RoomManager*>(lua_touserdata(L, -1));
 
 	//create the room
-	RoomData* newRoom = roomMgr->CreateRoom();
+	int uid = roomMgr->CreateRoom();
+
+	//TODO: any room parameters
 
 	//return the new room
-	lua_pushlightuserdata(L, newRoom);
+	lua_pushlightuserdata(L, roomMgr->FindRoom(uid));
 	return 1;
 }
 
@@ -60,20 +60,22 @@ static int unloadRoom(lua_State* L) {
 	lua_gettable(L, LUA_REGISTRYINDEX);
 	RoomManager* roomMgr = reinterpret_cast<RoomManager*>(lua_touserdata(L, -1));
 
+	//TODO: any room parameters
+
 	//unload the specified room
 	roomMgr->UnloadRoom(lua_tointeger(L, -2));
 
 	return 0;
 }
 
-static const luaL_Reg roomMgrLib[] = {
+static const luaL_Reg roomManagerLib[] = {
 	{"GetRoom",getRoom},
 	{"CreateRoom",createRoom},
 	{"UnloadRoom",unloadRoom},
 	{nullptr, nullptr}
 };
 
-LUAMOD_API int openRoomMgrAPI(lua_State* L) {
-	luaL_newlib(L, roomMgrLib);
+LUAMOD_API int openRoomManagerAPI(lua_State* L) {
+	luaL_newlib(L, roomManagerLib);
 	return 1;
 }

@@ -25,26 +25,25 @@
 
 static int getPager(lua_State* L) {
 	RoomData* room = reinterpret_cast<RoomData*>(lua_touserdata(L, 1));
-	lua_pushlightuserdata(L, reinterpret_cast<void*>(&room->pager));
+	lua_pushlightuserdata(L, reinterpret_cast<void*>(room->GetPager()) );
 	return 1;
 }
 
-static int onCreate(lua_State* L) {
-	//TODO: onCreate()
+static int create(lua_State* L) {
+	//EMPTY
+	//NOTE: This can be used to set defaults for the pager
 	return 0;
 }
 
-static int onUnload(lua_State* L) {
-	//TODO: onUnload()
+static int unload(lua_State* L) {
+	//EMPTY
 	return 0;
 }
-
-//TODO: parameters
 
 static const luaL_Reg roomLib[] = {
 	{"GetPager",getPager},
-	{"OnCreate", onCreate},
-	{"OnUnload", onUnload},
+	{"Create", create},
+	{"Unload", unload},
 	{nullptr, nullptr}
 };
 

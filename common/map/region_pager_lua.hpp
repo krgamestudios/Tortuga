@@ -44,8 +44,25 @@ public:
 	//accessors & mutators
 	lua_State* SetLuaState(lua_State* L) { return lua = L; }
 	lua_State* GetLuaState() { return lua; }
+
+	//utilities for the API
+	int SetLoadReference(int i) { return loadRef = i; }
+	int SetSaveReference(int i) { return saveRef = i; }
+	int SetCreateReference(int i) { return createRef = i; }
+	int SetUnloadReference(int i) { return unloadRef = i; }
+
+	int GetLoadReference() { return loadRef; }
+	int GetSaveReference() { return saveRef; }
+	int GetCreateReference() { return createRef; }
+	int GetUnloadReference() { return unloadRef; }
+
 protected:
 	lua_State* lua = nullptr;
+
+	int loadRef = LUA_NOREF;
+	int saveRef = LUA_NOREF;
+	int createRef = LUA_NOREF;
+	int unloadRef = LUA_NOREF;
 };
 
 #endif

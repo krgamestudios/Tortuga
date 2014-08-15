@@ -19,36 +19,12 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#include "enemy_manager.hpp"
+#ifndef ROOMMANAGERAPI_HPP_
+#define ROOMMANAGERAPI_HPP_
 
-//-------------------------
-//public access methods
-//-------------------------
+#include "lua/lua.hpp"
 
-//TODO
+#define TORTUGA_ROOM_MANAGER_NAME "RoomManager"
+LUAMOD_API int openRoomManagerAPI(lua_State* L);
 
-//-------------------------
-//accessors and mutators
-//-------------------------
-
-EnemyData* EnemyManager::GetEnemy(int uid) {
-	std::map<int, EnemyData>::iterator it = enemyMap.find(uid);
-
-	if (it == enemyMap.end()) {
-		return nullptr;
-	}
-
-	return &it->second;
-}
-
-std::map<int, EnemyData>* EnemyManager::GetContainer() {
-	return &enemyMap;
-}
-
-lua_State* EnemyManager::SetLuaState(lua_State* L) {
-	return luaState = L;
-}
-
-lua_State* EnemyManager::GetLuaState() {
-	return luaState;
-}
+#endif

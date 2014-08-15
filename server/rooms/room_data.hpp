@@ -25,12 +25,19 @@
 //map system
 #include "region_pager_lua.hpp"
 
-struct RoomData {
+class RoomData {
+public:
+	RoomData() = default;
+	~RoomData() = default;
+
+	//accessors and mutators
+	RegionPagerLua* GetPager() { return &pager; }
+
+private:
+	friend class RoomManager;
+
 	//members
 	RegionPagerLua pager;
-
-	//TODO: collision map
-	//TODO: NPCs?
 };
 
 #endif
