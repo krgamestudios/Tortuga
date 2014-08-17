@@ -138,7 +138,7 @@ void ServerApplication::Init(int argc, char** argv) {
 }
 
 void ServerApplication::Proc() {
-	SerialPacket* packetBuffer = static_cast<SerialPacket*>(malloc(MAX_PACKET_SIZE));
+	SerialPacket* packetBuffer = reinterpret_cast<SerialPacket*>(new char[MAX_PACKET_SIZE]);
 	while(running) {
 		//suck in the waiting packets & process them
 		while(network.Receive(packetBuffer)) {
@@ -150,7 +150,7 @@ void ServerApplication::Proc() {
 		//give the computer a break
 		SDL_Delay(10);
 	}
-	free(static_cast<void*>(packetBuffer));
+	delete packetBuffer;
 }
 
 void ServerApplication::Quit() {

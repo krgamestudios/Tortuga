@@ -3,6 +3,7 @@ TODO: Get the rooms working
 TODO: A proper logging system
 TODO: Move the statistics into their own SQL table, instead of duplicating the structure a dozen times
 
+TODO: Fix shoddy movement
 TODO: make the whole thing more fault tolerant
 TODO: Authentication
 TODO: server is slaved to the client

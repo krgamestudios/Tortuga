@@ -82,18 +82,11 @@ CleanUp::~CleanUp() {
 
 void CleanUp::Update(double delta) {
 	if (std::chrono::steady_clock::now() - startTick > std::chrono::duration<int>(10)) {
-		QuitEvent();
+		SetNextScene(SceneList::MAINMENU);
 	}
 
 	//BUGFIX: Eat incoming packets
 	while(network.Receive());
-}
-
-void CleanUp::RenderFrame() {
-	SDL_FillRect(GetScreen(), 0, 0);
-	Render(GetScreen());
-	SDL_Flip(GetScreen());
-	fps.Calculate();
 }
 
 void CleanUp::Render(SDL_Surface* const screen) {
