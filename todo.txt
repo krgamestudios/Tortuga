@@ -1,5 +1,4 @@
 TODO: encapsulate the data structures
-TODO: The server's managers should be singletons too
 TODO: Get the rooms working
 TODO: A proper logging system
 TODO: Move the statistics into their own SQL table, instead of duplicating the structure a dozen times
@@ -10,34 +9,3 @@ TODO: server is slaved to the client
 
 TODO: Time delay for requesting region packets
 TODO: command line parameters overriding config.cfg settings
-
---Requirements--
-
-The enemies need AI scripts
-The scripts need to be able to generate other enemies (frog king).
-The characters need a flag to show if they're in a combat instance or not, to signify of they should be unloaded client-side
-On each game loop, the server should envoke each combat instance's update function
-	Each combat instance invokes each enemy's and character's update functions
-		These update functions increase the ATB guagues
-		if an ATB guage is full
-			than the stored command is executed
-			the players issue their commands during the build up
-			if there isn't a command ready, then the player is still choosing
-			for the enemies, the stored commands are driven by scripts, so when the enemies need to attack, their attached scripts are called.
-		after the commands are called, the ATB is reset to 0.
-	etc...
-
---Enemy API--
-
-enemyTables -- The global store of enemy tables. Only accessed by C++ code (unless you want to break something).
-
-enemy.new(parameters) -- return a new enemy object
-
-table.logic: the AI logic. If null, do nothing
-table.ref: reference to the enemy itself, for use by API functions, set by constructor?
-
-combat -- the combat API
-combat.new(mapIndex, x, y) -- return combat instance's index
-combat.pushenemy(c, enemy) -- return the enemy's position
-combat.popenemy(c, position) --
-

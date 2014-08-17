@@ -92,9 +92,9 @@ private:
 	std::map<int, ClientData> clientMap;
 
 	//managers
-	AccountManager accountMgr;
-	CharacterManager characterMgr;
-	RoomManager roomMgr;
+	AccountManager& accountMgr = AccountManager::GetSingleton();
+	CharacterManager& characterMgr = CharacterManager::GetSingleton();
+	RoomManager& roomMgr = RoomManager::GetSingleton();
 
 	//misc
 	bool running = true;

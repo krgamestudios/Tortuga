@@ -85,14 +85,7 @@ void ServerApplication::Init(int argc, char** argv) {
 
 	roomMgr.SetLuaState(luaState);
 
-	std::cout << "Internal managers set" << std::endl;
-
-	//register the "globals"
-	lua_pushstring(luaState, ROOM_MANAGER_PSEUDOINDEX);
-	lua_pushlightuserdata(luaState, &roomMgr);
-	lua_settable(luaState, LUA_REGISTRYINDEX);
-
-	std::cout << "Internal managers registered with lua" << std::endl;
+	std::cout << "Internal managers initialized" << std::endl;
 
 	//-------------------------
 	//Run the startup scripts

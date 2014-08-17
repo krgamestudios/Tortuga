@@ -33,7 +33,10 @@ using namespace std;
 int main(int argc, char** argv) {
 	try {
 		//create the singletons
+		AccountManager::Create();
+		CharacterManager::Create();
 		ConfigUtility::Create();
+		RoomManager::Create();
 		UDPNetworkUtility::Create();
 
 		//call the server's routines
@@ -47,7 +50,10 @@ int main(int argc, char** argv) {
 		ServerApplication::Delete();
 
 		//delete the singletons
+		AccountManager::Delete();
+		CharacterManager::Delete();
 		ConfigUtility::Delete();
+		RoomManager::Delete();
 		UDPNetworkUtility::Delete();
 	}
 	catch(exception& e) {

@@ -26,45 +26,24 @@
 #include <string>
 
 static int getRoom(lua_State* L) {
-	//get the room manager
-	lua_pushstring(L, ROOM_MANAGER_PSEUDOINDEX);
-	lua_gettable(L, LUA_REGISTRYINDEX);
-	RoomManager* roomMgr = reinterpret_cast<RoomManager*>(lua_touserdata(L, -1));
-
-	//push the room and return it
-	lua_pushlightuserdata(L, reinterpret_cast<void*>( roomMgr->GetRoom(lua_tointeger(L, -2)) ));
+	//find, push and return the room
+	RoomData* room = RoomManager::GetSingleton().GetRoom(lua_tointeger(L, -2));
+	lua_pushlightuserdata(L, reinterpret_cast<void*>(room));
 	return 1;
 }
 
 static int createRoom(lua_State* L) {
 	//TODO: check parameter count for the glue functions
 
-	//get the room manager
-	lua_pushstring(L, ROOM_MANAGER_PSEUDOINDEX);
-	lua_gettable(L, LUA_REGISTRYINDEX);
-	RoomManager* roomMgr = reinterpret_cast<RoomManager*>(lua_touserdata(L, -1));
-
-	//create the room
-	int uid = roomMgr->CreateRoom();
-
-	//TODO: any room parameters
-
-	//return the new room
-	lua_pushlightuserdata(L, roomMgr->FindRoom(uid));
+	//create, find and return the room
+	int uid = RoomManager::GetSingleton().CreateRoom();
+	lua_pushlightuserdata(L, RoomManager::GetSingleton().FindRoom(uid));
 	return 1;
 }
 
 static int unloadRoom(lua_State* L) {
-	//get the room manager
-	lua_pushstring(L, ROOM_MANAGER_PSEUDOINDEX);
-	lua_gettable(L, LUA_REGISTRYINDEX);
-	RoomManager* roomMgr = reinterpret_cast<RoomManager*>(lua_touserdata(L, -1));
-
-	//TODO: any room parameters
-
 	//unload the specified room
-	roomMgr->UnloadRoom(lua_tointeger(L, -2));
-
+	RoomManager::GetSingleton().UnloadRoom(lua_tointeger(L, -2));
 	return 0;
 }
 
