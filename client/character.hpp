@@ -40,7 +40,7 @@ public:
 	Character() = default;
 	~Character() = default;
 
-	void Update(double delta);
+	void Update();
 
 	//graphics
 	void DrawTo(SDL_Surface* const, int camX, int camY);

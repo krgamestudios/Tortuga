@@ -23,18 +23,14 @@
 #define ROOMMANAGER_HPP_
 
 #include "room_data.hpp"
+#include "singleton.hpp"
 
 #include "lua/lua.hpp"
 
 #include <map>
 
-#define ROOM_MANAGER_PSEUDOINDEX "RoomManager"
-
-class RoomManager {
+class RoomManager : public Singleton<RoomManager> {
 public:
-	RoomManager() = default;
-	~RoomManager() = default;
-
 	//public access methods
 	int CreateRoom();
 	void UnloadRoom(int uid);
@@ -52,6 +48,11 @@ public:
 	lua_State* GetLuaState() { return luaState; }
 
 private:
+	friend Singleton<RoomManager>;
+
+	RoomManager() = default;
+	~RoomManager() = default;
+
 	std::map<int, RoomData*> roomMap;
 	lua_State* luaState = nullptr;
 	int counter = 0;

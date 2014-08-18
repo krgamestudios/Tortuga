@@ -120,7 +120,6 @@ void ClientApplication::Proc() {
 	//prepare the time system
 	typedef std::chrono::steady_clock Clock;
 
-	std::chrono::duration<int, std::milli> delta(16);
 	Clock::time_point simTime = Clock::now();
 	Clock::time_point realTime;
 
@@ -138,8 +137,9 @@ void ClientApplication::Proc() {
 		//simulate game time
 		while (simTime < realTime) {
 			//call each user defined function
-			activeScene->RunFrame(double(delta.count()) / std::chrono::duration<int, std::milli>::period::den);
-			simTime += delta;
+			activeScene->RunFrame();
+			//~60 FPS
+			simTime += std::chrono::duration<int, std::milli>(16);
 		}
 
 		//draw the game to the screen

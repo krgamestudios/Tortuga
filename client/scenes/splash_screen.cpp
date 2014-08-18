@@ -40,7 +40,7 @@ SplashScreen::~SplashScreen() {
 //Frame loop
 //-------------------------
 
-void SplashScreen::Update(double delta) {
+void SplashScreen::Update() {
 	if (std::chrono::steady_clock::now() - startTick > std::chrono::duration<int>(1)) {
 		SetNextScene(SceneList::MAINMENU);
 	}

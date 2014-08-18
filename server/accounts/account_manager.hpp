@@ -23,16 +23,14 @@
 #define ACCOUNTMANAGER_HPP_
 
 #include "account_data.hpp"
+#include "singleton.hpp"
 
 #include "sqlite3/sqlite3.h"
 
 #include <map>
 
-class AccountManager {
+class AccountManager : public Singleton<AccountManager> {
 public:
-	AccountManager() = default;
-	~AccountManager() { UnloadAll(); };
-
 	//public access methods
 	int CreateAccount(std::string username, int clientIndex);
 	int LoadAccount(std::string username, int clientIndex);
@@ -50,6 +48,11 @@ public:
 	sqlite3* GetDatabase();
 
 private:
+	friend Singleton<AccountManager>;
+
+	AccountManager() = default;
+	~AccountManager() = default;
+
 	std::map<int, AccountData> accountMap;
 	sqlite3* database = nullptr;
 };

@@ -23,17 +23,15 @@
 #define CHARACTERMANAGER_HPP_
 
 #include "character_data.hpp"
+#include "singleton.hpp"
 
 #include "sqlite3/sqlite3.h"
 
 #include <map>
 #include <functional>
 
-class CharacterManager {
+class CharacterManager : public Singleton<CharacterManager> {
 public:
-	CharacterManager() = default;
-	~CharacterManager() { UnloadAll(); };
-
 	//public access methods
 	int CreateCharacter(int owner, std::string handle, std::string avatar);
 	int LoadCharacter(int owner, std::string handle, std::string avatar);
@@ -53,6 +51,11 @@ public:
 	sqlite3* GetDatabase();
 
 private:
+	friend Singleton<CharacterManager>;
+
+	CharacterManager() = default;
+	~CharacterManager() = default;
+
 	std::map<int, CharacterData> characterMap;
 	sqlite3* database = nullptr;
 };
