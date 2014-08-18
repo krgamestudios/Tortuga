@@ -1,7 +1,8 @@
 TODO: encapsulate the data structures
-TODO: Get the rooms working
 TODO: A proper logging system
+TODO: Ping-pong and keep alive system
 TODO: Move the statistics into their own SQL table, instead of duplicating the structure a dozen times
+TODO: Get the rooms working, even if only via hotkeys
 
 TODO: Fix shoddy movement
 TODO: make the whole thing more fault tolerant
