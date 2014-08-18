@@ -86,6 +86,7 @@ void BaseScene::RenderFrame() {
 	SDL_FillRect(screen, 0, 0);
 	Render(screen);
 	SDL_Flip(screen);
+	SDL_Delay(10);
 }
 
 //-------------------------

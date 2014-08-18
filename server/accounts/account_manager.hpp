@@ -51,7 +51,7 @@ private:
 	friend Singleton<AccountManager>;
 
 	AccountManager() = default;
-	~AccountManager() { UnloadAll(); };
+	~AccountManager() = default;
 
 	std::map<int, AccountData> accountMap;
 	sqlite3* database = nullptr;

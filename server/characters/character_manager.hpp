@@ -54,7 +54,7 @@ private:
 	friend Singleton<CharacterManager>;
 
 	CharacterManager() = default;
-	~CharacterManager() { UnloadAll(); };
+	~CharacterManager() = default;
 
 	std::map<int, CharacterData> characterMap;
 	sqlite3* database = nullptr;

@@ -17,6 +17,7 @@ tiles = {
 
 --custom generation systems here
 function islandGenerator(region)
+	io.write("Generating (", Region.GetX(region), ", ", Region.GetY(region), ")\n")
 	for i = 1, Region.GetWidth(region) do
 		for j = 1, Region.GetHeight(region) do
 			local dist = math.dist(0, 0, i + Region.GetX(region) -1, j + Region.GetY(region) -1)

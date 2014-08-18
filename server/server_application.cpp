@@ -150,7 +150,7 @@ void ServerApplication::Proc() {
 		//give the computer a break
 		SDL_Delay(10);
 	}
-	delete packetBuffer;
+	delete reinterpret_cast<char*>(packetBuffer);
 }
 
 void ServerApplication::Quit() {
