@@ -223,8 +223,11 @@ void ServerApplication::HandlePacket(SerialPacket* const argPacket) {
 		break;
 
 		//handle errors
-		default:
-			throw(std::runtime_error(std::string() + "Unknown SerialPacketType encountered in the server: " + to_string_custom(static_cast<int>(argPacket->type)) ));
+		default: {
+			std::string msg = "Unknown SerialPacketType encountered in the server: ";
+			msg += to_string_custom(static_cast<int>(argPacket->type));
+			throw(std::runtime_error(msg));
+		}
 		break;
 	}
 }

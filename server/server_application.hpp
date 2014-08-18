@@ -98,7 +98,7 @@ private:
 
 	//misc
 	bool running = true;
-	int clientUID = 0;
+	int clientIndex = 0;
 };
 
 #endif

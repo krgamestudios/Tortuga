@@ -46,7 +46,7 @@ void ServerApplication::HandleJoinRequest(ClientPacket* const argPacket) {
 
 	//load the user account
 	//TODO: handle passwords
-	int accountIndex = accountMgr.LoadAccount(argPacket->username, clientUID);
+	int accountIndex = accountMgr.LoadAccount(argPacket->username, clientIndex);
 	if (accountIndex < 0) {
 		//TODO: send rejection packet
 		std::cerr << "Error: Account already loaded: " << accountIndex << std::endl;
@@ -56,13 +56,13 @@ void ServerApplication::HandleJoinRequest(ClientPacket* const argPacket) {
 	//send the client their info
 	ClientPacket newPacket;
 	newPacket.type = SerialPacketType::JOIN_RESPONSE;
-	newPacket.clientIndex = clientUID;
+	newPacket.clientIndex = clientIndex;
 	newPacket.accountIndex = accountIndex;
 
 	network.SendTo(&newClient.address, static_cast<SerialPacket*>(&newPacket));
 
 	//finished this routine
-	clientMap[clientUID++] = newClient;
+	clientMap[clientIndex++] = newClient;
 	std::cout << "New connection, " << clientMap.size() << " clients and " << accountMgr.GetContainer()->size() << " accounts total" << std::endl;
 }
 
