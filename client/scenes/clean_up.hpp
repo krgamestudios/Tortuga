@@ -30,12 +30,8 @@
 #include "raster_font.hpp"
 #include "button.hpp"
 
-//common
-#include "frame_rate.hpp"
-
-#include "character.hpp"
-
 //client
+#include "character.hpp"
 #include "base_scene.hpp"
 
 //std namespace
@@ -54,8 +50,7 @@ public:
 
 protected:
 	//Frame loop
-	void Update(double delta);
-	void RenderFrame();
+	void Update();
 	void Render(SDL_Surface* const);
 
 	//Event handlers
@@ -79,7 +74,6 @@ protected:
 
 	//UI
 	Button backButton;
-	FrameRate fps;
 
 	//auto return
 	std::chrono::steady_clock::time_point startTick;

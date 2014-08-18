@@ -92,17 +92,17 @@ void InWorld::FrameStart() {
 	//
 }
 
-void InWorld::Update(double delta) {
+void InWorld::Update() {
 	//suck in and process all waiting packets
-	SerialPacket* packetBuffer = static_cast<SerialPacket*>(malloc(MAX_PACKET_SIZE));
+	SerialPacket* packetBuffer = reinterpret_cast<SerialPacket*>(new char[MAX_PACKET_SIZE]);
 	while(network.Receive(packetBuffer)) {
 		HandlePacket(packetBuffer);
 	}
-	free(static_cast<void*>(packetBuffer));
+	delete reinterpret_cast<char*>(packetBuffer);
 
 	//update the characters
 	for (auto& it : characterMap) {
-		it.second.Update(delta);
+		it.second.Update();
 	}
 
 	//check the map
@@ -129,7 +129,7 @@ void InWorld::Update(double delta) {
 			}
 
 			if ((localCharacter->GetOrigin() + localCharacter->GetBounds()).CheckOverlap(wallBounds)) {
-				localCharacter->SetOrigin(localCharacter->GetOrigin() - (localCharacter->GetMotion() * delta));
+				localCharacter->SetOrigin(localCharacter->GetOrigin() - (localCharacter->GetMotion()));
 				localCharacter->SetMotion({0,0});
 				localCharacter->CorrectSprite();
 				SendPlayerUpdate();
@@ -312,7 +312,12 @@ void InWorld::HandleCharacterNew(CharacterPacket* const argPacket) {
 
 	newCharacter.SetOrigin(argPacket->origin);
 	newCharacter.SetMotion(argPacket->motion);
-	newCharacter.SetBounds({0, 16, 32, 32}); //TODO: magic numbers, fix this
+	newCharacter.SetBounds({
+		CHARACTER_BOUNDS_X,
+		CHARACTER_BOUNDS_Y,
+		CHARACTER_BOUNDS_WIDTH,
+		CHARACTER_BOUNDS_HEIGHT
+	});
 
 	(*newCharacter.GetStats()) = argPacket->stats;
 

@@ -21,27 +21,25 @@
 */
 #include "room_manager.hpp"
 
+#include "room_api.hpp"
+
 #include <stdexcept>
 
 //-------------------------
 //public access methods
 //-------------------------
 
-RoomData* RoomManager::CreateRoom() {
+int RoomManager::CreateRoom() {
 	//create the room
 	RoomData* newRoom = new RoomData();
-
-	//set the state
-	if (luaState) {
-		newRoom->pager.SetLuaState(luaState);
-	}
+	newRoom->pager.SetLuaState(luaState);
 
 	//register the room
-	roomMap[counter++] = newRoom;
+	roomMap[counter] = newRoom;
 
 	//API hook
-	lua_getglobal(luaState, "Room");
-	lua_getfield(luaState, -1, "OnCreate");
+	lua_getglobal(luaState, TORTUGA_ROOM_NAME);
+	lua_getfield(luaState, -1, "Create");
 	lua_pushlightuserdata(luaState, newRoom);
 	if (lua_pcall(luaState, 1, 0, 0) != LUA_OK) {
 		throw(std::runtime_error(std::string() + "Lua error: " + lua_tostring(luaState, -1) ));
@@ -49,7 +47,7 @@ RoomData* RoomManager::CreateRoom() {
 	lua_pop(luaState, 1);
 
 	//finish the routine
-	return newRoom;
+	return counter++;
 }
 
 void RoomManager::UnloadRoom(int uid) {
@@ -60,8 +58,8 @@ void RoomManager::UnloadRoom(int uid) {
 	}
 
 	//API hook
-	lua_getglobal(luaState, "Room");
-	lua_getfield(luaState, -1, "OnUnload");
+	lua_getglobal(luaState, TORTUGA_ROOM_NAME);
+	lua_getfield(luaState, -1, "Unload");
 	lua_pushlightuserdata(luaState, room);
 	if (lua_pcall(luaState, 1, 0, 0) != LUA_OK) {
 		throw(std::runtime_error(std::string() + "Lua error: " + lua_tostring(luaState, -1) ));
@@ -92,11 +90,11 @@ int RoomManager::PushRoom(RoomData* room) {
 }
 
 void RoomManager::UnloadAll() {
-	lua_getglobal(luaState, "Room");
+	lua_getglobal(luaState, TORTUGA_ROOM_NAME);
 
 	for (auto& it : roomMap) {
 		//API hook
-		lua_getfield(luaState, -1, "OnUnload");
+		lua_getfield(luaState, -1, "Unload");
 		lua_pushlightuserdata(luaState, it.second);
 		if (lua_pcall(luaState, 1, 0, 0) != LUA_OK) {
 			throw(std::runtime_error(std::string() + "Lua error: " + lua_tostring(luaState, -1) ));

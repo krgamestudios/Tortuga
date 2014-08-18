@@ -82,13 +82,13 @@ void LobbyMenu::FrameStart() {
 	//
 }
 
-void LobbyMenu::Update(double delta) {
+void LobbyMenu::Update() {
 	//suck in and process all waiting packets
-	SerialPacket* packetBuffer = static_cast<SerialPacket*>(malloc(MAX_PACKET_SIZE));
+	SerialPacket* packetBuffer = reinterpret_cast<SerialPacket*>(new char[MAX_PACKET_SIZE]);
 	while(network.Receive(packetBuffer)) {
 		HandlePacket(packetBuffer);
 	}
-	free(static_cast<void*>(packetBuffer));
+	delete reinterpret_cast<char*>(packetBuffer);
 }
 
 void LobbyMenu::FrameEnd() {

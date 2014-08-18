@@ -72,7 +72,7 @@ void MainMenu::FrameStart() {
 	//
 }
 
-void MainMenu::Update(double delta) {
+void MainMenu::Update() {
 	//
 }
 

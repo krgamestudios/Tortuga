@@ -15,10 +15,11 @@ tiles = {
 	water	= base + shift * 4
 }
 
---could set custom generation systems here, that differ from the global generators, etc.
-function Region.Create(region)
-	for i = 1, Region.GetWidth() do
-		for j = 1, Region.GetHeight() do
+--custom generation systems here
+function islandGenerator(region)
+	io.write("Generating (", Region.GetX(region), ", ", Region.GetY(region), ")\n")
+	for i = 1, Region.GetWidth(region) do
+		for j = 1, Region.GetHeight(region) do
 			local dist = math.dist(0, 0, i + Region.GetX(region) -1, j + Region.GetY(region) -1)
 			if dist < 10 then
 				Region.SetTile(region, i, j, 1, tiles.plains)
@@ -33,14 +34,19 @@ function Region.Create(region)
 end
 
 --Get some regions
---BUG: The server fails without this
-newRoom = RoomMgr.CreateRoom("overworld")
+--BUG: The server fails without at least one room
+--TODO: Create rooms with names?
+newRoom = RoomManager.CreateRoom()
 pager = Room.GetPager(newRoom)
+RegionPager.SetOnCreate(pager, islandGenerator)
+
+--[[
 regionTable = {
 	RegionPager.GetRegion(pager, Region.GetWidth() * 0, Region.GetHeight() * 0),
 	RegionPager.GetRegion(pager, Region.GetWidth() *-1, Region.GetHeight() * 0),
 	RegionPager.GetRegion(pager, Region.GetWidth() * 0, Region.GetHeight() *-1),
 	RegionPager.GetRegion(pager, Region.GetWidth() *-1, Region.GetHeight() *-1)
 }
+]]
 
 print("Finished the lua script")

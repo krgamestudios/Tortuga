@@ -78,27 +78,6 @@ static int getDepth(lua_State* L) {
 	return 1;
 }
 
-static int load(lua_State* L) {
-	//EMPTY
-	lua_pushboolean(L, false);
-	return 1;
-}
-
-static int save(lua_State* L) {
-	//EMPTY
-	return 0;
-}
-
-static int create(lua_State* L) {
-	//EMPTY
-	return 0;
-}
-
-static int unload(lua_State* L) {
-	//EMPTY
-	return 0;
-}
-
 static const luaL_Reg regionLib[] = {
 	{"SetTile",setTile},
 	{"GetTile",getTile},
@@ -109,10 +88,6 @@ static const luaL_Reg regionLib[] = {
 	{"GetWidth",getWidth},
 	{"GetHeight",getHeight},
 	{"GetDepth",getDepth},
-	{"Load",load},
-	{"Save",save},
-	{"Create",create},
-	{"Unload",unload},
 	{nullptr, nullptr}
 };
 
