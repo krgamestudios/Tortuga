@@ -75,10 +75,10 @@ SceneList BaseScene::GetNextScene() const {
 //Frame loop
 //-------------------------
 
-void BaseScene::RunFrame(double delta) {
+void BaseScene::RunFrame() {
 	FrameStart();
 	HandleEvents();
-	Update(delta);
+	Update();
 	FrameEnd();
 }
 

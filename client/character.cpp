@@ -21,14 +21,14 @@
 */
 #include "character.hpp"
 
-void Character::Update(double delta) {
+void Character::Update() {
 	if (motion.x && motion.y) {
-		origin += motion * delta * CHARACTER_WALKING_MOD;
+		origin += motion * CHARACTER_WALKING_MOD;
 	}
 	else if (motion != 0) {
-		origin += motion * delta;
+		origin += motion;
 	}
-	sprite.Update(delta);
+	sprite.Update(0.016);
 }
 
 void Character::DrawTo(SDL_Surface* const dest, int camX, int camY) {

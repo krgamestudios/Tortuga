@@ -92,17 +92,17 @@ void InWorld::FrameStart() {
 	//
 }
 
-void InWorld::Update(double delta) {
+void InWorld::Update() {
 	//suck in and process all waiting packets
-	SerialPacket* packetBuffer = static_cast<SerialPacket*>(malloc(MAX_PACKET_SIZE));
+	SerialPacket* packetBuffer = reinterpret_cast<SerialPacket*>(new char[MAX_PACKET_SIZE]);
 	while(network.Receive(packetBuffer)) {
 		HandlePacket(packetBuffer);
 	}
-	free(static_cast<void*>(packetBuffer));
+	delete reinterpret_cast<char*>(packetBuffer);
 
 	//update the characters
 	for (auto& it : characterMap) {
-		it.second.Update(delta);
+		it.second.Update();
 	}
 
 	//check the map
@@ -129,7 +129,7 @@ void InWorld::Update(double delta) {
 			}
 
 			if ((localCharacter->GetOrigin() + localCharacter->GetBounds()).CheckOverlap(wallBounds)) {
-				localCharacter->SetOrigin(localCharacter->GetOrigin() - (localCharacter->GetMotion() * delta));
+				localCharacter->SetOrigin(localCharacter->GetOrigin() - (localCharacter->GetMotion()));
 				localCharacter->SetMotion({0,0});
 				localCharacter->CorrectSprite();
 				SendPlayerUpdate();

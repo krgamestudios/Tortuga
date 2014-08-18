@@ -50,7 +50,7 @@ public:
 
 protected:
 	//Frame loop
-	void Update(double delta);
+	void Update();
 	void Render(SDL_Surface* const);
 
 	//Event handlers

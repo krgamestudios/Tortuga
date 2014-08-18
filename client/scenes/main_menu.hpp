@@ -37,7 +37,7 @@ public:
 protected:
 	//Frame loop
 	void FrameStart();
-	void Update(double delta);
+	void Update();
 	void FrameEnd();
 	void Render(SDL_Surface* const);
 

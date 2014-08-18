@@ -40,13 +40,13 @@ public:
 	SceneList GetNextScene() const;
 
 	//Frame loop
-	virtual void RunFrame(double delta);
+	virtual void RunFrame();
 	virtual void RenderFrame();
 
 protected:
 	virtual void FrameStart() {}
 	virtual void HandleEvents();
-	virtual void Update(double delta) {}
+	virtual void Update() {}
 	virtual void FrameEnd() {}
 	virtual void Render(SDL_Surface* const screen) {}
 

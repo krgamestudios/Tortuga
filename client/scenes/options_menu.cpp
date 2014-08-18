@@ -59,7 +59,7 @@ void OptionsMenu::FrameStart() {
 	//
 }
 
-void OptionsMenu::Update(double delta) {
+void OptionsMenu::Update() {
 	//
 }
 

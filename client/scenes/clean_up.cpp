@@ -80,7 +80,7 @@ CleanUp::~CleanUp() {
 //Frame loop
 //-------------------------
 
-void CleanUp::Update(double delta) {
+void CleanUp::Update() {
 	if (std::chrono::steady_clock::now() - startTick > std::chrono::duration<int>(10)) {
 		SetNextScene(SceneList::MAINMENU);
 	}
