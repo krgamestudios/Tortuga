@@ -23,8 +23,6 @@
 
 #include <stdexcept>
 
-//TODO: Could I push the pager to the API functions too?
-
 Region* RegionPagerLua::LoadRegion(int x, int y) {
 	//get the pager's function from the registry
 	lua_rawgeti(lua, LUA_REGISTRYINDEX, loadRef);

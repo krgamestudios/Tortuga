@@ -23,15 +23,11 @@
 #define REGION_HPP_
 
 #include <bitset>
-#include <cmath>
 
 //the region's storage format
 constexpr int REGION_WIDTH = 20;
 constexpr int REGION_HEIGHT = 20;
 constexpr int REGION_DEPTH = 3;
-
-//the size of the solid map
-constexpr int REGION_SOLID_FOOTPRINT = ceil(REGION_WIDTH * REGION_HEIGHT / 8.0);
 
 //utility function
 int snapToBase(int base, int x);
@@ -63,8 +59,5 @@ private:
 	type_t tiles[REGION_WIDTH][REGION_HEIGHT][REGION_DEPTH];
 	std::bitset<REGION_WIDTH*REGION_HEIGHT> solid;
 };
-
-//the memory footprint of the tile and solid data; not including any metadata
-constexpr int REGION_FOOTPRINT = REGION_WIDTH * REGION_HEIGHT * REGION_DEPTH * sizeof(Region::type_t) + REGION_SOLID_FOOTPRINT;
 
 #endif

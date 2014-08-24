@@ -27,6 +27,8 @@
 #include "region.hpp"
 #include "statistics.hpp"
 
+#include <cmath>
+
 //Primary interface functions
 void serializePacket(SerialPacketBase*, void* dest);
 void deserializePacket(SerialPacketBase*, void* src);
@@ -53,15 +55,19 @@ void deserializeRegionContent(RegionPacket*, void*);
 void deserializeServer(ServerPacket*, void*);
 void deserializeStatistics(Statistics*, void*);
 
-/* DOCS: Keep PACKET_BUFFER_SIZE up to date
- * DOCS: SerialPacketType::REGION_CONTENT is currently the largest type of packet, read more
- * The metadata used are:
+/* DOCS: PACKET_BUFFER_SIZE is the memory required to store serialized data
+ * DOCS: SerialPacketType::REGION_CONTENT is currently the largest packet type
+ * Serialized packet structure:
  *     SerialPacketType
  *     room index
- *     X & Y positon
- * The rest is taken up by the Regions's content.
+ *     X & Y position
+ *     tile data (3 layers)
+ *     solid data (bitset)
+ * The constants declared here are used for networking ONLY
 */
 
-constexpr int PACKET_BUFFER_SIZE = sizeof(SerialPacketType) + sizeof(int) * 3 + REGION_FOOTPRINT;
+constexpr int REGION_TILE_FOOTPRINT = sizeof(Region::type_t) * REGION_WIDTH * REGION_HEIGHT * REGION_DEPTH;
+constexpr int REGION_SOLID_FOOTPRINT = ceil(REGION_WIDTH * REGION_HEIGHT / 8.0);
+constexpr int PACKET_BUFFER_SIZE = sizeof(SerialPacketType) + sizeof(int) * 3 + REGION_TILE_FOOTPRINT + REGION_SOLID_FOOTPRINT;
 
 #endif

@@ -3,6 +3,8 @@ TODO: Ping-pong and keep alive system
 TODO: Move the statistics into their own SQL table, instead of duplicating the structure a dozen times
 TODO: Get the rooms working, even if only via hotkeys
 TODO: Rejection messages
+TODO: Move the map system into it's own namespace
+TODO: The TileSheet class should implement the surface itself
 
 TODO: Fix shoddy movement
 TODO: make the whole thing more fault tolerant

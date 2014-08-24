@@ -71,12 +71,12 @@ Region* RegionPagerBase::PushRegion(Region* const ptr) {
 }
 
 Region* RegionPagerBase::LoadRegion(int x, int y) {
-	//TODO: load the region if possible
+	//EMPTY, intended for override
 	return nullptr;
 }
 
 Region* RegionPagerBase::SaveRegion(int x, int y) {
-	//TODO: find & save the region
+	//EMPTY, intended for override
 	return nullptr;
 }
 

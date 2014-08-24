@@ -22,6 +22,7 @@
 #include "region.hpp"
 
 #include <stdexcept>
+#include <cmath>
 #include <cstring>
 
 int snapToBase(int base, int x) {
