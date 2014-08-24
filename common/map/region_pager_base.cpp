@@ -21,8 +21,6 @@
 */
 #include "region_pager_base.hpp"
 
-#include "utility.hpp"
-
 #include <stdexcept>
 #include <algorithm>
 

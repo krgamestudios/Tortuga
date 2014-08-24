@@ -21,10 +21,12 @@
 */
 #include "region.hpp"
 
-#include "utility.hpp"
-
 #include <stdexcept>
 #include <cstring>
+
+int snapToBase(int base, int x) {
+	return floor((double)x / base) * base;
+}
 
 Region::Region(int argX, int argY): x(argX), y(argY) {
 	if (x != snapToBase(REGION_WIDTH, x) || y != snapToBase(REGION_HEIGHT, y)) {

@@ -1,5 +1,4 @@
 TODO: encapsulate the data structures
-TODO: A proper logging system
 TODO: Ping-pong and keep alive system
 TODO: Move the statistics into their own SQL table, instead of duplicating the structure a dozen times
 TODO: Get the rooms working, even if only via hotkeys
@@ -12,3 +11,4 @@ TODO: server is slaved to the client
 
 TODO: Time delay for requesting region packets
 TODO: command line parameters overriding config.cfg settings
+TODO: A proper logging system

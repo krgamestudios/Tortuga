@@ -24,9 +24,6 @@
 
 #include <string>
 
-int snapToBase(int base, int x);
-double snapToBase(double base, double x);
-
 std::string truncatePath(std::string pathname);
 
 //fixing known bugs in g++

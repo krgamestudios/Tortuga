@@ -33,6 +33,9 @@ constexpr int REGION_DEPTH = 3;
 //the size of the solid map
 constexpr int REGION_SOLID_FOOTPRINT = ceil(REGION_WIDTH * REGION_HEIGHT / 8.0);
 
+//utility function
+int snapToBase(int base, int x);
+
 class Region {
 public:
 	typedef unsigned char type_t;

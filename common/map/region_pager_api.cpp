@@ -24,8 +24,6 @@
 #include "region_pager_lua.hpp"
 #include "region.hpp"
 
-#include <string>
-
 //DOCS: These glue functions simply wrap RegionPagerLua's methods
 
 static int setTile(lua_State* L) {

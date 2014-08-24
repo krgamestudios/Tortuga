@@ -21,8 +21,6 @@
 */
 #include "region_pager_lua.hpp"
 
-#include "utility.hpp"
-
 #include <stdexcept>
 
 //TODO: Could I push the pager to the API functions too?
