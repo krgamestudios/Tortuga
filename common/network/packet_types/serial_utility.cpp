@@ -19,47 +19,56 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#include "serial.hpp"
+#include "serial_utility.hpp"
 
-#include "serial_util.hpp"
+#include <cstring>
 
-void serializeStatistics(Statistics* stats, void* buffer) {
-	//integers
-	SERIALIZE(buffer, &stats->level, sizeof(int));
-	SERIALIZE(buffer, &stats->exp, sizeof(int));
-	SERIALIZE(buffer, &stats->maxHP, sizeof(int));
-	SERIALIZE(buffer, &stats->health, sizeof(int));
-	SERIALIZE(buffer, &stats->maxMP, sizeof(int));
-	SERIALIZE(buffer, &stats->mana, sizeof(int));
-	SERIALIZE(buffer, &stats->attack, sizeof(int));
-	SERIALIZE(buffer, &stats->defence, sizeof(int));
-	SERIALIZE(buffer, &stats->intelligence, sizeof(int));
-	SERIALIZE(buffer, &stats->resistance, sizeof(int));
-	SERIALIZE(buffer, &stats->speed, sizeof(int));
-
-	//floats
-	SERIALIZE(buffer, &stats->accuracy, sizeof(float));
-	SERIALIZE(buffer, &stats->evasion, sizeof(float));
-	SERIALIZE(buffer, &stats->luck, sizeof(float));
+void serialize(void** bufferHead, void* data, int size) {
+	memcpy(*bufferHead, data, size);
+	(*bufferHead) = static_cast<void*>(static_cast<char*>(*bufferHead) + size);
 }
 
+void deserialize(void** bufferHead, void* data, int size) {
+	memcpy(data, *bufferHead, size);
+	(*bufferHead) = static_cast<void*>(static_cast<char*>(*bufferHead) + size);
+}
 
-void deserializeStatistics(Statistics* stats, void* buffer) {
+void serializeStatistics(void** bufferHead, Statistics* stats) {
 	//integers
-	DESERIALIZE(buffer, &stats->level, sizeof(int));
-	DESERIALIZE(buffer, &stats->exp, sizeof(int));
-	DESERIALIZE(buffer, &stats->maxHP, sizeof(int));
-	DESERIALIZE(buffer, &stats->health, sizeof(int));
-	DESERIALIZE(buffer, &stats->maxMP, sizeof(int));
-	DESERIALIZE(buffer, &stats->mana, sizeof(int));
-	DESERIALIZE(buffer, &stats->attack, sizeof(int));
-	DESERIALIZE(buffer, &stats->defence, sizeof(int));
-	DESERIALIZE(buffer, &stats->intelligence, sizeof(int));
-	DESERIALIZE(buffer, &stats->resistance, sizeof(int));
-	DESERIALIZE(buffer, &stats->speed, sizeof(int));
+	serialize(bufferHead, &stats->level, sizeof(int));
+	serialize(bufferHead, &stats->exp, sizeof(int));
+	serialize(bufferHead, &stats->maxHP, sizeof(int));
+	serialize(bufferHead, &stats->health, sizeof(int));
+	serialize(bufferHead, &stats->maxMP, sizeof(int));
+	serialize(bufferHead, &stats->mana, sizeof(int));
+	serialize(bufferHead, &stats->attack, sizeof(int));
+	serialize(bufferHead, &stats->defence, sizeof(int));
+	serialize(bufferHead, &stats->intelligence, sizeof(int));
+	serialize(bufferHead, &stats->resistance, sizeof(int));
+	serialize(bufferHead, &stats->speed, sizeof(int));
 
 	//floats
-	DESERIALIZE(buffer, &stats->accuracy, sizeof(float));
-	DESERIALIZE(buffer, &stats->evasion, sizeof(float));
-	DESERIALIZE(buffer, &stats->luck, sizeof(float));
+	serialize(bufferHead, &stats->accuracy, sizeof(float));
+	serialize(bufferHead, &stats->evasion, sizeof(float));
+	serialize(bufferHead, &stats->luck, sizeof(float));
+}
+
+void deserializeStatistics(void** bufferHead, Statistics* stats) {
+	//integers
+	deserialize(bufferHead, &stats->level, sizeof(int));
+	deserialize(bufferHead, &stats->exp, sizeof(int));
+	deserialize(bufferHead, &stats->maxHP, sizeof(int));
+	deserialize(bufferHead, &stats->health, sizeof(int));
+	deserialize(bufferHead, &stats->maxMP, sizeof(int));
+	deserialize(bufferHead, &stats->mana, sizeof(int));
+	deserialize(bufferHead, &stats->attack, sizeof(int));
+	deserialize(bufferHead, &stats->defence, sizeof(int));
+	deserialize(bufferHead, &stats->intelligence, sizeof(int));
+	deserialize(bufferHead, &stats->resistance, sizeof(int));
+	deserialize(bufferHead, &stats->speed, sizeof(int));
+
+	//floats
+	deserialize(bufferHead, &stats->accuracy, sizeof(float));
+	deserialize(bufferHead, &stats->evasion, sizeof(float));
+	deserialize(bufferHead, &stats->luck, sizeof(float));
 }

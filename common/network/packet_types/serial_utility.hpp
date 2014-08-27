@@ -22,10 +22,13 @@
 #ifndef SERIALIZEUTIL_HPP_
 #define SERIALIZEUTIL_HPP_
 
-#include <cstring>
+#include "statistics.hpp"
 
-//NOTE: The strange assignments here used in order to move the void* parameter
-#define SERIALIZE(buffer, data, size) memcpy(buffer, data, size); buffer = reinterpret_cast<char*>(buffer) + size;
-#define DESERIALIZE(buffer, data, size) memcpy(data, buffer, size); buffer = reinterpret_cast<char*>(buffer) + size;
+//raw memcpy
+inline void serialize(void** bufferHead, void* data, int size);
+inline void deserialize(void** bufferHead, void* data, int size);
+
+void serializeStatistics(void** bufferHead, Statistics* stats);
+void deserializeStatistics(void** bufferHead, Statistics* stats);
 
 #endif
