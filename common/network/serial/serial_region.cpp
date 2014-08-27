@@ -41,9 +41,9 @@ void serializeRegionContent(RegionPacket* packet, void* buffer) {
 	SERIALIZE(buffer, &packet->y, sizeof(int));
 
 	//tiles
-	for (register int i = 0; i < REGION_WIDTH; i++) {
-		for (register int j = 0; j < REGION_HEIGHT; j++) {
-			for (register int k = 0; k < REGION_DEPTH; k++) {
+	for (int i = 0; i < REGION_WIDTH; i++) {
+		for (int j = 0; j < REGION_HEIGHT; j++) {
+			for (int k = 0; k < REGION_DEPTH; k++) {
 				*reinterpret_cast<Region::type_t*>(buffer) = packet->region->GetTile(i, j, k);
 				buffer = reinterpret_cast<char*>(buffer) + sizeof(Region::type_t);
 			}
@@ -75,9 +75,9 @@ void deserializeRegionContent(RegionPacket* packet, void* buffer) {
 	packet->region = new Region(packet->x, packet->y);
 
 	//tiles
-	for (register int i = 0; i < REGION_WIDTH; i++) {
-		for (register int j = 0; j < REGION_HEIGHT; j++) {
-			for (register int k = 0; k < REGION_DEPTH; k++) {
+	for (int i = 0; i < REGION_WIDTH; i++) {
+		for (int j = 0; j < REGION_HEIGHT; j++) {
+			for (int k = 0; k < REGION_DEPTH; k++) {
 				packet->region->SetTile(i, j, k, *reinterpret_cast<Region::type_t*>(buffer));
 				buffer = reinterpret_cast<char*>(buffer) + sizeof(Region::type_t);
 			}

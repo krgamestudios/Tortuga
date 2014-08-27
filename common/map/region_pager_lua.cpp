@@ -21,11 +21,7 @@
 */
 #include "region_pager_lua.hpp"
 
-#include "utility.hpp"
-
 #include <stdexcept>
-
-//TODO: Could I push the pager to the API functions too?
 
 Region* RegionPagerLua::LoadRegion(int x, int y) {
 	//get the pager's function from the registry

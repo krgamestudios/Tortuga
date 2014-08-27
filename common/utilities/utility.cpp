@@ -23,19 +23,6 @@
 
 #include <algorithm>
 
-int snapToBase(int base, int x) {
-	//snap to a grid
-	if (x < 0) {
-		++x;
-		return x / base * base - base;
-	}
-	return x / base * base;
-}
-
-double snapToBase(double base, double x) {
-	return floor(x / base) * base;
-}
-
 std::string truncatePath(std::string pathname) {
 	return std::string(
 		std::find_if(
