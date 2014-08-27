@@ -41,4 +41,19 @@ union MaxPacket {
 };
 constexpr int MAX_PACKET_SIZE = sizeof(MaxPacket);
 
+/* DOCS: PACKET_BUFFER_SIZE is the memory required to store serialized data
+ * DOCS: SerialPacketType::REGION_CONTENT is currently the largest packet type
+ * Serialized packet structure:
+ *     SerialPacketType
+ *     room index
+ *     X & Y position
+ *     tile data (3 layers)
+ *     solid data (bitset)
+ * The constants declared here are used for networking ONLY
+*/
+
+constexpr int REGION_TILE_FOOTPRINT = sizeof(Region::type_t) * REGION_WIDTH * REGION_HEIGHT * REGION_DEPTH;
+constexpr int REGION_SOLID_FOOTPRINT = ceil(REGION_WIDTH * REGION_HEIGHT / 8.0);
+constexpr int PACKET_BUFFER_SIZE = sizeof(SerialPacketType) + sizeof(int) * 3 + REGION_TILE_FOOTPRINT + REGION_SOLID_FOOTPRINT;
+
 #endif
