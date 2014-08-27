@@ -19,24 +19,22 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#include "serial.hpp"
+#include "client_packet.hpp"
 
-#include "serial_util.hpp"
+#include "serial_utility.hpp"
 
-void serializeClient(ClientPacket* packet, void* buffer) {
-	SERIALIZE(buffer, &packet->type, sizeof(SerialPacketType));
+void ClientPacket::Serialize(void* buffer) {
+	serialize(&buffer, &type, sizeof(SerialPacketType));
 
-	SERIALIZE(buffer, &packet->clientIndex, sizeof(int));
-	SERIALIZE(buffer, &packet->accountIndex, sizeof(int));
-	SERIALIZE(buffer, &packet->username, PACKET_STRING_SIZE);
-//	SERIALIZE(buffer, &packet->password, PACKET_STRING_SIZE);
+	serialize(&buffer, &clientIndex, sizeof(int));
+	serialize(&buffer, &accountIndex, sizeof(int));
+	serialize(&buffer, username, PACKET_STRING_SIZE);
 }
 
-void deserializeClient(ClientPacket* packet, void* buffer) {
-	DESERIALIZE(buffer, &packet->type, sizeof(SerialPacketType));
+void ClientPacket::Deserialize(void* buffer) {
+	deserialize(&buffer, &type, sizeof(SerialPacketType));
 
-	DESERIALIZE(buffer, &packet->clientIndex, sizeof(int));
-	DESERIALIZE(buffer, &packet->accountIndex, sizeof(int));
-	DESERIALIZE(buffer, &packet->username, PACKET_STRING_SIZE);
-//	DESERIALIZE(buffer, &packet->password, PACKET_STRING_SIZE);
+	deserialize(&buffer, &clientIndex, sizeof(int));
+	deserialize(&buffer, &accountIndex, sizeof(int));
+	deserialize(&buffer, username, PACKET_STRING_SIZE);
 }

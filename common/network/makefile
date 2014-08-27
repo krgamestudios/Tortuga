@@ -1,5 +1,5 @@
 #config
-INCLUDES+=. packet_types ../utilities ../gameplay ../map
+INCLUDES+=. packet_types ../gameplay ../map ../utilities
 LIBS+=
 CXXFLAGS+=-std=c++11 $(addprefix -I,$(INCLUDES))
 

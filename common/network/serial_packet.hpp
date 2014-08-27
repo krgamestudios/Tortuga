@@ -29,8 +29,6 @@
 #include "serial_packet_base.hpp"
 #include "character_packet.hpp"
 #include "client_packet.hpp"
-#include "combat_packet.hpp"
-#include "enemy_packet.hpp"
 #include "region_packet.hpp"
 #include "server_packet.hpp"
 
@@ -44,10 +42,8 @@ constexpr int NETWORK_VERSION = 20140827;
 union _MaxPacket {
 	CharacterPacket a;
 	ClientPacket b;
-	CombatPacket c;
-	EnemyPacket d;
-	RegionPacket e;
-	ServerPacket f;
+	RegionPacket c;
+	ServerPacket d;
 };
 
 constexpr int MAX_PACKET_SIZE = sizeof(_MaxPacket);
@@ -62,8 +58,10 @@ constexpr int MAX_PACKET_SIZE = sizeof(_MaxPacket);
  *     solid data (bitset)
 */
 
-constexpr int REGION_TILE_FOOTPRINT = sizeof(Region::type_t) * REGION_WIDTH * REGION_HEIGHT * REGION_DEPTH;
-constexpr int REGION_SOLID_FOOTPRINT = ceil(REGION_WIDTH * REGION_HEIGHT / 8.0);
-constexpr int PACKET_BUFFER_SIZE = sizeof(SerialPacketType) + sizeof(int) * 3 + REGION_TILE_FOOTPRINT + REGION_SOLID_FOOTPRINT;
+constexpr int PACKET_BUFFER_SIZE =
+	sizeof(SerialPacketType) +
+	REGION_METADATA_FOOTPRINT +
+	REGION_TILE_FOOTPRINT +
+	REGION_SOLID_FOOTPRINT;
 
 #endif

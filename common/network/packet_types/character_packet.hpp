@@ -27,11 +27,49 @@
 #include "vector2.hpp"
 #include "statistics.hpp"
 
-struct CharacterPacket : SerialPacketBase {
+#include <cstring>
+
+class CharacterPacket : public SerialPacketBase {
+public:
+	CharacterPacket() {}
+	~CharacterPacket() {}
+
+	//indentity
+	int SetCharacterIndex(int i) { return characterIndex = i; }
+	const char* SetHandle(const char* s)
+	{ return strncpy(handle, s, PACKET_STRING_SIZE); }
+	const char* SetAvatar(const char* s)
+	{ return strncpy(handle, s, PACKET_STRING_SIZE); }
+
+	int SetAccountIndex(int i) { return accountIndex = i; }
+
+	int GetCharacterIndex() { return characterIndex; }
+	const char* GetHandle() { return handle; }
+	const char* GetAvatar() { return avatar; }
+
+	int GetAccountIndex() { return accountIndex; }
+
+	//location
+	int SetRoomIndex(int i) { return roomIndex = i; }
+	Vector2 SetOrigin(Vector2 v) { return origin = v; }
+	Vector2 SetMotion(Vector2 v) { return motion = v; }
+
+	int GetRoomIndex() { return roomIndex; }
+	Vector2 GetOrigin() { return origin; }
+	Vector2 GetMotion() { return motion; }
+
+	//gameplay
+	Statistics* GetStatistics() { return &stats; }
+
+protected:
+	virtual void Serialize(void* buffer) override;
+	virtual void Deserialize(void* buffer) override;
+
+private:
 	//identify the character
 	int characterIndex;
-	char handle[PACKET_STRING_SIZE];
-	char avatar[PACKET_STRING_SIZE];
+	char handle[PACKET_STRING_SIZE+1];
+	char avatar[PACKET_STRING_SIZE+1];
 
 	//the owner
 	int accountIndex;

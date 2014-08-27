@@ -26,7 +26,37 @@
 
 #include "region.hpp"
 
-struct RegionPacket : SerialPacketBase {
+#include <cmath>
+#include <cstring>
+
+//define the memory footprint for the region's members
+constexpr int REGION_TILE_FOOTPRINT = sizeof(Region::type_t) * REGION_WIDTH * REGION_HEIGHT * REGION_DEPTH;
+constexpr int REGION_SOLID_FOOTPRINT = ceil(REGION_WIDTH * REGION_HEIGHT / 8.0);
+constexpr int REGION_METADATA_FOOTPRINT = sizeof(int) * 3;
+
+class RegionPacket : public SerialPacketBase {
+public:
+	RegionPacket() {}
+	~RegionPacket() {}
+
+	//location
+	int SetRoomIndex(int i) { return roomIndex = i; }
+	int SetX(int i) { return x = i; }
+	int SetY(int i) { return y = i; }
+
+	int GetRoomIndex() { return roomIndex; }
+	int GetX() { return x; }
+	int GetY() { return y; }
+
+	//the region itself
+	Region* SetRegion(Region* r) { return region = r; }
+	Region* GetRegion() { return region; }
+
+protected:
+	virtual void Serialize(void* buffer) override;
+	virtual void Deserialize(void* buffer) override;
+
+private:
 	//location/identify the region
 	int roomIndex;
 	int x, y;

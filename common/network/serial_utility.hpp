@@ -25,8 +25,8 @@
 #include "statistics.hpp"
 
 //raw memcpy
-inline void serialize(void** bufferHead, void* data, int size);
-inline void deserialize(void** bufferHead, void* data, int size);
+void serialize(void** bufferHead, void* data, int size);
+void deserialize(void** bufferHead, void* data, int size);
 
 void serializeStatistics(void** bufferHead, Statistics* stats);
 void deserializeStatistics(void** bufferHead, Statistics* stats);

@@ -1,5 +1,5 @@
 #config
-INCLUDES+=. ..
+INCLUDES+=. .. ../../gameplay ../../map ../../utilities
 LIBS+=
 CXXFLAGS+=-std=c++11 $(addprefix -I,$(INCLUDES))
 

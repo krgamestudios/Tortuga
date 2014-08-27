@@ -24,9 +24,29 @@
 
 #include "serial_packet_base.hpp"
 
-struct ServerPacket : SerialPacketBase {
+#include <cstring>
+
+class ServerPacket : public SerialPacketBase {
+public:
+	ServerPacket() {}
+	~ServerPacket() {}
+
+	const char* SetName(const char* s)
+	{ return strncpy(name, s, PACKET_STRING_SIZE); }
+	int SetPlayerCount(int i) { return playerCount = i; }
+	int SetVersion(int i) { return version = i; }
+
+	const char* GetName() { return name; }
+	int GetPlayerCount() { return playerCount; }
+	int GetVersion() { return version; }
+
+protected:
+	virtual void Serialize(void* buffer) override;
+	virtual void Deserialize(void* buffer) override;
+
+private:
 	//identify the server
-	char name[PACKET_STRING_SIZE];
+	char name[PACKET_STRING_SIZE+1];
 	int playerCount;
 	int version;
 };

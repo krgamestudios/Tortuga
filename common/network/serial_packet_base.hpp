@@ -39,13 +39,12 @@ public:
 protected:
 	friend class UDPNetworkUtility;
 
-	SerialPacketBase() = default;
-	virtual ~SerialPacketBase() = default;
+	SerialPacketBase() {};
+	virtual ~SerialPacketBase() {};
 
-	virtual void Serialize(const void* buffer) = 0;
-	virtual void Deserialize(const void* buffer) = 0;
+	virtual void Serialize(void* buffer) = 0;
+	virtual void Deserialize(void* buffer) = 0;
 
-private:
 	SerialPacketType type;
 	IPaddress srcAddress;
 };

@@ -19,56 +19,54 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#include "serial.hpp"
+#include "character_packet.hpp"
 
-#include "serial_util.hpp"
+#include "serial_utility.hpp"
 
-void serializeCharacter(CharacterPacket* packet, void* buffer) {
-	SERIALIZE(buffer, &packet->type, sizeof(SerialPacketType));
+void CharacterPacket::Serialize(void* buffer) {
+	serialize(&buffer, &type, sizeof(SerialPacketType));
 
 	//identify the character
-	SERIALIZE(buffer, &packet->characterIndex, sizeof(int));
-	SERIALIZE(buffer, &packet->handle, PACKET_STRING_SIZE);
-	SERIALIZE(buffer, &packet->avatar, PACKET_STRING_SIZE);
+	serialize(&buffer, &characterIndex, sizeof(int));
+	serialize(&buffer, &handle, PACKET_STRING_SIZE);
+	serialize(&buffer, &avatar, PACKET_STRING_SIZE);
 
 	//the owner
-	SERIALIZE(buffer, &packet->accountIndex, sizeof(int));
+	serialize(&buffer, &accountIndex, sizeof(int));
 
 	//location
-	SERIALIZE(buffer, &packet->roomIndex, sizeof(int));
-	SERIALIZE(buffer, &packet->origin.x, sizeof(double));
-	SERIALIZE(buffer, &packet->origin.y, sizeof(double));
-	SERIALIZE(buffer, &packet->motion.x, sizeof(double));
-	SERIALIZE(buffer, &packet->motion.y, sizeof(double));
+	serialize(&buffer, &roomIndex, sizeof(int));
+	serialize(&buffer, &origin.x, sizeof(double));
+	serialize(&buffer, &origin.y, sizeof(double));
+	serialize(&buffer, &motion.x, sizeof(double));
+	serialize(&buffer, &motion.y, sizeof(double));
 
 	//stats structure
-	serializeStatistics(&packet->stats, buffer);
-	buffer = reinterpret_cast<char*>(buffer) + sizeof(Statistics);
+	serializeStatistics(&buffer, &stats);
 
 	//TODO: gameplay components: equipment, items, buffs, debuffs
 }
 
-void deserializeCharacter(CharacterPacket* packet, void* buffer) {
-	DESERIALIZE(buffer, &packet->type, sizeof(SerialPacketType));
+void CharacterPacket::Deserialize(void* buffer) {
+	deserialize(&buffer, &type, sizeof(SerialPacketType));
 
 	//identify the character
-	DESERIALIZE(buffer, &packet->characterIndex, sizeof(int));
-	DESERIALIZE(buffer, &packet->handle, PACKET_STRING_SIZE);
-	DESERIALIZE(buffer, &packet->avatar, PACKET_STRING_SIZE);
+	deserialize(&buffer, &characterIndex, sizeof(int));
+	deserialize(&buffer, &handle, PACKET_STRING_SIZE);
+	deserialize(&buffer, &avatar, PACKET_STRING_SIZE);
 
 	//the owner
-	DESERIALIZE(buffer, &packet->accountIndex, sizeof(int));
+	deserialize(&buffer, &accountIndex, sizeof(int));
 
 	//location
-	DESERIALIZE(buffer, &packet->roomIndex, sizeof(int));
-	DESERIALIZE(buffer, &packet->origin.x, sizeof(double));
-	DESERIALIZE(buffer, &packet->origin.y, sizeof(double));
-	DESERIALIZE(buffer, &packet->motion.x, sizeof(double));
-	DESERIALIZE(buffer, &packet->motion.y, sizeof(double));
+	deserialize(&buffer, &roomIndex, sizeof(int));
+	deserialize(&buffer, &origin.x, sizeof(double));
+	deserialize(&buffer, &origin.y, sizeof(double));
+	deserialize(&buffer, &motion.x, sizeof(double));
+	deserialize(&buffer, &motion.y, sizeof(double));
 
 	//stats structure
-	deserializeStatistics(&packet->stats, buffer);
-	buffer = reinterpret_cast<char*>(buffer) + sizeof(Statistics);
+	deserializeStatistics(&buffer, &stats);
 
 	//TODO: gameplay components: equipment, items, buffs, debuffs
 }

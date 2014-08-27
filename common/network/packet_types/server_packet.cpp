@@ -19,24 +19,24 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#include "serial.hpp"
+#include "server_packet.hpp"
 
-#include "serial_util.hpp"
+#include "serial_utility.hpp"
 
-void serializeServer(ServerPacket* packet, void* buffer) {
-	SERIALIZE(buffer, &packet->type, sizeof(SerialPacketType));
+void ServerPacket::Serialize(void* buffer) {
+	serialize(&buffer, &type, sizeof(SerialPacketType));
 
 	//identify the server
-	SERIALIZE(buffer, &packet->name, PACKET_STRING_SIZE);
-	SERIALIZE(buffer, &packet->playerCount, sizeof(int));
-	SERIALIZE(buffer, &packet->version, sizeof(int));
+	serialize(&buffer, &name, PACKET_STRING_SIZE);
+	serialize(&buffer, &playerCount, sizeof(int));
+	serialize(&buffer, &version, sizeof(int));
 }
 
-void deserializeServer(ServerPacket* packet, void* buffer) {
-	DESERIALIZE(buffer, &packet->type, sizeof(SerialPacketType));
+void ServerPacket::Deserialize(void* buffer) {
+	deserialize(&buffer, &type, sizeof(SerialPacketType));
 
 	//identify the server
-	DESERIALIZE(buffer, &packet->name, PACKET_STRING_SIZE);
-	DESERIALIZE(buffer, &packet->playerCount, sizeof(int));
-	DESERIALIZE(buffer, &packet->version, sizeof(int));
+	deserialize(&buffer, &name, PACKET_STRING_SIZE);
+	deserialize(&buffer, &playerCount, sizeof(int));
+	deserialize(&buffer, &version, sizeof(int));
 }

@@ -24,10 +24,31 @@
 
 #include "serial_packet_base.hpp"
 
-struct ClientPacket : SerialPacketBase {
+#include <cstring>
+
+class ClientPacket : public SerialPacketBase {
+public:
+	ClientPacket() {}
+	~ClientPacket() {}
+
+	//accessors & mutators
+	int SetClientIndex(int i) { return clientIndex = i; }
+	int SetAccountIndex(int i) { return accountIndex = i; }
+	const char* SetUsername(const char* s)
+	{ return strncpy(username, s, PACKET_STRING_SIZE); }
+
+	int GetClientIndex() { return clientIndex; }
+	int GetAccountIndex() { return accountIndex; }
+	const char* GetUsername() { return username; }
+
+protected:
+	virtual void Serialize(void* buffer) override;
+	virtual void Deserialize(void* buffer) override;
+
+private:
 	int clientIndex;
 	int accountIndex;
-	char username[PACKET_STRING_SIZE];
+	char username[PACKET_STRING_SIZE+1];
 //	char password[PACKET_STRING_SIZE]; //hashed, not currently used
 };
 
