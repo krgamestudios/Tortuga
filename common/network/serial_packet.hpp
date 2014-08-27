@@ -22,6 +22,11 @@
 #ifndef SERIALPACKET_HPP_
 #define SERIALPACKET_HPP_
 
+/* DOCS: serial_packet.hpp is used to define a number of required constants.
+ * These are used extensively by the server and client
+*/
+
+#include "serial_packet_base.hpp"
 #include "character_packet.hpp"
 #include "client_packet.hpp"
 #include "combat_packet.hpp"
@@ -29,9 +34,14 @@
 #include "region_packet.hpp"
 #include "server_packet.hpp"
 
-//NOTE: SerialPacket is defined in serial_packet_base.hpp
+//SerialPacketBase is defined in serial_packet_base.hpp
+typedef SerialPacketBase SerialPacket;
 
-union MaxPacket {
+//DOCS: NETWORK_VERSION is used to discern compatible servers and clients
+constexpr int NETWORK_VERSION = 20140827;
+
+//_MaxPacket Should not be used
+union _MaxPacket {
 	CharacterPacket a;
 	ClientPacket b;
 	CombatPacket c;
@@ -39,17 +49,17 @@ union MaxPacket {
 	RegionPacket e;
 	ServerPacket f;
 };
-constexpr int MAX_PACKET_SIZE = sizeof(MaxPacket);
+
+constexpr int MAX_PACKET_SIZE = sizeof(_MaxPacket);
 
 /* DOCS: PACKET_BUFFER_SIZE is the memory required to store serialized data
  * DOCS: SerialPacketType::REGION_CONTENT is currently the largest packet type
- * Serialized packet structure:
+ * Serialized RegionPacket structure:
  *     SerialPacketType
- *     room index
- *     X & Y position
+ *     room index (int)
+ *     X & Y position (int)
  *     tile data (3 layers)
  *     solid data (bitset)
- * The constants declared here are used for networking ONLY
 */
 
 constexpr int REGION_TILE_FOOTPRINT = sizeof(Region::type_t) * REGION_WIDTH * REGION_HEIGHT * REGION_DEPTH;

@@ -30,7 +30,7 @@ enum class SerialPacketType {
 	//default: there is something wrong
 	NONE = 0,
 
-	//keep alive
+	//heartbeat
 	//ping => pong
 	PING = 1,
 	PONG = 2,

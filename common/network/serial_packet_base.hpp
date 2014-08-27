@@ -22,25 +22,32 @@
 #ifndef SERIALPACKETBASE_HPP_
 #define SERIALPACKETBASE_HPP_
 
-#ifndef SERIALPACKET_HPP_
- #error Cannot include this file without 'serial_packet.hpp'
-#endif
-
 #include "serial_packet_type.hpp"
 
 #include "SDL/SDL_net.h"
 
-constexpr int NETWORK_VERSION = 20140701;
+//The packets use a char array for string storage
 constexpr int PACKET_STRING_SIZE = 100;
 
-struct SerialPacketBase {
-	//members
+class SerialPacketBase {
+public:
+	SerialPacketType SetType(SerialPacketType t) { return type = t; }
+	SerialPacketType GetType() { return type; }
+
+	IPaddress GetSourceAddress() { return srcAddress; }
+
+protected:
+	friend class UDPNetworkUtility;
+
+	SerialPacketBase() = default;
+	virtual ~SerialPacketBase() = default;
+
+	virtual void Serialize(const void* buffer) = 0;
+	virtual void Deserialize(const void* buffer) = 0;
+
+private:
 	SerialPacketType type;
 	IPaddress srcAddress;
-
-	virtual ~SerialPacketBase() {};
 };
-
-typedef SerialPacketBase SerialPacket;
 
 #endif
