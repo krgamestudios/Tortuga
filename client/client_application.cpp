@@ -21,7 +21,6 @@
 */
 #include "client_application.hpp"
 
-#include "serial.hpp"
 #include "config_utility.hpp"
 
 #include <stdexcept>

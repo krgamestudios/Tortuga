@@ -269,7 +269,7 @@ void InWorld::KeyUp(SDL_KeyboardEvent const& key) {
 //-------------------------
 
 void InWorld::HandlePacket(SerialPacket* const argPacket) {
-	switch(argPacket->type) {
+	switch(argPacket->GetType()) {
 		case SerialPacketType::DISCONNECT:
 			HandleDisconnect(argPacket);
 		break;
@@ -287,7 +287,7 @@ void InWorld::HandlePacket(SerialPacket* const argPacket) {
 		break;
 		//handle errors
 		default:
-			throw(std::runtime_error(std::string() + "Unknown SerialPacketType encountered in InWorld: " + to_string_custom(static_cast<int>(argPacket->type)) ));
+			throw(std::runtime_error(std::string() + "Unknown SerialPacketType encountered in InWorld: " + to_string_custom(static_cast<int>(argPacket->GetType())) ));
 		break;
 	}
 }
@@ -297,21 +297,21 @@ void InWorld::HandleDisconnect(SerialPacket* const argPacket) {
 }
 
 void InWorld::HandleCharacterNew(CharacterPacket* const argPacket) {
-	if (characterMap.find(argPacket->characterIndex) != characterMap.end()) {
+	if (characterMap.find(argPacket->GetCharacterIndex()) != characterMap.end()) {
 		throw(std::runtime_error("Cannot create duplicate characters"));
 	}
 
 	//create the character object
-	Character& newCharacter = characterMap[argPacket->characterIndex];
+	Character& newCharacter = characterMap[argPacket->GetCharacterIndex()];
 
 	//fill out the character's members
-	newCharacter.SetHandle(argPacket->handle);
-	newCharacter.SetAvatar(argPacket->avatar);
+	newCharacter.SetHandle(argPacket->GetHandle());
+	newCharacter.SetAvatar(argPacket->GetAvatar());
 
 	newCharacter.GetSprite()->LoadSurface(ConfigUtility::GetSingleton()["dir.sprites"] + newCharacter.GetAvatar(), 4, 4);
 
-	newCharacter.SetOrigin(argPacket->origin);
-	newCharacter.SetMotion(argPacket->motion);
+	newCharacter.SetOrigin(argPacket->GetOrigin());
+	newCharacter.SetMotion(argPacket->GetMotion());
 	newCharacter.SetBounds({
 		CHARACTER_BOUNDS_X,
 		CHARACTER_BOUNDS_Y,
@@ -319,14 +319,14 @@ void InWorld::HandleCharacterNew(CharacterPacket* const argPacket) {
 		CHARACTER_BOUNDS_HEIGHT
 	});
 
-	(*newCharacter.GetStats()) = argPacket->stats;
+	*newCharacter.GetStats() = *argPacket->GetStatistics();
 
 	//bookkeeping code
 	newCharacter.CorrectSprite();
 
 	//catch this client's player object
-	if (argPacket->accountIndex == accountIndex && !localCharacter) {
-		characterIndex = argPacket->characterIndex;
+	if (argPacket->GetAccountIndex() == accountIndex && !localCharacter) {
+		characterIndex = argPacket->GetCharacterIndex();
 		localCharacter = &newCharacter;
 
 		//setup the camera
@@ -344,39 +344,39 @@ void InWorld::HandleCharacterDelete(CharacterPacket* const argPacket) {
 	//TODO: authenticate when own character is being deleted (linked to a TODO in the server)
 
 	//catch this client's player object
-	if (argPacket->characterIndex == characterIndex) {
+	if (argPacket->GetCharacterIndex() == characterIndex) {
 		characterIndex = -1;
 		localCharacter = nullptr;
 	}
 
-	characterMap.erase(argPacket->characterIndex);
+	characterMap.erase(argPacket->GetCharacterIndex());
 }
 
 void InWorld::HandleCharacterUpdate(CharacterPacket* const argPacket) {
-	if (characterMap.find(argPacket->characterIndex) == characterMap.end()) {
+	if (characterMap.find(argPacket->GetCharacterIndex()) == characterMap.end()) {
 		std::cout << "Warning: HandleCharacterUpdate() is passing to HandleCharacterNew()" << std::endl;
 		HandleCharacterNew(argPacket);
 		return;
 	}
 
-	Character& character = characterMap[argPacket->characterIndex];
+	Character& character = characterMap[argPacket->GetCharacterIndex()];
 
 	//other characters moving
-	if (argPacket->characterIndex != characterIndex) {
-		character.SetOrigin(argPacket->origin);
-		character.SetMotion(argPacket->motion);
+	if (argPacket->GetCharacterIndex() != characterIndex) {
+		character.SetOrigin(argPacket->GetOrigin());
+		character.SetMotion(argPacket->GetMotion());
 		character.CorrectSprite();
 	}
 }
 
 void InWorld::HandleRegionContent(RegionPacket* const argPacket) {
 	//replace existing regions
-	regionPager.UnloadRegion(argPacket->x, argPacket->y);
-	regionPager.PushRegion(argPacket->region);
+	regionPager.UnloadRegion(argPacket->GetX(), argPacket->GetY());
+	regionPager.PushRegion(argPacket->GetRegion());
 
 	//clean up after the serial code
-	delete argPacket->region;
-	argPacket->region = nullptr;
+	delete argPacket->GetRegion();
+	argPacket->SetRegion(nullptr);
 }
 
 //-------------------------
@@ -387,9 +387,9 @@ void InWorld::RequestSynchronize() {
 	ClientPacket newPacket;
 
 	//request a sync
-	newPacket.type = SerialPacketType::SYNCHRONIZE;
-	newPacket.clientIndex = clientIndex;
-	newPacket.accountIndex = accountIndex;
+	newPacket.SetType(SerialPacketType::SYNCHRONIZE);
+	newPacket.SetClientIndex(clientIndex);
+	newPacket.SetAccountIndex(accountIndex);
 
 	//TODO: location, range for sync request
 
@@ -400,15 +400,15 @@ void InWorld::SendPlayerUpdate() {
 	CharacterPacket newPacket;
 
 	//pack the packet
-	newPacket.type = SerialPacketType::CHARACTER_UPDATE;
+	newPacket.SetType(SerialPacketType::CHARACTER_UPDATE);
 
-	newPacket.characterIndex = characterIndex;
+	newPacket.SetCharacterIndex(characterIndex);
 	//NOTE: omitting the handle and avatar here
-	newPacket.accountIndex = accountIndex;
-	newPacket.roomIndex = 0; //TODO: room index
-	newPacket.origin = localCharacter->GetOrigin();
-	newPacket.motion = localCharacter->GetMotion();
-	newPacket.stats = *localCharacter->GetStats();
+	newPacket.SetAccountIndex(accountIndex);
+	newPacket.SetRoomIndex(0); //TODO: room index
+	newPacket.SetOrigin(localCharacter->GetOrigin());
+	newPacket.SetMotion(localCharacter->GetMotion());
+	*newPacket.GetStatistics() = *localCharacter->GetStats();
 
 	//TODO: gameplay components: equipment, items, buffs, debuffs
 
@@ -419,9 +419,9 @@ void InWorld::RequestDisconnect() {
 	ClientPacket newPacket;
 
 	//send a disconnect request
-	newPacket.type = SerialPacketType::DISCONNECT;
-	newPacket.clientIndex = clientIndex;
-	newPacket.accountIndex = accountIndex;
+	newPacket.SetType(SerialPacketType::DISCONNECT);
+	newPacket.SetClientIndex(clientIndex);
+	newPacket.SetAccountIndex(accountIndex);
 
 	network.SendTo(Channels::SERVER, &newPacket);
 }
@@ -430,9 +430,9 @@ void InWorld::RequestShutDown() {
 	ClientPacket newPacket;
 
 	//send a shutdown request
-	newPacket.type = SerialPacketType::SHUTDOWN;
-	newPacket.clientIndex = clientIndex;
-	newPacket.accountIndex = accountIndex;
+	newPacket.SetType(SerialPacketType::SHUTDOWN);
+	newPacket.SetClientIndex(clientIndex);
+	newPacket.SetAccountIndex(accountIndex);
 
 	network.SendTo(Channels::SERVER, &newPacket);
 }
@@ -441,10 +441,10 @@ void InWorld::RequestRegion(int roomIndex, int x, int y) {
 	RegionPacket packet;
 
 	//pack the region's data
-	packet.type = SerialPacketType::REGION_REQUEST;
-	packet.roomIndex = roomIndex;
-	packet.x = x;
-	packet.y = y;
+	packet.SetType(SerialPacketType::REGION_REQUEST);
+	packet.SetRoomIndex(roomIndex);
+	packet.SetX(x);
+	packet.SetY(y);
 
 	network.SendTo(Channels::SERVER, &packet);
 }

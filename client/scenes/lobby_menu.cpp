@@ -185,7 +185,7 @@ void LobbyMenu::KeyUp(SDL_KeyboardEvent const& key) {
 //-------------------------
 
 void LobbyMenu::HandlePacket(SerialPacket* const argPacket) {
-		switch(argPacket->type) {
+		switch(argPacket->GetType()) {
 		case SerialPacketType::BROADCAST_RESPONSE:
 			HandleBroadcastResponse(static_cast<ServerPacket*>(argPacket));
 		break;
@@ -194,7 +194,7 @@ void LobbyMenu::HandlePacket(SerialPacket* const argPacket) {
 		break;
 		//handle errors
 		default:
-			throw(std::runtime_error(std::string() + "Unknown SerialPacketType encountered in LobbyMenu: " + to_string_custom(static_cast<int>(argPacket->type)) ));
+			throw(std::runtime_error(std::string() + "Unknown SerialPacketType encountered in LobbyMenu: " + to_string_custom(static_cast<int>(argPacket->GetType())) ));
 		break;
 	}
 }
@@ -202,10 +202,10 @@ void LobbyMenu::HandlePacket(SerialPacket* const argPacket) {
 void LobbyMenu::HandleBroadcastResponse(ServerPacket* const argPacket) {
 	//extract the data
 	ServerInformation server;
-	server.address = argPacket->srcAddress;
-	server.name = argPacket->name;
-	server.playerCount = argPacket->playerCount;
-	server.version = argPacket->version;
+	server.address = argPacket->GetAddress();
+	server.name = argPacket->GetName();
+	server.playerCount = argPacket->GetPlayerCount();
+	server.version = argPacket->GetVersion();
 
 	//Checking compatibility
 	server.compatible = server.version == NETWORK_VERSION;
@@ -215,17 +215,17 @@ void LobbyMenu::HandleBroadcastResponse(ServerPacket* const argPacket) {
 }
 
 void LobbyMenu::HandleJoinResponse(ClientPacket* const argPacket) {
-	clientIndex = argPacket->clientIndex;
-	accountIndex = argPacket->accountIndex;
-	network.Bind(&argPacket->srcAddress, Channels::SERVER);
+	clientIndex = argPacket->GetClientIndex();
+	accountIndex = argPacket->GetAccountIndex();
+	network.Bind(argPacket->GetAddressPtr(), Channels::SERVER);
 	SetNextScene(SceneList::INWORLD);
 
 	//send this player's character info
 	CharacterPacket newPacket;
-	newPacket.type = SerialPacketType::CHARACTER_NEW;
-	strncpy(newPacket.handle, config["client.handle"].c_str(), PACKET_STRING_SIZE);
-	strncpy(newPacket.avatar, config["client.avatar"].c_str(), PACKET_STRING_SIZE);
-	newPacket.accountIndex = accountIndex;
+	newPacket.SetType(SerialPacketType::CHARACTER_NEW);
+	newPacket.SetHandle(config["client.handle"].c_str());
+	newPacket.SetAvatar(config["client.avatar"].c_str());
+	newPacket.SetAccountIndex(accountIndex);
 	network.SendTo(Channels::SERVER, &newPacket);
 }
 
@@ -235,8 +235,8 @@ void LobbyMenu::HandleJoinResponse(ClientPacket* const argPacket) {
 
 void LobbyMenu::SendBroadcastRequest() {
 	//broadcast to the network, or a specific server
-		SerialPacket packet;
-		packet.type = SerialPacketType::BROADCAST_REQUEST;
+		ServerPacket packet;
+		packet.SetType(SerialPacketType::BROADCAST_REQUEST);
 		network.SendTo(config["server.host"].c_str(), config.Int("server.port"), &packet);
 
 		//reset the server list
@@ -247,8 +247,8 @@ void LobbyMenu::SendBroadcastRequest() {
 void LobbyMenu::SendJoinRequest() {
 	//pack the packet
 		ClientPacket packet;
-		packet.type = SerialPacketType::JOIN_REQUEST;
-		strncpy(packet.username, config["client.username"].c_str(), PACKET_STRING_SIZE);
+		packet.SetType(SerialPacketType::JOIN_REQUEST);
+		packet.SetUsername(config["client.username"].c_str());
 
 		//join the selected server
 		network.SendTo(&selection->address, &packet);
