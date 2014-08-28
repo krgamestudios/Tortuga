@@ -34,7 +34,8 @@ public:
 	SerialPacketType SetType(SerialPacketType t) { return type = t; }
 	SerialPacketType GetType() { return type; }
 
-	IPaddress GetSourceAddress() { return srcAddress; }
+	IPaddress GetAddress() { return srcAddress; }
+	IPaddress* GetAddressPtr() { return &srcAddress; }
 
 protected:
 	friend class UDPNetworkUtility;

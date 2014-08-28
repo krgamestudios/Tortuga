@@ -21,8 +21,7 @@
 */
 #include "server_application.hpp"
 
-//for PACKET_BUFFER_SIZE
-#include "serial.hpp"
+#include "serial_packet.hpp"
 
 //utility functions
 #include "sql_utility.hpp"
@@ -179,7 +178,7 @@ void ServerApplication::Quit() {
 //-------------------------
 
 void ServerApplication::HandlePacket(SerialPacket* const argPacket) {
-	switch(argPacket->type) {
+	switch(argPacket->GetType()) {
 		//basic connections
 		case SerialPacketType::BROADCAST_REQUEST:
 			HandleBroadcastRequest(static_cast<SerialPacket*>(argPacket));
@@ -225,7 +224,7 @@ void ServerApplication::HandlePacket(SerialPacket* const argPacket) {
 		//handle errors
 		default: {
 			std::string msg = "Unknown SerialPacketType encountered in the server: ";
-			msg += to_string_custom(static_cast<int>(argPacket->type));
+			msg += to_string_custom(static_cast<int>(argPacket->GetType()));
 			throw(std::runtime_error(msg));
 		}
 		break;

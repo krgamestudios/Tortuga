@@ -31,22 +31,22 @@ void ServerApplication::HandleBroadcastRequest(SerialPacket* const argPacket) {
 	//send the server's data
 	ServerPacket newPacket;
 
-	newPacket.type = SerialPacketType::BROADCAST_RESPONSE;
-	strncpy(newPacket.name, config["server.name"].c_str(), PACKET_STRING_SIZE);
-	newPacket.playerCount = characterMgr.GetContainer()->size();
-	newPacket.version = NETWORK_VERSION;
+	newPacket.SetType(SerialPacketType::BROADCAST_RESPONSE);
+	newPacket.SetName(config["server.name"].c_str());
+	newPacket.SetPlayerCount(characterMgr.GetContainer()->size());
+	newPacket.SetVersion(NETWORK_VERSION);
 
-	network.SendTo(&argPacket->srcAddress, static_cast<SerialPacket*>(&newPacket));
+	network.SendTo(argPacket->GetAddressPtr(), static_cast<SerialPacket*>(&newPacket));
 }
 
 void ServerApplication::HandleJoinRequest(ClientPacket* const argPacket) {
 	//create the new client
 	ClientData newClient;
-	newClient.address = argPacket->srcAddress;
+	newClient.address = argPacket->GetAddress();
 
 	//load the user account
 	//TODO: handle passwords
-	int accountIndex = accountMgr.LoadAccount(argPacket->username, clientIndex);
+	int accountIndex = accountMgr.LoadAccount(argPacket->GetUsername(), clientIndex);
 	if (accountIndex < 0) {
 		//TODO: send rejection packet
 		std::cerr << "Error: Account already loaded: " << accountIndex << std::endl;
@@ -55,9 +55,9 @@ void ServerApplication::HandleJoinRequest(ClientPacket* const argPacket) {
 
 	//send the client their info
 	ClientPacket newPacket;
-	newPacket.type = SerialPacketType::JOIN_RESPONSE;
-	newPacket.clientIndex = clientIndex;
-	newPacket.accountIndex = accountIndex;
+	newPacket.SetType(SerialPacketType::JOIN_RESPONSE);
+	newPacket.SetClientIndex(clientIndex);
+	newPacket.SetAccountIndex(accountIndex);
 
 	network.SendTo(&newClient.address, static_cast<SerialPacket*>(&newPacket));
 
@@ -80,14 +80,14 @@ void ServerApplication::HandleDisconnect(ClientPacket* const argPacket) {
 
 	//forward to the specified client
 	network.SendTo(
-		&clientMap[ accountMgr.GetAccount(argPacket->accountIndex)->GetClientIndex() ].address,
+		&clientMap[ accountMgr.GetAccount(argPacket->GetAccountIndex())->GetClientIndex() ].address,
 		static_cast<SerialPacket*>(argPacket)
 	);
 
 	//save and unload this account's characters
 	//pump the unload message to all remaining clients
 	characterMgr.UnloadCharacterIf([&](std::map<int, CharacterData>::iterator it) -> bool {
-		if (argPacket->accountIndex == it->second.GetOwner()) {
+		if (argPacket->GetAccountIndex() == it->second.GetOwner()) {
 			PumpCharacterUnload(it->first);
 			return true;
 		}
@@ -95,8 +95,8 @@ void ServerApplication::HandleDisconnect(ClientPacket* const argPacket) {
 	});
 
 	//erase the in-memory stuff
-	clientMap.erase(accountMgr.GetAccount(argPacket->accountIndex)->GetClientIndex());
-	accountMgr.UnloadAccount(argPacket->accountIndex);
+	clientMap.erase(accountMgr.GetAccount(argPacket->GetAccountIndex())->GetClientIndex());
+	accountMgr.UnloadAccount(argPacket->GetAccountIndex());
 
 	//finished this routine
 	std::cout << "Disconnection, " << clientMap.size() << " clients and " << accountMgr.GetContainer()->size() << " accounts total" << std::endl;
@@ -115,8 +115,8 @@ void ServerApplication::HandleShutdown(SerialPacket* const argPacket) {
 	running = false;
 
 	//disconnect all clients
-	SerialPacket newPacket;
-	newPacket.type = SerialPacketType::DISCONNECT;
+	ServerPacket newPacket;
+	newPacket.SetType(SerialPacketType::DISCONNECT);
 	PumpPacket(&newPacket);
 
 	//finished this routine
@@ -130,15 +130,15 @@ void ServerApplication::HandleShutdown(SerialPacket* const argPacket) {
 void ServerApplication::HandleRegionRequest(RegionPacket* const argPacket) {
 	RegionPacket newPacket;
 
-	newPacket.type = SerialPacketType::REGION_CONTENT;
-	newPacket.roomIndex = argPacket->roomIndex;
-	newPacket.x = argPacket->x;
-	newPacket.y = argPacket->y;
+	newPacket.SetType(SerialPacketType::REGION_CONTENT);
+	newPacket.SetRoomIndex(argPacket->GetRoomIndex());
+	newPacket.SetX(argPacket->GetX());
+	newPacket.SetY(argPacket->GetY());
 
-	newPacket.region = roomMgr.GetRoom(argPacket->roomIndex)->GetPager()->GetRegion(argPacket->x, argPacket->y);
+	newPacket.SetRegion(roomMgr.GetRoom(argPacket->GetRoomIndex())->GetPager()->GetRegion(argPacket->GetX(), argPacket->GetY() ));
 
 	//send the content
-	network.SendTo(&argPacket->srcAddress, static_cast<SerialPacket*>(&newPacket));
+	network.SendTo(argPacket->GetAddressPtr(), static_cast<SerialPacket*>(&newPacket));
 }
 
 //-------------------------
@@ -148,7 +148,7 @@ void ServerApplication::HandleRegionRequest(RegionPacket* const argPacket) {
 void ServerApplication::HandleCharacterNew(CharacterPacket* const argPacket) {
 	//BUG: #27 Characters can be created with an invalid account index
 	//NOTE: misnomer, try to load the character first
-	int characterIndex = characterMgr.LoadCharacter(argPacket->accountIndex, argPacket->handle, argPacket->avatar);
+	int characterIndex = characterMgr.LoadCharacter(argPacket->GetAccountIndex(), argPacket->GetHandle(), argPacket->GetAvatar());
 
 	if (characterIndex == -1) {
 		//TODO: rejection packet
@@ -164,7 +164,7 @@ void ServerApplication::HandleCharacterNew(CharacterPacket* const argPacket) {
 
 	//send this new character to all clients
 	CharacterPacket newPacket;
-	newPacket.type = SerialPacketType::CHARACTER_NEW;
+	newPacket.SetType(SerialPacketType::CHARACTER_NEW);
 	CopyCharacterToPacket(&newPacket, characterIndex);
 	PumpPacket(&newPacket);
 }
@@ -173,7 +173,7 @@ void ServerApplication::HandleCharacterDelete(CharacterPacket* const argPacket) 
 	//NOTE: Disconnecting only unloads a character, this explicitly deletes it
 
 	//Authenticate the owner is doing this
-	int characterIndex = characterMgr.LoadCharacter(argPacket->accountIndex, argPacket->handle, argPacket->avatar);
+	int characterIndex = characterMgr.LoadCharacter(argPacket->GetAccountIndex(), argPacket->GetHandle(), argPacket->GetAvatar());
 
 	//if this is not your character
 	if (characterIndex == -2) {
@@ -197,7 +197,7 @@ void ServerApplication::HandleCharacterDelete(CharacterPacket* const argPacket) 
 }
 
 void ServerApplication::HandleCharacterUpdate(CharacterPacket* const argPacket) {
-	CharacterData* character = characterMgr.GetCharacter(argPacket->characterIndex);
+	CharacterData* character = characterMgr.GetCharacter(argPacket->GetCharacterIndex());
 
 	//make a new character if this one doesn't exist
 	if (!character) {
@@ -208,11 +208,11 @@ void ServerApplication::HandleCharacterUpdate(CharacterPacket* const argPacket) 
 	}
 
 	//accept client-side logic
-	character->SetRoomIndex(argPacket->roomIndex);
-	character->SetOrigin(argPacket->origin);
-	character->SetMotion(argPacket->motion);
+	character->SetRoomIndex(argPacket->GetRoomIndex());
+	character->SetOrigin(argPacket->GetOrigin());
+	character->SetMotion(argPacket->GetMotion());
 
-	*character->GetBaseStats() = argPacket->stats;
+	*character->GetBaseStats() = *argPacket->GetStatistics();
 
 	//TODO: gameplay components: equipment, items, buffs, debuffs
 
@@ -228,14 +228,14 @@ void ServerApplication::HandleSynchronize(ClientPacket* const argPacket) {
 	//NOTE: I quite dislike this function
 
 	//send all of the server's data to this client
-	ClientData& client = clientMap[argPacket->clientIndex];
+	ClientData& client = clientMap[argPacket->GetClientIndex()];
 
 	//send all characters
 	CharacterPacket newPacket;
-	newPacket.type = SerialPacketType::CHARACTER_UPDATE;
+	newPacket.SetType(SerialPacketType::CHARACTER_UPDATE);
 
 	for (auto& it : *characterMgr.GetContainer()) {
-		newPacket.characterIndex = it.first;
+		newPacket.SetCharacterIndex(it.first);
 		CopyCharacterToPacket(&newPacket, it.first);
 		network.SendTo(&client.address, static_cast<SerialPacket*>(&newPacket));
 	}
@@ -258,8 +258,8 @@ void ServerApplication::PumpPacket(SerialPacket* const argPacket) {
 void ServerApplication::PumpCharacterUnload(int uid) {
 	//delete the client-side character(s)
 	CharacterPacket newPacket;
-	newPacket.type = SerialPacketType::CHARACTER_DELETE;
-	newPacket.characterIndex = uid;
+	newPacket.SetType(SerialPacketType::CHARACTER_DELETE);
+	newPacket.SetCharacterIndex(uid);
 	PumpPacket(static_cast<SerialPacket*>(&newPacket));
 }
 
@@ -270,12 +270,12 @@ void ServerApplication::CopyCharacterToPacket(CharacterPacket* const packet, int
 	}
 
 	//TODO: keep this up to date when the character changes
-	packet->characterIndex = characterIndex;
-	strncpy(packet->handle, character->GetHandle().c_str(), PACKET_STRING_SIZE);
-	strncpy(packet->avatar, character->GetAvatar().c_str(), PACKET_STRING_SIZE);
-	packet->accountIndex = character->GetOwner();
-	packet->roomIndex = character->GetRoomIndex();
-	packet->origin = character->GetOrigin();
-	packet->motion = character->GetMotion();
-	packet->stats = *character->GetBaseStats();
+	packet->SetCharacterIndex(characterIndex);
+	packet->SetHandle(character->GetHandle().c_str());
+	packet->SetAvatar(character->GetAvatar().c_str());
+	packet->SetAccountIndex(character->GetOwner());
+	packet->SetRoomIndex(character->GetRoomIndex());
+	packet->SetOrigin(character->GetOrigin());
+	packet->SetMotion(character->GetMotion());
+	*packet->GetStatistics() = *character->GetBaseStats();
 }
