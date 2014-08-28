@@ -211,8 +211,11 @@ int UDPNetworkUtility::SendToAllChannels(SerialPacket* serialPacket) {
 int UDPNetworkUtility::Receive(SerialPacket* serialPacket) {
 	memset(packet->data, 0, packet->maxlen);
 	int ret = SDLNet_UDP_Recv(socket, packet);
-	serialPacket->Deserialize(packet->data);
-	serialPacket->srcAddress = packet->address;
+	if (ret > 0) {
+		//BUG: This simply fails
+		serialPacket->Deserialize(packet->data);
+		serialPacket->srcAddress = packet->address;
+	}
 
 	if (ret < 0) {
 		throw(std::runtime_error("Unknown network error occured"));
