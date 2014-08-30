@@ -41,7 +41,6 @@ public:
 	int GetAccountIndex() { return accountIndex; }
 	const char* GetUsername() { return username; }
 
-protected:
 	virtual void Serialize(void* buffer) override;
 	virtual void Deserialize(void* buffer) override;
 

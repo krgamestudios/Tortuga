@@ -22,89 +22,74 @@
 #ifndef SERIALPACKETTYPE_HPP_
 #define SERIALPACKETTYPE_HPP_
 
-/* Key for the comments:
- * request => response
+/* DOCS: The headers indicate what packet type is used for each message
+ * different messages under the same header will carry different amounts of
+ * valid data, but it will still be carried in that packet's format.
 */
 
 enum class SerialPacketType {
 	//default: there is something wrong
 	NONE = 0,
 
+	//-------------------------
+	//ServerPacket
+	//  name, player count, version
+	//-------------------------
+
 	//heartbeat
-	//ping => pong
-	PING = 1,
-	PONG = 2,
+	PING,
+	PONG,
 
-	//search for the server list
-	//none => server name, player count, version info (and source address)
-	BROADCAST_REQUEST = 3,
-	BROADCAST_RESPONSE = 4,
+	//Used for finding available servers
+	BROADCAST_REQUEST,
+	BROADCAST_RESPONSE,
 
-	//try to join the server
-	//username, and password => client index, account index
-	JOIN_REQUEST = 5,
-	JOIN_RESPONSE = 6,
-	JOIN_REJECTION = 7,
+	//-------------------------
+	//ClientPacket
+	//  client index, account index, character index
+	//-------------------------
 
-	//mass update of all surrounding content
-	//character.x, character.y => packet barrage
-	SYNCHRONIZE = 8,
+	//Connecting to a server as a client
+	JOIN_REQUEST,
+	JOIN_RESPONSE,
+	JOIN_REJECTION,
+
+	//client requests all information from the server
+	SYNCHRONIZE,
 
 	//disconnect from the server
-	//autentication, account index => disconnect that account
-	DISCONNECT = 9,
+	DISCONNECT,
 
 	//shut down the server
-	//autentication => disconnect, shutdown
-	SHUTDOWN = 10,
+	SHUTDOWN,
+
+	//-------------------------
+	//RegionPacket
+	//  room index, x, y, raw data
+	//-------------------------
 
 	//map data
-	//room index, region.x, region.y => room index, region.x, region.y, region content
-	REGION_REQUEST = 11,
-	REGION_CONTENT = 12,
+	REGION_REQUEST,
+	REGION_CONTENT,
 
-	//combat data
-	//TODO: system incomplete
-	COMBAT_NEW = 13,
-	COMBAT_DELETE = 14,
-	COMBAT_UPDATE = 15,
+	//-------------------------
+	//CharacterPacket
+	//  handle, avatar, character index, account index,
+	//  room index, origin, motion
+	//  statistics
+	//-------------------------
 
-	COMBAT_ENTER_REQUEST = 16,
-	COMBAT_ENTER_RESPONSE = 17,
-
-	COMBAT_EXIT_REQUEST = 18,
-	COMBAT_EXIT_RESPONSE = 19,
-
-	//TODO: COMBAT info
-
-	COMBAT_REJECTION = 20,
-
-	//character data
-	//character data => etc.
-	CHARACTER_NEW = 21,
-	CHARACTER_DELETE = 22,
-	CHARACTER_UPDATE = 23,
+	//controlling characters
+	CHARACTER_NEW,
+	CHARACTER_DELETE,
+	CHARACTER_UPDATE,
 
 	//authentication, character index => character stats
-	CHARACTER_STATS_REQUEST= 24,
-	CHARACTER_STATS_RESPONSE = 25,
+	CHARACTER_STATS_REQUEST,
+	CHARACTER_STATS_RESPONSE,
 
-	//character new => character rejection, disconnect?
-	CHARACTER_REJECTION = 26,
-
-	//enemy data
-	//enemy data => etc.
-	ENEMY_NEW = 27,
-	ENEMY_DELETE = 28,
-	ENEMY_UPDATE = 29,
-
-	ENEMY_STATS_REQUEST = 30,
-	ENEMY_STATS_RESPONSE = 31,
-
-	//enemy index => enemy doens't exist
-	ENEMY_REJECTION= 32,
-
-	//NOTE: more packet types go here
+	//reject a character request
+	CHARACTER_REJECTION,
 
 	//not used
 	LAST

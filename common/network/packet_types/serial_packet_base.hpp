@@ -37,14 +37,14 @@ public:
 	IPaddress GetAddress() { return srcAddress; }
 	IPaddress* GetAddressPtr() { return &srcAddress; }
 
-protected:
-	friend class UDPNetworkUtility;
-
 	SerialPacketBase() {};
 	virtual ~SerialPacketBase() {};
 
 	virtual void Serialize(void* buffer) = 0;
 	virtual void Deserialize(void* buffer) = 0;
+
+protected:
+	friend class UDPNetworkUtility;
 
 	SerialPacketType type;
 	IPaddress srcAddress;

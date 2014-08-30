@@ -40,7 +40,6 @@ public:
 	int GetPlayerCount() { return playerCount; }
 	int GetVersion() { return version; }
 
-protected:
 	virtual void Serialize(void* buffer) override;
 	virtual void Deserialize(void* buffer) override;
 

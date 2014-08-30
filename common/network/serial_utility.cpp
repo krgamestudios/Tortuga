@@ -23,11 +23,41 @@
 
 #include "serial_packet_type.hpp"
 
+#include "server_packet.hpp"
+#include "client_packet.hpp"
+#include "region_packet.hpp"
+#include "character_packet.hpp"
+
 #include <cstring>
 
 void serializePacket(SerialPacketBase* packet, void* data) {
 	switch(packet->GetType()) {
-		//define all packet types
+		case SerialPacketType::PING:
+		case SerialPacketType::PONG:
+		case SerialPacketType::BROADCAST_REQUEST:
+		case SerialPacketType::BROADCAST_RESPONSE:
+			static_cast<ServerPacket*>(packet)->Serialize(data);
+		break;
+		case SerialPacketType::JOIN_REQUEST:
+		case SerialPacketType::JOIN_RESPONSE:
+		case SerialPacketType::JOIN_REJECTION:
+		case SerialPacketType::SYNCHRONIZE:
+		case SerialPacketType::DISCONNECT:
+		case SerialPacketType::SHUTDOWN:
+			static_cast<ClientPacket*>(packet)->Serialize(data);
+		break;
+		case SerialPacketType::REGION_REQUEST:
+		case SerialPacketType::REGION_CONTENT:
+			static_cast<RegionPacket*>(packet)->Serialize(data);
+		break;
+		case SerialPacketType::CHARACTER_NEW:
+		case SerialPacketType::CHARACTER_DELETE:
+		case SerialPacketType::CHARACTER_UPDATE:
+		case SerialPacketType::CHARACTER_STATS_REQUEST:
+		case SerialPacketType::CHARACTER_STATS_RESPONSE:
+		case SerialPacketType::CHARACTER_REJECTION:
+			static_cast<CharacterPacket*>(packet)->Serialize(data);
+		break;
 	}
 }
 
@@ -37,7 +67,32 @@ void deserializePacket(SerialPacketBase* packet, void* data) {
 	memcpy(&type, data, sizeof(SerialPacketType));
 
 	switch(type) {
-		//define all extra types
+		case SerialPacketType::PING:
+		case SerialPacketType::PONG:
+		case SerialPacketType::BROADCAST_REQUEST:
+		case SerialPacketType::BROADCAST_RESPONSE:
+			static_cast<ServerPacket*>(packet)->Deserialize(data);
+		break;
+		case SerialPacketType::JOIN_REQUEST:
+		case SerialPacketType::JOIN_RESPONSE:
+		case SerialPacketType::JOIN_REJECTION:
+		case SerialPacketType::SYNCHRONIZE:
+		case SerialPacketType::DISCONNECT:
+		case SerialPacketType::SHUTDOWN:
+			static_cast<ClientPacket*>(packet)->Deserialize(data);
+		break;
+		case SerialPacketType::REGION_REQUEST:
+		case SerialPacketType::REGION_CONTENT:
+			static_cast<RegionPacket*>(packet)->Deserialize(data);
+		break;
+		case SerialPacketType::CHARACTER_NEW:
+		case SerialPacketType::CHARACTER_DELETE:
+		case SerialPacketType::CHARACTER_UPDATE:
+		case SerialPacketType::CHARACTER_STATS_REQUEST:
+		case SerialPacketType::CHARACTER_STATS_RESPONSE:
+		case SerialPacketType::CHARACTER_REJECTION:
+			static_cast<CharacterPacket*>(packet)->Deserialize(data);
+		break;
 	}
 }
 
