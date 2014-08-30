@@ -19,16 +19,24 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef SERIALIZEUTIL_HPP_
-#define SERIALIZEUTIL_HPP_
+#ifndef SERIALIZEUTILITY_HPP_
+#define SERIALIZEUTILITY_HPP_
+
+#include "serial_packet_base.hpp"
 
 #include "statistics.hpp"
 
-//raw memcpy
-void serialize(void** bufferHead, void* data, int size);
-void deserialize(void** bufferHead, void* data, int size);
+//NOTE: The naming conventions here are fucking terrible
 
-void serializeStatistics(void** bufferHead, Statistics* stats);
-void deserializeStatistics(void** bufferHead, Statistics* stats);
+//BUGFIX: There's really no way to escape this :(
+void serializePacket(SerialPacketBase* packet, void* data);
+void deserializePacket(SerialPacketBase* packet, void* data);
+
+//raw memcpy
+void serializeCopy(void** bufferHead, void* data, int size);
+void deserializeCopy(void** bufferHead, void* data, int size);
+
+void serializeCopyStatistics(void** bufferHead, Statistics* stats);
+void deserializeCopyStatistics(void** bufferHead, Statistics* stats);
 
 #endif

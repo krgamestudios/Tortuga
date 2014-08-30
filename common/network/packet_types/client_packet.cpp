@@ -24,17 +24,17 @@
 #include "serial_utility.hpp"
 
 void ClientPacket::Serialize(void* buffer) {
-	serialize(&buffer, &type, sizeof(SerialPacketType));
+	serializeCopy(&buffer, &type, sizeof(SerialPacketType));
 
-	serialize(&buffer, &clientIndex, sizeof(int));
-	serialize(&buffer, &accountIndex, sizeof(int));
-	serialize(&buffer, username, PACKET_STRING_SIZE);
+	serializeCopy(&buffer, &clientIndex, sizeof(int));
+	serializeCopy(&buffer, &accountIndex, sizeof(int));
+	serializeCopy(&buffer, username, PACKET_STRING_SIZE);
 }
 
 void ClientPacket::Deserialize(void* buffer) {
-	deserialize(&buffer, &type, sizeof(SerialPacketType));
+	deserializeCopy(&buffer, &type, sizeof(SerialPacketType));
 
-	deserialize(&buffer, &clientIndex, sizeof(int));
-	deserialize(&buffer, &accountIndex, sizeof(int));
-	deserialize(&buffer, username, PACKET_STRING_SIZE);
+	deserializeCopy(&buffer, &clientIndex, sizeof(int));
+	deserializeCopy(&buffer, &accountIndex, sizeof(int));
+	deserializeCopy(&buffer, username, PACKET_STRING_SIZE);
 }

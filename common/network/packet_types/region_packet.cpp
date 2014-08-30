@@ -24,12 +24,12 @@
 #include "serial_utility.hpp"
 
 void RegionPacket::Serialize(void* buffer) {
-	serialize(&buffer, &type, sizeof(SerialPacketType));
+	serializeCopy(&buffer, &type, sizeof(SerialPacketType));
 
 	//format
-	serialize(&buffer, &roomIndex, sizeof(int));
-	serialize(&buffer, &x, sizeof(int));
-	serialize(&buffer, &y, sizeof(int));
+	serializeCopy(&buffer, &roomIndex, sizeof(int));
+	serializeCopy(&buffer, &x, sizeof(int));
+	serializeCopy(&buffer, &y, sizeof(int));
 
 	if (type != SerialPacketType::REGION_CONTENT) {
 		return;
@@ -46,16 +46,16 @@ void RegionPacket::Serialize(void* buffer) {
 	}
 
 	//solids
-	serialize(&buffer, region->GetSolidBitset(), REGION_SOLID_FOOTPRINT);
+	serializeCopy(&buffer, region->GetSolidBitset(), REGION_SOLID_FOOTPRINT);
 }
 
 void RegionPacket::Deserialize(void* buffer) {
-	deserialize(&buffer, &type, sizeof(SerialPacketType));
+	deserializeCopy(&buffer, &type, sizeof(SerialPacketType));
 
 	//format
-	deserialize(&buffer, &roomIndex, sizeof(int));
-	deserialize(&buffer, &x, sizeof(int));
-	deserialize(&buffer, &y, sizeof(int));
+	deserializeCopy(&buffer, &roomIndex, sizeof(int));
+	deserializeCopy(&buffer, &x, sizeof(int));
+	deserializeCopy(&buffer, &y, sizeof(int));
 
 	if (type != SerialPacketType::REGION_CONTENT) {
 		return;
@@ -75,5 +75,5 @@ void RegionPacket::Deserialize(void* buffer) {
 	}
 
 	//solids
-	deserialize(&buffer, region->GetSolidBitset(), REGION_SOLID_FOOTPRINT);
+	deserializeCopy(&buffer, region->GetSolidBitset(), REGION_SOLID_FOOTPRINT);
 }

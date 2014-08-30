@@ -24,49 +24,49 @@
 #include "serial_utility.hpp"
 
 void CharacterPacket::Serialize(void* buffer) {
-	serialize(&buffer, &type, sizeof(SerialPacketType));
+	serializeCopy(&buffer, &type, sizeof(SerialPacketType));
 
 	//identify the character
-	serialize(&buffer, &characterIndex, sizeof(int));
-	serialize(&buffer, handle, PACKET_STRING_SIZE);
-	serialize(&buffer, avatar, PACKET_STRING_SIZE);
+	serializeCopy(&buffer, &characterIndex, sizeof(int));
+	serializeCopy(&buffer, handle, PACKET_STRING_SIZE);
+	serializeCopy(&buffer, avatar, PACKET_STRING_SIZE);
 
 	//the owner
-	serialize(&buffer, &accountIndex, sizeof(int));
+	serializeCopy(&buffer, &accountIndex, sizeof(int));
 
 	//location
-	serialize(&buffer, &roomIndex, sizeof(int));
-	serialize(&buffer, &origin.x, sizeof(double));
-	serialize(&buffer, &origin.y, sizeof(double));
-	serialize(&buffer, &motion.x, sizeof(double));
-	serialize(&buffer, &motion.y, sizeof(double));
+	serializeCopy(&buffer, &roomIndex, sizeof(int));
+	serializeCopy(&buffer, &origin.x, sizeof(double));
+	serializeCopy(&buffer, &origin.y, sizeof(double));
+	serializeCopy(&buffer, &motion.x, sizeof(double));
+	serializeCopy(&buffer, &motion.y, sizeof(double));
 
 	//stats structure
-	serializeStatistics(&buffer, &stats);
+	serializeCopyStatistics(&buffer, &stats);
 
 	//TODO: gameplay components: equipment, items, buffs, debuffs
 }
 
 void CharacterPacket::Deserialize(void* buffer) {
-	deserialize(&buffer, &type, sizeof(SerialPacketType));
+	deserializeCopy(&buffer, &type, sizeof(SerialPacketType));
 
 	//identify the character
-	deserialize(&buffer, &characterIndex, sizeof(int));
-	deserialize(&buffer, handle, PACKET_STRING_SIZE);
-	deserialize(&buffer, avatar, PACKET_STRING_SIZE);
+	deserializeCopy(&buffer, &characterIndex, sizeof(int));
+	deserializeCopy(&buffer, handle, PACKET_STRING_SIZE);
+	deserializeCopy(&buffer, avatar, PACKET_STRING_SIZE);
 
 	//the owner
-	deserialize(&buffer, &accountIndex, sizeof(int));
+	deserializeCopy(&buffer, &accountIndex, sizeof(int));
 
 	//location
-	deserialize(&buffer, &roomIndex, sizeof(int));
-	deserialize(&buffer, &origin.x, sizeof(double));
-	deserialize(&buffer, &origin.y, sizeof(double));
-	deserialize(&buffer, &motion.x, sizeof(double));
-	deserialize(&buffer, &motion.y, sizeof(double));
+	deserializeCopy(&buffer, &roomIndex, sizeof(int));
+	deserializeCopy(&buffer, &origin.x, sizeof(double));
+	deserializeCopy(&buffer, &origin.y, sizeof(double));
+	deserializeCopy(&buffer, &motion.x, sizeof(double));
+	deserializeCopy(&buffer, &motion.y, sizeof(double));
 
 	//stats structure
-	deserializeStatistics(&buffer, &stats);
+	deserializeCopyStatistics(&buffer, &stats);
 
 	//TODO: gameplay components: equipment, items, buffs, debuffs
 }

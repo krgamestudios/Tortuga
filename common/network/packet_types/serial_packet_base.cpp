@@ -21,3 +21,4 @@
 */
 #include "serial_packet_base.hpp"
 
+//NOTE: This is a sanity check

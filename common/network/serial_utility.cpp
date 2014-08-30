@@ -21,54 +21,72 @@
 */
 #include "serial_utility.hpp"
 
+#include "serial_packet_type.hpp"
+
 #include <cstring>
 
-void serialize(void** bufferHead, void* data, int size) {
+void serializePacket(SerialPacketBase* packet, void* data) {
+	switch(packet->GetType()) {
+		//define all packet types
+	}
+}
+
+void deserializePacket(SerialPacketBase* packet, void* data) {
+	//get the type
+	SerialPacketType type;
+	memcpy(&type, data, sizeof(SerialPacketType));
+
+	switch(type) {
+		//define all extra types
+	}
+}
+
+void serializeCopy(void** bufferHead, void* data, int size) {
 	memcpy(*bufferHead, data, size);
 	(*bufferHead) = static_cast<void*>(static_cast<char*>(*bufferHead) + size);
 }
 
-void deserialize(void** bufferHead, void* data, int size) {
+void deserializeCopy(void** bufferHead, void* data, int size) {
 	memcpy(data, *bufferHead, size);
 	(*bufferHead) = static_cast<void*>(static_cast<char*>(*bufferHead) + size);
 }
 
-void serializeStatistics(void** bufferHead, Statistics* stats) {
+void serializeCopyStatistics(void** bufferHead, Statistics* stats) {
 	//integers
-	serialize(bufferHead, &stats->level, sizeof(int));
-	serialize(bufferHead, &stats->exp, sizeof(int));
-	serialize(bufferHead, &stats->maxHP, sizeof(int));
-	serialize(bufferHead, &stats->health, sizeof(int));
-	serialize(bufferHead, &stats->maxMP, sizeof(int));
-	serialize(bufferHead, &stats->mana, sizeof(int));
-	serialize(bufferHead, &stats->attack, sizeof(int));
-	serialize(bufferHead, &stats->defence, sizeof(int));
-	serialize(bufferHead, &stats->intelligence, sizeof(int));
-	serialize(bufferHead, &stats->resistance, sizeof(int));
-	serialize(bufferHead, &stats->speed, sizeof(int));
+	serializeCopy(bufferHead, &stats->level, sizeof(int));
+	serializeCopy(bufferHead, &stats->exp, sizeof(int));
+	serializeCopy(bufferHead, &stats->maxHP, sizeof(int));
+	serializeCopy(bufferHead, &stats->health, sizeof(int));
+	serializeCopy(bufferHead, &stats->maxMP, sizeof(int));
+	serializeCopy(bufferHead, &stats->mana, sizeof(int));
+	serializeCopy(bufferHead, &stats->attack, sizeof(int));
+	serializeCopy(bufferHead, &stats->defence, sizeof(int));
+	serializeCopy(bufferHead, &stats->intelligence, sizeof(int));
+	serializeCopy(bufferHead, &stats->resistance, sizeof(int));
+	serializeCopy(bufferHead, &stats->speed, sizeof(int));
 
 	//floats
-	serialize(bufferHead, &stats->accuracy, sizeof(float));
-	serialize(bufferHead, &stats->evasion, sizeof(float));
-	serialize(bufferHead, &stats->luck, sizeof(float));
+	serializeCopy(bufferHead, &stats->accuracy, sizeof(float));
+	serializeCopy(bufferHead, &stats->evasion, sizeof(float));
+	serializeCopy(bufferHead, &stats->luck, sizeof(float));
 }
 
-void deserializeStatistics(void** bufferHead, Statistics* stats) {
+void deserializeCopyStatistics(void** bufferHead, Statistics* stats) {
 	//integers
-	deserialize(bufferHead, &stats->level, sizeof(int));
-	deserialize(bufferHead, &stats->exp, sizeof(int));
-	deserialize(bufferHead, &stats->maxHP, sizeof(int));
-	deserialize(bufferHead, &stats->health, sizeof(int));
-	deserialize(bufferHead, &stats->maxMP, sizeof(int));
-	deserialize(bufferHead, &stats->mana, sizeof(int));
-	deserialize(bufferHead, &stats->attack, sizeof(int));
-	deserialize(bufferHead, &stats->defence, sizeof(int));
-	deserialize(bufferHead, &stats->intelligence, sizeof(int));
-	deserialize(bufferHead, &stats->resistance, sizeof(int));
-	deserialize(bufferHead, &stats->speed, sizeof(int));
+	deserializeCopy(bufferHead, &stats->level, sizeof(int));
+	deserializeCopy(bufferHead, &stats->exp, sizeof(int));
+	deserializeCopy(bufferHead, &stats->maxHP, sizeof(int));
+	deserializeCopy(bufferHead, &stats->health, sizeof(int));
+	deserializeCopy(bufferHead, &stats->maxMP, sizeof(int));
+	deserializeCopy(bufferHead, &stats->mana, sizeof(int));
+	deserializeCopy(bufferHead, &stats->attack, sizeof(int));
+	deserializeCopy(bufferHead, &stats->defence, sizeof(int));
+	deserializeCopy(bufferHead, &stats->intelligence, sizeof(int));
+	deserializeCopy(bufferHead, &stats->resistance, sizeof(int));
+	deserializeCopy(bufferHead, &stats->speed, sizeof(int));
 
 	//floats
-	deserialize(bufferHead, &stats->accuracy, sizeof(float));
-	deserialize(bufferHead, &stats->evasion, sizeof(float));
-	deserialize(bufferHead, &stats->luck, sizeof(float));
+	deserializeCopy(bufferHead, &stats->accuracy, sizeof(float));
+	deserializeCopy(bufferHead, &stats->evasion, sizeof(float));
+	deserializeCopy(bufferHead, &stats->luck, sizeof(float));
 }
