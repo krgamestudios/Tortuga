@@ -27,7 +27,7 @@ void ServerPacket::Serialize(void* buffer) {
 	serialize(&buffer, &type, sizeof(SerialPacketType));
 
 	//identify the server
-	serialize(&buffer, &name, PACKET_STRING_SIZE);
+	serialize(&buffer, name, PACKET_STRING_SIZE);
 	serialize(&buffer, &playerCount, sizeof(int));
 	serialize(&buffer, &version, sizeof(int));
 }
@@ -36,7 +36,7 @@ void ServerPacket::Deserialize(void* buffer) {
 	deserialize(&buffer, &type, sizeof(SerialPacketType));
 
 	//identify the server
-	deserialize(&buffer, &name, PACKET_STRING_SIZE);
+	deserialize(&buffer, name, PACKET_STRING_SIZE);
 	deserialize(&buffer, &playerCount, sizeof(int));
 	deserialize(&buffer, &version, sizeof(int));
 }

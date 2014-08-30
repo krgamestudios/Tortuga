@@ -28,8 +28,8 @@ void CharacterPacket::Serialize(void* buffer) {
 
 	//identify the character
 	serialize(&buffer, &characterIndex, sizeof(int));
-	serialize(&buffer, &handle, PACKET_STRING_SIZE);
-	serialize(&buffer, &avatar, PACKET_STRING_SIZE);
+	serialize(&buffer, handle, PACKET_STRING_SIZE);
+	serialize(&buffer, avatar, PACKET_STRING_SIZE);
 
 	//the owner
 	serialize(&buffer, &accountIndex, sizeof(int));
@@ -52,8 +52,8 @@ void CharacterPacket::Deserialize(void* buffer) {
 
 	//identify the character
 	deserialize(&buffer, &characterIndex, sizeof(int));
-	deserialize(&buffer, &handle, PACKET_STRING_SIZE);
-	deserialize(&buffer, &avatar, PACKET_STRING_SIZE);
+	deserialize(&buffer, handle, PACKET_STRING_SIZE);
+	deserialize(&buffer, avatar, PACKET_STRING_SIZE);
 
 	//the owner
 	deserialize(&buffer, &accountIndex, sizeof(int));
