@@ -1,4 +1,4 @@
-/* Copyright: (c) Kayne Ruse 2013, 2014
+/* Copyright: (c) Kayne Ruse 2014
  * 
  * This software is provided 'as-is', without any express or implied
  * warranty. In no event will the authors be held liable for any damages
@@ -19,28 +19,12 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef SERIALPACKETBASE_HPP_
-#define SERIALPACKETBASE_HPP_
+#ifndef SERIALSTATISTICS_HPP_
+#define SERIALSTATISTICS_HPP_
 
-#ifndef SERIALPACKET_HPP_
- #error Cannot include this file without 'serial_packet.hpp'
-#endif
+#include "statistics.hpp"
 
-#include "serial_packet_type.hpp"
-
-#include "SDL/SDL_net.h"
-
-constexpr int NETWORK_VERSION = 20140701;
-constexpr int PACKET_STRING_SIZE = 100;
-
-struct SerialPacketBase {
-	//members
-	SerialPacketType type;
-	IPaddress srcAddress;
-
-	virtual ~SerialPacketBase() {};
-};
-
-typedef SerialPacketBase SerialPacket;
+void serializeStatistics(void** buffer, Statistics* stats);
+void deserializeStatistics(void** buffer, Statistics* stats);
 
 #endif

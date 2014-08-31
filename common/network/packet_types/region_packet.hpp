@@ -1,4 +1,4 @@
-/* Copyright: (c) Kayne Ruse 2014
+/* Copyright: (c) Kayne Ruse 2013, 2014
  * 
  * This software is provided 'as-is', without any express or implied
  * warranty. In no event will the authors be held liable for any damages
@@ -19,24 +19,30 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#include "serial.hpp"
+#ifndef REGIONPACKET_HPP_
+#define REGIONPACKET_HPP_
 
-#include "serial_util.hpp"
+#include "serial_packet_base.hpp"
 
-void serializeServer(ServerPacket* packet, void* buffer) {
-	SERIALIZE(buffer, &packet->type, sizeof(SerialPacketType));
+#include "region.hpp"
 
-	//identify the server
-	SERIALIZE(buffer, &packet->name, PACKET_STRING_SIZE);
-	SERIALIZE(buffer, &packet->playerCount, sizeof(int));
-	SERIALIZE(buffer, &packet->version, sizeof(int));
-}
+#include <cmath>
 
-void deserializeServer(ServerPacket* packet, void* buffer) {
-	DESERIALIZE(buffer, &packet->type, sizeof(SerialPacketType));
+//define the memory footprint for the region's members
+constexpr int REGION_TILE_FOOTPRINT = sizeof(Region::type_t) * REGION_WIDTH * REGION_HEIGHT * REGION_DEPTH;
+constexpr int REGION_SOLID_FOOTPRINT = ceil(REGION_WIDTH * REGION_HEIGHT / 8.0);
+constexpr int REGION_METADATA_FOOTPRINT = sizeof(int) * 3;
 
-	//identify the server
-	DESERIALIZE(buffer, &packet->name, PACKET_STRING_SIZE);
-	DESERIALIZE(buffer, &packet->playerCount, sizeof(int));
-	DESERIALIZE(buffer, &packet->version, sizeof(int));
-}
+struct RegionPacket : SerialPacketBase {
+	//location/identify the region
+	int roomIndex;
+	int x, y;
+
+	//the data
+	Region* region;
+};
+
+void serializeRegion(void* buffer, RegionPacket* packet);
+void deserializeRegion(void* buffer, RegionPacket* packet);
+
+#endif

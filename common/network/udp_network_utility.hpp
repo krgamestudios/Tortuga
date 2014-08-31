@@ -23,7 +23,7 @@
 #define UDPNETWORKUTILITY_HPP_
 
 //common
-#include "serial_packet.hpp"
+#include "serial_packet_base.hpp"
 #include "singleton.hpp"
 
 //APIs
@@ -50,12 +50,12 @@ public:
 	int SendToAllChannels(void* data, int len);
 	int Receive();
 
-	//send a SerialPacket
-	int SendTo(const char* ip, int port, SerialPacket* serialPacket);
-	int SendTo(IPaddress* add, SerialPacket* serialPacket);
-	int SendTo(int channel, SerialPacket* serialPacket);
-	int SendToAllChannels(SerialPacket* serialPacket);
-	int Receive(SerialPacket* serialPacket);
+	//send a SerialPacketBase
+	int SendTo(const char* ip, int port, SerialPacketBase* serialPacket);
+	int SendTo(IPaddress* add, SerialPacketBase* serialPacket);
+	int SendTo(int channel, SerialPacketBase* serialPacket);
+	int SendToAllChannels(SerialPacketBase* serialPacket);
+	int Receive(SerialPacketBase* serialPacket);
 
 	//accessors
 	UDPpacket* GetPacket() const {

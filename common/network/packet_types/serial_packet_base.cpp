@@ -1,4 +1,4 @@
-/* Copyright: (c) Kayne Ruse 2013, 2014
+/* Copyright: (c) Kayne Ruse 2014
  * 
  * This software is provided 'as-is', without any express or implied
  * warranty. In no event will the authors be held liable for any damages
@@ -19,16 +19,6 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef CLIENTPACKET_HPP_
-#define CLIENTPACKET_HPP_
-
 #include "serial_packet_base.hpp"
 
-struct ClientPacket : SerialPacketBase {
-	int clientIndex;
-	int accountIndex;
-	char username[PACKET_STRING_SIZE];
-//	char password[PACKET_STRING_SIZE]; //hashed, not currently used
-};
-
-#endif
+//sanity check

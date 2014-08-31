@@ -1,4 +1,4 @@
-/* Copyright: (c) Kayne Ruse 2013, 2014
+/* Copyright: (c) Kayne Ruse 2014
  * 
  * This software is provided 'as-is', without any express or implied
  * warranty. In no event will the authors be held liable for any damages
@@ -19,32 +19,24 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef CHARACTERPACKET_HPP_
-#define CHARACTERPACKET_HPP_
+#include "server_packet.hpp"
 
-#include "serial_packet_base.hpp"
+#include "serial_utility.hpp"
 
-#include "vector2.hpp"
-#include "statistics.hpp"
+void serializeServer(void* buffer, ServerPacket* packet) {
+	serialCopy(&buffer, &packet->type, sizeof(SerialPacketType));
 
-struct CharacterPacket : SerialPacketBase {
-	//identify the character
-	int characterIndex;
-	char handle[PACKET_STRING_SIZE];
-	char avatar[PACKET_STRING_SIZE];
+	//identify the server
+	serialCopy(&buffer, packet->name, PACKET_STRING_SIZE);
+	serialCopy(&buffer, &packet->playerCount, sizeof(int));
+	serialCopy(&buffer, &packet->version, sizeof(int));
+}
 
-	//the owner
-	int accountIndex;
+void deserializeServer(void* buffer, ServerPacket* packet) {
+	deserialCopy(&buffer, &packet->type, sizeof(SerialPacketType));
 
-	//location
-	int roomIndex;
-	Vector2 origin;
-	Vector2 motion;
-
-	//gameplay
-	Statistics stats;
-
-	//TODO: gameplay components: equipment, items, buffs, debuffs
-};
-
-#endif
+	//identify the server
+	deserialCopy(&buffer, packet->name, PACKET_STRING_SIZE);
+	deserialCopy(&buffer, &packet->playerCount, sizeof(int));
+	deserialCopy(&buffer, &packet->version, sizeof(int));
+}

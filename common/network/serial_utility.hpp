@@ -19,13 +19,19 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef SERIALIZEUTIL_HPP_
-#define SERIALIZEUTIL_HPP_
+#ifndef SERIALIZEUTILITY_HPP_
+#define SERIALIZEUTILITY_HPP_
+
+#include "serial_packet_base.hpp"
 
 #include <cstring>
 
-//NOTE: The strange assignments here used in order to move the void* parameter
-#define SERIALIZE(buffer, data, size) memcpy(buffer, data, size); buffer = reinterpret_cast<char*>(buffer) + size;
-#define DESERIALIZE(buffer, data, size) memcpy(data, buffer, size); buffer = reinterpret_cast<char*>(buffer) + size;
+//raw memory copy
+void serialCopy(void** buffer, void* data, int size);
+void deserialCopy(void** buffer, void* data, int size);
+
+//primary functions
+void serializePacket(SerialPacketBase* packet, void* buffer);
+void deserializePacket(SerialPacketBase* packet, void* buffer);
 
 #endif

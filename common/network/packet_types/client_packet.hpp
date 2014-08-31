@@ -19,21 +19,18 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef ENEMYPACKET_HPP_
-#define ENEMYPACKET_HPP_
+#ifndef CLIENTPACKET_HPP_
+#define CLIENTPACKET_HPP_
 
 #include "serial_packet_base.hpp"
 
-struct EnemyPacket : SerialPacketBase {
-	//identify the enemy
-	int enemyIndex;
-	char handle[PACKET_STRING_SIZE];
-	char avatar[PACKET_STRING_SIZE];
-
-	//gameplay
-	Statistics stats;
-
-	//TODO: gameplay components: equipment, items, buffs, debuffs, rewards
+struct ClientPacket : SerialPacketBase {
+	int clientIndex;
+	int accountIndex;
+	char username[PACKET_STRING_SIZE];
 };
+
+void serializeClient(void* buffer, ClientPacket* packet);
+void deserializeClient(void* buffer, ClientPacket* packet);
 
 #endif

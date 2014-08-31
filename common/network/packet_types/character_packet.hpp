@@ -19,20 +19,35 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef REGIONPACKET_HPP_
-#define REGIONPACKET_HPP_
+#ifndef CHARACTERPACKET_HPP_
+#define CHARACTERPACKET_HPP_
 
 #include "serial_packet_base.hpp"
 
-#include "region.hpp"
+#include "vector2.hpp"
+#include "statistics.hpp"
 
-struct RegionPacket : SerialPacketBase {
-	//location/identify the region
+struct CharacterPacket : SerialPacketBase {
+	//identify the character
+	int characterIndex;
+	char handle[PACKET_STRING_SIZE];
+	char avatar[PACKET_STRING_SIZE];
+
+	//the owner
+	int accountIndex;
+
+	//location
 	int roomIndex;
-	int x, y;
+	Vector2 origin;
+	Vector2 motion;
 
-	//the data
-	Region* region;
+	//gameplay
+	Statistics stats;
+
+	//TODO: gameplay components: equipment, items, buffs, debuffs
 };
+
+void serializeCharacter(void* buffer, CharacterPacket* packet);
+void deserializeCharacter(void* buffer, CharacterPacket* packet);
 
 #endif
