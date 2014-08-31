@@ -1,5 +1,5 @@
 #config
-INCLUDES+=. accounts characters rooms ../common/debugging ../common/gameplay ../common/map ../common/network ../common/network/packet ../common/network/serial ../common/utilities
+INCLUDES+=. accounts characters rooms ../common/debugging ../common/gameplay ../common/map ../common/network ../common/network/packet_types ../common/utilities
 LIBS+=server.a ../libcommon.a -lSDL_net -lwsock32 -liphlpapi -lmingw32 -lSDLmain -lSDL -llua -lsqlite3
 CXXFLAGS+=-std=c++11 $(addprefix -I,$(INCLUDES))
 

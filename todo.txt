@@ -1,3 +1,4 @@
+TODO: Sort out the *_cast<> stuff
 TODO: encapsulate the data structures
 TODO: Ping-pong and keep alive system
 TODO: Move the statistics into their own SQL table, instead of duplicating the structure a dozen times

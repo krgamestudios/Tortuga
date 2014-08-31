@@ -19,26 +19,21 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef SERIALPACKET_HPP_
-#define SERIALPACKET_HPP_
+#ifndef SERIALPACKETBASE_HPP_
+#define SERIALPACKETBASE_HPP_
 
-#include "character_packet.hpp"
-#include "client_packet.hpp"
-#include "combat_packet.hpp"
-#include "enemy_packet.hpp"
-#include "region_packet.hpp"
-#include "server_packet.hpp"
+#include "serial_packet_type.hpp"
 
-//NOTE: SerialPacket is defined in serial_packet_base.hpp
+#include "SDL/SDL_net.h"
 
-union MaxPacket {
-	CharacterPacket a;
-	ClientPacket b;
-	CombatPacket c;
-	EnemyPacket d;
-	RegionPacket e;
-	ServerPacket f;
+constexpr int PACKET_STRING_SIZE = 100;
+
+struct SerialPacketBase {
+	//members
+	SerialPacketType type;
+	IPaddress srcAddress;
+
+	virtual ~SerialPacketBase() {};
 };
-constexpr int MAX_PACKET_SIZE = sizeof(MaxPacket);
 
 #endif

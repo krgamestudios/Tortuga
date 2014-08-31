@@ -1,5 +1,5 @@
 #config
-INCLUDES+=. packet serial ../gameplay ../map ../utilities
+INCLUDES+=. packet_types ../gameplay ../map ../utilities
 LIBS+=
 CXXFLAGS+=-std=c++11 $(addprefix -I,$(INCLUDES))
 
@@ -17,8 +17,7 @@ OUT=$(addprefix $(OUTDIR)/,libcommon.a)
 #targets
 all: $(OBJ) $(OUT)
 	ar -crs $(OUT) $(OBJ)
-	$(MAKE) -C packet
-	$(MAKE) -C serial
+	$(MAKE) -C packet_types
 
 $(OBJ): | $(OBJDIR)
 

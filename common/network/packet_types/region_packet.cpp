@@ -19,26 +19,21 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#include "serial.hpp"
+#include "region_packet.hpp"
 
-#include "serial_util.hpp"
+#include "serial_utility.hpp"
 
-void serializeRegionFormat(RegionPacket* packet, void* buffer) {
-	SERIALIZE(buffer, &packet->type, sizeof(SerialPacketType));
-
-	//format
-	SERIALIZE(buffer, &packet->roomIndex, sizeof(int));
-	SERIALIZE(buffer, &packet->x, sizeof(int));
-	SERIALIZE(buffer, &packet->y, sizeof(int));
-}
-
-void serializeRegionContent(RegionPacket* packet, void* buffer) {
-	SERIALIZE(buffer, &packet->type, sizeof(SerialPacketType));
+void serializeRegion(void* buffer, RegionPacket* packet) {
+	serialCopy(&buffer, &packet->type, sizeof(SerialPacketType));
 
 	//format
-	SERIALIZE(buffer, &packet->roomIndex, sizeof(int));
-	SERIALIZE(buffer, &packet->x, sizeof(int));
-	SERIALIZE(buffer, &packet->y, sizeof(int));
+	serialCopy(&buffer, &packet->roomIndex, sizeof(int));
+	serialCopy(&buffer, &packet->x, sizeof(int));
+	serialCopy(&buffer, &packet->y, sizeof(int));
+
+	if (packet->type != SerialPacketType::REGION_CONTENT) {
+		return;
+	}
 
 	//tiles
 	for (int i = 0; i < REGION_WIDTH; i++) {
@@ -51,25 +46,20 @@ void serializeRegionContent(RegionPacket* packet, void* buffer) {
 	}
 
 	//solids
-	SERIALIZE(buffer, packet->region->GetSolidBitset(), REGION_SOLID_FOOTPRINT);
+	serialCopy(&buffer, packet->region->GetSolidBitset(), REGION_SOLID_FOOTPRINT);
 }
 
-void deserializeRegionFormat(RegionPacket* packet, void* buffer) {
-	DESERIALIZE(buffer, &packet->type, sizeof(SerialPacketType));
+void deserializeRegion(void* buffer, RegionPacket* packet) {
+	deserialCopy(&buffer, &packet->type, sizeof(SerialPacketType));
 
 	//format
-	DESERIALIZE(buffer, &packet->roomIndex, sizeof(int));
-	DESERIALIZE(buffer, &packet->x, sizeof(int));
-	DESERIALIZE(buffer, &packet->y, sizeof(int));
-}
+	deserialCopy(&buffer, &packet->roomIndex, sizeof(int));
+	deserialCopy(&buffer, &packet->x, sizeof(int));
+	deserialCopy(&buffer, &packet->y, sizeof(int));
 
-void deserializeRegionContent(RegionPacket* packet, void* buffer) {
-	DESERIALIZE(buffer, &packet->type, sizeof(SerialPacketType));
-
-	//format
-	DESERIALIZE(buffer, &packet->roomIndex, sizeof(int));
-	DESERIALIZE(buffer, &packet->x, sizeof(int));
-	DESERIALIZE(buffer, &packet->y, sizeof(int));
+	if (packet->type != SerialPacketType::REGION_CONTENT) {
+		return;
+	}
 
 	//an object to work on
 	packet->region = new Region(packet->x, packet->y);
@@ -85,5 +75,5 @@ void deserializeRegionContent(RegionPacket* packet, void* buffer) {
 	}
 
 	//solids
-	DESERIALIZE(buffer, packet->region->GetSolidBitset(), REGION_SOLID_FOOTPRINT);
+	deserialCopy(&buffer, packet->region->GetSolidBitset(), REGION_SOLID_FOOTPRINT);
 }

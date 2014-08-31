@@ -19,28 +19,19 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef COMBATPACKET_HPP_
-#define COMBATPACKET_HPP_
+#ifndef SERVERPACKET_HPP_
+#define SERVERPACKET_HPP_
 
 #include "serial_packet_base.hpp"
 
-#include "combat_defines.hpp"
-
-struct CombatPacket : SerialPacketBase {
-	//identify the combat instance
-	int combatIndex;
-	int difficulty;
-	TerrainType terrainType;
-
-	//combatants
-	int characterArray[COMBAT_MAX_CHARACTERS];
-	int enemyArray[COMBAT_MAX_ENEMIES];
-
-	//location
-	int mapIndex;
-	Vector2 origin;
-
-	//TODO: gameplay components: rewards
+struct ServerPacket : SerialPacketBase {
+	//identify the server
+	char name[PACKET_STRING_SIZE];
+	int playerCount;
+	int version;
 };
+
+void serializeServer(void* buffer, ServerPacket* packet);
+void deserializeServer(void* buffer, ServerPacket* packet);
 
 #endif

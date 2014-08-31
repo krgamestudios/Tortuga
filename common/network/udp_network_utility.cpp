@@ -21,12 +21,13 @@
 */
 #include "udp_network_utility.hpp"
 
-#include "serial.hpp"
+#include "serial_packet.hpp"
+#include "serial_utility.hpp"
 
 #include <stdexcept>
 
 //BUGFIX: memset() is used before sending a packet to remove old data; you don't want to send sensitive data over the network
-//NOTE: don't confuse SerialPacket with UDPpacket
+//NOTE: don't confuse SerialPacketBase with UDPpacket
 
 void UDPNetworkUtility::Open(int port) {
 	socket = SDLNet_UDP_Open(port);
@@ -152,10 +153,10 @@ int UDPNetworkUtility::Receive() {
 }
 
 //-------------------------
-//send a SerialPacket
+//send a SerialPacketBase
 //-------------------------
 
-int UDPNetworkUtility::SendTo(const char* ip, int port, SerialPacket* serialPacket) {
+int UDPNetworkUtility::SendTo(const char* ip, int port, SerialPacketBase* serialPacket) {
 	IPaddress add;
 	if (SDLNet_ResolveHost(&add, ip, port) == -1) {
 		throw(std::runtime_error("Failed to resolve a host"));
@@ -164,9 +165,9 @@ int UDPNetworkUtility::SendTo(const char* ip, int port, SerialPacket* serialPack
 	SendTo(&add, serialPacket);
 }
 
-int UDPNetworkUtility::SendTo(IPaddress* add, SerialPacket* serialPacket) {
+int UDPNetworkUtility::SendTo(IPaddress* add, SerialPacketBase* serialPacket) {
 	memset(packet->data, 0, packet->maxlen);
-	serializePacket(serialPacket, packet->data);
+	serializePacket(packet->data, serialPacket);
 	packet->len = PACKET_BUFFER_SIZE;
 	packet->address = *add;
 
@@ -179,9 +180,9 @@ int UDPNetworkUtility::SendTo(IPaddress* add, SerialPacket* serialPacket) {
 	return ret;
 }
 
-int UDPNetworkUtility::SendTo(int channel, SerialPacket* serialPacket) {
+int UDPNetworkUtility::SendTo(int channel, SerialPacketBase* serialPacket) {
 	memset(packet->data, 0, packet->maxlen);
-	serializePacket(serialPacket, packet->data);
+	serializePacket(packet->data, serialPacket);
 	packet->len = PACKET_BUFFER_SIZE;
 
 	int ret = SDLNet_UDP_Send(socket, channel, packet);
@@ -193,9 +194,9 @@ int UDPNetworkUtility::SendTo(int channel, SerialPacket* serialPacket) {
 	return ret;
 }
 
-int UDPNetworkUtility::SendToAllChannels(SerialPacket* serialPacket) {
+int UDPNetworkUtility::SendToAllChannels(SerialPacketBase* serialPacket) {
 	memset(packet->data, 0, packet->maxlen);
-	serializePacket(serialPacket, packet->data);
+	serializePacket(packet->data, serialPacket);
 	packet->len = PACKET_BUFFER_SIZE;
 
 	int sent = 0;
@@ -210,10 +211,10 @@ int UDPNetworkUtility::SendToAllChannels(SerialPacket* serialPacket) {
 	return sent;
 }
 
-int UDPNetworkUtility::Receive(SerialPacket* serialPacket) {
+int UDPNetworkUtility::Receive(SerialPacketBase* serialPacket) {
 	memset(packet->data, 0, packet->maxlen);
 	int ret = SDLNet_UDP_Recv(socket, packet);
-	deserializePacket(serialPacket, packet->data);
+	deserializePacket(packet->data, serialPacket);
 	serialPacket->srcAddress = packet->address;
 
 	if (ret < 0) {

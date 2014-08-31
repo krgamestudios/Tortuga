@@ -21,9 +21,6 @@
 */
 #include "server_application.hpp"
 
-//for PACKET_BUFFER_SIZE
-#include "serial.hpp"
-
 //utility functions
 #include "sql_utility.hpp"
 #include "utility.hpp"

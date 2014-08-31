@@ -30,6 +30,7 @@
 
 //common utilities
 #include "udp_network_utility.hpp"
+#include "serial_packet.hpp"
 #include "config_utility.hpp"
 #include "singleton.hpp"
 

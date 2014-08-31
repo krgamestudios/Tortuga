@@ -27,6 +27,7 @@
 
 //networking
 #include "udp_network_utility.hpp"
+#include "serial_packet.hpp"
 
 //graphics
 #include "image.hpp"
