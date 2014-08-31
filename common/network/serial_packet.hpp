@@ -32,7 +32,7 @@
 typedef SerialPacketBase SerialPacket;
 
 //DOCS: NETWORK_VERSION is used to discern compatible servers and clients
-constexpr int NETWORK_VERSION = -1;
+constexpr int NETWORK_VERSION = 20140831;
 
 union MaxPacket {
 	CharacterPacket a;

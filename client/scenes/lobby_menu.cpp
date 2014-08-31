@@ -235,7 +235,7 @@ void LobbyMenu::HandleJoinResponse(ClientPacket* const argPacket) {
 
 void LobbyMenu::SendBroadcastRequest() {
 	//broadcast to the network, or a specific server
-		SerialPacket packet;
+		ClientPacket packet;
 		packet.type = SerialPacketType::BROADCAST_REQUEST;
 		network.SendTo(config["server.host"].c_str(), config.Int("server.port"), &packet);
 

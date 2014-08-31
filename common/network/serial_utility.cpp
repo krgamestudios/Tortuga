@@ -32,34 +32,77 @@
 //raw memory copy
 void serialCopy(void** buffer, void* data, int size) {
 	memcpy(*buffer, data, size);
-	*buffer = static_cast<char*>(*buffer) + size;
+	*buffer = reinterpret_cast<char*>(*buffer) + size;
 }
 
 void deserialCopy(void** buffer, void* data, int size) {
 	memcpy(data, *buffer, size);
-	*buffer = static_cast<char*>(*buffer) + size;
-}
-
-//simple type functions
-void serializeType(SerialPacketBase* packet, void* buffer) {
-	serialCopy(&buffer, &packet->type, sizeof(SerialPacketType));
-}
-
-void deserializeType(SerialPacketBase* packet, void* buffer) {
-	deserialCopy(&buffer, &packet->type, sizeof(SerialPacketType));
+	*buffer = reinterpret_cast<char*>(*buffer) + size;
 }
 
 //main switch functions
-void serializePacket(SerialPacketBase* packet, void* buffer) {
+void serializePacket(void* buffer, SerialPacketBase* packet) {
 	switch(packet->type) {
-		//TODO: implement the switch statement
+		case SerialPacketType::PING:
+		case SerialPacketType::PONG:
+		case SerialPacketType::BROADCAST_REQUEST:
+		case SerialPacketType::BROADCAST_RESPONSE:
+			serializeServer(buffer, static_cast<ServerPacket*>(packet));
+		break;
+		case SerialPacketType::JOIN_REQUEST:
+		case SerialPacketType::JOIN_RESPONSE:
+		case SerialPacketType::JOIN_REJECTION:
+		case SerialPacketType::SYNCHRONIZE:
+		case SerialPacketType::DISCONNECT:
+		case SerialPacketType::SHUTDOWN:
+			serializeClient(buffer, static_cast<ClientPacket*>(packet));
+		break;
+		case SerialPacketType::REGION_REQUEST:
+		case SerialPacketType::REGION_CONTENT:
+			serializeRegion(buffer, static_cast<RegionPacket*>(packet));
+		break;
+		case SerialPacketType::CHARACTER_NEW:
+		case SerialPacketType::CHARACTER_DELETE:
+		case SerialPacketType::CHARACTER_UPDATE:
+		case SerialPacketType::CHARACTER_STATS_REQUEST:
+		case SerialPacketType::CHARACTER_STATS_RESPONSE:
+		case SerialPacketType::CHARACTER_REJECTION:
+			serializeCharacter(buffer, static_cast<CharacterPacket*>(packet));
+		break;
 	}
 }
 
-void deserializePacket(SerialPacketBase* packet, void* buffer) {
+void deserializePacket(void* buffer, SerialPacketBase* packet) {
 	//find the type, so that you can actually deserialize the packet!
-	deserializeType(packet, buffer);
-	switch(packet->type) {
-		//TODO: implement the switch statement
+	SerialPacketType type;
+	memcpy(&type, buffer, sizeof(SerialPacketType));
+
+	switch(type) {
+		case SerialPacketType::PING:
+		case SerialPacketType::PONG:
+		case SerialPacketType::BROADCAST_REQUEST:
+		case SerialPacketType::BROADCAST_RESPONSE:
+			deserializeServer(buffer, static_cast<ServerPacket*>(packet));
+		break;
+		case SerialPacketType::JOIN_REQUEST:
+		case SerialPacketType::JOIN_RESPONSE:
+		case SerialPacketType::JOIN_REJECTION:
+		case SerialPacketType::SYNCHRONIZE:
+		case SerialPacketType::DISCONNECT:
+		case SerialPacketType::SHUTDOWN:
+			deserializeClient(buffer, static_cast<ClientPacket*>(packet));
+		break;
+		case SerialPacketType::REGION_REQUEST:
+		case SerialPacketType::REGION_CONTENT:
+			deserializeRegion(buffer, static_cast<RegionPacket*>(packet));
+		break;
+		case SerialPacketType::CHARACTER_NEW:
+		case SerialPacketType::CHARACTER_DELETE:
+		case SerialPacketType::CHARACTER_UPDATE:
+		case SerialPacketType::CHARACTER_STATS_REQUEST:
+		case SerialPacketType::CHARACTER_STATS_RESPONSE:
+		case SerialPacketType::CHARACTER_REJECTION:
+			deserializeCharacter(buffer, static_cast<CharacterPacket*>(packet));
+		break;
 	}
 }

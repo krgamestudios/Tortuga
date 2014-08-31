@@ -31,7 +31,7 @@ void serialCopy(void** buffer, void* data, int size);
 void deserialCopy(void** buffer, void* data, int size);
 
 //primary functions
-void serializePacket(SerialPacketBase* packet, void* buffer);
-void deserializePacket(SerialPacketBase* packet, void* buffer);
+void serializePacket(void* buffer, SerialPacketBase* packet);
+void deserializePacket(void* buffer, SerialPacketBase* packet);
 
 #endif

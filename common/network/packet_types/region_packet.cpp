@@ -23,7 +23,7 @@
 
 #include "serial_utility.hpp"
 
-void serializeRegionContent(void* buffer, RegionPacket* packet) {
+void serializeRegion(void* buffer, RegionPacket* packet) {
 	serialCopy(&buffer, &packet->type, sizeof(SerialPacketType));
 
 	//format
@@ -49,7 +49,7 @@ void serializeRegionContent(void* buffer, RegionPacket* packet) {
 	serialCopy(&buffer, packet->region->GetSolidBitset(), REGION_SOLID_FOOTPRINT);
 }
 
-void deserializeRegionContent(void* buffer, RegionPacket* packet) {
+void deserializeRegion(void* buffer, RegionPacket* packet) {
 	deserialCopy(&buffer, &packet->type, sizeof(SerialPacketType));
 
 	//format
