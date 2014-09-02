@@ -217,7 +217,7 @@ void LobbyMenu::HandleBroadcastResponse(ServerPacket* const argPacket) {
 void LobbyMenu::HandleJoinResponse(ClientPacket* const argPacket) {
 	clientIndex = argPacket->clientIndex;
 	accountIndex = argPacket->accountIndex;
-	network.Bind(&argPacket->srcAddress, Channels::SERVER);
+	network.Bind(argPacket->srcAddress, Channels::SERVER);
 	SetNextScene(SceneList::INWORLD);
 
 	//send this player's character info
@@ -251,6 +251,6 @@ void LobbyMenu::SendJoinRequest() {
 		strncpy(packet.username, config["client.username"].c_str(), PACKET_STRING_SIZE);
 
 		//join the selected server
-		network.SendTo(&selection->address, &packet);
+		network.SendTo(selection->address, &packet);
 		selection = nullptr;
 }

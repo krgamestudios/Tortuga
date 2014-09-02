@@ -36,7 +36,7 @@ public:
 
 	//bind to a channel
 	int Bind(const char* ip, int port, int channel = -1);
-	int Bind(IPaddress* add, int channel = -1);
+	int Bind(IPaddress add, int channel = -1);
 	void Unbind(int channel);
 
 	IPaddress* GetIPAddress(int channel) {
@@ -45,14 +45,14 @@ public:
 
 	//send a buffer
 	int SendTo(const char* ip, int port, void* data, int len);
-	int SendTo(IPaddress* add, void* data, int len);
+	int SendTo(IPaddress add, void* data, int len);
 	int SendTo(int channel, void* data, int len);
 	int SendToAllChannels(void* data, int len);
 	int Receive();
 
 	//send a SerialPacketBase
 	int SendTo(const char* ip, int port, SerialPacketBase* serialPacket);
-	int SendTo(IPaddress* add, SerialPacketBase* serialPacket);
+	int SendTo(IPaddress add, SerialPacketBase* serialPacket);
 	int SendTo(int channel, SerialPacketBase* serialPacket);
 	int SendToAllChannels(SerialPacketBase* serialPacket);
 	int Receive(SerialPacketBase* serialPacket);

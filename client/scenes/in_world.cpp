@@ -315,7 +315,7 @@ void InWorld::HandlePacket(SerialPacket* const argPacket) {
 void InWorld::HandlePing(ServerPacket* const argPacket) {
 	ServerPacket newPacket;
 	newPacket.type = SerialPacketType::PONG;
-	network.SendTo(&argPacket->srcAddress, &newPacket);
+	network.SendTo(argPacket->srcAddress, &newPacket);
 }
 
 void InWorld::HandlePong(ServerPacket* const argPacket) {

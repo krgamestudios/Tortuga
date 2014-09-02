@@ -19,36 +19,14 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef CLIENTDATA_HPP_
-#define CLIENTDATA_HPP_
+#include "client_data.hpp"
 
-#include "SDL/SDL_net.h"
+int ClientData::IncrementAttempts() {
+	lastBeat = Clock::now();
+	return attemptedBeats++;
+}
 
-#include <chrono>
-
-//TODO: ClientManager?
-class ClientData {
-public:
-	typedef std::chrono::steady_clock Clock;
-
-	ClientData() = default;
-	ClientData(IPaddress add): address(add) {}
-	~ClientData() = default;
-
-	IPaddress SetAddress(IPaddress add) { return address = add; }
-	IPaddress GetAddress() { return address; }
-
-	Clock::time_point GetLastBeat() { return lastBeat; }
-
-	int GetAttempts() { return attemptedBeats; }
-	int IncrementAttempts();
-	int ResetAttempts();
-
-private:
-	IPaddress address = {0,0};
-
-	Clock::time_point lastBeat = Clock::now();
-	int attemptedBeats = 0;
-};
-
-#endif
+int ClientData::ResetAttempts() {
+	lastBeat = Clock::now();
+	return attemptedBeats = 0;
+}

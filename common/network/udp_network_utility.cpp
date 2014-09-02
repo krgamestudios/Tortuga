@@ -55,11 +55,11 @@ int UDPNetworkUtility::Bind(const char* ip, int port, int channel) {
 		throw(std::runtime_error("Failed to resolve a host"));
 	}
 
-	return Bind(&add, channel);
+	return Bind(add, channel);
 }
 
-int UDPNetworkUtility::Bind(IPaddress* add, int channel) {
-	int ret = SDLNet_UDP_Bind(socket, channel, add);
+int UDPNetworkUtility::Bind(IPaddress add, int channel) {
+	int ret = SDLNet_UDP_Bind(socket, channel, &add);
 
 	if (ret < 0) {
 		throw(std::runtime_error("Failed to bind to a channel"));
@@ -82,17 +82,17 @@ int UDPNetworkUtility::SendTo(const char* ip, int port, void* data, int len) {
 		throw(std::runtime_error("Failed to resolve a host"));
 	}
 
-	SendTo(&add, data, len);
+	SendTo(add, data, len);
 }
 
-int UDPNetworkUtility::SendTo(IPaddress* add, void* data, int len) {
+int UDPNetworkUtility::SendTo(IPaddress add, void* data, int len) {
 	if (len > packet->maxlen) {
 		throw(std::runtime_error("The buffer is to large for the UDPpacket"));
 	}
 	memset(packet->data, 0, packet->maxlen);
 	memcpy(packet->data, data, len);
 	packet->len = len;
-	packet->address = *add;
+	packet->address = add;
 
 	int ret = SDLNet_UDP_Send(socket, -1, packet);
 
@@ -162,14 +162,14 @@ int UDPNetworkUtility::SendTo(const char* ip, int port, SerialPacketBase* serial
 		throw(std::runtime_error("Failed to resolve a host"));
 	}
 
-	SendTo(&add, serialPacket);
+	SendTo(add, serialPacket);
 }
 
-int UDPNetworkUtility::SendTo(IPaddress* add, SerialPacketBase* serialPacket) {
+int UDPNetworkUtility::SendTo(IPaddress add, SerialPacketBase* serialPacket) {
 	memset(packet->data, 0, packet->maxlen);
 	serializePacket(packet->data, serialPacket);
 	packet->len = PACKET_BUFFER_SIZE;
-	packet->address = *add;
+	packet->address = add;
 
 	int ret = SDLNet_UDP_Send(socket, -1, packet);
 
