@@ -26,6 +26,7 @@
 #include "utility.hpp"
 
 #include <stdexcept>
+#include <chrono>
 #include <iostream>
 #include <string>
 
@@ -144,6 +145,24 @@ void ServerApplication::Proc() {
 		//update the internals
 		//BUG: #30 Update the internals i.e. player positions
 
+		//TODO: This could be checked only every few seconds
+		//Check connections
+		for (auto& it : clientMap) {
+			if (std::chrono::steady_clock::now() - it.second.GetLastBeat() > std::chrono::seconds(5)) {
+				ServerPacket newPacket;
+				newPacket.type = SerialPacketType::PING;
+				network.SendTo(it.second.GetAddress(), &newPacket);
+				it.second.IncrementAttempts();
+			}
+
+			if (it.second.GetAttempts() > 2) {
+				CleanupLostConnection(it.first);
+
+				//all iterators are invalid, so we can't continue
+				break;
+			}
+		}
+
 		//give the computer a break
 		SDL_Delay(10);
 	}
@@ -178,8 +197,14 @@ void ServerApplication::Quit() {
 void ServerApplication::HandlePacket(SerialPacket* const argPacket) {
 	switch(argPacket->type) {
 		//basic connections
+		case SerialPacketType::PING:
+			HandlePing(static_cast<ServerPacket*>(argPacket));
+		break;
+		case SerialPacketType::PONG:
+			HandlePong(static_cast<ServerPacket*>(argPacket));
+		break;
 		case SerialPacketType::BROADCAST_REQUEST:
-			HandleBroadcastRequest(static_cast<SerialPacket*>(argPacket));
+			HandleBroadcastRequest(static_cast<ServerPacket*>(argPacket));
 		break;
 		case SerialPacketType::JOIN_REQUEST:
 			HandleJoinRequest(static_cast<ClientPacket*>(argPacket));
@@ -188,7 +213,7 @@ void ServerApplication::HandlePacket(SerialPacket* const argPacket) {
 			HandleDisconnect(static_cast<ClientPacket*>(argPacket));
 		break;
 		case SerialPacketType::SHUTDOWN:
-			HandleShutdown(static_cast<SerialPacket*>(argPacket));
+			HandleShutdown(static_cast<ClientPacket*>(argPacket));
 		break;
 
 		//map management

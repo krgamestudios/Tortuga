@@ -27,7 +27,27 @@
 //basic connections
 //-------------------------
 
-void ServerApplication::HandleBroadcastRequest(SerialPacket* const argPacket) {
+void ServerApplication::HandlePing(ServerPacket* const argPacket) {
+	ServerPacket newPacket;
+	newPacket.type = SerialPacketType::PONG;
+	network.SendTo(argPacket->srcAddress, &newPacket);
+}
+
+void ServerApplication::HandlePong(ServerPacket* const argPacket) {
+	//find and update the specified client
+
+	//BUGFIX: running multiple clients on one computer will result in matching host values; check the ports too
+	for (auto& it : clientMap) {
+		if (it.second.GetAddress().host == argPacket->srcAddress.host &&
+			it.second.GetAddress().port == argPacket->srcAddress.port
+			) {
+			it.second.ResetAttempts();
+			break;
+		}
+	}
+}
+
+void ServerApplication::HandleBroadcastRequest(ServerPacket* const argPacket) {
 	//send the server's data
 	ServerPacket newPacket;
 
@@ -36,13 +56,13 @@ void ServerApplication::HandleBroadcastRequest(SerialPacket* const argPacket) {
 	newPacket.playerCount = characterMgr.GetContainer()->size();
 	newPacket.version = NETWORK_VERSION;
 
-	network.SendTo(&argPacket->srcAddress, static_cast<SerialPacket*>(&newPacket));
+	network.SendTo(argPacket->srcAddress, static_cast<SerialPacket*>(&newPacket));
 }
 
 void ServerApplication::HandleJoinRequest(ClientPacket* const argPacket) {
 	//create the new client
 	ClientData newClient;
-	newClient.address = argPacket->srcAddress;
+	newClient.SetAddress(argPacket->srcAddress);
 
 	//load the user account
 	//TODO: handle passwords
@@ -59,7 +79,7 @@ void ServerApplication::HandleJoinRequest(ClientPacket* const argPacket) {
 	newPacket.clientIndex = clientIndex;
 	newPacket.accountIndex = accountIndex;
 
-	network.SendTo(&newClient.address, static_cast<SerialPacket*>(&newPacket));
+	network.SendTo(newClient.GetAddress(), static_cast<SerialPacket*>(&newPacket));
 
 	//finished this routine
 	clientMap[clientIndex++] = newClient;
@@ -80,7 +100,7 @@ void ServerApplication::HandleDisconnect(ClientPacket* const argPacket) {
 
 	//forward to the specified client
 	network.SendTo(
-		&clientMap[ accountMgr.GetAccount(argPacket->accountIndex)->GetClientIndex() ].address,
+		clientMap[ accountMgr.GetAccount(argPacket->accountIndex)->GetClientIndex() ].GetAddress(),
 		static_cast<SerialPacket*>(argPacket)
 	);
 
@@ -102,7 +122,7 @@ void ServerApplication::HandleDisconnect(ClientPacket* const argPacket) {
 	std::cout << "Disconnection, " << clientMap.size() << " clients and " << accountMgr.GetContainer()->size() << " accounts total" << std::endl;
 }
 
-void ServerApplication::HandleShutdown(SerialPacket* const argPacket) {
+void ServerApplication::HandleShutdown(ClientPacket* const argPacket) {
 	//TODO: authenticate who is shutting the server down
 	/*Pseudocode:
 	if sender's account -> admin is not true then
@@ -115,7 +135,7 @@ void ServerApplication::HandleShutdown(SerialPacket* const argPacket) {
 	running = false;
 
 	//disconnect all clients
-	SerialPacket newPacket;
+	ClientPacket newPacket;
 	newPacket.type = SerialPacketType::DISCONNECT;
 	PumpPacket(&newPacket);
 
@@ -138,7 +158,7 @@ void ServerApplication::HandleRegionRequest(RegionPacket* const argPacket) {
 	newPacket.region = roomMgr.GetRoom(argPacket->roomIndex)->GetPager()->GetRegion(argPacket->x, argPacket->y);
 
 	//send the content
-	network.SendTo(&argPacket->srcAddress, static_cast<SerialPacket*>(&newPacket));
+	network.SendTo(argPacket->srcAddress, static_cast<SerialPacket*>(&newPacket));
 }
 
 //-------------------------
@@ -161,6 +181,8 @@ void ServerApplication::HandleCharacterNew(CharacterPacket* const argPacket) {
 		std::cerr << "Warning: Character already exists" << std::endl;
 		return;
 	}
+
+	//TODO: Make sure that a character's owner's account is loaded before continuing
 
 	//send this new character to all clients
 	CharacterPacket newPacket;
@@ -237,7 +259,7 @@ void ServerApplication::HandleSynchronize(ClientPacket* const argPacket) {
 	for (auto& it : *characterMgr.GetContainer()) {
 		newPacket.characterIndex = it.first;
 		CopyCharacterToPacket(&newPacket, it.first);
-		network.SendTo(&client.address, static_cast<SerialPacket*>(&newPacket));
+		network.SendTo(client.GetAddress(), static_cast<SerialPacket*>(&newPacket));
 	}
 
 	//TODO: more in HandleSynchronize()
@@ -247,11 +269,52 @@ void ServerApplication::HandleSynchronize(ClientPacket* const argPacket) {
 //utility methods
 //-------------------------
 
+void ServerApplication::CleanupLostConnection(int clientIndex) {
+	//NOTE: This assumes each player has only one account and character at a time
+
+	//find the account
+	int accountIndex = -1;
+	for (auto& it : *accountMgr.GetContainer()) {
+		if (it.second.GetClientIndex() == clientIndex) {
+			accountIndex = it.first;
+			break;
+		}
+	}
+
+	//find the character
+	int characterIndex = -1;
+	for (auto& it : *characterMgr.GetContainer()) {
+		if (it.second.GetOwner() == accountIndex) {
+			characterIndex = it.first;
+			break;
+		}
+	}
+
+	//send a dissconnection message just in case
+	ClientPacket newPacket;
+	newPacket.type = SerialPacketType::DISCONNECT;
+	network.SendTo(clientMap[clientIndex].GetAddress(), &newPacket);
+
+	//clean up this mess
+	characterMgr.UnloadCharacter(characterIndex);
+	accountMgr.UnloadAccount(accountIndex);
+	clientMap.erase(clientIndex);
+
+	PumpCharacterUnload(characterIndex);
+
+	//output a message
+	std::cerr << "Connection lost: " << std::endl;
+	std::cerr << "\tClient: " << clientIndex << std::endl;
+	std::cerr << "\tAccount: " << accountIndex << std::endl;
+	std::cerr << "\tCharacter: " << characterIndex << std::endl;
+	std::cout << clientMap.size() << " clients and " << accountMgr.GetContainer()->size() << " accounts total" << std::endl;
+}
+
 //TODO: a function that only sends to characters in a certain proximity
 
 void ServerApplication::PumpPacket(SerialPacket* const argPacket) {
 	for (auto& it : clientMap) {
-		network.SendTo(&it.second.address, argPacket);
+		network.SendTo(it.second.GetAddress(), argPacket);
 	}
 }
 

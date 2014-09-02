@@ -61,10 +61,12 @@ private:
 	void HandlePacket(SerialPacket* const);
 
 	//basic connections
-	void HandleBroadcastRequest(SerialPacket* const);
+	void HandlePing(ServerPacket* const);
+	void HandlePong(ServerPacket* const);
+	void HandleBroadcastRequest(ServerPacket* const);
 	void HandleJoinRequest(ClientPacket* const);
 	void HandleDisconnect(ClientPacket* const);
-	void HandleShutdown(SerialPacket* const);
+	void HandleShutdown(ClientPacket* const);
 
 	//map management
 	void HandleRegionRequest(RegionPacket* const);
@@ -79,6 +81,7 @@ private:
 
 	//utility methods
 	//TODO: a function that only sends to characters in a certain proximity
+	void CleanupLostConnection(int index);
 	void PumpPacket(SerialPacket* const);
 	void PumpCharacterUnload(int uid);
 	void CopyCharacterToPacket(CharacterPacket* const packet, int characterIndex);
