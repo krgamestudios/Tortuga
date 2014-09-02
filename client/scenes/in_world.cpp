@@ -366,7 +366,6 @@ void InWorld::HandleCharacterNew(CharacterPacket* const argPacket) {
 		localCharacter = &newCharacter;
 
 		//setup the camera
-		//TODO: move this?
 		camera.width = GetScreen()->w;
 		camera.height = GetScreen()->h;
 

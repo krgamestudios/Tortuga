@@ -44,7 +44,7 @@ struct CharacterPacket : SerialPacketBase {
 	//gameplay
 	Statistics stats;
 
-	//TODO: gameplay components: equipment, items, buffs, debuffs
+	//gameplay components: equipment, items, buffs, debuffs...
 };
 
 void serializeCharacter(void* buffer, CharacterPacket* packet);

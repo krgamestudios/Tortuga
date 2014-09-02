@@ -157,7 +157,7 @@ int CharacterManager::LoadCharacter(int owner, std::string handle, std::string a
 		newChar.baseStats.evasion = sqlite3_column_double(statement, 20);
 		newChar.baseStats.luck = sqlite3_column_double(statement, 21);
 
-		//TODO: gameplay components: equipment, items, buffs, debuffs
+		//gameplay components: equipment, items, buffs, debuffs...
 
 		//finish the routine
 		sqlite3_finalize(statement);
@@ -214,7 +214,7 @@ int CharacterManager::SaveCharacter(int uid) {
 	ret |= sqlite3_bind_double(statement, 17, character.baseStats.evasion) != SQLITE_OK;
 	ret |= sqlite3_bind_double(statement, 18, character.baseStats.luck) != SQLITE_OK;
 
-	//TODO: gameplay components: equipment, items, buffs, debuffs
+	//gameplay components: equipment, items, buffs, debuffs...
 
 	//check for binding errors
 	if (ret) {

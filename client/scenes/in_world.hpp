@@ -113,7 +113,8 @@ protected:
 	//UI
 	Button disconnectButton;
 	Button shutDownButton;
-	//TODO: Review the camera
+
+	//the camera structure
 	struct {
 		int x = 0, y = 0;
 		int width = 0, height = 0;

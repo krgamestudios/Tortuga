@@ -1,9 +1,11 @@
 TODO: Rejection messages
 TODO: The error handling is terrible
-TODO: Move the statistics into their own SQL table, instead of duplicating the structure a dozen times
 TODO: Get the rooms working, even if only via hotkeys
 TODO: Fix shoddy movement
+TODO: Move the statistics into their own SQL table, instead of duplicating the structure a dozen times
 
+TODO: Remove the big "Shut Down" button
+TODO: Make a way for the server owner to control the server directly
 TODO: Move the map system into it's own namespace?
 TODO: The TileSheet class should implement the surface itself
 TODO: make the whole thing more fault tolerant
