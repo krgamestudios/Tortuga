@@ -34,7 +34,17 @@ void ServerApplication::HandlePing(ServerPacket* const argPacket) {
 }
 
 void ServerApplication::HandlePong(ServerPacket* const argPacket) {
-	//TODO: ServerApplications::HandlePong()
+	//find and update the specified client
+
+	//BUGFIX: running multiple clients on one computer will result in matching host values; check the ports too
+	for (auto& it : clientMap) {
+		if (it.second.GetAddress().host == argPacket->srcAddress.host &&
+			it.second.GetAddress().port == argPacket->srcAddress.port
+			) {
+			it.second.ResetAttempts();
+			break;
+		}
+	}
 }
 
 void ServerApplication::HandleBroadcastRequest(ServerPacket* const argPacket) {
@@ -172,6 +182,8 @@ void ServerApplication::HandleCharacterNew(CharacterPacket* const argPacket) {
 		return;
 	}
 
+	//TODO: Make sure that a character's owner's account is loaded before continuing
+
 	//send this new character to all clients
 	CharacterPacket newPacket;
 	newPacket.type = SerialPacketType::CHARACTER_NEW;
@@ -256,6 +268,47 @@ void ServerApplication::HandleSynchronize(ClientPacket* const argPacket) {
 //-------------------------
 //utility methods
 //-------------------------
+
+void ServerApplication::CleanupLostConnection(int clientIndex) {
+	//NOTE: This assumes each player has only one account and character at a time
+
+	//find the account
+	int accountIndex = -1;
+	for (auto& it : *accountMgr.GetContainer()) {
+		if (it.second.GetClientIndex() == clientIndex) {
+			accountIndex = it.first;
+			break;
+		}
+	}
+
+	//find the character
+	int characterIndex = -1;
+	for (auto& it : *characterMgr.GetContainer()) {
+		if (it.second.GetOwner() == accountIndex) {
+			characterIndex = it.first;
+			break;
+		}
+	}
+
+	//send a dissconnection message just in case
+	ClientPacket newPacket;
+	newPacket.type = SerialPacketType::DISCONNECT;
+	network.SendTo(clientMap[clientIndex].GetAddress(), &newPacket);
+
+	//clean up this mess
+	characterMgr.UnloadCharacter(characterIndex);
+	accountMgr.UnloadAccount(accountIndex);
+	clientMap.erase(clientIndex);
+
+	PumpCharacterUnload(characterIndex);
+
+	//output a message
+	std::cerr << "Connection lost: " << std::endl;
+	std::cerr << "\tClient: " << clientIndex << std::endl;
+	std::cerr << "\tAccount: " << accountIndex << std::endl;
+	std::cerr << "\tCharacter: " << characterIndex << std::endl;
+	std::cout << clientMap.size() << " clients and " << accountMgr.GetContainer()->size() << " accounts total" << std::endl;
+}
 
 //TODO: a function that only sends to characters in a certain proximity
 

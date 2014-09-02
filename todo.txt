@@ -1,4 +1,3 @@
-TODO: Heartbeat systems
 TODO: Rejection messages
 TODO: The error handling is terrible
 TODO: Move the statistics into their own SQL table, instead of duplicating the structure a dozen times
