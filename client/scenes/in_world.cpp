@@ -270,6 +270,12 @@ void InWorld::KeyUp(SDL_KeyboardEvent const& key) {
 
 void InWorld::HandlePacket(SerialPacket* const argPacket) {
 	switch(argPacket->type) {
+		case SerialPacketType::PING:
+			HandlePing(static_cast<ServerPacket*>(argPacket));
+		break;
+		case SerialPacketType::PONG:
+			HandlePong(static_cast<ServerPacket*>(argPacket));
+		break;
 		case SerialPacketType::DISCONNECT:
 			HandleDisconnect(static_cast<ClientPacket*>(argPacket));
 		break;
@@ -291,6 +297,17 @@ void InWorld::HandlePacket(SerialPacket* const argPacket) {
 		break;
 	}
 }
+
+void InWorld::HandlePing(ServerPacket* const argPacket) {
+	ServerPacket newPacket;
+	newPacket.type = SerialPacketType::PONG;
+	network.SendTo(&argPacket->srcAddress, &newPacket);
+}
+
+void InWorld::HandlePong(ServerPacket* const argPacket) {
+	//TODO: InWorld::HandlePong()
+}
+
 
 void InWorld::HandleDisconnect(ClientPacket* const argPacket) {
 	//TODO: More needed in the disconnection

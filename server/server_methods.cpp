@@ -27,6 +27,16 @@
 //basic connections
 //-------------------------
 
+void ServerApplication::HandlePing(ServerPacket* const argPacket) {
+	ServerPacket newPacket;
+	newPacket.type = SerialPacketType::PONG;
+	network.SendTo(&argPacket->srcAddress, &newPacket);
+}
+
+void ServerApplication::HandlePong(ServerPacket* const argPacket) {
+	//TODO: ServerApplications::HandlePong()
+}
+
 void ServerApplication::HandleBroadcastRequest(ServerPacket* const argPacket) {
 	//send the server's data
 	ServerPacket newPacket;

@@ -61,6 +61,8 @@ private:
 	void HandlePacket(SerialPacket* const);
 
 	//basic connections
+	void HandlePing(ServerPacket* const);
+	void HandlePong(ServerPacket* const);
 	void HandleBroadcastRequest(ServerPacket* const);
 	void HandleJoinRequest(ClientPacket* const);
 	void HandleDisconnect(ClientPacket* const);

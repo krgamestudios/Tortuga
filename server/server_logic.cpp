@@ -178,6 +178,12 @@ void ServerApplication::Quit() {
 void ServerApplication::HandlePacket(SerialPacket* const argPacket) {
 	switch(argPacket->type) {
 		//basic connections
+		case SerialPacketType::PING:
+			HandlePing(static_cast<ServerPacket*>(argPacket));
+		break;
+		case SerialPacketType::PONG:
+			HandlePong(static_cast<ServerPacket*>(argPacket));
+		break;
 		case SerialPacketType::BROADCAST_REQUEST:
 			HandleBroadcastRequest(static_cast<ServerPacket*>(argPacket));
 		break;
