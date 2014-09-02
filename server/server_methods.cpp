@@ -27,7 +27,7 @@
 //basic connections
 //-------------------------
 
-void ServerApplication::HandleBroadcastRequest(SerialPacket* const argPacket) {
+void ServerApplication::HandleBroadcastRequest(ServerPacket* const argPacket) {
 	//send the server's data
 	ServerPacket newPacket;
 
@@ -102,7 +102,7 @@ void ServerApplication::HandleDisconnect(ClientPacket* const argPacket) {
 	std::cout << "Disconnection, " << clientMap.size() << " clients and " << accountMgr.GetContainer()->size() << " accounts total" << std::endl;
 }
 
-void ServerApplication::HandleShutdown(SerialPacket* const argPacket) {
+void ServerApplication::HandleShutdown(ClientPacket* const argPacket) {
 	//TODO: authenticate who is shutting the server down
 	/*Pseudocode:
 	if sender's account -> admin is not true then
@@ -115,7 +115,7 @@ void ServerApplication::HandleShutdown(SerialPacket* const argPacket) {
 	running = false;
 
 	//disconnect all clients
-	SerialPacket newPacket;
+	ClientPacket newPacket;
 	newPacket.type = SerialPacketType::DISCONNECT;
 	PumpPacket(&newPacket);
 

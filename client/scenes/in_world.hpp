@@ -75,7 +75,7 @@ protected:
 
 	//Network handlers
 	void HandlePacket(SerialPacket* const);
-	void HandleDisconnect(SerialPacket* const);
+	void HandleDisconnect(ClientPacket* const);
 	void HandleCharacterNew(CharacterPacket* const);
 	void HandleCharacterDelete(CharacterPacket* const);
 	void HandleCharacterUpdate(CharacterPacket* const);

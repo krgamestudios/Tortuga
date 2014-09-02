@@ -1,16 +1,13 @@
-TODO: Sort out the *_cast<> stuff
-TODO: encapsulate the data structures
-TODO: Ping-pong and keep alive system
+TODO: Heartbeat systems
+TODO: Rejection messages
 TODO: Move the statistics into their own SQL table, instead of duplicating the structure a dozen times
 TODO: Get the rooms working, even if only via hotkeys
-TODO: Rejection messages
-TODO: Move the map system into it's own namespace
-TODO: The TileSheet class should implement the surface itself
-
 TODO: Fix shoddy movement
+
+TODO: Move the map system into it's own namespace?
+TODO: The TileSheet class should implement the surface itself
 TODO: make the whole thing more fault tolerant
 TODO: Authentication
-TODO: server is slaved to the client
 
 TODO: Time delay for requesting region packets
 TODO: command line parameters overriding config.cfg settings

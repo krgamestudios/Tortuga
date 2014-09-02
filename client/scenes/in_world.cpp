@@ -271,7 +271,7 @@ void InWorld::KeyUp(SDL_KeyboardEvent const& key) {
 void InWorld::HandlePacket(SerialPacket* const argPacket) {
 	switch(argPacket->type) {
 		case SerialPacketType::DISCONNECT:
-			HandleDisconnect(argPacket);
+			HandleDisconnect(static_cast<ClientPacket*>(argPacket));
 		break;
 		case SerialPacketType::CHARACTER_NEW:
 			HandleCharacterNew(static_cast<CharacterPacket*>(argPacket));
@@ -292,7 +292,8 @@ void InWorld::HandlePacket(SerialPacket* const argPacket) {
 	}
 }
 
-void InWorld::HandleDisconnect(SerialPacket* const argPacket) {
+void InWorld::HandleDisconnect(ClientPacket* const argPacket) {
+	//TODO: More needed in the disconnection
 	SetNextScene(SceneList::CLEANUP);
 }
 

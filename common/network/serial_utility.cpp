@@ -40,6 +40,8 @@ void deserialCopy(void** buffer, void* data, int size) {
 	*buffer = reinterpret_cast<char*>(*buffer) + size;
 }
 
+//DOCS: The server and client MUST use the correct packet types
+
 //main switch functions
 void serializePacket(void* buffer, SerialPacketBase* packet) {
 	switch(packet->type) {

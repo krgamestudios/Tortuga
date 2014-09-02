@@ -61,10 +61,10 @@ private:
 	void HandlePacket(SerialPacket* const);
 
 	//basic connections
-	void HandleBroadcastRequest(SerialPacket* const);
+	void HandleBroadcastRequest(ServerPacket* const);
 	void HandleJoinRequest(ClientPacket* const);
 	void HandleDisconnect(ClientPacket* const);
-	void HandleShutdown(SerialPacket* const);
+	void HandleShutdown(ClientPacket* const);
 
 	//map management
 	void HandleRegionRequest(RegionPacket* const);

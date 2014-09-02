@@ -179,7 +179,7 @@ void ServerApplication::HandlePacket(SerialPacket* const argPacket) {
 	switch(argPacket->type) {
 		//basic connections
 		case SerialPacketType::BROADCAST_REQUEST:
-			HandleBroadcastRequest(static_cast<SerialPacket*>(argPacket));
+			HandleBroadcastRequest(static_cast<ServerPacket*>(argPacket));
 		break;
 		case SerialPacketType::JOIN_REQUEST:
 			HandleJoinRequest(static_cast<ClientPacket*>(argPacket));
@@ -188,7 +188,7 @@ void ServerApplication::HandlePacket(SerialPacket* const argPacket) {
 			HandleDisconnect(static_cast<ClientPacket*>(argPacket));
 		break;
 		case SerialPacketType::SHUTDOWN:
-			HandleShutdown(static_cast<SerialPacket*>(argPacket));
+			HandleShutdown(static_cast<ClientPacket*>(argPacket));
 		break;
 
 		//map management
