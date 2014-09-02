@@ -140,6 +140,20 @@ void InWorld::Update() {
 	//update the camera
 	camera.x = localCharacter->GetOrigin().x - camera.marginX;
 	camera.y = localCharacter->GetOrigin().y - camera.marginY;
+
+	//check the connection
+	if (Clock::now() - lastBeat > std::chrono::seconds(5)) {
+		if (attemptedBeats > 2) {
+			throw(std::runtime_error("Connection lost"));
+		}
+
+		ServerPacket newPacket;
+		newPacket.type = SerialPacketType::PING;
+		network.SendTo(Channels::SERVER, &newPacket);
+
+		attemptedBeats++;
+		lastBeat = Clock::now();
+	}
 }
 
 void InWorld::FrameEnd() {
@@ -305,9 +319,13 @@ void InWorld::HandlePing(ServerPacket* const argPacket) {
 }
 
 void InWorld::HandlePong(ServerPacket* const argPacket) {
-	//TODO: InWorld::HandlePong()
-}
+	if (network.GetIPAddress(Channels::SERVER)->host != argPacket->srcAddress.host) {
+		throw(std::runtime_error("Heartbeat message received from unknown source"));
+	}
 
+	attemptedBeats = 0;
+	lastBeat = Clock::now();
+}
 
 void InWorld::HandleDisconnect(ClientPacket* const argPacket) {
 	//TODO: More needed in the disconnection

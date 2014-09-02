@@ -46,6 +46,8 @@
 //STL
 #include <map>
 
+#include <chrono>
+
 class InWorld : public BaseScene {
 public:
 	//Public access members
@@ -121,6 +123,11 @@ protected:
 
 	//game
 	Character* localCharacter = nullptr;
+
+	//connections
+	typedef std::chrono::steady_clock Clock;
+	Clock::time_point lastBeat = Clock::now();
+	int attemptedBeats = 0;
 };
 
 #endif
