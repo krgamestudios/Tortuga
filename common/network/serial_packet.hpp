@@ -27,18 +27,20 @@
 #include "client_packet.hpp"
 #include "region_packet.hpp"
 #include "server_packet.hpp"
+#include "text_packet.hpp"
 
 //SerialPacketBase is defined in serial_packet_base.hpp
 typedef SerialPacketBase SerialPacket;
 
 //DOCS: NETWORK_VERSION is used to discern compatible servers and clients
-constexpr int NETWORK_VERSION = 20140831;
+constexpr int NETWORK_VERSION = 20140909;
 
 union MaxPacket {
 	CharacterPacket a;
 	ClientPacket b;
 	RegionPacket c;
 	ServerPacket d;
+	TextPacket e;
 };
 
 constexpr int MAX_PACKET_SIZE = sizeof(MaxPacket);

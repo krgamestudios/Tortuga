@@ -52,7 +52,6 @@ enum class SerialPacketType {
 	//Connecting to a server as a client
 	JOIN_REQUEST,
 	JOIN_RESPONSE,
-	JOIN_REJECTION,
 
 	//client requests all information from the server
 	SYNCHRONIZE,
@@ -88,10 +87,23 @@ enum class SerialPacketType {
 	CHARACTER_STATS_REQUEST,
 	CHARACTER_STATS_RESPONSE,
 
-	//reject a character request
+	//-------------------------
+	//TextPacket
+	//  name, text
+	//-------------------------
+
+	//general speech
+	TEXT_BROADCAST,
+
+	//rejection/error messages
+	SHUTDOWN_REJECTION,
+	JOIN_REJECTION,
 	CHARACTER_REJECTION,
 
+	//-------------------------
 	//not used
+	//-------------------------
+
 	LAST
 };
 
