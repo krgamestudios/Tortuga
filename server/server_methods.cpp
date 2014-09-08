@@ -67,9 +67,14 @@ void ServerApplication::HandleJoinRequest(ClientPacket* const argPacket) {
 	//load the user account
 	//TODO: handle passwords
 	int accountIndex = accountMgr.LoadAccount(argPacket->username, clientIndex);
+
+	//Error checking
 	if (accountIndex < 0) {
-		//TODO: send rejection packet
-		std::cerr << "Error: Account already loaded: " << accountIndex << std::endl;
+		TextPacket newPacket;
+		newPacket.type = SerialPacketType::JOIN_REJECTION;
+		std::string msg = std::string() + "Account already loaded: " + argPacket->username;
+		strncpy(newPacket.text, msg.c_str(), PACKET_STRING_SIZE); //BUG: If the name is too long this would truncate it
+		network.SendTo(argPacket->srcAddress, static_cast<SerialPacket*>(&newPacket));
 		return;
 	}
 
@@ -223,8 +228,6 @@ void ServerApplication::HandleCharacterUpdate(CharacterPacket* const argPacket) 
 
 	//make a new character if this one doesn't exist
 	if (!character) {
-		//this isn't normal
-		std::cerr << "Warning: HandleCharacterUpdate() is passing to HandleCharacterNew()" << std::endl;
 		HandleCharacterNew(argPacket);
 		return;
 	}

@@ -25,6 +25,7 @@
 #include "utility.hpp"
 
 #include <stdexcept>
+#include <iostream>
 
 //-------------------------
 //Public access members
@@ -192,6 +193,9 @@ void LobbyMenu::HandlePacket(SerialPacket* const argPacket) {
 		case SerialPacketType::JOIN_RESPONSE:
 			HandleJoinResponse(static_cast<ClientPacket*>(argPacket));
 		break;
+		case SerialPacketType::JOIN_REJECTION:
+			HandleJoinRejection(static_cast<TextPacket*>(argPacket));
+		break;
 		//handle errors
 		default:
 			throw(std::runtime_error(std::string() + "Unknown SerialPacketType encountered in LobbyMenu: " + to_string_custom(static_cast<int>(argPacket->type)) ));
@@ -227,6 +231,11 @@ void LobbyMenu::HandleJoinResponse(ClientPacket* const argPacket) {
 	strncpy(newPacket.avatar, config["client.avatar"].c_str(), PACKET_STRING_SIZE);
 	newPacket.accountIndex = accountIndex;
 	network.SendTo(Channels::SERVER, &newPacket);
+}
+
+void LobbyMenu::HandleJoinRejection(TextPacket* const argPacket) {
+	//TODO: Better output
+	std::cerr << "Error: " << argPacket->text << std::endl;
 }
 
 //-------------------------

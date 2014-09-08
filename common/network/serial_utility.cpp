@@ -109,11 +109,11 @@ void deserializePacket(void* buffer, SerialPacketBase* packet) {
 		case SerialPacketType::CHARACTER_STATS_RESPONSE:
 			deserializeCharacter(buffer, static_cast<CharacterPacket*>(packet));
 		break;
-			case SerialPacketType::TEXT_BROADCAST:
+		case SerialPacketType::TEXT_BROADCAST:
 		case SerialPacketType::JOIN_REJECTION:
 		case SerialPacketType::SHUTDOWN_REJECTION:
 		case SerialPacketType::CHARACTER_REJECTION:
-			serializeText(buffer, static_cast<TextPacket*>(packet));
+			deserializeText(buffer, static_cast<TextPacket*>(packet));
 		break;
 	}
 }
