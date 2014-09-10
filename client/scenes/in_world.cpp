@@ -142,7 +142,7 @@ void InWorld::Update() {
 	camera.y = localCharacter->GetOrigin().y - camera.marginY;
 
 	//check the connection
-	if (Clock::now() - lastBeat > std::chrono::seconds(5)) {
+	if (Clock::now() - lastBeat > std::chrono::seconds(3)) {
 		if (attemptedBeats > 2) {
 			throw(std::runtime_error("Connection lost"));
 		}

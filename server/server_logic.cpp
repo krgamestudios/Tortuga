@@ -151,7 +151,7 @@ void ServerApplication::Proc() {
 		//TODO: This could be checked only every few seconds
 		//Check connections
 		for (auto& it : clientMap) {
-			if (std::chrono::steady_clock::now() - it.second.GetLastBeat() > std::chrono::seconds(5)) {
+			if (std::chrono::steady_clock::now() - it.second.GetLastBeat() > std::chrono::seconds(3)) {
 				ServerPacket newPacket;
 				newPacket.type = SerialPacketType::PING;
 				network.SendTo(it.second.GetAddress(), &newPacket);

@@ -225,7 +225,7 @@ int CharacterManager::SaveCharacter(int uid) {
 	if (sqlite3_step(statement) != SQLITE_DONE) {
 		//if this fails, than something went horribly wrong
 		sqlite3_finalize(statement);
-		throw( std::runtime_error(std::string() + "Unknown SQL error when saving an account: " + sqlite3_errmsg(database)) );
+		throw( std::runtime_error(std::string() + "Unknown SQL error when saving a character: " + sqlite3_errmsg(database)) );
 	}
 
 	sqlite3_finalize(statement);
@@ -258,7 +258,7 @@ void CharacterManager::DeleteCharacter(int uid) {
 	if (sqlite3_step(statement) != SQLITE_DONE) {
 		//if this fails, than something went horribly wrong
 		sqlite3_finalize(statement);
-		throw( std::runtime_error(std::string() + "Unknown SQL error when deleting an account: " + sqlite3_errmsg(database)) );
+		throw( std::runtime_error(std::string() + "Unknown SQL error when deleting a character: " + sqlite3_errmsg(database)) );
 	}
 
 	//finish the routine

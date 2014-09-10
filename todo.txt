@@ -1,3 +1,4 @@
+TODO: Remove the BUGFIX tags
 TODO: Rejection messages
 TODO: The error handling is terrible
 TODO: Get the rooms working, even if only via hotkeys
