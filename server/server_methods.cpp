@@ -185,7 +185,7 @@ void ServerApplication::HandleCharacterNew(CharacterPacket* const argPacket) {
 		if (characterIndex == -1) {
 			msg += "Character already loaded: ";
 		}
-		else if (characterIndex == -1) {
+		else if (characterIndex == -2) {
 			msg += "Character already exists: ";
 		}
 		msg += argPacket->handle;

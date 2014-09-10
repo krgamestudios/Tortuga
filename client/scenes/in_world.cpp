@@ -73,6 +73,14 @@ InWorld::InWorld(
 	//TODO: Tile size and tile sheet should be loaded elsewhere
 	tileSheet.Load(config["dir.tilesets"] + "terrain.bmp", 32, 32);
 
+	//send this player's character info
+	CharacterPacket newPacket;
+	newPacket.type = SerialPacketType::CHARACTER_NEW;
+	strncpy(newPacket.handle, config["client.handle"].c_str(), PACKET_STRING_SIZE);
+	strncpy(newPacket.avatar, config["client.avatar"].c_str(), PACKET_STRING_SIZE);
+	newPacket.accountIndex = accountIndex;
+	network.SendTo(Channels::SERVER, &newPacket);
+
 	//request a sync
 	RequestSynchronize();
 
@@ -302,6 +310,9 @@ void InWorld::HandlePacket(SerialPacket* const argPacket) {
 		case SerialPacketType::CHARACTER_UPDATE:
 			HandleCharacterUpdate(static_cast<CharacterPacket*>(argPacket));
 		break;
+		case SerialPacketType::CHARACTER_REJECTION:
+			HandleCharacterRejection(static_cast<TextPacket*>(argPacket));
+		break;
 		case SerialPacketType::REGION_CONTENT:
 			HandleRegionContent(static_cast<RegionPacket*>(argPacket));
 		break;
@@ -389,7 +400,6 @@ void InWorld::HandleCharacterDelete(CharacterPacket* const argPacket) {
 
 void InWorld::HandleCharacterUpdate(CharacterPacket* const argPacket) {
 	if (characterMap.find(argPacket->characterIndex) == characterMap.end()) {
-		std::cout << "Warning: HandleCharacterUpdate() is passing to HandleCharacterNew()" << std::endl;
 		HandleCharacterNew(argPacket);
 		return;
 	}
@@ -402,6 +412,12 @@ void InWorld::HandleCharacterUpdate(CharacterPacket* const argPacket) {
 		character.SetMotion(argPacket->motion);
 		character.CorrectSprite();
 	}
+}
+
+void InWorld::HandleCharacterRejection(TextPacket* const argPacket) {
+	std::cerr << "Error: " << argPacket->text << std::endl;
+	RequestDisconnect();
+	SetNextScene(SceneList::CLEANUP);
 }
 
 void InWorld::HandleRegionContent(RegionPacket* const argPacket) {

@@ -83,6 +83,7 @@ protected:
 	void HandleCharacterNew(CharacterPacket* const);
 	void HandleCharacterDelete(CharacterPacket* const);
 	void HandleCharacterUpdate(CharacterPacket* const);
+	void HandleCharacterRejection(TextPacket* const);
 	void HandleRegionContent(RegionPacket* const);
 
 	//Server control
