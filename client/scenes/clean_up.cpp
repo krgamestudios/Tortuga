@@ -90,8 +90,10 @@ void CleanUp::Update() {
 }
 
 void CleanUp::Render(SDL_Surface* const screen) {
+	ConfigUtility& config = ConfigUtility::GetSingleton();
+
 	backButton.DrawTo(screen);
-	font.DrawStringTo("You have been disconnected.", screen, 50, 30);
+	font.DrawStringTo(config["client.disconnectMessage"], screen, 50, 30);
 }
 
 //-------------------------

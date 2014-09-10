@@ -152,7 +152,9 @@ void InWorld::Update() {
 	//check the connection
 	if (Clock::now() - lastBeat > std::chrono::seconds(3)) {
 		if (attemptedBeats > 2) {
-			throw(std::runtime_error("Connection lost"));
+			RequestDisconnect();
+			SetNextScene(SceneList::CLEANUP);
+			ConfigUtility::GetSingleton()["client.disconnectMessage"] = "Error: Lost connection to the server";
 		}
 
 		ServerPacket newPacket;
@@ -341,6 +343,7 @@ void InWorld::HandlePong(ServerPacket* const argPacket) {
 void InWorld::HandleDisconnect(ClientPacket* const argPacket) {
 	//TODO: More needed in the disconnection
 	SetNextScene(SceneList::CLEANUP);
+	ConfigUtility::GetSingleton()["client.disconnectMessage"] = "You have been disconnected";
 }
 
 void InWorld::HandleCharacterNew(CharacterPacket* const argPacket) {
@@ -415,9 +418,11 @@ void InWorld::HandleCharacterUpdate(CharacterPacket* const argPacket) {
 }
 
 void InWorld::HandleCharacterRejection(TextPacket* const argPacket) {
-	std::cerr << "Error: " << argPacket->text << std::endl;
 	RequestDisconnect();
 	SetNextScene(SceneList::CLEANUP);
+	ConfigUtility& config = ConfigUtility::GetSingleton();
+	config["client.disconnectMessage"] = "Error: ";
+	config["client.disconnectMessage"] += argPacket->text;
 }
 
 void InWorld::HandleRegionContent(RegionPacket* const argPacket) {

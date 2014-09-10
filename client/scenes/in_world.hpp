@@ -127,6 +127,7 @@ protected:
 	Character* localCharacter = nullptr;
 
 	//connections
+	//TODO: This needs it's own utility, for both InWorld and InCombat
 	typedef std::chrono::steady_clock Clock;
 	Clock::time_point lastBeat = Clock::now();
 	int attemptedBeats = 0;
