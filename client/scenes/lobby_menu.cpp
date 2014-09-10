@@ -64,7 +64,7 @@ LobbyMenu::LobbyMenu(int* const argClientIndex, int* const argAccountIndex):
 	//set the server list's position
 	listBox = {300, 50, 200, font.GetCharH()};
 
-	//BUGFIX: Eat incoming packets
+	//Eat incoming packets
 	while(network.Receive());
 
 	//Initial broadcast

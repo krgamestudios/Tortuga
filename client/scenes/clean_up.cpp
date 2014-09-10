@@ -85,7 +85,7 @@ void CleanUp::Update() {
 		SetNextScene(SceneList::MAINMENU);
 	}
 
-	//BUGFIX: Eat incoming packets
+	//Eat incoming packets
 	while(network.Receive());
 }
 

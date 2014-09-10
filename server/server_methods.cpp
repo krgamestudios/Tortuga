@@ -35,8 +35,6 @@ void ServerApplication::HandlePing(ServerPacket* const argPacket) {
 
 void ServerApplication::HandlePong(ServerPacket* const argPacket) {
 	//find and update the specified client
-
-	//BUGFIX: running multiple clients on one computer will result in matching host values; check the ports too
 	for (auto& it : clientMap) {
 		if (it.second.GetAddress().host == argPacket->srcAddress.host &&
 			it.second.GetAddress().port == argPacket->srcAddress.port

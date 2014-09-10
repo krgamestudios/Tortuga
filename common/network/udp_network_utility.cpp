@@ -26,7 +26,7 @@
 
 #include <stdexcept>
 
-//BUGFIX: memset() is used before sending a packet to remove old data; you don't want to send sensitive data over the network
+//NOTE: memset() is used before sending a packet to remove old data; you don't want to send sensitive data over the network
 //NOTE: don't confuse SerialPacketBase with UDPpacket
 
 void UDPNetworkUtility::Open(int port) {
