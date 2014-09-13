@@ -26,6 +26,7 @@
 #include "client_packet.hpp"
 #include "region_packet.hpp"
 #include "server_packet.hpp"
+#include "text_packet.hpp"
 
 #include <cstring>
 
@@ -53,7 +54,6 @@ void serializePacket(void* buffer, SerialPacketBase* packet) {
 		break;
 		case SerialPacketType::JOIN_REQUEST:
 		case SerialPacketType::JOIN_RESPONSE:
-		case SerialPacketType::JOIN_REJECTION:
 		case SerialPacketType::SYNCHRONIZE:
 		case SerialPacketType::DISCONNECT:
 		case SerialPacketType::SHUTDOWN:
@@ -68,8 +68,13 @@ void serializePacket(void* buffer, SerialPacketBase* packet) {
 		case SerialPacketType::CHARACTER_UPDATE:
 		case SerialPacketType::CHARACTER_STATS_REQUEST:
 		case SerialPacketType::CHARACTER_STATS_RESPONSE:
-		case SerialPacketType::CHARACTER_REJECTION:
 			serializeCharacter(buffer, static_cast<CharacterPacket*>(packet));
+		break;
+		case SerialPacketType::TEXT_BROADCAST:
+		case SerialPacketType::JOIN_REJECTION:
+		case SerialPacketType::SHUTDOWN_REJECTION:
+		case SerialPacketType::CHARACTER_REJECTION:
+			serializeText(buffer, static_cast<TextPacket*>(packet));
 		break;
 	}
 }
@@ -88,7 +93,6 @@ void deserializePacket(void* buffer, SerialPacketBase* packet) {
 		break;
 		case SerialPacketType::JOIN_REQUEST:
 		case SerialPacketType::JOIN_RESPONSE:
-		case SerialPacketType::JOIN_REJECTION:
 		case SerialPacketType::SYNCHRONIZE:
 		case SerialPacketType::DISCONNECT:
 		case SerialPacketType::SHUTDOWN:
@@ -103,8 +107,13 @@ void deserializePacket(void* buffer, SerialPacketBase* packet) {
 		case SerialPacketType::CHARACTER_UPDATE:
 		case SerialPacketType::CHARACTER_STATS_REQUEST:
 		case SerialPacketType::CHARACTER_STATS_RESPONSE:
-		case SerialPacketType::CHARACTER_REJECTION:
 			deserializeCharacter(buffer, static_cast<CharacterPacket*>(packet));
+		break;
+		case SerialPacketType::TEXT_BROADCAST:
+		case SerialPacketType::JOIN_REJECTION:
+		case SerialPacketType::SHUTDOWN_REJECTION:
+		case SerialPacketType::CHARACTER_REJECTION:
+			deserializeText(buffer, static_cast<TextPacket*>(packet));
 		break;
 	}
 }

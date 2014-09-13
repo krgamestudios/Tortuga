@@ -46,7 +46,7 @@ void serializeCharacter(void* buffer, CharacterPacket* packet) {
 	//stats structure
 	serializeStatistics(&buffer, &packet->stats);
 
-	//TODO: gameplay components: equipment, items, buffs, debuffs
+	//gameplay components: equipment, items, buffs, debuffs...
 }
 
 void deserializeCharacter(void* buffer, CharacterPacket* packet) {
@@ -70,5 +70,5 @@ void deserializeCharacter(void* buffer, CharacterPacket* packet) {
 	//stats structure
 	deserializeStatistics(&buffer, &packet->stats);
 
-	//TODO: gameplay components: equipment, items, buffs, debuffs
+	//gameplay components: equipment, items, buffs, debuffs...
 }

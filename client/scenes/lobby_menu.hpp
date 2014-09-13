@@ -63,6 +63,7 @@ protected:
 	void HandlePacket(SerialPacket* const);
 	void HandleBroadcastResponse(ServerPacket* const);
 	void HandleJoinResponse(ClientPacket* const);
+	void HandleJoinRejection(TextPacket* const);
 
 	//server control
 	void SendBroadcastRequest();

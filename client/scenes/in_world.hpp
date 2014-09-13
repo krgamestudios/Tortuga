@@ -83,6 +83,7 @@ protected:
 	void HandleCharacterNew(CharacterPacket* const);
 	void HandleCharacterDelete(CharacterPacket* const);
 	void HandleCharacterUpdate(CharacterPacket* const);
+	void HandleCharacterRejection(TextPacket* const);
 	void HandleRegionContent(RegionPacket* const);
 
 	//Server control
@@ -113,7 +114,8 @@ protected:
 	//UI
 	Button disconnectButton;
 	Button shutDownButton;
-	//TODO: Review the camera
+
+	//the camera structure
 	struct {
 		int x = 0, y = 0;
 		int width = 0, height = 0;
@@ -125,6 +127,7 @@ protected:
 	Character* localCharacter = nullptr;
 
 	//connections
+	//TODO: This needs it's own utility, for both InWorld and InCombat
 	typedef std::chrono::steady_clock Clock;
 	Clock::time_point lastBeat = Clock::now();
 	int attemptedBeats = 0;

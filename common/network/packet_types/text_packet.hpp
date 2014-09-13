@@ -19,35 +19,17 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef CHARACTERPACKET_HPP_
-#define CHARACTERPACKET_HPP_
+#ifndef TEXTPACKET_HPP_
+#define TEXTPACKET_HPP_
 
 #include "serial_packet_base.hpp"
 
-#include "vector2.hpp"
-#include "statistics.hpp"
-
-struct CharacterPacket : SerialPacketBase {
-	//identify the character
-	int characterIndex;
-	char handle[PACKET_STRING_SIZE];
-	char avatar[PACKET_STRING_SIZE];
-
-	//the owner
-	int accountIndex;
-
-	//location
-	int roomIndex;
-	Vector2 origin;
-	Vector2 motion;
-
-	//gameplay
-	Statistics stats;
-
-	//gameplay components: equipment, items, buffs, debuffs...
+struct TextPacket : SerialPacketBase {
+	char name[PACKET_STRING_SIZE];
+	char text[PACKET_STRING_SIZE];
 };
 
-void serializeCharacter(void* buffer, CharacterPacket* packet);
-void deserializeCharacter(void* buffer, CharacterPacket* packet);
+void serializeText(void* buffer, TextPacket* packet);
+void deserializeText(void* buffer, TextPacket* packet);
 
 #endif

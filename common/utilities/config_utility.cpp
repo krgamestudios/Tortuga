@@ -88,7 +88,6 @@ ConfigUtility::table_t ConfigUtility::Read(std::string fname) {
 	is.close();
 
 	//load in any subordinate config files
-	//TODO: Possibility of nesting config levels?
 	if (retTable.find("config.next") != retTable.end()) {
 		table_t subTable = Read(retTable["config.next"]);
 		retTable.insert(subTable.begin(), subTable.end());

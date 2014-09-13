@@ -75,7 +75,7 @@ private:
 	//base statistics
 	Statistics stats;
 
-	//TODO: gameplay components: equipment, items, buffs, debuffs
+	//gameplay components: equipment, items, buffs, debuffs...
 
 	//metadata
 	int owner;

@@ -25,6 +25,7 @@
 #include "utility.hpp"
 
 #include <stdexcept>
+#include <iostream>
 
 //-------------------------
 //Public access members
@@ -63,7 +64,7 @@ LobbyMenu::LobbyMenu(int* const argClientIndex, int* const argAccountIndex):
 	//set the server list's position
 	listBox = {300, 50, 200, font.GetCharH()};
 
-	//BUGFIX: Eat incoming packets
+	//Eat incoming packets
 	while(network.Receive());
 
 	//Initial broadcast
@@ -192,6 +193,9 @@ void LobbyMenu::HandlePacket(SerialPacket* const argPacket) {
 		case SerialPacketType::JOIN_RESPONSE:
 			HandleJoinResponse(static_cast<ClientPacket*>(argPacket));
 		break;
+		case SerialPacketType::JOIN_REJECTION:
+			HandleJoinRejection(static_cast<TextPacket*>(argPacket));
+		break;
 		//handle errors
 		default:
 			throw(std::runtime_error(std::string() + "Unknown SerialPacketType encountered in LobbyMenu: " + to_string_custom(static_cast<int>(argPacket->type)) ));
@@ -219,14 +223,11 @@ void LobbyMenu::HandleJoinResponse(ClientPacket* const argPacket) {
 	accountIndex = argPacket->accountIndex;
 	network.Bind(argPacket->srcAddress, Channels::SERVER);
 	SetNextScene(SceneList::INWORLD);
+}
 
-	//send this player's character info
-	CharacterPacket newPacket;
-	newPacket.type = SerialPacketType::CHARACTER_NEW;
-	strncpy(newPacket.handle, config["client.handle"].c_str(), PACKET_STRING_SIZE);
-	strncpy(newPacket.avatar, config["client.avatar"].c_str(), PACKET_STRING_SIZE);
-	newPacket.accountIndex = accountIndex;
-	network.SendTo(Channels::SERVER, &newPacket);
+void LobbyMenu::HandleJoinRejection(TextPacket* const argPacket) {
+	//TODO: Better output
+	std::cerr << "Error: " << argPacket->text << std::endl;
 }
 
 //-------------------------

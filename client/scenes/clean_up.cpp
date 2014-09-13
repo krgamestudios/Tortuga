@@ -85,13 +85,15 @@ void CleanUp::Update() {
 		SetNextScene(SceneList::MAINMENU);
 	}
 
-	//BUGFIX: Eat incoming packets
+	//Eat incoming packets
 	while(network.Receive());
 }
 
 void CleanUp::Render(SDL_Surface* const screen) {
+	ConfigUtility& config = ConfigUtility::GetSingleton();
+
 	backButton.DrawTo(screen);
-	font.DrawStringTo("You have been disconnected.", screen, 50, 30);
+	font.DrawStringTo(config["client.disconnectMessage"], screen, 50, 30);
 }
 
 //-------------------------

@@ -110,6 +110,7 @@ void ServerApplication::Init(int argc, char** argv) {
 
 	std::cout << "Internal sizes:" << std::endl;
 
+	DEBUG_OUTPUT_VAR(NETWORK_VERSION);
 	DEBUG_OUTPUT_VAR(sizeof(Region::type_t));
 	DEBUG_OUTPUT_VAR(sizeof(Region));
 	DEBUG_OUTPUT_VAR(REGION_WIDTH);
@@ -117,8 +118,10 @@ void ServerApplication::Init(int argc, char** argv) {
 	DEBUG_OUTPUT_VAR(REGION_DEPTH);
 	DEBUG_OUTPUT_VAR(REGION_TILE_FOOTPRINT);
 	DEBUG_OUTPUT_VAR(REGION_SOLID_FOOTPRINT);
+	DEBUG_OUTPUT_VAR(PACKET_STRING_SIZE);
 	DEBUG_OUTPUT_VAR(PACKET_BUFFER_SIZE);
 	DEBUG_OUTPUT_VAR(MAX_PACKET_SIZE);
+	DEBUG_OUTPUT_VAR(static_cast<int>(SerialPacketType::LAST));
 
 #undef DEBUG_OUTPUT_VAR
 
@@ -148,7 +151,7 @@ void ServerApplication::Proc() {
 		//TODO: This could be checked only every few seconds
 		//Check connections
 		for (auto& it : clientMap) {
-			if (std::chrono::steady_clock::now() - it.second.GetLastBeat() > std::chrono::seconds(5)) {
+			if (std::chrono::steady_clock::now() - it.second.GetLastBeat() > std::chrono::seconds(3)) {
 				ServerPacket newPacket;
 				newPacket.type = SerialPacketType::PING;
 				network.SendTo(it.second.GetAddress(), &newPacket);

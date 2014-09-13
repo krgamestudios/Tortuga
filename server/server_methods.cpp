@@ -35,8 +35,6 @@ void ServerApplication::HandlePing(ServerPacket* const argPacket) {
 
 void ServerApplication::HandlePong(ServerPacket* const argPacket) {
 	//find and update the specified client
-
-	//BUGFIX: running multiple clients on one computer will result in matching host values; check the ports too
 	for (auto& it : clientMap) {
 		if (it.second.GetAddress().host == argPacket->srcAddress.host &&
 			it.second.GetAddress().port == argPacket->srcAddress.port
@@ -60,16 +58,18 @@ void ServerApplication::HandleBroadcastRequest(ServerPacket* const argPacket) {
 }
 
 void ServerApplication::HandleJoinRequest(ClientPacket* const argPacket) {
-	//create the new client
-	ClientData newClient;
-	newClient.SetAddress(argPacket->srcAddress);
-
 	//load the user account
 	//TODO: handle passwords
 	int accountIndex = accountMgr.LoadAccount(argPacket->username, clientIndex);
+
+	//Cannot load
 	if (accountIndex < 0) {
-		//TODO: send rejection packet
-		std::cerr << "Error: Account already loaded: " << accountIndex << std::endl;
+		TextPacket newPacket;
+		newPacket.type = SerialPacketType::JOIN_REJECTION;
+		std::string msg = std::string() + "Account already loaded: " + argPacket->username;
+		memset(newPacket.name, 0, PACKET_STRING_SIZE);
+		strncpy(newPacket.text, msg.c_str(), PACKET_STRING_SIZE); //BUG: If the name is too long this would truncate it
+		network.SendTo(argPacket->srcAddress, static_cast<SerialPacket*>(&newPacket));
 		return;
 	}
 
@@ -79,10 +79,14 @@ void ServerApplication::HandleJoinRequest(ClientPacket* const argPacket) {
 	newPacket.clientIndex = clientIndex;
 	newPacket.accountIndex = accountIndex;
 
-	network.SendTo(newClient.GetAddress(), static_cast<SerialPacket*>(&newPacket));
+	network.SendTo(argPacket->srcAddress, static_cast<SerialPacket*>(&newPacket));
+
+	//register the client
+	ClientData newClient;
+	newClient.SetAddress(argPacket->srcAddress);
+	clientMap[clientIndex++] = newClient;
 
 	//finished this routine
-	clientMap[clientIndex++] = newClient;
 	std::cout << "New connection, " << clientMap.size() << " clients and " << accountMgr.GetContainer()->size() << " accounts total" << std::endl;
 }
 
@@ -105,9 +109,9 @@ void ServerApplication::HandleDisconnect(ClientPacket* const argPacket) {
 	);
 
 	//save and unload this account's characters
-	//pump the unload message to all remaining clients
 	characterMgr.UnloadCharacterIf([&](std::map<int, CharacterData>::iterator it) -> bool {
 		if (argPacket->accountIndex == it->second.GetOwner()) {
+			//pump the unload message to all remaining clients
 			PumpCharacterUnload(it->first);
 			return true;
 		}
@@ -167,22 +171,31 @@ void ServerApplication::HandleRegionRequest(RegionPacket* const argPacket) {
 
 void ServerApplication::HandleCharacterNew(CharacterPacket* const argPacket) {
 	//BUG: #27 Characters can be created with an invalid account index
+	//TODO: Make sure that a character's owner's account is loaded before continuing
+
 	//NOTE: misnomer, try to load the character first
 	int characterIndex = characterMgr.LoadCharacter(argPacket->accountIndex, argPacket->handle, argPacket->avatar);
 
-	if (characterIndex == -1) {
-		//TODO: rejection packet
-		std::cerr << "Warning: Character already loaded" << std::endl;
+	//cannot load or create
+	if (characterIndex < 0) {
+		//build the error message
+		std::string msg;
+		if (characterIndex == -1) {
+			msg += "Character already loaded: ";
+		}
+		else if (characterIndex == -2) {
+			msg += "Character already exists: ";
+		}
+		msg += argPacket->handle;
+
+		//create, fill and send the packet
+		TextPacket newPacket;
+		newPacket.type = SerialPacketType::CHARACTER_REJECTION;
+		memset(newPacket.name, 0, PACKET_STRING_SIZE);
+		strncpy(newPacket.text, msg.c_str(), PACKET_STRING_SIZE);
+		network.SendTo(argPacket->srcAddress, static_cast<SerialPacket*>(&newPacket));
 		return;
 	}
-
-	if (characterIndex == -2) {
-		//TODO: rejection packet
-		std::cerr << "Warning: Character already exists" << std::endl;
-		return;
-	}
-
-	//TODO: Make sure that a character's owner's account is loaded before continuing
 
 	//send this new character to all clients
 	CharacterPacket newPacket;
@@ -198,9 +211,13 @@ void ServerApplication::HandleCharacterDelete(CharacterPacket* const argPacket) 
 	int characterIndex = characterMgr.LoadCharacter(argPacket->accountIndex, argPacket->handle, argPacket->avatar);
 
 	//if this is not your character
-	if (characterIndex == -2) {
-		//TODO: rejection packet
-		std::cerr << "Warning: Character cannot be deleted" << std::endl;
+	if (characterIndex < 0 && characterMgr.GetCharacter(characterIndex)->GetOwner() != argPacket->accountIndex) {
+		//send the rejection packet
+		TextPacket newPacket;
+		newPacket.type = SerialPacketType::CHARACTER_REJECTION;
+		memset(newPacket.name, 0, PACKET_STRING_SIZE);
+		strncpy(newPacket.text, "Character cannot be deleted", PACKET_STRING_SIZE);
+		network.SendTo(argPacket->srcAddress, static_cast<SerialPacket*>(&newPacket));
 
 		//unload an unneeded character
 		if (characterIndex != -1) {
@@ -223,8 +240,6 @@ void ServerApplication::HandleCharacterUpdate(CharacterPacket* const argPacket) 
 
 	//make a new character if this one doesn't exist
 	if (!character) {
-		//this isn't normal
-		std::cerr << "Warning: HandleCharacterUpdate() is passing to HandleCharacterNew()" << std::endl;
 		HandleCharacterNew(argPacket);
 		return;
 	}
@@ -257,7 +272,6 @@ void ServerApplication::HandleSynchronize(ClientPacket* const argPacket) {
 	newPacket.type = SerialPacketType::CHARACTER_UPDATE;
 
 	for (auto& it : *characterMgr.GetContainer()) {
-		newPacket.characterIndex = it.first;
 		CopyCharacterToPacket(&newPacket, it.first);
 		network.SendTo(client.GetAddress(), static_cast<SerialPacket*>(&newPacket));
 	}
@@ -320,6 +334,7 @@ void ServerApplication::PumpPacket(SerialPacket* const argPacket) {
 
 void ServerApplication::PumpCharacterUnload(int uid) {
 	//delete the client-side character(s)
+	//NOTE: This is a strange function
 	CharacterPacket newPacket;
 	newPacket.type = SerialPacketType::CHARACTER_DELETE;
 	newPacket.characterIndex = uid;
