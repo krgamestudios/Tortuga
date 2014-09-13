@@ -1,3 +1,6 @@
+TODO: Config switch for the debug output
+TODO: A better way of handling the disconnection message
+TODO: LobbyMenu::HandleJoinRejection()
 TODO: Get the rooms working, even if only via hotkeys
 TODO: Fix shoddy movement
 TODO: Move the statistics into their own SQL table, instead of duplicating the structure a dozen times
