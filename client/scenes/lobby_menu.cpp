@@ -25,7 +25,6 @@
 #include "utility.hpp"
 
 #include <stdexcept>
-#include <iostream>
 
 //-------------------------
 //Public access members
@@ -113,7 +112,7 @@ void LobbyMenu::Render(SDL_Surface* const screen) {
 				(Uint16)listBox.w, (Uint16)listBox.h
 			};
 			r.y += i * listBox.h;
-			SDL_FillRect(screen, &r, SDL_MapRGB(screen->format, 255, 127, 39));
+			SDL_FillRect(screen, &r, SDL_MapRGB(screen->format, 49, 150, 5));
 		}
 
 		//draw the server name
@@ -226,8 +225,7 @@ void LobbyMenu::HandleJoinResponse(ClientPacket* const argPacket) {
 }
 
 void LobbyMenu::HandleJoinRejection(TextPacket* const argPacket) {
-	//TODO: Better output
-	std::cerr << "Error: " << argPacket->text << std::endl;
+	//TODO: Better output for join rejection
 }
 
 //-------------------------

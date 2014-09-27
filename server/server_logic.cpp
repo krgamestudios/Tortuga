@@ -34,12 +34,12 @@
 //public methods
 //-------------------------
 
-void ServerApplication::Init(int argc, char** argv) {
+void ServerApplication::Init(int argc, char* argv[]) {
 	//NOTE: I might need to rearrange the init process so that lua & SQL can interact with the map system as needed.
 	std::cout << "Beginning " << argv[0] << std::endl;
 
 	//load the prerequisites
-	config.Load("rsc\\config.cfg");
+	config.Load("rsc\\config.cfg", argc, argv);
 
 	//-------------------------
 	//Initialize the APIs

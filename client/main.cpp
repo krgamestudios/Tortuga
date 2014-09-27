@@ -30,7 +30,7 @@
 
 using namespace std;
 
-int main(int argc, char** argv) {
+int main(int argc, char* argv[]) {
 	try {
 		//create the singletons
 		ConfigUtility::Create();

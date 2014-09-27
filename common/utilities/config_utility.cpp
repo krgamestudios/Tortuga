@@ -22,14 +22,56 @@
 #include "config_utility.hpp"
 
 #include <cstdlib>
+#include <cstring>
 #include <fstream>
+#include <sstream>
 #include <stdexcept>
 
-void ConfigUtility::Load(std::string fname) {
+void ConfigUtility::Load(std::string fname, int argc, char* argv[]) {
 	//clear the stored configuration
 	configMap.clear();
-	//pass to the recursive method
-	configMap = Read(fname);
+
+	//use the default file
+	if (argc < 2) {
+		configMap = Read(fname);
+		return;
+	}
+
+	//some variables to use
+	table_t redirectedFile;
+	table_t cmdLineParams;
+	char key[256], val[256];
+
+	//reading from the command line
+	for (int i = 1; i < argc; ++i) {
+		//read from a specified config file
+		if (!strncmp(argv[i], "-config=", 8)) {
+			redirectedFile = Read(argv[i] + 8);
+			continue;
+		}
+
+		//set some specific values
+		if (!strncmp(argv[i], "-C", 2)) {
+			//wipe the variables
+			memset(key, 0, 256);
+			memset(key, 0, 256);
+
+			//read the key-value pair
+			if (sscanf(argv[i], "-C%[^=]=%[^\0]", key, val) != 2) {
+				std::ostringstream os;
+				os << "Failed to read a command line config argument (expected -C%s=%s):" << std::endl;
+				os << "\targv[" << i << "]: " << argv[i] << std::endl;
+				os << "\tkey: " << key << std::endl;
+				os << "\tval: " << val << std::endl;
+				throw(std::runtime_error( os.str() ));
+			}
+			cmdLineParams[key] = val;
+		}
+	}
+
+	//finally, construct the final config table
+	configMap.insert(cmdLineParams.begin(), cmdLineParams.end());
+	configMap.insert(redirectedFile.begin(), redirectedFile.end());
 }
 
 ConfigUtility::table_t ConfigUtility::Read(std::string fname) {
@@ -38,10 +80,9 @@ ConfigUtility::table_t ConfigUtility::Read(std::string fname) {
 	std::ifstream is(fname);
 
 	if (!is.is_open()) {
-		std::string msg;
-		msg += "Failed to open a config file: ";
-		msg += fname;
-		throw(std::runtime_error(msg));
+		std::ostringstream os;
+		os << "Failed to open a config file: " << fname;
+		throw(std::runtime_error( os.str() ));
 	}
 
 	std::string key, val;
@@ -69,15 +110,23 @@ ConfigUtility::table_t ConfigUtility::Read(std::string fname) {
 		getline(is, key,'=');
 		getline(is, val);
 
-		//trim the strings at the start & end
-		while(key.size() && isspace(*key.begin())) key.erase(0, 1);
-		while(val.size() && isspace(*val.begin())) val.erase(0, 1);
+		//eat the whitespace at the start & end
+		while(key.size() && isspace( *key.begin() )) {
+			key.erase(0, 1);
+		}
+		while(val.size() && isspace( *val.begin() )) {
+			val.erase(0, 1);
+		}
 
-		while(key.size() && isspace(*(key.end()-1))) key.erase(key.end() - 1);
-		while(val.size() && isspace(*(val.end()-1))) val.erase(val.end() - 1);
+		while(key.size() && isspace( *(key.end()-1) )) {
+			key.erase(key.end() - 1);
+		}
+		while(val.size() && isspace( *(val.end()-1) )) {
+			val.erase(val.end() - 1);
+		}
 
-		//disallow empty/wiped values
-		if (key.size() == 0) {
+		//disallow empty/wiped pairs
+		if (key.size() == 0 || val.size() == 0) {
 			continue;
 		}
 
