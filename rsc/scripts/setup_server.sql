@@ -1,12 +1,9 @@
---TODO: why is the database setup script scripted, while accessing, etc. hardcoded?
---there should be a way to control the database more directly
---TODO: move this script into a hardocded Init() method?
-
 CREATE TABLE IF NOT EXISTS Accounts (
 	uid INTEGER PRIMARY KEY AUTOINCREMENT,
 	username varchar(100) UNIQUE,
 	--TODO: server-client security
---	password varchar(100),
+--	passhash varchar(100),
+--	passsalt varchar(100),
 	blacklisted BIT DEFAULT 0,
 	whitelisted BIT DEFAULT 1,
 	mod BIT DEFAULT 0,
@@ -22,12 +19,30 @@ CREATE TABLE IF NOT EXISTS Characters (
 	avatar varchar(100),
 	birth timestamp NOT NULL DEFAULT (datetime()),
 
-	--position
+	--position in the world
 	roomIndex	INTEGER DEFAULT 0,
 	originX		INTEGER DEFAULT 0,
 	originY		INTEGER DEFAULT 0,
 
 	--statistics
+	baseStats	INTEGER REFERENCES StatisticSets(uid),
+
+	--equipment
+	weapon		INTEGER REFERENCES WornEquipment(uid),
+	helmet		INTEGER REFERENCES WornEquipment(uid),
+	armour		INTEGER REFERENCES WornEquipment(uid)
+	--etc.
+);
+
+-------------------------
+--Utility tables
+-------------------------
+
+CREATE TABLE IF NOT EXISTS StatisticSets (
+	--metadata
+	uid INTEGER PRIMARY KEY AUTOINCREMENT,
+
+	--general use statistics
 	level			INTEGER DEFAULT 0,
 	exp				INTEGER DEFAULT 0,
 	maxHP			INTEGER DEFAULT 0,
@@ -41,28 +56,29 @@ CREATE TABLE IF NOT EXISTS Characters (
 	speed			INTEGER DEFAULT 0,
 	accuracy		REAL DEFAULT 0.0,
 	evasion			REAL DEFAULT 0.0,
-	luck			REAL DEFAULT 0.0,
-
-	--equipment
-	weapon INTEGER REFERENCES WornEquipment(uid),
-	helmet INTEGER REFERENCES WornEquipment(uid),
-	armour INTEGER REFERENCES WornEquipment(uid)
-	--etc.
+	luck			REAL DEFAULT 0.0
 );
 
 CREATE TABLE IF NOT EXISTS InventoryItems (
 	--metadata
 	uid INTEGER PRIMARY KEY AUTOINCREMENT,
-	itemID INTEGER, --type
+	owner INTEGER REFERENCES Characters(uid),
+	itemType INTEGER,
+
+	--unique information
 	stackSize INTEGER DEFAULT 0,
-	owner INTEGER REFERENCES Characters(uid)
+	durability INTEGER DEFAULT 0,
+	stats INTEGER REFERENCES StatisticSets(uid)
 );
 
 CREATE TABLE IF NOT EXISTS WornEquipment (
 	--metadata
 	uid INTEGER PRIMARY KEY AUTOINCREMENT,
-	itemID INTEGER, --type
-	owner INTEGER REFERENCES Characters(uid)
-	--hold all equipment info
-	--stat mods, special effects, etc.
+	owner INTEGER REFERENCES Characters(uid),
+	itemType INTEGER,
+
+	--unique information
+	durability INTEGER DEFAULT 0,
+	stats INTEGER REFERENCES StatisticSets(uid)
+	--TODO: attached script?
 );

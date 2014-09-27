@@ -41,12 +41,14 @@ void ConfigUtility::Load(std::string fname, int argc, char* argv[]) {
 	table_t redirectedFile;
 	table_t cmdLineParams;
 	char key[256], val[256];
+	bool redirectUsed = false;
 
 	//reading from the command line
 	for (int i = 1; i < argc; ++i) {
 		//read from a specified config file
 		if (!strncmp(argv[i], "-config=", 8)) {
 			redirectedFile = Read(argv[i] + 8);
+			redirectUsed = true;
 			continue;
 		}
 
@@ -70,6 +72,9 @@ void ConfigUtility::Load(std::string fname, int argc, char* argv[]) {
 	}
 
 	//finally, construct the final config table
+	if (!redirectUsed) {
+		redirectedFile = Read(fname);
+	}
 	configMap.insert(cmdLineParams.begin(), cmdLineParams.end());
 	configMap.insert(redirectedFile.begin(), redirectedFile.end());
 }
