@@ -1,14 +1,17 @@
+## Outline
+
+Tortuga is a 2D multiplayer JRPG featuring permadeath, with an emphasis on multiplayer cooperation, exploration and customization. The game runs on customizable public and private servers.
+
+This game is inspired by classic 2D RPGs (Final Fantasy, The Legend of Zelda), as well as more modern sandboxes amd MMOs (Minecraft, EVE Online). This project is currently independently created and funded, with the goal of creating a game that will engage the players and inspire a large community.
+
+## Releases
+
 The most recent stable build for Windows can be found [here](https://dl.dropboxusercontent.com/u/46669050/Tortuga.rar).
-
-Tortuga is a 2D multiplayer JRPG featuring permadeath (deletion of a character upon death). The emphasis of this game is on multiplayer cooperation, exploration and customization. The game runs on customizable server software that can support up to 150 simultaneous players or more.
-
-This game is inspired by classic 2D RPGs, as well as more modern sandbox MMOs. This project is currently independently created and funded, with the goal of creating a game that will engage user's imagination and inspire a large modding community.
 
 ## Documentation
 
-Tortuga's full documentation can be found in a separate branch, see [Tortuga/docs](https://github.com/Ratstail91/Tortuga/tree/docs).  
-For Tortuga's primary documentation, please read the [Tortuga Game Design Document](https://github.com/Ratstail91/Tortuga/blob/docs/Tortuga%20Game%20Design%20Document.docx?raw=true).  
-For a list of known bugs, see the [GitHub bug tracker](https://github.com/Ratstail91/Tortuga/issues).
+* [Tortuga Wiki](https://github.com/Ratstail91/Tortuga/wiki) - Full documentation
+* [Tortuga Bug Tracker](https://github.com/Ratstail91/Tortuga/issues) - A list of all known bugs and issues
 
 ## External Dependencies
 
