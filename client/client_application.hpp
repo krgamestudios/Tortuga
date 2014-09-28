@@ -35,7 +35,7 @@
 class ClientApplication: public Singleton<ClientApplication> {
 public:
 	//public methods
-	void Init(int argc, char** argv);
+	void Init(int argc, char* argv[]);
 	void Proc();
 	void Quit();
 

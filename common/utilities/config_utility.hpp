@@ -29,7 +29,7 @@
 
 class ConfigUtility : public Singleton<ConfigUtility> {
 public:
-	void Load(std::string fname);
+	void Load(std::string fname, int argc = 0, char* argv[] = nullptr);
 
 	//convert to a type
 	std::string& String(std::string);

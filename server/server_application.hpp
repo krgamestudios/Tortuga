@@ -47,7 +47,7 @@
 class ServerApplication: public Singleton<ServerApplication> {
 public:
 	//public methods
-	void Init(int argc, char** argv);
+	void Init(int argc, char* argv[]);
 	void Proc();
 	void Quit();
 

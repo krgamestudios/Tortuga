@@ -31,27 +31,7 @@
 
 static const char* CREATE_CHARACTER = "INSERT INTO Characters (owner, handle, avatar) VALUES (?, ?, ?);";
 static const char* LOAD_CHARACTER = "SELECT * FROM Characters WHERE handle = ?;";
-
-static const char* SAVE_CHARACTER = "UPDATE OR FAIL Characters SET "
-	"roomIndex = ?2,"
-	"originX = ?3,"
-	"originY = ?4,"
-	"level = ?5,"
-	"exp = ?6,"
-	"maxHP = ?7,"
-	"health = ?8,"
-	"maxMP = ?9,"
-	"mana = ?10,"
-	"attack = ?11,"
-	"defence = ?12,"
-	"intelligence = ?13,"
-	"resistance = ?14,"
-	"speed = ?15,"
-	"accuracy = ?16,"
-	"evasion = ?17,"
-	"luck = ?18"
-" WHERE uid = ?1;";
-
+static const char* SAVE_CHARACTER = "UPDATE OR FAIL Characters SET roomIndex = ?2, originX = ?3, originY = ?4 WHERE uid = ?1;";
 static const char* DELETE_CHARACTER = "DELETE FROM Characters WHERE uid = ?;";
 
 //-------------------------
@@ -141,22 +121,6 @@ int CharacterManager::LoadCharacter(int owner, std::string handle, std::string a
 		newChar.origin.x = (double)sqlite3_column_int(statement, 6);
 		newChar.origin.y = (double)sqlite3_column_int(statement, 7);
 
-		//statistics
-		newChar.baseStats.level = sqlite3_column_int(statement, 8);
-		newChar.baseStats.exp = sqlite3_column_int(statement, 9);
-		newChar.baseStats.maxHP = sqlite3_column_int(statement, 10);
-		newChar.baseStats.health = sqlite3_column_int(statement, 11);
-		newChar.baseStats.maxMP = sqlite3_column_int(statement, 12);
-		newChar.baseStats.mana = sqlite3_column_int(statement, 13);
-		newChar.baseStats.attack = sqlite3_column_int(statement, 14);
-		newChar.baseStats.defence = sqlite3_column_int(statement, 15);
-		newChar.baseStats.intelligence = sqlite3_column_int(statement, 16);
-		newChar.baseStats.resistance = sqlite3_column_int(statement, 17);
-		newChar.baseStats.speed = sqlite3_column_int(statement, 18);
-		newChar.baseStats.accuracy = sqlite3_column_double(statement, 19);
-		newChar.baseStats.evasion = sqlite3_column_double(statement, 20);
-		newChar.baseStats.luck = sqlite3_column_double(statement, 21);
-
 		//gameplay components: equipment, items, buffs, debuffs...
 
 		//finish the routine
@@ -197,22 +161,6 @@ int CharacterManager::SaveCharacter(int uid) {
 	ret |= sqlite3_bind_int(statement, 2, character.roomIndex) != SQLITE_OK;
 	ret |= sqlite3_bind_int(statement, 3, (int)character.origin.x) != SQLITE_OK;
 	ret |= sqlite3_bind_int(statement, 4, (int)character.origin.y) != SQLITE_OK;
-
-	//statistics
-	ret |= sqlite3_bind_int(statement, 5, character.baseStats.level) != SQLITE_OK;
-	ret |= sqlite3_bind_int(statement, 6, character.baseStats.exp) != SQLITE_OK;
-	ret |= sqlite3_bind_int(statement, 7, character.baseStats.maxHP) != SQLITE_OK;
-	ret |= sqlite3_bind_int(statement, 8, character.baseStats.health) != SQLITE_OK;
-	ret |= sqlite3_bind_int(statement, 9, character.baseStats.maxMP) != SQLITE_OK;
-	ret |= sqlite3_bind_int(statement, 10, character.baseStats.mana) != SQLITE_OK;
-	ret |= sqlite3_bind_int(statement, 11, character.baseStats.attack) != SQLITE_OK;
-	ret |= sqlite3_bind_int(statement, 12, character.baseStats.defence) != SQLITE_OK;
-	ret |= sqlite3_bind_int(statement, 13, character.baseStats.intelligence) != SQLITE_OK;
-	ret |= sqlite3_bind_int(statement, 14, character.baseStats.resistance) != SQLITE_OK;
-	ret |= sqlite3_bind_int(statement, 15, character.baseStats.speed) != SQLITE_OK;
-	ret |= sqlite3_bind_double(statement, 16, character.baseStats.accuracy) != SQLITE_OK;
-	ret |= sqlite3_bind_double(statement, 17, character.baseStats.evasion) != SQLITE_OK;
-	ret |= sqlite3_bind_double(statement, 18, character.baseStats.luck) != SQLITE_OK;
 
 	//gameplay components: equipment, items, buffs, debuffs...
 

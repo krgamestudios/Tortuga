@@ -34,7 +34,7 @@ function islandGenerator(region)
 end
 
 --Get some regions
---BUG: The server fails without at least one room
+--BUG: #35 The server fails without at least one room
 --TODO: Create rooms with names?
 newRoom = RoomManager.CreateRoom()
 pager = Room.GetPager(newRoom)

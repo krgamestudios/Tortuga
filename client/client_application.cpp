@@ -45,12 +45,12 @@
 //Public access members
 //-------------------------
 
-void ClientApplication::Init(int argc, char** argv) {
+void ClientApplication::Init(int argc, char* argv[]) {
 	std::cout << "Beginning " << argv[0] << std::endl;
 
 	//load the prerequisites
 	ConfigUtility& config = ConfigUtility::GetSingleton();
-	config.Load("rsc\\config.cfg");
+	config.Load("rsc\\config.cfg", argc, argv);
 
 	//-------------------------
 	//Initialize the APIs
