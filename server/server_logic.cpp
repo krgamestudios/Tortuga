@@ -146,7 +146,7 @@ void ServerApplication::Proc() {
 			HandlePacket(packetBuffer);
 		}
 		//update the internals
-		//BUG: #30 Update the internals i.e. player positions
+		//...
 
 		//TODO: This could be checked only every few seconds
 		//Check connections

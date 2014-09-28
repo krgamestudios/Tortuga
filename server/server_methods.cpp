@@ -170,9 +170,6 @@ void ServerApplication::HandleRegionRequest(RegionPacket* const argPacket) {
 //-------------------------
 
 void ServerApplication::HandleCharacterNew(CharacterPacket* const argPacket) {
-	//BUG: #27 Characters can be created with an invalid account index
-	//TODO: Make sure that a character's owner's account is loaded before continuing
-
 	//NOTE: misnomer, try to load the character first
 	int characterIndex = characterMgr.LoadCharacter(argPacket->accountIndex, argPacket->handle, argPacket->avatar);
 
@@ -285,6 +282,7 @@ void ServerApplication::HandleSynchronize(ClientPacket* const argPacket) {
 
 void ServerApplication::CleanupLostConnection(int clientIndex) {
 	//NOTE: This assumes each player has only one account and character at a time
+	//TODO: handle multiple characters (bots, etc.)
 
 	//find the account
 	int accountIndex = -1;
@@ -304,7 +302,7 @@ void ServerApplication::CleanupLostConnection(int clientIndex) {
 		}
 	}
 
-	//send a dissconnection message just in case
+	//send a disconnection message just in case
 	ClientPacket newPacket;
 	newPacket.type = SerialPacketType::DISCONNECT;
 	network.SendTo(clientMap[clientIndex].GetAddress(), &newPacket);
