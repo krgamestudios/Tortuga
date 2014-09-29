@@ -1,5 +1,8 @@
 print("Lua script check")
 
+mapMaker = require "map_maker"
+mapMaker.foo()
+
 --uber lazy declarations
 function math.sqr(x) return x*x end
 function math.dist(x, y, i, j) return math.sqrt(math.sqr(x - i) + math.sqr(y - j)) end

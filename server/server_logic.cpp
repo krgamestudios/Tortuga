@@ -28,6 +28,7 @@
 #include <stdexcept>
 #include <chrono>
 #include <iostream>
+#include <sstream>
 #include <string>
 
 //-------------------------
@@ -71,7 +72,26 @@ void ServerApplication::Init(int argc, char* argv[]) {
 		throw(std::runtime_error("Failed to initialize lua"));
 	}
 	luaL_openlibs(luaState);
+
 	std::cout << "Initialized lua" << std::endl;
+
+	//append config["dir.scripts"] to the module path
+	if (config["dir.scripts"].size() > 0) {
+		//get the original path
+		lua_getglobal(luaState, "package");
+		lua_getfield(luaState, -1, "path");
+
+		//build & push the message
+		std::ostringstream path;
+		path << lua_tostring(luaState, -1) << ";" << config["dir.scripts"] << "?.lua";
+		lua_pushstring(luaState, path.str().c_str());
+
+		//set the new path and clean up the stack
+		lua_setfield(luaState, -3, "path");
+		lua_pop(luaState, 2);
+
+		std::cout << "\tLua script directory appended" << std::endl;
+	}
 
 	//-------------------------
 	//Setup the objects
