@@ -168,23 +168,8 @@ void ServerApplication::Proc() {
 		//update the internals
 		//...
 
-		//TODO: This could be checked only every few seconds
 		//Check connections
-		for (auto& it : clientMap) {
-			if (std::chrono::steady_clock::now() - it.second.GetLastBeat() > std::chrono::seconds(3)) {
-				ServerPacket newPacket;
-				newPacket.type = SerialPacketType::PING;
-				network.SendTo(it.second.GetAddress(), &newPacket);
-				it.second.IncrementAttempts();
-			}
-
-			if (it.second.GetAttempts() > 2) {
-				CleanupLostConnection(it.first);
-
-				//all iterators are invalid, so we can't continue
-				break;
-			}
-		}
+		CheckClientConnections();
 
 		//give the computer a break
 		SDL_Delay(10);

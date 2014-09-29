@@ -25,6 +25,8 @@
 //map system
 #include "region_pager_lua.hpp"
 
+#include <string>
+
 class RoomData {
 public:
 	RoomData() = default;
@@ -33,11 +35,15 @@ public:
 	//accessors and mutators
 	RegionPagerLua* GetPager() { return &pager; }
 
+	std::string SetTilesetName(std::string s) { return tilesetName = s; }
+	std::string GetTilesetName() { return tilesetName; }
+
 private:
 	friend class RoomManager;
 
 	//members
 	RegionPagerLua pager;
+	std::string tilesetName;
 };
 
 #endif

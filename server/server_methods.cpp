@@ -21,6 +21,7 @@
 */
 #include "server_application.hpp"
 
+#include <chrono>
 #include <iostream>
 
 //-------------------------
@@ -159,6 +160,7 @@ void ServerApplication::HandleRegionRequest(RegionPacket* const argPacket) {
 	newPacket.x = argPacket->x;
 	newPacket.y = argPacket->y;
 
+	//BUG: possibly related to #35
 	newPacket.region = roomMgr.GetRoom(argPacket->roomIndex)->GetPager()->GetRegion(argPacket->x, argPacket->y);
 
 	//send the content
@@ -279,6 +281,23 @@ void ServerApplication::HandleSynchronize(ClientPacket* const argPacket) {
 //-------------------------
 //utility methods
 //-------------------------
+
+void ServerApplication::CheckClientConnections() {
+	for (auto& it : clientMap) {
+		if (std::chrono::steady_clock::now() - it.second.GetLastBeat() > std::chrono::seconds(3)) {
+			ServerPacket newPacket;
+			newPacket.type = SerialPacketType::PING;
+			network.SendTo(it.second.GetAddress(), &newPacket);
+			it.second.IncrementAttempts();
+		}
+
+		if (it.second.GetAttempts() > 2) {
+			CleanupLostConnection(it.first);
+			//all iterators are invalid, so we can't continue
+			break;
+		}
+	}
+}
 
 void ServerApplication::CleanupLostConnection(int clientIndex) {
 	//NOTE: This assumes each player has only one account and character at a time
