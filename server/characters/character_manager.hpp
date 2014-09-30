@@ -27,24 +27,25 @@
 
 #include "sqlite3/sqlite3.h"
 
-#include <map>
 #include <functional>
+#include <map>
 
 class CharacterManager : public Singleton<CharacterManager> {
 public:
 	//public access methods
-	int CreateCharacter(int owner, std::string handle, std::string avatar);
-	int LoadCharacter(int owner, std::string handle, std::string avatar);
-	int SaveCharacter(int uid);
-	void UnloadCharacter(int uid);
-	void DeleteCharacter(int uid);
-
-	void UnloadCharacterIf(std::function<bool(std::map<int, CharacterData>::iterator)> f);
+	int Create(int owner, std::string handle, std::string avatar);
+	int Load(int owner, std::string handle, std::string avatar);
+	int Save(int uid);
+	void Unload(int uid);
+	void Delete(int uid);
 
 	void UnloadAll();
+	void UnloadIf(std::function<bool(std::pair<int, CharacterData>)> fn);
 
 	//accessors and mutators
-	CharacterData* GetCharacter(int uid);
+	CharacterData* Get(int uid);
+	int GetLoadedCount();
+	int GetTotalCount();
 	std::map<int, CharacterData>* GetContainer();
 
 	sqlite3* SetDatabase(sqlite3* db);

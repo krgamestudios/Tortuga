@@ -22,7 +22,10 @@
 #include "server_application.hpp"
 
 //singletons
+#include "account_manager.hpp"
+#include "character_manager.hpp"
 #include "config_utility.hpp"
+#include "room_manager.hpp"
 #include "udp_network_utility.hpp"
 
 #include <stdexcept>
@@ -33,28 +36,28 @@ using namespace std;
 int main(int argc, char* argv[]) {
 	try {
 		//create the singletons
-		AccountManager::Create();
-		CharacterManager::Create();
-		ConfigUtility::Create();
-		RoomManager::Create();
-		UDPNetworkUtility::Create();
+		AccountManager::CreateSingleton();
+		CharacterManager::CreateSingleton();
+		ConfigUtility::CreateSingleton();
+		RoomManager::CreateSingleton();
+		UDPNetworkUtility::CreateSingleton();
 
 		//call the server's routines
-		ServerApplication::Create();
+		ServerApplication::CreateSingleton();
 		ServerApplication& app = ServerApplication::GetSingleton();
 
 		app.Init(argc, argv);
 		app.Proc();
 		app.Quit();
 
-		ServerApplication::Delete();
+		ServerApplication::DeleteSingleton();
 
 		//delete the singletons
-		AccountManager::Delete();
-		CharacterManager::Delete();
-		ConfigUtility::Delete();
-		RoomManager::Delete();
-		UDPNetworkUtility::Delete();
+		AccountManager::DeleteSingleton();
+		CharacterManager::DeleteSingleton();
+		ConfigUtility::DeleteSingleton();
+		RoomManager::DeleteSingleton();
+		UDPNetworkUtility::DeleteSingleton();
 	}
 	catch(exception& e) {
 		cerr << "Fatal exception thrown: " << e.what() << endl;

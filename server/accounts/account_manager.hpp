@@ -27,21 +27,25 @@
 
 #include "sqlite3/sqlite3.h"
 
+#include <functional>
 #include <map>
 
 class AccountManager : public Singleton<AccountManager> {
 public:
 	//public access methods
-	int CreateAccount(std::string username, int clientIndex);
-	int LoadAccount(std::string username, int clientIndex);
-	int SaveAccount(int uid);
-	void UnloadAccount(int uid);
-	void DeleteAccount(int uid);
+	int Create(std::string username, int clientIndex);
+	int Load(std::string username, int clientIndex);
+	int Save(int uid);
+	void Unload(int uid);
+	void Delete(int uid);
 
 	void UnloadAll();
+	void UnloadIf(std::function<bool(std::pair<int, AccountData>)> fn);
 
 	//accessors and mutators
-	AccountData* GetAccount(int uid);
+	AccountData* Get(int uid);
+	int GetLoadedCount();
+	int GetTotalCount();
 	std::map<int, AccountData>* GetContainer();
 
 	sqlite3* SetDatabase(sqlite3* db);

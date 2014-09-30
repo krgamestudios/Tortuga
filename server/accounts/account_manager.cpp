@@ -31,12 +31,13 @@ static const char* CREATE_USER_ACCOUNT = "INSERT INTO Accounts (username) VALUES
 static const char* LOAD_USER_ACCOUNT = "SELECT * FROM Accounts WHERE username = ?;";
 static const char* SAVE_USER_ACCOUNT = "UPDATE OR FAIL Accounts SET blacklisted = ?2, whitelisted = ?3, mod = ?4, admin = ?5 WHERE uid = ?1;";
 static const char* DELETE_USER_ACCOUNT = "DELETE FROM Accounts WHERE uid = ?;";
+static const char* COUNT_USER_ACCOUNT_RECORDS = "SELECT COUNT(*) FROM Accounts;";
 
 //-------------------------
 //Define the public methods
 //-------------------------
 
-int AccountManager::CreateAccount(std::string username, int clientIndex) {
+int AccountManager::Create(std::string username, int clientIndex) {
 	//create this user account, failing if it exists, leave this account in memory
 	sqlite3_stmt* statement = nullptr;
 
@@ -60,10 +61,10 @@ int AccountManager::CreateAccount(std::string username, int clientIndex) {
 	sqlite3_finalize(statement);
 
 	//load this account into memory
-	return LoadAccount(username, clientIndex);
+	return Load(username, clientIndex);
 }
 
-int AccountManager::LoadAccount(std::string username, int clientIndex) {
+int AccountManager::Load(std::string username, int clientIndex) {
 	//load this user account, failing if it is in memory, creating it if it doesn't exist
 	sqlite3_stmt* statement = nullptr;
 
@@ -109,13 +110,13 @@ int AccountManager::LoadAccount(std::string username, int clientIndex) {
 
 	if (ret == SQLITE_DONE) {
 		//create the non-existant account instead
-		return CreateAccount(username, clientIndex);
+		return Create(username, clientIndex);
 	}
 
 	throw(std::runtime_error(std::string() + "Unknown SQL error in LoadAccount: " + sqlite3_errmsg(database) ));
 }
 
-int AccountManager::SaveAccount(int uid) {
+int AccountManager::Save(int uid) {
 	//save this user account from memory, replacing it if it exists in the database
 	//DOCS: To use this method, change the in-memory copy, and then call this function using that object's UID.
 
@@ -158,14 +159,14 @@ int AccountManager::SaveAccount(int uid) {
 	return 0;
 }
 
-void AccountManager::UnloadAccount(int uid) {
+void AccountManager::Unload(int uid) {
 	//save this user account, and then unload it
 	//NOTE: the associated characters are unloaded externally
-	SaveAccount(uid);
+	Save(uid);
 	accountMap.erase(uid);
 }
 
-void AccountManager::DeleteAccount(int uid) {
+void AccountManager::Delete(int uid) {
 	//delete a user account from the database, and remove it from memory
 	//NOTE: the associated characters should be deleted externally
 	sqlite3_stmt* statement = nullptr;
@@ -194,16 +195,29 @@ void AccountManager::DeleteAccount(int uid) {
 
 void AccountManager::UnloadAll() {
 	for (auto& it : accountMap) {
-		SaveAccount(it.first);
+		Save(it.first);
 	}
 	accountMap.clear();
+}
+
+void AccountManager::UnloadIf(std::function<bool(std::pair<int, AccountData>)> fn) {
+	//replicate std::remove_if, using custom code
+	for (std::map<int, AccountData>::iterator it = accountMap.begin(); it != accountMap.end(); /* empty */) {
+		if (fn(*it)) {
+			Save(it->first);
+			it = accountMap.erase(it);
+			continue;
+		}
+		++it;
+	}
 }
 
 //-------------------------
 //Define the accessors and mutators
 //-------------------------
 
-AccountData* AccountManager::GetAccount(int uid) {
+AccountData* AccountManager::Get(int uid) {
+	//TODO: could this load an account first?
 	std::map<int, AccountData>::iterator it = accountMap.find(uid);
 
 	if (it == accountMap.end()) {
@@ -211,6 +225,28 @@ AccountData* AccountManager::GetAccount(int uid) {
 	}
 
 	return &it->second;
+}
+
+int AccountManager::GetLoadedCount() {
+	return accountMap.size();
+}
+
+int AccountManager::GetTotalCount() {
+	//a lot just to count something.
+	sqlite3_stmt* statement = nullptr;
+
+	//prep
+	if (sqlite3_prepare_v2(database, COUNT_USER_ACCOUNT_RECORDS, -1, &statement, nullptr) != SQLITE_OK) {
+		throw( std::runtime_error(std::string() + "Failed to prepare an SQL statement: " + sqlite3_errmsg(database)) );
+	}
+
+	//execute & retrieve the result
+	sqlite3_step(statement);
+	int ret = sqlite3_column_int(statement, 0);
+
+	//finish the routine
+	sqlite3_finalize(statement);
+	return ret;
 }
 
 std::map<int, AccountData>* AccountManager::GetContainer() {
