@@ -53,15 +53,15 @@ void ConfigUtility::Load(std::string fname, int argc, char* argv[]) {
 		}
 
 		//set some specific values
-		if (!strncmp(argv[i], "-C", 2)) {
+		if (!strncmp(argv[i], "-", 1)) {
 			//wipe the variables
 			memset(key, 0, 256);
 			memset(key, 0, 256);
 
 			//read the key-value pair
-			if (sscanf(argv[i], "-C%[^=]=%[^\0]", key, val) != 2) {
+			if (sscanf(argv[i], "-%[^=]=%[^\0]", key, val) != 2) {
 				std::ostringstream os;
-				os << "Failed to read a command line config argument (expected -C%s=%s):" << std::endl;
+				os << "Failed to read a command line config argument (expected -%s=%s):" << std::endl;
 				os << "\targv[" << i << "]: " << argv[i] << std::endl;
 				os << "\tkey: " << key << std::endl;
 				os << "\tval: " << val << std::endl;
