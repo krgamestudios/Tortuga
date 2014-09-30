@@ -71,7 +71,7 @@ InWorld::InWorld(
 	//load the tilesheet
 	//TODO: add the tilesheet to the map system?
 	//TODO: Tile size and tile sheet should be loaded elsewhere
-	tileSheet.Load(config["dir.tilesets"] + "terrain.bmp", 32, 32);
+	tileSheet.Load(config["dir.tilesets"] + "overworld.bmp", 32, 32);
 
 	//send this player's character info
 	CharacterPacket newPacket;

@@ -80,6 +80,7 @@ private:
 	void HandleSynchronize(ClientPacket* const);
 
 	//utility methods
+	void CheckClientConnections();
 	//TODO: a function that only sends to characters in a certain proximity
 	void CleanupLostConnection(int index);
 	void PumpPacket(SerialPacket* const);
