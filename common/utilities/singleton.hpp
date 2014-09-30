@@ -33,13 +33,13 @@ public:
 		}
 		return *ptr;
 	}
-	static void Create() {
+	static void CreateSingleton() {
 		if (ptr) {
 			throw(std::logic_error("This singleton has already been created"));
 		}
 		ptr = new T();
 	}
-	static void Delete() {
+	static void DeleteSingleton() {
 		if (!ptr) {
 			throw(std::logic_error("A non-existant singleton cannot be deleted"));
 		}

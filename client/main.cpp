@@ -33,22 +33,22 @@ using namespace std;
 int main(int argc, char* argv[]) {
 	try {
 		//create the singletons
-		ConfigUtility::Create();
-		UDPNetworkUtility::Create();
+		ConfigUtility::CreateSingleton();
+		UDPNetworkUtility::CreateSingleton();
 
 		//call the server's routines
-		ClientApplication::Create();
+		ClientApplication::CreateSingleton();
 		ClientApplication& app = ClientApplication::GetSingleton();
 
 		app.Init(argc, argv);
 		app.Proc();
 		app.Quit();
 
-		ClientApplication::Delete();
+		ClientApplication::DeleteSingleton();
 
 		//delete the singletons
-		ConfigUtility::Delete();
-		UDPNetworkUtility::Delete();
+		ConfigUtility::DeleteSingleton();
+		UDPNetworkUtility::DeleteSingleton();
 	}
 	catch(exception& e) {
 		cerr << "Fatal exception thrown: " << e.what() << endl;

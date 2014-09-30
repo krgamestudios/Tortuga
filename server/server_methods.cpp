@@ -52,7 +52,7 @@ void ServerApplication::HandleBroadcastRequest(ServerPacket* const argPacket) {
 
 	newPacket.type = SerialPacketType::BROADCAST_RESPONSE;
 	strncpy(newPacket.name, config["server.name"].c_str(), PACKET_STRING_SIZE);
-	newPacket.playerCount = characterMgr.GetContainer()->size();
+	newPacket.playerCount = characterMgr.GetLoadedCount();
 	newPacket.version = NETWORK_VERSION;
 
 	network.SendTo(argPacket->srcAddress, static_cast<SerialPacket*>(&newPacket));
@@ -61,7 +61,7 @@ void ServerApplication::HandleBroadcastRequest(ServerPacket* const argPacket) {
 void ServerApplication::HandleJoinRequest(ClientPacket* const argPacket) {
 	//load the user account
 	//TODO: handle passwords
-	int accountIndex = accountMgr.LoadAccount(argPacket->username, clientIndex);
+	int accountIndex = accountMgr.Load(argPacket->username, clientIndex);
 
 	//Cannot load
 	if (accountIndex < 0) {
@@ -88,7 +88,7 @@ void ServerApplication::HandleJoinRequest(ClientPacket* const argPacket) {
 	clientMap[clientIndex++] = newClient;
 
 	//finished this routine
-	std::cout << "New connection, " << clientMap.size() << " clients and " << accountMgr.GetContainer()->size() << " accounts total" << std::endl;
+	std::cout << "New connection, " << clientMap.size() << " clients and " << accountMgr.GetLoadedCount() << " accounts total" << std::endl;
 }
 
 void ServerApplication::HandleDisconnect(ClientPacket* const argPacket) {
@@ -105,26 +105,26 @@ void ServerApplication::HandleDisconnect(ClientPacket* const argPacket) {
 
 	//forward to the specified client
 	network.SendTo(
-		clientMap[ accountMgr.GetAccount(argPacket->accountIndex)->GetClientIndex() ].GetAddress(),
+		clientMap[ accountMgr.Get(argPacket->accountIndex)->GetClientIndex() ].GetAddress(),
 		static_cast<SerialPacket*>(argPacket)
 	);
 
 	//save and unload this account's characters
-	characterMgr.UnloadCharacterIf([&](std::map<int, CharacterData>::iterator it) -> bool {
-		if (argPacket->accountIndex == it->second.GetOwner()) {
+	characterMgr.UnloadIf([&](std::pair<int, CharacterData> it) -> bool {
+		if (argPacket->accountIndex == it.second.GetOwner()) {
 			//pump the unload message to all remaining clients
-			PumpCharacterUnload(it->first);
+			PumpCharacterUnload(it.first);
 			return true;
 		}
 		return false;
 	});
 
 	//erase the in-memory stuff
-	clientMap.erase(accountMgr.GetAccount(argPacket->accountIndex)->GetClientIndex());
-	accountMgr.UnloadAccount(argPacket->accountIndex);
+	clientMap.erase(accountMgr.Get(argPacket->accountIndex)->GetClientIndex());
+	accountMgr.Unload(argPacket->accountIndex);
 
 	//finished this routine
-	std::cout << "Disconnection, " << clientMap.size() << " clients and " << accountMgr.GetContainer()->size() << " accounts total" << std::endl;
+	std::cout << "Disconnection, " << clientMap.size() << " clients and " << accountMgr.GetLoadedCount() << " accounts total" << std::endl;
 }
 
 void ServerApplication::HandleShutdown(ClientPacket* const argPacket) {
@@ -173,7 +173,7 @@ void ServerApplication::HandleRegionRequest(RegionPacket* const argPacket) {
 
 void ServerApplication::HandleCharacterNew(CharacterPacket* const argPacket) {
 	//NOTE: misnomer, try to load the character first
-	int characterIndex = characterMgr.LoadCharacter(argPacket->accountIndex, argPacket->handle, argPacket->avatar);
+	int characterIndex = characterMgr.Load(argPacket->accountIndex, argPacket->handle, argPacket->avatar);
 
 	//cannot load or create
 	if (characterIndex < 0) {
@@ -207,10 +207,10 @@ void ServerApplication::HandleCharacterDelete(CharacterPacket* const argPacket) 
 	//NOTE: Disconnecting only unloads a character, this explicitly deletes it
 
 	//Authenticate the owner is doing this
-	int characterIndex = characterMgr.LoadCharacter(argPacket->accountIndex, argPacket->handle, argPacket->avatar);
+	int characterIndex = characterMgr.Load(argPacket->accountIndex, argPacket->handle, argPacket->avatar);
 
 	//if this is not your character
-	if (characterIndex < 0 && characterMgr.GetCharacter(characterIndex)->GetOwner() != argPacket->accountIndex) {
+	if (characterIndex < 0 && characterMgr.Get(characterIndex)->GetOwner() != argPacket->accountIndex) {
 		//send the rejection packet
 		TextPacket newPacket;
 		newPacket.type = SerialPacketType::CHARACTER_REJECTION;
@@ -220,13 +220,13 @@ void ServerApplication::HandleCharacterDelete(CharacterPacket* const argPacket) 
 
 		//unload an unneeded character
 		if (characterIndex != -1) {
-			characterMgr.UnloadCharacter(characterIndex);
+			characterMgr.Unload(characterIndex);
 		}
 		return;
 	}
 
 	//delete it
-	characterMgr.DeleteCharacter(characterIndex);
+	characterMgr.Delete(characterIndex);
 
 	//TODO: success packet
 
@@ -235,7 +235,7 @@ void ServerApplication::HandleCharacterDelete(CharacterPacket* const argPacket) 
 }
 
 void ServerApplication::HandleCharacterUpdate(CharacterPacket* const argPacket) {
-	CharacterData* character = characterMgr.GetCharacter(argPacket->characterIndex);
+	CharacterData* character = characterMgr.Get(argPacket->characterIndex);
 
 	//make a new character if this one doesn't exist
 	if (!character) {
@@ -327,8 +327,8 @@ void ServerApplication::CleanupLostConnection(int clientIndex) {
 	network.SendTo(clientMap[clientIndex].GetAddress(), &newPacket);
 
 	//clean up this mess
-	characterMgr.UnloadCharacter(characterIndex);
-	accountMgr.UnloadAccount(accountIndex);
+	characterMgr.Unload(characterIndex);
+	accountMgr.Unload(accountIndex);
 	clientMap.erase(clientIndex);
 
 	PumpCharacterUnload(characterIndex);
@@ -338,7 +338,7 @@ void ServerApplication::CleanupLostConnection(int clientIndex) {
 	std::cerr << "\tClient: " << clientIndex << std::endl;
 	std::cerr << "\tAccount: " << accountIndex << std::endl;
 	std::cerr << "\tCharacter: " << characterIndex << std::endl;
-	std::cout << clientMap.size() << " clients and " << accountMgr.GetContainer()->size() << " accounts total" << std::endl;
+	std::cout << clientMap.size() << " clients and " << accountMgr.GetLoadedCount() << " accounts total" << std::endl;
 }
 
 //TODO: a function that only sends to characters in a certain proximity
@@ -359,7 +359,7 @@ void ServerApplication::PumpCharacterUnload(int uid) {
 }
 
 void ServerApplication::CopyCharacterToPacket(CharacterPacket* const packet, int characterIndex) {
-	CharacterData* character = characterMgr.GetCharacter(characterIndex);
+	CharacterData* character = characterMgr.Get(characterIndex);
 	if (!character) {
 		throw(std::runtime_error("Failed to copy a character to a packet"));
 	}

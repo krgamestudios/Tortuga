@@ -22,7 +22,7 @@
 #include "server_application.hpp"
 
 //utility functions
-#include "sql_utility.hpp"
+#include "sql_tools.hpp"
 #include "utility.hpp"
 
 #include <stdexcept>
