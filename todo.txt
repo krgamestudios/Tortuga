@@ -10,3 +10,4 @@ TODO: Authentication
 
 TODO: Time delay for requesting region packets
 TODO: A proper logging system
+TODO: Update Codebase with the improvements from Tortuga
