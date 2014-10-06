@@ -24,28 +24,34 @@
 
 #include "room_data.hpp"
 #include "singleton.hpp"
+#include "manager_interface.hpp"
 
 #include "lua/lua.hpp"
 
-#include <map>
-
-class RoomManager : public Singleton<RoomManager> {
+class RoomManager:
+	public Singleton<RoomManager>,
+	public ManagerInterface<RoomData>
+{
 public:
-	//public access methods
-	int CreateRoom();
-	void UnloadRoom(int uid);
+	//common public methods
+	int Create() override;
+	int Load() override;
+	int Save(int uid) override;
+	void Unload(int uid) override;
+	void Delete(int uid) override;
 
-	RoomData* GetRoom(int uid);
-	RoomData* FindRoom(int uid);
-	int PushRoom(RoomData*);
-
-	void UnloadAll();
+	void UnloadAll() override;
+	void UnloadIf(std::function<bool(std::pair<const int,RoomData>)> fn) override;
 
 	//accessors and mutators
-	std::map<int, RoomData*>* GetContainer() { return &roomMap; }
+	RoomData* Get(int uid) override;
+	int GetLoadedCount() override;
+	int GetTotalCount() override;
+	std::map<int, RoomData>* GetContainer() override;
 
-	lua_State* SetLuaState(lua_State* L) { return luaState = L; }
-	lua_State* GetLuaState() { return luaState; }
+	//hooks
+	lua_State* SetLuaState(lua_State* L) { return lua = L; }
+	lua_State* GetLuaState() { return lua; }
 
 private:
 	friend Singleton<RoomManager>;
@@ -53,8 +59,7 @@ private:
 	RoomManager() = default;
 	~RoomManager() = default;
 
-	std::map<int, RoomData*> roomMap;
-	lua_State* luaState = nullptr;
+	lua_State* lua = nullptr;
 	int counter = 0;
 };
 

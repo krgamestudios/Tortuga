@@ -29,21 +29,36 @@ static int getPager(lua_State* L) {
 	return 1;
 }
 
-static int create(lua_State* L) {
-	//EMPTY
-	//NOTE: This can be used to set defaults for the pager
+static int setRoomName(lua_State* L) {
+	RoomData* room = reinterpret_cast<RoomData*>(lua_touserdata(L, 1));
+	room->SetRoomName(lua_tostring(L, 2));
 	return 0;
 }
 
-static int unload(lua_State* L) {
-	//EMPTY
+static int getRoomName(lua_State* L) {
+	RoomData* room = reinterpret_cast<RoomData*>(lua_touserdata(L, 1));
+	lua_pushstring(L, room->GetRoomName().c_str());
+	return 1;
+}
+
+static int setTilesetName(lua_State* L) {
+	RoomData* room = reinterpret_cast<RoomData*>(lua_touserdata(L, 1));
+	room->SetTilesetName(lua_tostring(L, 2));
 	return 0;
+}
+
+static int getTilesetName(lua_State* L) {
+	RoomData* room = reinterpret_cast<RoomData*>(lua_touserdata(L, 1));
+	lua_pushstring(L, room->GetTilesetName().c_str());
+	return 1;
 }
 
 static const luaL_Reg roomLib[] = {
 	{"GetPager",getPager},
-	{"Create", create},
-	{"Unload", unload},
+	{"SetRoomName", setRoomName},
+	{"GetRoomName", getRoomName},
+	{"SetTileset", setTilesetName},
+	{"GetTileset", getTilesetName},
 	{nullptr, nullptr}
 };
 

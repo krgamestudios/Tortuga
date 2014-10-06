@@ -29,78 +29,76 @@
 //public access methods
 //-------------------------
 
-int RoomManager::CreateRoom() {
+int RoomManager::Create() {
 	//create the room
-	RoomData* newRoom = new RoomData();
-	newRoom->pager.SetLuaState(luaState);
-
-	//register the room
-	roomMap[counter] = newRoom;
-
-	//API hook
-	lua_getglobal(luaState, TORTUGA_ROOM_NAME);
-	lua_getfield(luaState, -1, "Create");
-	lua_pushlightuserdata(luaState, newRoom);
-	if (lua_pcall(luaState, 1, 0, 0) != LUA_OK) {
-		throw(std::runtime_error(std::string() + "Lua error: " + lua_tostring(luaState, -1) ));
-	}
-	lua_pop(luaState, 1);
+	RoomData* newRoom = &elementMap[counter]; //implicitly constructs the element
+	newRoom->pager.SetLuaState(lua);
 
 	//finish the routine
 	return counter++;
 }
 
-void RoomManager::UnloadRoom(int uid) {
+int RoomManager::Load() {
+	//TODO: RoomManager::Load()
+	return -1;
+}
+
+int RoomManager::Save(int uid) {
+	//TODO: RoomManager::Save(uid)
+	return -1;
+}
+
+void RoomManager::Unload(int uid) {
 	//find the room
-	RoomData* room = FindRoom(uid);
-	if (!room) {
+	std::map<int, RoomData>::iterator it = elementMap.find(uid);
+	if (it == elementMap.end()) {
 		return;
 	}
 
-	//API hook
-	lua_getglobal(luaState, TORTUGA_ROOM_NAME);
-	lua_getfield(luaState, -1, "Unload");
-	lua_pushlightuserdata(luaState, room);
-	if (lua_pcall(luaState, 1, 0, 0) != LUA_OK) {
-		throw(std::runtime_error(std::string() + "Lua error: " + lua_tostring(luaState, -1) ));
-	}
-	lua_pop(luaState, 1);
-
 	//free the memory
-	delete room;
-	roomMap.erase(uid);
+	elementMap.erase(uid);
 }
 
-RoomData* RoomManager::GetRoom(int uid) {
-	return FindRoom(uid);
-	//TODO: expand this to auto-create the room
-}
-
-RoomData* RoomManager::FindRoom(int uid) {
-	std::map<int, RoomData*>::iterator it = roomMap.find(uid);
-	if (it == roomMap.end()) {
-		return nullptr;
-	}
-	return it->second;
-}
-
-int RoomManager::PushRoom(RoomData* room) {
-	roomMap[counter++] = room;
-	return counter;
+void RoomManager::Delete(int uid) {
+	//TODO: RoomManager::Delete(int uid)
+	//NOTE: aliased to RoomManager::Unload(int uid)
+	Unload(uid);
 }
 
 void RoomManager::UnloadAll() {
-	lua_getglobal(luaState, TORTUGA_ROOM_NAME);
+	elementMap.clear();
+}
 
-	for (auto& it : roomMap) {
-		//API hook
-		lua_getfield(luaState, -1, "Unload");
-		lua_pushlightuserdata(luaState, it.second);
-		if (lua_pcall(luaState, 1, 0, 0) != LUA_OK) {
-			throw(std::runtime_error(std::string() + "Lua error: " + lua_tostring(luaState, -1) ));
+void RoomManager::UnloadIf(std::function<bool(std::pair<const int,RoomData>)> fn) {
+	std::map<int, RoomData>::iterator it = elementMap.begin();
+	while (it != elementMap.end()) {
+		if (fn(*it)) {
+			it = elementMap.erase(it);
+		}
+		else {
+			++it;
 		}
 	}
+}
 
-	lua_pop(luaState, 1);
-	roomMap.clear();
+RoomData* RoomManager::Get(int uid) {
+	std::map<int, RoomData>::iterator it = elementMap.find(uid);
+
+	if (it == elementMap.end()) {
+		return nullptr;
+	}
+
+	return &it->second;
+}
+
+int RoomManager::GetLoadedCount() {
+	return elementMap.size();
+}
+
+int RoomManager::GetTotalCount() {
+	return elementMap.size();
+}
+
+std::map<int, RoomData>* RoomManager::GetContainer() {
+	return &elementMap;
 }

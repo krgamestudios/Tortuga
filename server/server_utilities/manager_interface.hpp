@@ -19,37 +19,37 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef ROOMDATA_HPP_
-#define ROOMDATA_HPP_
+#ifndef MANAGERINTERFACE_HPP_
+#define MANAGERINTERFACE_HPP_
 
-//map system
-#include "region_pager_lua.hpp"
+#include <functional>
+#include <map>
 
-#include <string>
-
-class RoomData {
+template<typename T, typename... Arguments>
+class ManagerInterface {
 public:
-	RoomData() = default;
-	~RoomData() = default;
+	//common public methods
+	virtual int Create(Arguments... parameters) = 0;
+	virtual int Load(Arguments... parameters) = 0;
+	virtual int Save(int uid) = 0;
+	virtual void Unload(int uid) = 0;
+	virtual void Delete(int uid) = 0;
 
-	//accessors and mutators
-	RegionPagerLua* GetPager() { return &pager; }
+	virtual void UnloadAll() = 0;
+	virtual void UnloadIf(std::function<bool(std::pair<const int, T>)> fn) = 0;
 
-	std::string SetRoomName(std::string s) { return roomName = s; }
-	std::string GetRoomName() { return roomName; }
+	//accessors & mutators
+	virtual T* Get(int uid) = 0;
+	virtual int GetLoadedCount() = 0;
+	virtual int GetTotalCount() = 0; //can be an alias of GetLoadedCount()
+	virtual std::map<int, T>* GetContainer() = 0;
 
-	std::string SetTilesetName(std::string s) { return tilesetName = s; }
-	std::string GetTilesetName() { return tilesetName; }
-
-private:
-	friend class RoomManager;
+protected:
+	ManagerInterface() = default;
+	~ManagerInterface() = default;
 
 	//members
-	RegionPagerLua pager;
-	std::string roomName;
-	std::string tilesetName;
-	//TODO: pass the room name & tileset name to the clients
-	//TODO: lua references i.e. create, unload, etc.
+	std::map<int, T> elementMap;
 };
 
 #endif

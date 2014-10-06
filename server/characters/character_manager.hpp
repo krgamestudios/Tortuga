@@ -24,29 +24,33 @@
 
 #include "character_data.hpp"
 #include "singleton.hpp"
+#include "manager_interface.hpp"
 
 #include "sqlite3/sqlite3.h"
 
 #include <functional>
 #include <map>
 
-class CharacterManager : public Singleton<CharacterManager> {
+class CharacterManager:
+	public Singleton<CharacterManager>,
+	public ManagerInterface<CharacterData, int, std::string, std::string>
+{
 public:
-	//public access methods
-	int Create(int owner, std::string handle, std::string avatar);
-	int Load(int owner, std::string handle, std::string avatar);
-	int Save(int uid);
-	void Unload(int uid);
-	void Delete(int uid);
+	//common public methods
+	int Create(int owner, std::string handle, std::string avatar) override;
+	int Load(int owner, std::string handle, std::string avatar) override;
+	int Save(int uid) override;
+	void Unload(int uid) override;
+	void Delete(int uid) override;
 
-	void UnloadAll();
-	void UnloadIf(std::function<bool(std::pair<int, CharacterData>)> fn);
+	void UnloadAll() override;
+	void UnloadIf(std::function<bool(std::pair<const int, CharacterData>)> fn) override;
 
 	//accessors and mutators
-	CharacterData* Get(int uid);
-	int GetLoadedCount();
-	int GetTotalCount();
-	std::map<int, CharacterData>* GetContainer();
+	CharacterData* Get(int uid) override;
+	int GetLoadedCount() override;
+	int GetTotalCount() override;
+	std::map<int, CharacterData>* GetContainer() override;
 
 	sqlite3* SetDatabase(sqlite3* db);
 	sqlite3* GetDatabase();
@@ -57,7 +61,6 @@ private:
 	CharacterManager() = default;
 	~CharacterManager() = default;
 
-	std::map<int, CharacterData> characterMap;
 	sqlite3* database = nullptr;
 };
 
