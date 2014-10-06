@@ -29,9 +29,9 @@
 //public access methods
 //-------------------------
 
-int RoomManager::CreateRoom() {
-	//create the room
-	RoomData* newRoom = new RoomData();
+int RoomManager::Create() {
+/*	//create the room
+	RoomData* newRoom = 
 	newRoom->pager.SetLuaState(luaState);
 
 	//register the room
@@ -47,13 +47,21 @@ int RoomManager::CreateRoom() {
 	lua_pop(luaState, 1);
 
 	//finish the routine
-	return counter++;
+*/	return counter++;
 }
 
-void RoomManager::UnloadRoom(int uid) {
-	//find the room
-	RoomData* room = FindRoom(uid);
-	if (!room) {
+int RoomManager::Load() {
+	//TODO: RoomManageR::Load()
+}
+
+int RoomManager::Save(int uid) {
+	//TODO: RoomManageR::Save(uid)
+}
+
+void RoomManager::Unload(int uid) {
+/*	//find the room
+	RoomData* room = elementMap.find(uid);
+	if (room == elementMap.end()) {
 		return;
 	}
 
@@ -69,28 +77,14 @@ void RoomManager::UnloadRoom(int uid) {
 	//free the memory
 	delete room;
 	roomMap.erase(uid);
-}
+*/}
 
-RoomData* RoomManager::GetRoom(int uid) {
-	return FindRoom(uid);
-	//TODO: expand this to auto-create the room
-}
-
-RoomData* RoomManager::FindRoom(int uid) {
-	std::map<int, RoomData*>::iterator it = roomMap.find(uid);
-	if (it == roomMap.end()) {
-		return nullptr;
-	}
-	return it->second;
-}
-
-int RoomManager::PushRoom(RoomData* room) {
-	roomMap[counter++] = room;
-	return counter;
+void RoomManager::Delete(int uid) {
+	//
 }
 
 void RoomManager::UnloadAll() {
-	lua_getglobal(luaState, TORTUGA_ROOM_NAME);
+/*	lua_getglobal(luaState, TORTUGA_ROOM_NAME);
 
 	for (auto& it : roomMap) {
 		//API hook
@@ -103,4 +97,32 @@ void RoomManager::UnloadAll() {
 
 	lua_pop(luaState, 1);
 	roomMap.clear();
+*/}
+
+void RoomManager::UnloadIf(std::function<bool(std::pair<const int,RoomData>)> fn) {
+	std::map<int, RoomData>::iterator it = elementMap.begin();
+	while (it != elementMap.end()) {
+		if (fn(*it)) {
+			it = elementMap.erase(it);
+		}
+		else {
+			++it;
+		}
+	}
+}
+
+RoomData* RoomManager::Get(int uid) {
+	return &elementMap[uid];
+}
+
+int RoomManager::GetLoadedCount() {
+	return elementMap.size();
+}
+
+int RoomManager::GetTotalCount() {
+	return elementMap.size();
+}
+
+std::map<int, RoomData>* RoomManager::GetContainer() {
+	return &elementMap;
 }

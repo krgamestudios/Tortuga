@@ -24,7 +24,7 @@
 #include "room_manager.hpp"
 
 #include <string>
-
+/*
 static int getRoom(lua_State* L) {
 	//find, push and return the room
 	RoomData* room = RoomManager::GetSingleton().GetRoom(lua_tointeger(L, -2));
@@ -46,11 +46,11 @@ static int unloadRoom(lua_State* L) {
 	RoomManager::GetSingleton().UnloadRoom(lua_tointeger(L, -2));
 	return 0;
 }
-
+*/
 static const luaL_Reg roomManagerLib[] = {
-	{"GetRoom",getRoom},
-	{"CreateRoom",createRoom},
-	{"UnloadRoom",unloadRoom},
+//	{"GetRoom",getRoom},
+//	{"CreateRoom",createRoom},
+//	{"UnloadRoom",unloadRoom},
 	{nullptr, nullptr}
 };
 

@@ -19,44 +19,37 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef ROOMMANAGER_HPP_
-#define ROOMMANAGER_HPP_
+#ifndef MANAGERINTERFACE_HPP_
+#define MANAGERINTERFACE_HPP_
 
-#include "room_data.hpp"
+#include <functional>
+#include <map>
 
-#include "singleton.hpp"
-#include "manager_interface.hpp"
-
-#include "lua/lua.hpp"
-
-class RoomManager: public Singleton<RoomManager>, public ManagerInterface<RoomData> {
+template<typename T, typename... Arguments>
+class ManagerInterface {
 public:
-	RoomManager() = default;
-	~RoomManager() = default;
-
 	//common public methods
-	int Create() override;
-	int Load() override;
-	int Save(int uid) override;
-	void Unload(int uid) override;
-	void Delete(int uid) override;
+	virtual int Create(Arguments... parameters) = 0;
+	virtual int Load(Arguments... parameters) = 0;
+	virtual int Save(int uid) = 0;
+	virtual void Unload(int uid) = 0;
+	virtual void Delete(int uid) = 0;
 
-	void UnloadAll() override;
-	void UnloadIf(std::function<bool(std::pair<const int,RoomData>)> fn) override;
+	virtual void UnloadAll() = 0;
+	virtual void UnloadIf(std::function<bool(std::pair<const int, T>)> fn) = 0;
 
-	//accessors and mutators
-	RoomData* Get(int uid) override;
-	int GetLoadedCount() override;
-	int GetTotalCount() override;
-	std::map<int, RoomData>* GetContainer() override;
+	//accessors & mutators
+	virtual T* Get(int uid) = 0;
+	virtual int GetLoadedCount() = 0;
+	virtual int GetTotalCount() = 0; //can be an alias of GetLoadedCount()
+	virtual std::map<int, T>* GetContainer() = 0;
 
-	//hooks
-	lua_State* SetLuaState(lua_State* L) { return lua = L; }
-	lua_State* GetLuaState() { return lua; }
+protected:
+	ManagerInterface() = default;
+	~ManagerInterface() = default;
 
-private:
-	lua_State* lua = nullptr;
-	int counter = 0;
+	//members
+	std::map<int, T> elementMap;
 };
 
 #endif
