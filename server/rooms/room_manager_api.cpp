@@ -23,34 +23,34 @@
 
 #include "room_manager.hpp"
 
-#include <string>
-/*
-static int getRoom(lua_State* L) {
-	//find, push and return the room
-	RoomData* room = RoomManager::GetSingleton().GetRoom(lua_tointeger(L, -2));
-	lua_pushlightuserdata(L, reinterpret_cast<void*>(room));
-	return 1;
+int createRoom(lua_State* L) {
+	//create & get the room
+	RoomManager& roomMgr = RoomManager::GetSingleton();
+	int uid = roomMgr.Create();
+	RoomData* room = roomMgr.Get(uid);
+
+	//setup the room
+	//TODO: room parameters only set via lua, fix this
+	room->SetRoomName(lua_tostring(L, 1));
+	room->SetTilesetName(lua_tostring(L, 2));
+
+	//return room, uid
+	lua_pushlightuserdata(L, static_cast<void*>(room));
+	lua_pushinteger(L, uid);
+
+	return 2;
 }
 
-static int createRoom(lua_State* L) {
-	//TODO: check parameter count for the glue functions
-
-	//create, find and return the room
-	int uid = RoomManager::GetSingleton().CreateRoom();
-	lua_pushlightuserdata(L, RoomManager::GetSingleton().FindRoom(uid));
-	return 1;
-}
-
-static int unloadRoom(lua_State* L) {
-	//unload the specified room
-	RoomManager::GetSingleton().UnloadRoom(lua_tointeger(L, -2));
+int unloadRoom(lua_State* L) {
+	//TODO: check authorization for room deletion
+	RoomManager& roomMgr = RoomManager::GetSingleton();
+	roomMgr.Unload(lua_tointeger(L, 1));
 	return 0;
 }
-*/
+
 static const luaL_Reg roomManagerLib[] = {
-//	{"GetRoom",getRoom},
-//	{"CreateRoom",createRoom},
-//	{"UnloadRoom",unloadRoom},
+	{"CreateRoom", createRoom},
+	{"UnloadRoom", unloadRoom},
 	{nullptr, nullptr}
 };
 

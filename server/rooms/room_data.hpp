@@ -35,6 +35,9 @@ public:
 	//accessors and mutators
 	RegionPagerLua* GetPager() { return &pager; }
 
+	std::string SetRoomName(std::string s) { return roomName = s; }
+	std::string GetRoomName() { return roomName; }
+
 	std::string SetTilesetName(std::string s) { return tilesetName = s; }
 	std::string GetTilesetName() { return tilesetName; }
 
@@ -43,7 +46,10 @@ private:
 
 	//members
 	RegionPagerLua pager;
+	std::string roomName;
 	std::string tilesetName;
+	//TODO: pass the room name & tileset name to the clients
+	//TODO: lua references i.e. create, unload, etc.
 };
 
 #endif
