@@ -23,17 +23,16 @@
 #define ROOMMANAGER_HPP_
 
 #include "room_data.hpp"
-
 #include "singleton.hpp"
 #include "manager_interface.hpp"
 
 #include "lua/lua.hpp"
 
-class RoomManager: public Singleton<RoomManager>, public ManagerInterface<RoomData> {
+class RoomManager:
+	public Singleton<RoomManager>,
+	public ManagerInterface<RoomData>
+{
 public:
-	RoomManager() = default;
-	~RoomManager() = default;
-
 	//common public methods
 	int Create() override;
 	int Load() override;
@@ -55,6 +54,11 @@ public:
 	lua_State* GetLuaState() { return lua; }
 
 private:
+	friend Singleton<RoomManager>;
+
+	RoomManager() = default;
+	~RoomManager() = default;
+
 	lua_State* lua = nullptr;
 	int counter = 0;
 };

@@ -98,7 +98,7 @@ int CharacterManager::Load(int owner, std::string handle, std::string avatar) {
 		int uid = sqlite3_column_int(statement, 0);
 
 		//check to see if this character is already loaded
-		if (characterMap.find(uid) != characterMap.end()) {
+		if (elementMap.find(uid) != elementMap.end()) {
 			sqlite3_finalize(statement);
 			return -1;
 		}
@@ -110,7 +110,7 @@ int CharacterManager::Load(int owner, std::string handle, std::string avatar) {
 		}
 
 		//extract the data into memory
-		CharacterData& newChar = characterMap[uid];
+		CharacterData& newChar = elementMap[uid];
 
 		//metadata
 		newChar.owner = owner;
@@ -145,11 +145,11 @@ int CharacterManager::Save(int uid) {
 	//DOCS: To use this method, change the in-memory copy, and then call this function using that object's UID.
 
 	//this method fails if this character is not loaded
-	if (characterMap.find(uid) == characterMap.end()) {
+	if (elementMap.find(uid) == elementMap.end()) {
 		return -1;
 	}
 
-	CharacterData& character = characterMap[uid];
+	CharacterData& character = elementMap[uid];
 	sqlite3_stmt* statement = nullptr;
 
 	//prep
@@ -187,7 +187,7 @@ int CharacterManager::Save(int uid) {
 void CharacterManager::Unload(int uid) {
 	//save this character, then unload it
 	Save(uid);
-	characterMap.erase(uid);
+	elementMap.erase(uid);
 }
 
 void CharacterManager::Delete(int uid) {
@@ -213,25 +213,26 @@ void CharacterManager::Delete(int uid) {
 
 	//finish the routine
 	sqlite3_finalize(statement);
-	characterMap.erase(uid);
+	elementMap.erase(uid);
 }
 
 void CharacterManager::UnloadAll() {
-	for (auto& it : characterMap) {
+	for (auto& it : elementMap) {
 		Save(it.first);
 	}
-	characterMap.clear();
+	elementMap.clear();
 }
 
-void CharacterManager::UnloadIf(std::function<bool(std::pair<int, CharacterData>)> fn) {
-	//replicate std::remove_if, using custom code
-	for (std::map<int, CharacterData>::iterator it = characterMap.begin(); it != characterMap.end(); /* empty */) {
+void CharacterManager::UnloadIf(std::function<bool(std::pair<const int, CharacterData>)> fn) {
+	std::map<int, CharacterData>::iterator it = elementMap.begin();
+	while (it != elementMap.end()) {
 		if (fn(*it)) {
 			Save(it->first);
-			it = characterMap.erase(it);
-			continue;
+			it = elementMap.erase(it);
 		}
-		++it;
+		else {
+			++it;
+		}
 	}
 }
 
@@ -240,9 +241,9 @@ void CharacterManager::UnloadIf(std::function<bool(std::pair<int, CharacterData>
 //-------------------------
 
 CharacterData* CharacterManager::Get(int uid) {
-	std::map<int, CharacterData>::iterator it = characterMap.find(uid);
+	std::map<int, CharacterData>::iterator it = elementMap.find(uid);
 
-	if (it == characterMap.end()) {
+	if (it == elementMap.end()) {
 		return nullptr;
 	}
 
@@ -250,7 +251,7 @@ CharacterData* CharacterManager::Get(int uid) {
 }
 
 int CharacterManager::GetLoadedCount() {
-	return characterMap.size();
+	return elementMap.size();
 }
 
 int CharacterManager::GetTotalCount() {
@@ -272,7 +273,7 @@ int CharacterManager::GetTotalCount() {
 }
 
 std::map<int, CharacterData>* CharacterManager::GetContainer() {
-	return &characterMap;
+	return &elementMap;
 }
 
 sqlite3* CharacterManager::SetDatabase(sqlite3* db) {

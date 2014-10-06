@@ -112,7 +112,13 @@ void RoomManager::UnloadIf(std::function<bool(std::pair<const int,RoomData>)> fn
 }
 
 RoomData* RoomManager::Get(int uid) {
-	return &elementMap[uid];
+	std::map<int, RoomData>::iterator it = elementMap.find(uid);
+
+	if (it == elementMap.end()) {
+		return nullptr;
+	}
+
+	return &it->second;
 }
 
 int RoomManager::GetLoadedCount() {
