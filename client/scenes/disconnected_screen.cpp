@@ -19,10 +19,11 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#include "clean_up.hpp"
+#include "disconnected_screen.hpp"
 
 #include "channels.hpp"
 #include "config_utility.hpp"
+#include "udp_network_utility.hpp"
 
 #include <stdexcept>
 
@@ -30,17 +31,7 @@
 //Public access members
 //-------------------------
 
-CleanUp::CleanUp(
-	int* const argClientIndex,
-	int* const argAccountIndex,
-	int* const argCharacterIndex,
-	CharacterMap* argCharacterMap
-	):
-	clientIndex(*argClientIndex),
-	accountIndex(*argAccountIndex),
-	characterIndex(*argCharacterIndex),
-	characterMap(*argCharacterMap)
-{
+DisconnectedScreen::DisconnectedScreen() {
 	ConfigUtility& config = ConfigUtility::GetSingleton();
 
 	//setup the utility objects
@@ -60,19 +51,13 @@ CleanUp::CleanUp(
 	backButton.SetText("Back");
 
 	//full reset
-	network.Unbind(Channels::SERVER);
-	clientIndex = -1;
-	accountIndex = -1;
-	characterIndex = -1;
-//	combatMap.clear();
-	characterMap.clear();
-//	enemyMap.clear();
+	UDPNetworkUtility::GetSingleton().Unbind(Channels::SERVER);
 
 	//auto return
 	startTick = std::chrono::steady_clock::now();
 }
 
-CleanUp::~CleanUp() {
+DisconnectedScreen::~DisconnectedScreen() {
 	//
 }
 
@@ -80,16 +65,16 @@ CleanUp::~CleanUp() {
 //Frame loop
 //-------------------------
 
-void CleanUp::Update() {
+void DisconnectedScreen::Update() {
 	if (std::chrono::steady_clock::now() - startTick > std::chrono::duration<int>(10)) {
 		SetNextScene(SceneList::MAINMENU);
 	}
 
 	//Eat incoming packets
-	while(network.Receive());
+	while(UDPNetworkUtility::GetSingleton().Receive());
 }
 
-void CleanUp::Render(SDL_Surface* const screen) {
+void DisconnectedScreen::Render(SDL_Surface* const screen) {
 	ConfigUtility& config = ConfigUtility::GetSingleton();
 
 	backButton.DrawTo(screen);
@@ -100,25 +85,25 @@ void CleanUp::Render(SDL_Surface* const screen) {
 //Event handlers
 //-------------------------
 
-void CleanUp::QuitEvent() {
+void DisconnectedScreen::QuitEvent() {
 	SetNextScene(SceneList::QUIT);
 }
 
-void CleanUp::MouseMotion(SDL_MouseMotionEvent const& motion) {
+void DisconnectedScreen::MouseMotion(SDL_MouseMotionEvent const& motion) {
 	backButton.MouseMotion(motion);
 }
 
-void CleanUp::MouseButtonDown(SDL_MouseButtonEvent const& button) {
+void DisconnectedScreen::MouseButtonDown(SDL_MouseButtonEvent const& button) {
 	backButton.MouseButtonDown(button);
 }
 
-void CleanUp::MouseButtonUp(SDL_MouseButtonEvent const& button) {
+void DisconnectedScreen::MouseButtonUp(SDL_MouseButtonEvent const& button) {
 	if (backButton.MouseButtonUp(button) == Button::State::HOVER) {
 		SetNextScene(SceneList::MAINMENU);
 	}
 }
 
-void CleanUp::KeyDown(SDL_KeyboardEvent const& key) {
+void DisconnectedScreen::KeyDown(SDL_KeyboardEvent const& key) {
 	switch(key.keysym.sym) {
 		case SDLK_ESCAPE:
 			SetNextScene(SceneList::MAINMENU);
@@ -126,6 +111,6 @@ void CleanUp::KeyDown(SDL_KeyboardEvent const& key) {
 	}
 }
 
-void CleanUp::KeyUp(SDL_KeyboardEvent const& key) {
+void DisconnectedScreen::KeyUp(SDL_KeyboardEvent const& key) {
 	//
 }

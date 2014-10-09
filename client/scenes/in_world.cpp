@@ -34,16 +34,9 @@
 //Public access members
 //-------------------------
 
-InWorld::InWorld(
-	int* const argClientIndex,
-	int* const argAccountIndex,
-	int* const argCharacterIndex,
-	CharacterMap* argCharacterMap
-	):
+InWorld::InWorld(int* const argClientIndex,	int* const argAccountIndex):
 	clientIndex(*argClientIndex),
-	accountIndex(*argAccountIndex),
-	characterIndex(*argCharacterIndex),
-	characterMap(*argCharacterMap)
+	accountIndex(*argAccountIndex)
 {
 	ConfigUtility& config = ConfigUtility::GetSingleton();
 
@@ -153,7 +146,7 @@ void InWorld::Update() {
 	if (Clock::now() - lastBeat > std::chrono::seconds(3)) {
 		if (attemptedBeats > 2) {
 			RequestDisconnect();
-			SetNextScene(SceneList::CLEANUP);
+			SetNextScene(SceneList::DISCONNECTEDSCREEN);
 			ConfigUtility::GetSingleton()["client.disconnectMessage"] = "Error: Lost connection to the server";
 		}
 
@@ -342,7 +335,7 @@ void InWorld::HandlePong(ServerPacket* const argPacket) {
 
 void InWorld::HandleDisconnect(ClientPacket* const argPacket) {
 	//TODO: More needed in the disconnection
-	SetNextScene(SceneList::CLEANUP);
+	SetNextScene(SceneList::DISCONNECTEDSCREEN);
 	ConfigUtility::GetSingleton()["client.disconnectMessage"] = "You have been disconnected";
 }
 
@@ -352,7 +345,7 @@ void InWorld::HandleCharacterNew(CharacterPacket* const argPacket) {
 	}
 
 	//create the character object
-	Character& newCharacter = characterMap[argPacket->characterIndex];
+	BaseCharacter& newCharacter = characterMap[argPacket->characterIndex];
 
 	//fill out the character's members
 	newCharacter.SetHandle(argPacket->handle);
@@ -369,7 +362,7 @@ void InWorld::HandleCharacterNew(CharacterPacket* const argPacket) {
 		CHARACTER_BOUNDS_HEIGHT
 	});
 
-	(*newCharacter.GetStats()) = argPacket->stats;
+//	(*newCharacter.GetBaseStats()) = argPacket->stats;
 
 	//bookkeeping code
 	newCharacter.CorrectSprite();
@@ -407,7 +400,7 @@ void InWorld::HandleCharacterUpdate(CharacterPacket* const argPacket) {
 		return;
 	}
 
-	Character& character = characterMap[argPacket->characterIndex];
+	BaseCharacter& character = characterMap[argPacket->characterIndex];
 
 	//other characters moving
 	if (argPacket->characterIndex != characterIndex) {
@@ -419,7 +412,7 @@ void InWorld::HandleCharacterUpdate(CharacterPacket* const argPacket) {
 
 void InWorld::HandleCharacterRejection(TextPacket* const argPacket) {
 	RequestDisconnect();
-	SetNextScene(SceneList::CLEANUP);
+	SetNextScene(SceneList::DISCONNECTEDSCREEN);
 	ConfigUtility& config = ConfigUtility::GetSingleton();
 	config["client.disconnectMessage"] = "Error: ";
 	config["client.disconnectMessage"] += argPacket->text;
@@ -464,7 +457,7 @@ void InWorld::SendPlayerUpdate() {
 	newPacket.roomIndex = 0; //TODO: room index
 	newPacket.origin = localCharacter->GetOrigin();
 	newPacket.motion = localCharacter->GetMotion();
-	newPacket.stats = *localCharacter->GetStats();
+//	newPacket.stats = *localCharacter->GetBaseStats();
 
 	//TODO: gameplay components: equipment, items, buffs, debuffs
 
