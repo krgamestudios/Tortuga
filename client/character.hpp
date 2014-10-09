@@ -24,28 +24,22 @@
 
 //components
 #include "character_defines.hpp"
-#include "vector2.hpp"
-#include "bounding_box.hpp"
+#include "renderable.hpp"
 #include "statistics.hpp"
-
-//graphics
-#include "sprite_sheet.hpp"
 
 //std namespace
 #include <string>
 #include <cmath>
 
-class Character {
+class Character : public Renderable {
 public:
 	Character() = default;
 	~Character() = default;
 
-	void Update();
+	void Update() override;
 
 	//graphics
-	void DrawTo(SDL_Surface* const, int camX, int camY);
 	void CorrectSprite();
-	SpriteSheet* GetSprite() { return &sprite; }
 
 	//gameplay
 	Statistics* GetStats() { return &stats; }
@@ -61,17 +55,8 @@ public:
 	std::string GetAvatar() const { return avatar; }
 
 	//position
-	Vector2 SetOrigin(Vector2 v) { return origin = v; }
-	Vector2 GetOrigin() const { return origin; }
-	Vector2 SetMotion(Vector2 v) { return motion = v; }
-	Vector2 GetMotion() const { return motion; }
-	BoundingBox SetBounds(BoundingBox b) { return bounds = b; }
-	BoundingBox GetBounds() { return bounds; }
-
+	
 private:
-	//graphics
-	SpriteSheet sprite;
-
 	//base statistics
 	Statistics stats;
 
@@ -81,11 +66,6 @@ private:
 	int owner;
 	std::string handle;
 	std::string avatar;
-
-	//position
-	Vector2 origin = {0.0,0.0};
-	Vector2 motion = {0.0,0.0};
-	BoundingBox bounds;
 };
 
 //tmp

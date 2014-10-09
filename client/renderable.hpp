@@ -19,39 +19,38 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#include "character.hpp"
+#ifndef RENDERABLE_HPP_
+#define RENDERABLE_HPP_
 
-void Character::Update() {
-	if (motion.x && motion.y) {
-		origin += motion * CHARACTER_WALKING_MOD;
-	}
-	else if (motion != 0) {
-		origin += motion;
-	}
-	sprite.Update(0.016);
-}
+#include "bounding_box.hpp"
+#include "sprite_sheet.hpp"
+#include "vector2.hpp"
 
-void Character::CorrectSprite() {
-	//NOTE: These must correspond to the sprite sheet in use
-	if (motion.y > 0) {
-		sprite.SetYIndex(0);
-	}
-	else if (motion.y < 0) {
-		sprite.SetYIndex(1);
-	}
-	else if (motion.x > 0) {
-		sprite.SetYIndex(3);
-	}
-	else if (motion.x < 0) {
-		sprite.SetYIndex(2);
-	}
+class Renderable {
+public:
+	Renderable() = default;
+	virtual ~Renderable() = default;
 
-	//animation
-	if (motion != 0) {
-		sprite.SetDelay(0.1);
-	}
-	else {
-		sprite.SetDelay(0);
-		sprite.SetXIndex(0);
-	}
-}
+	virtual void Update();
+	virtual void DrawTo(SDL_Surface* const, int camX, int camY);
+
+	SpriteSheet* GetSprite() { return &sprite; }
+
+	//position
+	Vector2 SetOrigin(Vector2 v) { return origin = v; }
+	Vector2 GetOrigin() const { return origin; }
+	Vector2 SetMotion(Vector2 v) { return motion = v; }
+	Vector2 GetMotion() const { return motion; }
+
+	//collision
+	BoundingBox SetBounds(BoundingBox b) { return bounds = b; }
+	BoundingBox GetBounds() { return bounds; }
+
+protected: //TODO: should be private
+	SpriteSheet sprite;
+	Vector2 origin = {0, 0};
+	Vector2 motion = {0, 0};
+	BoundingBox bounds;
+};
+
+#endif
