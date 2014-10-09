@@ -21,16 +21,6 @@
 */
 #include "character.hpp"
 
-void Character::Update() {
-	if (motion.x && motion.y) {
-		origin += motion * CHARACTER_WALKING_MOD;
-	}
-	else if (motion != 0) {
-		origin += motion;
-	}
-	sprite.Update(0.016);
-}
-
 void Character::CorrectSprite() {
 	//NOTE: These must correspond to the sprite sheet in use
 	if (motion.y > 0) {

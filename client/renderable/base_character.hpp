@@ -36,15 +36,11 @@ public:
 	Character() = default;
 	~Character() = default;
 
-	void Update() override;
-
 	//graphics
 	void CorrectSprite();
 
 	//gameplay
 	Statistics* GetStats() { return &stats; }
-
-	//accessors and mutators
 
 	//metadata
 	int SetOwner(int i) { return owner = i; }
@@ -54,8 +50,6 @@ public:
 	std::string SetAvatar(std::string s) { return avatar = s; }
 	std::string GetAvatar() const { return avatar; }
 
-	//position
-	
 private:
 	//base statistics
 	Statistics stats;
