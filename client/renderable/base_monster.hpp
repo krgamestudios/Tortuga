@@ -19,37 +19,18 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef BASECHARACTER_HPP_
-#define BASECHARACTER_HPP_
+#ifndef BASEMONSTER_HPP_
+#define BASEMONSTER_HPP_
 
-//components
-#include "character_defines.hpp"
 #include "renderable.hpp"
 
-//std namespace
-#include <string>
-
-class BaseCharacter : public Renderable {
+class BaseMonster {
 public:
-	BaseCharacter() = default;
-	virtual ~BaseCharacter() = default;
-
-	//graphics
-	void CorrectSprite();
-
-	//metadata
-	int SetOwner(int i) { return owner = i; }
-	int GetOwner() { return owner; }
-	std::string SetHandle(std::string s) { return handle = s; }
-	std::string GetHandle() const { return handle; }
-	std::string SetAvatar(std::string s) { return avatar = s; }
-	std::string GetAvatar() const { return avatar; }
+	BaseMonster();
+	virtual ~BaseMonster();
 
 private:
-	//metadata
-	int owner;
-	std::string handle;
-	std::string avatar;
+	//
 };
 
 #endif

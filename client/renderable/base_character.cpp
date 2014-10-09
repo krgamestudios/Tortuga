@@ -19,9 +19,9 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#include "character.hpp"
+#include "base_character.hpp"
 
-void Character::CorrectSprite() {
+void BaseCharacter::CorrectSprite() {
 	//NOTE: These must correspond to the sprite sheet in use
 	if (motion.y > 0) {
 		sprite.SetYIndex(0);
