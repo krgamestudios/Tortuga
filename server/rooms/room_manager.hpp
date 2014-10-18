@@ -26,7 +26,11 @@
 #include "singleton.hpp"
 #include "manager_interface.hpp"
 
+#ifdef __unix__
+#include "lua.hpp"
+#else
 #include "lua/lua.hpp"
+#endif
 
 class RoomManager:
 	public Singleton<RoomManager>,

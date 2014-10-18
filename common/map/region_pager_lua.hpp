@@ -24,7 +24,11 @@
 
 #include "region_pager_base.hpp"
 
+#ifdef __unix__
+#include "lua.hpp"
+#else
 #include "lua/lua.hpp"
+#endif
 
 #include <string>
 
