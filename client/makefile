@@ -1,6 +1,11 @@
 #config
 INCLUDES+=. client_utilities renderable scenes ../common/debugging ../common/gameplay ../common/graphics ../common/map ../common/network ../common/network/packet_types ../common/ui ../common/utilities
-LIBS+=client.a ../libcommon.a -lSDL_net -lwsock32 -liphlpapi -lmingw32 -lSDLmain -lSDL -llua
+
+LIBS+=client.a ../libcommon.a -lSDL_net -lSDLmain -lSDL -llua
+ifeq ($(OS),Windows_NT )
+	LIBS+=-lwsock32 -liphlpapi -lmingw32
+endif
+
 CXXFLAGS+=-std=c++11 $(addprefix -I,$(INCLUDES))
 
 #source

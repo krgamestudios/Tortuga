@@ -29,7 +29,7 @@ $(OUTDIR):
 	mkdir $(OUTDIR)
 
 $(OBJDIR)/%.o: %.cpp
-	$(CXX) $(CXXFLAGS) -c -o $@ $<
+	$(CXX) $(CXXFLAGS) -c -o $@ $< -llua
 
 clean:
 	$(RM) *.o *.a *.exe

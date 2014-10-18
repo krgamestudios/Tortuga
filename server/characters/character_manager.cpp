@@ -21,7 +21,11 @@
 */
 #include "character_manager.hpp"
 
+#ifdef __unix__
+#include "sqlite3.h"
+#else
 #include "sqlite3/sqlite3.h"
+#endif
 
 #include <algorithm>
 #include <stdexcept>

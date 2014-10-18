@@ -40,7 +40,11 @@ void ServerApplication::Init(int argc, char* argv[]) {
 	std::cout << "Beginning " << argv[0] << std::endl;
 
 	//load the prerequisites
+#ifdef __unix__
+	config.Load("rsc/config.cfg", argc, argv);
+#else
 	config.Load("rsc\\config.cfg", argc, argv);
+#endif
 
 	//-------------------------
 	//Initialize the APIs
