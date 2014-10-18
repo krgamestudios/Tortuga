@@ -1,6 +1,15 @@
-#config
+#include directories
 INCLUDES+=. client_utilities renderable scenes ../common/debugging ../common/gameplay ../common/graphics ../common/map ../common/network ../common/network/packet_types ../common/ui ../common/utilities
-LIBS+=client.a ../libcommon.a -lSDL_net -lwsock32 -liphlpapi -lmingw32 -lSDLmain -lSDL -llua
+
+#libraries
+#the order of the $(LIBS) is important, at least for MinGW
+LIBS+=client.a ../libcommon.a -lSDL_net
+ifeq ($(OS),Windows_NT)
+	LIBS+=-lwsock32 -liphlpapi -lmingw32
+endif
+LIBS+=-lSDLmain -lSDL
+
+#flags
 CXXFLAGS+=-std=c++11 $(addprefix -I,$(INCLUDES))
 
 #source

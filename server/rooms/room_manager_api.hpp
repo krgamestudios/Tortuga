@@ -22,7 +22,11 @@
 #ifndef ROOMMANAGERAPI_HPP_
 #define ROOMMANAGERAPI_HPP_
 
+#ifdef __unix__
+#include "lua.hpp"
+#else
 #include "lua/lua.hpp"
+#endif
 
 #define TORTUGA_ROOM_MANAGER_NAME "RoomManager"
 LUAMOD_API int openRoomManagerAPI(lua_State* L);

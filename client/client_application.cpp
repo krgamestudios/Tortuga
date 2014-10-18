@@ -49,7 +49,7 @@ void ClientApplication::Init(int argc, char* argv[]) {
 
 	//load the prerequisites
 	ConfigUtility& config = ConfigUtility::GetSingleton();
-	config.Load("rsc\\config.cfg", argc, argv);
+	config.Load("rsc/config.cfg", argc, argv);
 
 	//-------------------------
 	//Initialize the APIs
