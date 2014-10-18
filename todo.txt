@@ -2,6 +2,7 @@ TODO: Get the rooms working, even if only via hotkeys
 TODO: SerialPacketType::CHARACTER_LOCATION, CHARACTER_MOVE, CHARACTER_TELEPORT, ROOM_CHANGE, etc.
 TODO: Fix shoddy movement
 TODO: Handle statistics server-side
+TODO: Periodic mass server saves
 
 TODO: Remove the big "Shut Down" button
 TODO: Make a way for the server owner to control the server directly
@@ -13,3 +14,26 @@ TODO: Authentication
 TODO: Time delay for requesting region packets
 TODO: A proper logging system
 TODO: Update Codebase with the improvements from Tortuga
+
+-------------------------
+Serial Packet Types
+-------------------------
+
+//character management
+* CHARACTER_CREATE //make this character
+* CHARACTER_DELETE //unmake this character
+* CHARACTER_LOAD //load this character into the world
+* CHARACTER_UNLOAD //unload this character from the world
+
+//find out info from the server
+* CHARACTER_QUERY_EXISTS //also sends the owner's info
+* CHARACTER_QUERY_LOCATION
+* CHARACTER_get all the entities within a distance of this
+
+//set the info in the server
+* CHARACTER_SET_ORIGIN
+* CHARACTER_SET_MOTION
+
+//authentication, character index => character stats
+CHARACTER_STATS_REQUEST
+CHARACTER_STATS_RESPONSE
