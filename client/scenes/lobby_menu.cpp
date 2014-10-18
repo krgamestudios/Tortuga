@@ -34,6 +34,10 @@ LobbyMenu::LobbyMenu(int* const argClientIndex, int* const argAccountIndex):
 	clientIndex(*argClientIndex),
 	accountIndex(*argAccountIndex)
 {
+	//preemptive reset
+	clientIndex = -1;
+	accountIndex = -1;
+
 	//setup the utility objects
 	image.LoadSurface(config["dir.interface"] + "button_menu.bmp");
 	image.SetClipH(image.GetClipH()/3);

@@ -19,37 +19,5 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef ROOMDATA_HPP_
-#define ROOMDATA_HPP_
+#include "base_monster.hpp"
 
-//map system
-#include "region_pager_lua.hpp"
-
-#include <string>
-
-class RoomData {
-public:
-	RoomData() = default;
-	~RoomData() = default;
-
-	//accessors and mutators
-	RegionPagerLua* GetPager() { return &pager; }
-
-	std::string SetRoomName(std::string s) { return roomName = s; }
-	std::string GetRoomName() { return roomName; }
-
-	std::string SetTilesetName(std::string s) { return tilesetName = s; }
-	std::string GetTilesetName() { return tilesetName; }
-
-private:
-	friend class RoomManager;
-
-	//members
-	RegionPagerLua pager;
-	std::string roomName;
-	std::string tilesetName;
-	//TODO: pass the room name & tileset name to the clients
-	//TODO: lua references i.e. create, unload, etc.
-};
-
-#endif

@@ -161,7 +161,7 @@ void ServerApplication::HandleRegionRequest(RegionPacket* const argPacket) {
 	newPacket.y = argPacket->y;
 
 	//BUG: possibly related to #35
-	newPacket.region = roomMgr.GetRoom(argPacket->roomIndex)->GetPager()->GetRegion(argPacket->x, argPacket->y);
+	newPacket.region = roomMgr.Get(argPacket->roomIndex)->GetPager()->GetRegion(argPacket->x, argPacket->y);
 
 	//send the content
 	network.SendTo(argPacket->srcAddress, static_cast<SerialPacket*>(&newPacket));

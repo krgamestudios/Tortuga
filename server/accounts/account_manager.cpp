@@ -87,13 +87,13 @@ int AccountManager::Load(std::string username, int clientIndex) {
 		int uid = sqlite3_column_int(statement, 0);
 
 		//check to see if this account is already loaded
-		if (accountMap.find(uid) != accountMap.end()) {
+		if (elementMap.find(uid) != elementMap.end()) {
 			sqlite3_finalize(statement);
 			return -1;
 		}
 
 		//extract the data into memory
-		AccountData& newAccount = accountMap[uid];
+		AccountData& newAccount = elementMap[uid];
 		newAccount.username = reinterpret_cast<const char*>(sqlite3_column_text(statement, 1));
 		newAccount.blackListed = sqlite3_column_int(statement, 2);
 		newAccount.whiteListed = sqlite3_column_int(statement, 3);
@@ -121,11 +121,11 @@ int AccountManager::Save(int uid) {
 	//DOCS: To use this method, change the in-memory copy, and then call this function using that object's UID.
 
 	//this method fails if this account is not loaded
-	if (accountMap.find(uid) == accountMap.end()) {
+	if (elementMap.find(uid) == elementMap.end()) {
 		return -1;
 	}
 
-	AccountData& account = accountMap[uid];
+	AccountData& account = elementMap[uid];
 	sqlite3_stmt* statement = nullptr;
 
 	//prep
@@ -163,7 +163,7 @@ void AccountManager::Unload(int uid) {
 	//save this user account, and then unload it
 	//NOTE: the associated characters are unloaded externally
 	Save(uid);
-	accountMap.erase(uid);
+	elementMap.erase(uid);
 }
 
 void AccountManager::Delete(int uid) {
@@ -190,25 +190,27 @@ void AccountManager::Delete(int uid) {
 
 	//finish the routine
 	sqlite3_finalize(statement);
-	accountMap.erase(uid);
+	elementMap.erase(uid);
 }
 
 void AccountManager::UnloadAll() {
-	for (auto& it : accountMap) {
+	for (auto& it : elementMap) {
 		Save(it.first);
 	}
-	accountMap.clear();
+	elementMap.clear();
 }
 
-void AccountManager::UnloadIf(std::function<bool(std::pair<int, AccountData>)> fn) {
+void AccountManager::UnloadIf(std::function<bool(std::pair<const int, AccountData>)> fn) {
 	//replicate std::remove_if, using custom code
-	for (std::map<int, AccountData>::iterator it = accountMap.begin(); it != accountMap.end(); /* empty */) {
+	std::map<int, AccountData>::iterator it = elementMap.begin();
+	while (it != elementMap.end()) {
 		if (fn(*it)) {
 			Save(it->first);
-			it = accountMap.erase(it);
-			continue;
+			it = elementMap.erase(it);
 		}
-		++it;
+		else {
+			++it;
+		}
 	}
 }
 
@@ -218,9 +220,9 @@ void AccountManager::UnloadIf(std::function<bool(std::pair<int, AccountData>)> f
 
 AccountData* AccountManager::Get(int uid) {
 	//TODO: could this load an account first?
-	std::map<int, AccountData>::iterator it = accountMap.find(uid);
+	std::map<int, AccountData>::iterator it = elementMap.find(uid);
 
-	if (it == accountMap.end()) {
+	if (it == elementMap.end()) {
 		return nullptr;
 	}
 
@@ -228,7 +230,7 @@ AccountData* AccountManager::Get(int uid) {
 }
 
 int AccountManager::GetLoadedCount() {
-	return accountMap.size();
+	return elementMap.size();
 }
 
 int AccountManager::GetTotalCount() {
@@ -250,7 +252,7 @@ int AccountManager::GetTotalCount() {
 }
 
 std::map<int, AccountData>* AccountManager::GetContainer() {
-	return &accountMap;
+	return &elementMap;
 }
 
 sqlite3* AccountManager::SetDatabase(sqlite3* db) {

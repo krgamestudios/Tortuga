@@ -19,37 +19,38 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef ROOMDATA_HPP_
-#define ROOMDATA_HPP_
+#ifndef RENDERABLE_HPP_
+#define RENDERABLE_HPP_
 
-//map system
-#include "region_pager_lua.hpp"
+#include "bounding_box.hpp"
+#include "sprite_sheet.hpp"
+#include "vector2.hpp"
 
-#include <string>
-
-class RoomData {
+class Renderable {
 public:
-	RoomData() = default;
-	~RoomData() = default;
+	Renderable() = default;
+	virtual ~Renderable() = default;
 
-	//accessors and mutators
-	RegionPagerLua* GetPager() { return &pager; }
+	virtual void Update();
+	virtual void DrawTo(SDL_Surface* const, int camX, int camY);
 
-	std::string SetRoomName(std::string s) { return roomName = s; }
-	std::string GetRoomName() { return roomName; }
+	SpriteSheet* GetSprite() { return &sprite; }
 
-	std::string SetTilesetName(std::string s) { return tilesetName = s; }
-	std::string GetTilesetName() { return tilesetName; }
+	//position
+	Vector2 SetOrigin(Vector2 v) { return origin = v; }
+	Vector2 GetOrigin() const { return origin; }
+	Vector2 SetMotion(Vector2 v) { return motion = v; }
+	Vector2 GetMotion() const { return motion; }
 
-private:
-	friend class RoomManager;
+	//collision
+	BoundingBox SetBounds(BoundingBox b) { return bounds = b; }
+	BoundingBox GetBounds() { return bounds; }
 
-	//members
-	RegionPagerLua pager;
-	std::string roomName;
-	std::string tilesetName;
-	//TODO: pass the room name & tileset name to the clients
-	//TODO: lua references i.e. create, unload, etc.
+protected: //TODO: should be private
+	SpriteSheet sprite;
+	Vector2 origin = {0, 0};
+	Vector2 motion = {0, 0};
+	BoundingBox bounds;
 };
 
 #endif

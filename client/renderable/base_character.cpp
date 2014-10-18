@@ -19,37 +19,29 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef ROOMDATA_HPP_
-#define ROOMDATA_HPP_
+#include "base_character.hpp"
 
-//map system
-#include "region_pager_lua.hpp"
+void BaseCharacter::CorrectSprite() {
+	//NOTE: These must correspond to the sprite sheet in use
+	if (motion.y > 0) {
+		sprite.SetYIndex(0);
+	}
+	else if (motion.y < 0) {
+		sprite.SetYIndex(1);
+	}
+	else if (motion.x > 0) {
+		sprite.SetYIndex(3);
+	}
+	else if (motion.x < 0) {
+		sprite.SetYIndex(2);
+	}
 
-#include <string>
-
-class RoomData {
-public:
-	RoomData() = default;
-	~RoomData() = default;
-
-	//accessors and mutators
-	RegionPagerLua* GetPager() { return &pager; }
-
-	std::string SetRoomName(std::string s) { return roomName = s; }
-	std::string GetRoomName() { return roomName; }
-
-	std::string SetTilesetName(std::string s) { return tilesetName = s; }
-	std::string GetTilesetName() { return tilesetName; }
-
-private:
-	friend class RoomManager;
-
-	//members
-	RegionPagerLua pager;
-	std::string roomName;
-	std::string tilesetName;
-	//TODO: pass the room name & tileset name to the clients
-	//TODO: lua references i.e. create, unload, etc.
-};
-
-#endif
+	//animation
+	if (motion != 0) {
+		sprite.SetDelay(0.1);
+	}
+	else {
+		sprite.SetDelay(0);
+		sprite.SetXIndex(0);
+	}
+}

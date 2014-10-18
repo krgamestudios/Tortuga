@@ -1,5 +1,5 @@
 #config
-INCLUDES+=. ../server_utilities ../../common/utilities
+INCLUDES+=. .. ../../common/gameplay ../../common/graphics ../../common/utilities
 LIBS+=
 CXXFLAGS+=-std=c++11 $(addprefix -I,$(INCLUDES))
 
@@ -12,7 +12,7 @@ OBJ+=$(addprefix $(OBJDIR)/,$(CXXSRC:.cpp=.o))
 
 #output
 OUTDIR=..
-OUT=$(addprefix $(OUTDIR)/,server.a)
+OUT=$(addprefix $(OUTDIR)/,client.a)
 
 #targets
 all: $(OBJ) $(OUT)

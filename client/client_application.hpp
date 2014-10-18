@@ -26,7 +26,6 @@
 #include "base_scene.hpp"
 
 #include "udp_network_utility.hpp"
-#include "character.hpp"
 
 #include "singleton.hpp"
 
@@ -54,9 +53,6 @@ private:
 	//shared parameters
 	int clientIndex = -1;
 	int accountIndex = -1;
-	int characterIndex = -1;
-
-	CharacterMap characterMap;
 };
 
 #endif

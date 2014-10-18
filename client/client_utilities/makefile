@@ -12,7 +12,7 @@ OBJ+=$(addprefix $(OBJDIR)/,$(CXXSRC:.cpp=.o))
 
 #output
 OUTDIR=..
-OUT=$(addprefix $(OUTDIR)/,server.a)
+OUT=$(addprefix $(OUTDIR)/,client.a)
 
 #targets
 all: $(OBJ) $(OUT)

@@ -38,8 +38,7 @@
 #include "options_menu.hpp"
 #include "lobby_menu.hpp"
 #include "in_world.hpp"
-//#include "in_combat.hpp"
-#include "clean_up.hpp"
+#include "disconnected_screen.hpp"
 
 //-------------------------
 //Public access members
@@ -179,16 +178,13 @@ void ClientApplication::LoadScene(SceneList sceneIndex) {
 			activeScene = new OptionsMenu();
 		break;
 		case SceneList::LOBBYMENU:
-			activeScene = new LobbyMenu(&clientIndex, &accountIndex);
+			activeScene = new LobbyMenu(&clientIndex, &accountIndex); //TODO: can I use the ConfigUtility for these parameters?
 		break;
 		case SceneList::INWORLD:
-			activeScene = new InWorld(&clientIndex, &accountIndex, &characterIndex, &characterMap);
+			activeScene = new InWorld(&clientIndex, &accountIndex);
 		break;
-//		case SceneList::INCOMBAT:
-//			activeScene = new InCombat(&clientIndex, &accountIndex, &characterIndex, &characterMap);
-//		break;
-		case SceneList::CLEANUP:
-			activeScene = new CleanUp(&clientIndex, &accountIndex, &characterIndex, &characterMap);
+		case SceneList::DISCONNECTEDSCREEN:
+			activeScene = new DisconnectedScreen();
 		break;
 		default:
 			throw(std::logic_error("Failed to recognize the scene index"));

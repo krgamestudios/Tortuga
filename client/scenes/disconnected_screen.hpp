@@ -19,11 +19,8 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef CLEANUP_HPP_
-#define CLEANUP_HPP_
-
-//network
-#include "udp_network_utility.hpp"
+#ifndef DISCONNECTEDSCREEN_HPP_
+#define DISCONNECTEDSCREEN_HPP_
 
 //graphics
 #include "image.hpp"
@@ -31,22 +28,16 @@
 #include "button.hpp"
 
 //client
-#include "character.hpp"
 #include "base_scene.hpp"
 
 //std namespace
 #include <chrono>
 
-class CleanUp : public BaseScene {
+class DisconnectedScreen : public BaseScene {
 public:
 	//Public access members
-	CleanUp(
-		int* const argClientIndex,
-		int* const argAccountIndex,
-		int* const argCharacterIndex,
-		CharacterMap* argCharacterMap
-	);
-	~CleanUp();
+	DisconnectedScreen();
+	~DisconnectedScreen();
 
 protected:
 	//Frame loop
@@ -60,13 +51,6 @@ protected:
 	void MouseButtonUp(SDL_MouseButtonEvent const&);
 	void KeyDown(SDL_KeyboardEvent const&);
 	void KeyUp(SDL_KeyboardEvent const&);
-
-	//shared parameters
-	UDPNetworkUtility& network = UDPNetworkUtility::GetSingleton();
-	int& clientIndex;
-	int& accountIndex;
-	int& characterIndex;
-	CharacterMap& characterMap;
 
 	//graphics
 	Image image;

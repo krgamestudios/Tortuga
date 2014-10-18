@@ -38,7 +38,8 @@
 //common
 #include "frame_rate.hpp"
 
-#include "character.hpp"
+#include "base_character.hpp"
+#include "local_character.hpp"
 
 //client
 #include "base_scene.hpp"
@@ -51,12 +52,7 @@
 class InWorld : public BaseScene {
 public:
 	//Public access members
-	InWorld(
-		int* const argClientIndex,
-		int* const argAccountIndex,
-		int* const argCharacterIndex,
-		CharacterMap* argCharacterMap
-	);
+	InWorld(int* const argClientIndex, int* const argAccountIndex);
 	~InWorld();
 
 protected:
@@ -100,8 +96,8 @@ protected:
 	UDPNetworkUtility& network = UDPNetworkUtility::GetSingleton();
 	int& clientIndex;
 	int& accountIndex;
-	int& characterIndex;
-	CharacterMap& characterMap;
+	int characterIndex = -1;
+	std::map<int, BaseCharacter> characterMap;
 
 	//graphics
 	Image buttonImage;
@@ -124,7 +120,7 @@ protected:
 	FrameRate fps;
 
 	//game
-	Character* localCharacter = nullptr;
+	BaseCharacter* localCharacter = nullptr;
 
 	//connections
 	//TODO: This needs it's own utility, for both InWorld and InCombat

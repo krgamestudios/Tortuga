@@ -19,37 +19,22 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef ROOMDATA_HPP_
-#define ROOMDATA_HPP_
+#ifndef LOCALCHARACTER_HPP_
+#define LOCALCHARACTER_HPP_
 
-//map system
-#include "region_pager_lua.hpp"
+#include "base_character.hpp"
+#include "statistics.hpp"
 
-#include <string>
-
-class RoomData {
+class LocalCharacter : public BaseCharacter {
 public:
-	RoomData() = default;
-	~RoomData() = default;
+	LocalCharacter() = default;
+	~LocalCharacter() = default;
 
-	//accessors and mutators
-	RegionPagerLua* GetPager() { return &pager; }
-
-	std::string SetRoomName(std::string s) { return roomName = s; }
-	std::string GetRoomName() { return roomName; }
-
-	std::string SetTilesetName(std::string s) { return tilesetName = s; }
-	std::string GetTilesetName() { return tilesetName; }
+	Statistics* GetBaseStats() { return &baseStats; }
 
 private:
-	friend class RoomManager;
-
-	//members
-	RegionPagerLua pager;
-	std::string roomName;
-	std::string tilesetName;
-	//TODO: pass the room name & tileset name to the clients
-	//TODO: lua references i.e. create, unload, etc.
+	Statistics baseStats;
+	//TODO: weapons, armour, buffs, debuffs, etc.
 };
 
 #endif
