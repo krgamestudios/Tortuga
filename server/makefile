@@ -1,11 +1,15 @@
-#config
+#include directories
 INCLUDES+=. accounts characters rooms server_utilities ../common/debugging ../common/gameplay ../common/map ../common/network ../common/network/packet_types ../common/utilities
 
-LIBS+=server.a ../libcommon.a -lSDL_net -lSDLmain -lSDL -llua -lsqlite3
+#libraries
+#the order of the $(LIBS) is important, at least for MinGW
+LIBS+=server.a ../libcommon.a -lSDL_net
 ifeq ($(OS),Windows_NT)
 	LIBS+=-lwsock32 -liphlpapi -lmingw32
 endif
+LIBS+=-lSDLmain -lSDL -llua -lsqlite3
 
+#flags
 CXXFLAGS+=-std=c++11 $(addprefix -I,$(INCLUDES))
 
 #source
