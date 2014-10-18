@@ -34,7 +34,11 @@
 #define linit_c
 #define LUA_LIB
 
+#ifdef __unix__
+#include "lua.hpp"
+#else
 #include "lua/lua.hpp"
+#endif
 
 #include "region_api.hpp"
 #include "region_pager_api.hpp"
