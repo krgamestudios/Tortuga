@@ -19,38 +19,23 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef CHARACTER_HPP_
-#define CHARACTER_HPP_
+#ifndef BASECHARACTER_HPP_
+#define BASECHARACTER_HPP_
 
 //components
 #include "character_defines.hpp"
-#include "vector2.hpp"
-#include "bounding_box.hpp"
-#include "statistics.hpp"
-
-//graphics
-#include "sprite_sheet.hpp"
+#include "renderable.hpp"
 
 //std namespace
 #include <string>
-#include <cmath>
 
-class Character {
+class BaseCharacter : public Renderable {
 public:
-	Character() = default;
-	~Character() = default;
-
-	void Update();
+	BaseCharacter() = default;
+	virtual ~BaseCharacter() = default;
 
 	//graphics
-	void DrawTo(SDL_Surface* const, int camX, int camY);
 	void CorrectSprite();
-	SpriteSheet* GetSprite() { return &sprite; }
-
-	//gameplay
-	Statistics* GetStats() { return &stats; }
-
-	//accessors and mutators
 
 	//metadata
 	int SetOwner(int i) { return owner = i; }
@@ -60,36 +45,11 @@ public:
 	std::string SetAvatar(std::string s) { return avatar = s; }
 	std::string GetAvatar() const { return avatar; }
 
-	//position
-	Vector2 SetOrigin(Vector2 v) { return origin = v; }
-	Vector2 GetOrigin() const { return origin; }
-	Vector2 SetMotion(Vector2 v) { return motion = v; }
-	Vector2 GetMotion() const { return motion; }
-	BoundingBox SetBounds(BoundingBox b) { return bounds = b; }
-	BoundingBox GetBounds() { return bounds; }
-
 private:
-	//graphics
-	SpriteSheet sprite;
-
-	//base statistics
-	Statistics stats;
-
-	//gameplay components: equipment, items, buffs, debuffs...
-
 	//metadata
 	int owner;
 	std::string handle;
 	std::string avatar;
-
-	//position
-	Vector2 origin = {0.0,0.0};
-	Vector2 motion = {0.0,0.0};
-	BoundingBox bounds;
 };
-
-//tmp
-#include <map>
-typedef std::map<int, Character> CharacterMap;
 
 #endif

@@ -34,8 +34,7 @@ enum class SceneList {
 	OPTIONSMENU,
 	LOBBYMENU,
 	INWORLD,
-	INCOMBAT,
-	CLEANUP,
+	DISCONNECTEDSCREEN,
 };
 
 #endif

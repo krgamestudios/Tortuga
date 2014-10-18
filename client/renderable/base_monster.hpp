@@ -1,4 +1,4 @@
-/* Copyright: (c) Kayne Ruse 2013, 2014
+/* Copyright: (c) Kayne Ruse 2014
  * 
  * This software is provided 'as-is', without any express or implied
  * warranty. In no event will the authors be held liable for any damages
@@ -19,40 +19,18 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef CLIENTAPPLICATION_HPP_
-#define CLIENTAPPLICATION_HPP_
+#ifndef BASEMONSTER_HPP_
+#define BASEMONSTER_HPP_
 
-#include "scene_list.hpp"
-#include "base_scene.hpp"
+#include "renderable.hpp"
 
-#include "udp_network_utility.hpp"
-
-#include "singleton.hpp"
-
-#include <map>
-
-class ClientApplication: public Singleton<ClientApplication> {
+class BaseMonster {
 public:
-	//public methods
-	void Init(int argc, char* argv[]);
-	void Proc();
-	void Quit();
+	BaseMonster();
+	virtual ~BaseMonster();
 
 private:
-	friend Singleton<ClientApplication>;
-
-	ClientApplication() = default;
-	~ClientApplication() = default;
-
-	//Private access members
-	void LoadScene(SceneList sceneIndex);
-	void UnloadScene();
-
-	BaseScene* activeScene = nullptr;
-
-	//shared parameters
-	int clientIndex = -1;
-	int accountIndex = -1;
+	//
 };
 
 #endif

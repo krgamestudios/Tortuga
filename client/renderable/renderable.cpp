@@ -19,16 +19,13 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef COMBATDEFINES_HPP_
-#define COMBATDEFINES_HPP_
+#include "renderable.hpp"
 
-#define COMBAT_MAX_CHARACTERS 16
-#define COMBAT_MAX_ENEMIES 16
+void Renderable::Update() {
+	origin += motion;
+	sprite.Update(0.016);
+}
 
-enum class TerrainType {
-	NONE = 0,
-	GRASSLANDS,
-	//etc.
-};
-
-#endif
+void Renderable::DrawTo(SDL_Surface* const dest, int camX, int camY) {
+	sprite.DrawTo(dest, origin.x - camX, origin.y - camY);
+}

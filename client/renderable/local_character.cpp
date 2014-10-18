@@ -19,43 +19,5 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#include "character.hpp"
+#include "local_character.hpp"
 
-void Character::Update() {
-	if (motion.x && motion.y) {
-		origin += motion * CHARACTER_WALKING_MOD;
-	}
-	else if (motion != 0) {
-		origin += motion;
-	}
-	sprite.Update(0.016);
-}
-
-void Character::DrawTo(SDL_Surface* const dest, int camX, int camY) {
-	sprite.DrawTo(dest, origin.x - camX, origin.y - camY);
-}
-
-void Character::CorrectSprite() {
-	//NOTE: These must correspond to the sprite sheet in use
-	if (motion.y > 0) {
-		sprite.SetYIndex(0);
-	}
-	else if (motion.y < 0) {
-		sprite.SetYIndex(1);
-	}
-	else if (motion.x > 0) {
-		sprite.SetYIndex(3);
-	}
-	else if (motion.x < 0) {
-		sprite.SetYIndex(2);
-	}
-
-	//animation
-	if (motion != 0) {
-		sprite.SetDelay(0.1);
-	}
-	else {
-		sprite.SetDelay(0);
-		sprite.SetXIndex(0);
-	}
-}

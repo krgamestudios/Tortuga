@@ -27,6 +27,7 @@
 //the speeds that the characters move
 constexpr double CHARACTER_WALKING_SPEED = 2.24;
 constexpr double CHARACTER_WALKING_MOD = 1.0/sqrt(2.0);
+constexpr double CHARACTER_WALKING_NEGATIVE_MOD = 1.0 - CHARACTER_WALKING_MOD;
 
 //the bounds for the character objects, mapped to the default sprites
 constexpr int CHARACTER_BOUNDS_X = 0;

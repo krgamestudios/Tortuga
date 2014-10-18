@@ -1,4 +1,4 @@
-/* Copyright: (c) Kayne Ruse 2013, 2014
+/* Copyright: (c) Kayne Ruse 2014
  * 
  * This software is provided 'as-is', without any express or implied
  * warranty. In no event will the authors be held liable for any damages
@@ -19,40 +19,38 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef CLIENTAPPLICATION_HPP_
-#define CLIENTAPPLICATION_HPP_
+#ifndef RENDERABLE_HPP_
+#define RENDERABLE_HPP_
 
-#include "scene_list.hpp"
-#include "base_scene.hpp"
+#include "bounding_box.hpp"
+#include "sprite_sheet.hpp"
+#include "vector2.hpp"
 
-#include "udp_network_utility.hpp"
-
-#include "singleton.hpp"
-
-#include <map>
-
-class ClientApplication: public Singleton<ClientApplication> {
+class Renderable {
 public:
-	//public methods
-	void Init(int argc, char* argv[]);
-	void Proc();
-	void Quit();
+	Renderable() = default;
+	virtual ~Renderable() = default;
 
-private:
-	friend Singleton<ClientApplication>;
+	virtual void Update();
+	virtual void DrawTo(SDL_Surface* const, int camX, int camY);
 
-	ClientApplication() = default;
-	~ClientApplication() = default;
+	SpriteSheet* GetSprite() { return &sprite; }
 
-	//Private access members
-	void LoadScene(SceneList sceneIndex);
-	void UnloadScene();
+	//position
+	Vector2 SetOrigin(Vector2 v) { return origin = v; }
+	Vector2 GetOrigin() const { return origin; }
+	Vector2 SetMotion(Vector2 v) { return motion = v; }
+	Vector2 GetMotion() const { return motion; }
 
-	BaseScene* activeScene = nullptr;
+	//collision
+	BoundingBox SetBounds(BoundingBox b) { return bounds = b; }
+	BoundingBox GetBounds() { return bounds; }
 
-	//shared parameters
-	int clientIndex = -1;
-	int accountIndex = -1;
+protected: //TODO: should be private
+	SpriteSheet sprite;
+	Vector2 origin = {0, 0};
+	Vector2 motion = {0, 0};
+	BoundingBox bounds;
 };
 
 #endif

@@ -1,4 +1,4 @@
-/* Copyright: (c) Kayne Ruse 2013, 2014
+/* Copyright: (c) Kayne Ruse 2014
  * 
  * This software is provided 'as-is', without any express or implied
  * warranty. In no event will the authors be held liable for any damages
@@ -19,40 +19,29 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef CLIENTAPPLICATION_HPP_
-#define CLIENTAPPLICATION_HPP_
+#include "base_character.hpp"
 
-#include "scene_list.hpp"
-#include "base_scene.hpp"
+void BaseCharacter::CorrectSprite() {
+	//NOTE: These must correspond to the sprite sheet in use
+	if (motion.y > 0) {
+		sprite.SetYIndex(0);
+	}
+	else if (motion.y < 0) {
+		sprite.SetYIndex(1);
+	}
+	else if (motion.x > 0) {
+		sprite.SetYIndex(3);
+	}
+	else if (motion.x < 0) {
+		sprite.SetYIndex(2);
+	}
 
-#include "udp_network_utility.hpp"
-
-#include "singleton.hpp"
-
-#include <map>
-
-class ClientApplication: public Singleton<ClientApplication> {
-public:
-	//public methods
-	void Init(int argc, char* argv[]);
-	void Proc();
-	void Quit();
-
-private:
-	friend Singleton<ClientApplication>;
-
-	ClientApplication() = default;
-	~ClientApplication() = default;
-
-	//Private access members
-	void LoadScene(SceneList sceneIndex);
-	void UnloadScene();
-
-	BaseScene* activeScene = nullptr;
-
-	//shared parameters
-	int clientIndex = -1;
-	int accountIndex = -1;
-};
-
-#endif
+	//animation
+	if (motion != 0) {
+		sprite.SetDelay(0.1);
+	}
+	else {
+		sprite.SetDelay(0);
+		sprite.SetXIndex(0);
+	}
+}

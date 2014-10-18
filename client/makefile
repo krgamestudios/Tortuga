@@ -1,5 +1,5 @@
 #config
-INCLUDES+=. client_utilities scenes ../common/debugging ../common/gameplay ../common/graphics ../common/map ../common/network ../common/network/packet_types ../common/ui ../common/utilities
+INCLUDES+=. client_utilities renderable scenes ../common/debugging ../common/gameplay ../common/graphics ../common/map ../common/network ../common/network/packet_types ../common/ui ../common/utilities
 LIBS+=client.a ../libcommon.a -lSDL_net -lwsock32 -liphlpapi -lmingw32 -lSDLmain -lSDL -llua
 CXXFLAGS+=-std=c++11 $(addprefix -I,$(INCLUDES))
 
@@ -18,6 +18,7 @@ OUT=$(addprefix $(OUTDIR)/,client)
 all: $(OBJ) $(OUT)
 	$(MAKE) -C client_utilities
 	$(MAKE) -C scenes
+	$(MAKE) -C renderable
 	$(CXX) $(CXXFLAGS) -o $(OUT) $(OBJ) $(LIBS)
 
 $(OBJ): | $(OBJDIR)
