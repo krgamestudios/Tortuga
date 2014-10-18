@@ -1,5 +1,7 @@
 TODO: Get the rooms working, even if only via hotkeys
+TODO: SerialPacketType::CHARACTER_LOCATION, CHARACTER_MOVE, CHARACTER_TELEPORT, ROOM_CHANGE, etc.
 TODO: Fix shoddy movement
+TODO: Handle statistics server-side
 
 TODO: Remove the big "Shut Down" button
 TODO: Make a way for the server owner to control the server directly

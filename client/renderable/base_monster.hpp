@@ -26,8 +26,8 @@
 
 class BaseMonster {
 public:
-	BaseMonster();
-	virtual ~BaseMonster();
+	BaseMonster() = default;
+	virtual ~BaseMonster() = default;
 
 private:
 	//
