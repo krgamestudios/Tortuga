@@ -35,6 +35,7 @@ struct CharacterPacket : SerialPacketBase {
 
 	//the owner
 	int accountIndex;
+	//TODO: Authentication token?
 
 	//location
 	int roomIndex;
