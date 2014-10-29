@@ -26,21 +26,20 @@
 
 #include <chrono>
 
-//TODO: ClientManager?
 class ClientData {
 public:
 	typedef std::chrono::steady_clock Clock;
 
 	ClientData() = default;
-	ClientData(IPaddress add): address(add) {}
+	ClientData(IPaddress add);
 	~ClientData() = default;
 
-	IPaddress SetAddress(IPaddress add) { return address = add; }
-	IPaddress GetAddress() { return address; }
+	IPaddress SetAddress(IPaddress add);
+	IPaddress GetAddress();
 
-	Clock::time_point GetLastBeat() { return lastBeat; }
+	Clock::time_point GetLastBeat();
 
-	int GetAttempts() { return attemptedBeats; }
+	int GetAttempts();
 	int IncrementAttempts();
 	int ResetAttempts();
 

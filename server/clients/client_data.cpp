@@ -21,6 +21,26 @@
 */
 #include "client_data.hpp"
 
+ClientData::ClientData(IPaddress add) {
+	address = add;
+}
+
+IPaddress ClientData::SetAddress(IPaddress add) {
+	return address = add;
+}
+
+IPaddress ClientData::GetAddress() {
+	return address;
+}
+
+ClientData::Clock::time_point ClientData::GetLastBeat() {
+	return lastBeat;
+}
+
+int ClientData::GetAttempts() {
+	return attemptedBeats;
+}
+
 int ClientData::IncrementAttempts() {
 	lastBeat = Clock::now();
 	return attemptedBeats++;
