@@ -1,4 +1,5 @@
 TODO: Get the rooms working, even if only via hotkeys
+TODO: I need a better way to handle the statistics
 TODO: SerialPacketType::CHARACTER_LOCATION, CHARACTER_MOVE, CHARACTER_TELEPORT, ROOM_CHANGE, etc.
 TODO: Fix shoddy movement
 TODO: Handle statistics server-side
