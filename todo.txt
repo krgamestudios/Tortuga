@@ -3,6 +3,7 @@ TODO: SerialPacketType::CHARACTER_LOCATION, CHARACTER_MOVE, CHARACTER_TELEPORT, 
 TODO: Fix shoddy movement
 TODO: Handle statistics server-side
 TODO: Periodic mass server saves
+TODO: join vs login
 
 TODO: Remove the big "Shut Down" button
 TODO: Make a way for the server owner to control the server directly
