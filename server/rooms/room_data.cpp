@@ -21,3 +21,42 @@
 */
 #include "room_data.hpp"
 
+std::string RoomData::SetRoomName(std::string s) {
+	return roomName = s;
+}
+
+std::string RoomData::GetRoomName() {
+	return roomName;
+}
+
+std::string RoomData::SetTilesetName(std::string s) {
+	return tilesetName = s;
+}
+
+std::string RoomData::GetTilesetName() {
+	return tilesetName;
+}
+
+RegionPagerLua* RoomData::GetPager() {
+	return &pager;
+}
+
+std::list<Entity*>* RoomData::GetEntityList() {
+	return &entityList;
+}
+
+int RoomData::SetLoadReference(int i) {
+	return loadRef = i;
+}
+
+int RoomData::GetLoadReference() {
+	return loadRef;
+}
+
+int RoomData::SetUnloadReference(int i) {
+	return unloadRef = i;
+}
+
+int RoomData::GetUnloadReference() {
+	return unloadRef;
+}

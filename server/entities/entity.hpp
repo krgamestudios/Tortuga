@@ -28,15 +28,15 @@
 class Entity {
 public:
 	//accessors & mutators
-	int SetEntityIndex(int i)		{ return entityIndex = i; }
-	int SetRoomIndex(int i)			{ return roomIndex = i; }
-	Vector2 SetOrigin(Vector2 v)	{ return origin = v; }
-	Vector2 SetMotion(Vector2 v)	{ return motion = v; }
+	int SetEntityIndex(int i);
+	int SetRoomIndex(int i);
+	Vector2 SetOrigin(Vector2 v);
+	Vector2 SetMotion(Vector2 v);
 
-	int GetEntityIndex()	{ return entityIndex; }
-	int GetRoomIndex()		{ return roomIndex; }
-	Vector2 GetOrigin()		{ return origin; }
-	Vector2 GetMotion()		{ return motion; }
+	int GetEntityIndex();
+	int GetRoomIndex();
+	Vector2 GetOrigin();
+	Vector2 GetMotion();
 
 protected:
 	Entity() = default;

@@ -40,21 +40,29 @@ public:
 	~RoomData() = default;
 
 	//accessors and mutators
-	RegionPagerLua* GetPager() { return &pager; }
+	std::string SetRoomName(std::string s);
+	std::string GetRoomName();
 
-	std::string SetRoomName(std::string s) { return roomName = s; }
-	std::string GetRoomName() { return roomName; }
+	std::string SetTilesetName(std::string s);
+	std::string GetTilesetName();
 
-	std::string SetTilesetName(std::string s) { return tilesetName = s; }
-	std::string GetTilesetName() { return tilesetName; }
+	RegionPagerLua* GetPager();
+	std::list<Entity*>* GetEntityList();
+
+	//hooks
+	int SetLoadReference(int);
+	int GetLoadReference();
+	int SetUnloadReference(int);
+	int GetUnloadReference();
 
 private:
 	friend class RoomManager;
 
 	//members
-	RegionPagerLua pager;
 	std::string roomName;
 	std::string tilesetName;
+
+	RegionPagerLua pager;
 	std::list<Entity*> entityList;
 
 	//lua references

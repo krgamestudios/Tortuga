@@ -27,6 +27,10 @@ OUT=$(addprefix $(OUTDIR)/,server)
 all: $(OUT)
 	$(MAKE) -C accounts
 	$(MAKE) -C characters
+	$(MAKE) -C clients
+	$(MAKE) -C doors
+	$(MAKE) -C entities
+	$(MAKE) -C monsters
 	$(MAKE) -C rooms
 	$(MAKE) -C server_utilities
 #	$(CXX) $(CXXFLAGS) -o $(OUT) $(OBJ) $(LIBS)

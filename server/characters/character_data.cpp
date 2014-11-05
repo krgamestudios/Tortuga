@@ -19,16 +19,20 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef ROOMAPI_HPP_
-#define ROOMAPI_HPP_
+#include "character_data.hpp"
 
-#if defined(__MINGW32__)
- #include "lua/lua.hpp"
-#else
- #include "lua.hpp"
-#endif
+Statistics* CharacterData::GetBaseStats() {
+	return &baseStats;
+}
 
-#define TORTUGA_ROOM_NAME "room"
-LUAMOD_API int openRoomAPI(lua_State* L);
+int CharacterData::GetOwner() {
+	return owner;
+}
 
-#endif
+std::string CharacterData::GetHandle() {
+	return handle;
+}
+
+std::string CharacterData::GetAvatar() {
+	return avatar;
+}

@@ -23,12 +23,6 @@
 
 #include "room_data.hpp"
 
-static int getPager(lua_State* L) {
-	RoomData* room = reinterpret_cast<RoomData*>(lua_touserdata(L, 1));
-	lua_pushlightuserdata(L, reinterpret_cast<void*>(room->GetPager()) );
-	return 1;
-}
-
 static int setRoomName(lua_State* L) {
 	RoomData* room = reinterpret_cast<RoomData*>(lua_touserdata(L, 1));
 	room->SetRoomName(lua_tostring(L, 2));
@@ -52,6 +46,14 @@ static int getTilesetName(lua_State* L) {
 	lua_pushstring(L, room->GetTilesetName().c_str());
 	return 1;
 }
+
+static int getPager(lua_State* L) {
+	RoomData* room = reinterpret_cast<RoomData*>(lua_touserdata(L, 1));
+	lua_pushlightuserdata(L, reinterpret_cast<void*>(room->GetPager()) );
+	return 1;
+}
+
+
 
 static const luaL_Reg roomLib[] = {
 	{"GetPager",getPager},

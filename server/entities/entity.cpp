@@ -19,16 +19,35 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef ROOMAPI_HPP_
-#define ROOMAPI_HPP_
+#include "entity.hpp"
 
-#if defined(__MINGW32__)
- #include "lua/lua.hpp"
-#else
- #include "lua.hpp"
-#endif
+int Entity::SetEntityIndex(int i) {
+	return entityIndex = i;
+}
 
-#define TORTUGA_ROOM_NAME "room"
-LUAMOD_API int openRoomAPI(lua_State* L);
+int Entity::SetRoomIndex(int i) {
+	return roomIndex = i;
+}
 
-#endif
+Vector2 Entity::SetOrigin(Vector2 v) {
+	return origin = v;
+}
+
+Vector2 Entity::SetMotion(Vector2 v) {
+	return motion = v;
+}
+int Entity::GetEntityIndex() {
+	return entityIndex;
+}
+
+int Entity::GetRoomIndex() {
+	return roomIndex;
+}
+
+Vector2 Entity::GetOrigin() {
+	return origin;
+}
+
+Vector2 Entity::GetMotion() {
+	return motion;
+}

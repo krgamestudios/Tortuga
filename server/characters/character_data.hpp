@@ -37,12 +37,12 @@ public:
 	~CharacterData() = default;
 
 	//accessors and mutators
-	Statistics* GetBaseStats() { return &baseStats; }
+	Statistics* GetBaseStats();
 
 	//database stuff
-	int GetOwner() { return owner; }
-	std::string GetHandle() { return handle; }
-	std::string GetAvatar() { return avatar; }
+	int GetOwner();
+	std::string GetHandle();
+	std::string GetAvatar();
 
 private:
 	friend class CharacterManager;

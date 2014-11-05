@@ -59,10 +59,10 @@ public:
 	std::map<int, MonsterData>* GetContainer() override;
 
 	//hooks
-	sqlite3* SetDatabase(sqlite3* db) override;
-	sqlite3* GetDatabase() override;
-	lua_State* SetLuaState(lua_State* L) override;
-	lua_State* GetLuaState() override;
+	sqlite3* SetDatabase(sqlite3* db);
+	sqlite3* GetDatabase();
+	lua_State* SetLuaState(lua_State* L);
+	lua_State* GetLuaState();
 
 private:
 	friend Singleton<MonsterManager>;

@@ -19,16 +19,36 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef ROOMAPI_HPP_
-#define ROOMAPI_HPP_
+#include "account_data.hpp"
 
-#if defined(__MINGW32__)
- #include "lua/lua.hpp"
-#else
- #include "lua.hpp"
-#endif
+int AccountData::SetClientIndex(int i) {
+	return clientIndex = i;
+}
 
-#define TORTUGA_ROOM_NAME "room"
-LUAMOD_API int openRoomAPI(lua_State* L);
+int AccountData::GetClientIndex() {
+	return clientIndex;
+}
 
-#endif
+std::string AccountData::SetUsername(std::string s) {
+	return username = s;
+}
+
+std::string AccountData::GetUsername() {
+	return username;
+}
+
+bool AccountData::GetBlackListed() {
+	return blackListed;
+}
+
+bool AccountData::GetWhiteListed() {
+	return whiteListed;
+}
+
+bool AccountData::GetModerator() {
+	return mod;
+}
+
+bool AccountData::GetAdministrator() {
+	return admin;
+}

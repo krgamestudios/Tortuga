@@ -30,17 +30,17 @@ public:
 	~AccountData() = default;
 
 	//accessors and mutators
-	int SetClientIndex(int i) { return clientIndex = i; }
-	int GetClientIndex() { return clientIndex; }
+	int SetClientIndex(int i);
+	int GetClientIndex();
 
-	std::string SetUsername(std::string s) { return username = s; }
-	std::string GetUsername() { return username; }
+	std::string SetUsername(std::string s);
+	std::string GetUsername();
 
 	//database stuff
-	bool GetBlackListed() { return blackListed; }
-	bool GetWhiteListed() { return whiteListed; }
-	bool GetModerator() { return mod; }
-	bool GetAdministrator() { return admin; }
+	bool GetBlackListed();
+	bool GetWhiteListed();
+	bool GetModerator();
+	bool GetAdministrator();
 
 private:
 	friend class AccountManager;
