@@ -22,10 +22,10 @@
 #ifndef REGIONAPI_HPP_
 #define REGIONAPI_HPP_
 
-#ifdef __unix__
-#include "lua.hpp"
+#if defined(__MINGW32__)
+ #include "lua/lua.hpp"
 #else
-#include "lua/lua.hpp"
+ #include "lua.hpp"
 #endif
 
 #define TORTUGA_REGION_NAME "Region"
