@@ -19,8 +19,8 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef REGIONPAGERAPI_HPP_
-#define REGIONPAGERAPI_HPP_
+#ifndef MAPSYSTEMAPI_HPP_
+#define MAPSYSTEMAPI_APP_
 
 #if defined(__MINGW32__)
  #include "lua/lua.hpp"
@@ -28,7 +28,7 @@
  #include "lua.hpp"
 #endif
 
-#define TORTUGA_REGION_PAGER_NAME "region_pager"
-LUAMOD_API int openRegionPagerAPI(lua_State* L);
+#define TORTUGA_MAP_SYSTEM_API "map_system"
+LUAMOD_API int openMapSystemAPI(lua_State* L);
 
 #endif

@@ -19,16 +19,28 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef REGIONPAGERAPI_HPP_
-#define REGIONPAGERAPI_HPP_
+#include "map_system_api.hpp"
 
-#if defined(__MINGW32__)
- #include "lua/lua.hpp"
-#else
- #include "lua.hpp"
-#endif
+//all map API headers
+#include "region_api.hpp"
+#include "region_pager_api.hpp"
+#include "tile_sheet.hpp"
 
-#define TORTUGA_REGION_PAGER_NAME "region_pager"
-LUAMOD_API int openRegionPagerAPI(lua_State* L);
+/* This mimics linit.c to create a nested collection of all map modules.
+*/
 
-#endif
+static const luaL_Reg maplibs[] = {
+	{"Region", openRegionAPI},
+	{"RegionPager", openRegionPagerAPI},
+//	{"TileSheet", openTileSheetAPI},
+	{nullptr, nullptr}
+};
+
+int openMapSystemAPI(lua_State* L) {
+	luaL_newlibtable(L, maplibs);
+	for (const luaL_Reg* lib = maplibs; lib->func; lib++) {
+		lua_pushcfunction(L, lib->func);
+		lua_setfield(L, -2, lib->name);
+	}
+	return 1;
+}

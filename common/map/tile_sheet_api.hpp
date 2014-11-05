@@ -28,8 +28,7 @@
  #include "lua.hpp"
 #endif
 
-
-#define TORTUGA_TILE_SHEET_NAME "TileSheet"
+#define TORTUGA_TILE_SHEET_NAME "tile_sheet"
 LUAMOD_API int openTileSheetAPI(lua_State* L);
 
 #endif
