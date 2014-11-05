@@ -22,10 +22,10 @@
 #ifndef SERVERUTILITY_HPP_
 #define SERVERUTILITY_HPP_
 
-#ifdef __unix__
-#include "sqlite3.h"
+#if defined(__MINGW32__)
+ #include "sqlite3/sqlite3.h"
 #else
-#include "sqlite3/sqlite3.h"
+ #include "sqlite3.h"
 #endif
 
 #include <string>

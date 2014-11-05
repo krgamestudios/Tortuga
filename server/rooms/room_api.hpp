@@ -22,10 +22,10 @@
 #ifndef ROOMAPI_HPP_
 #define ROOMAPI_HPP_
 
-#ifdef __unix__
-#include "lua.hpp"
+#if defined(__MINGW32__)
+ #include "lua/lua.hpp"
 #else
-#include "lua/lua.hpp"
+ #include "lua.hpp"
 #endif
 
 #define TORTUGA_ROOM_NAME "Room"
