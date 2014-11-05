@@ -35,6 +35,8 @@
 //public methods
 //-------------------------
 
+//BUG: #35 The server fails without at least one room
+
 void ServerApplication::Init(int argc, char* argv[]) {
 	//NOTE: I might need to rearrange the init process so that lua & SQL can interact with the map system as needed.
 	std::cout << "Beginning " << argv[0] << std::endl;

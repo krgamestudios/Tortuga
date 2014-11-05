@@ -40,9 +40,7 @@
  #include "lua.hpp"
 #endif
 
-#include "region_api.hpp"
-#include "region_pager_api.hpp"
-#include "tile_sheet_api.hpp"
+#include "map_system_api.hpp"
 #include "room_api.hpp"
 #include "room_manager_api.hpp"
 
@@ -61,9 +59,6 @@ static const luaL_Reg loadedlibs[] = {
 	{LUA_DBLIBNAME, luaopen_debug},
 
 	//Tortuga's API
-	{TORTUGA_REGION_NAME, openRegionAPI},
-	{TORTUGA_REGION_PAGER_NAME, openRegionPagerAPI},
-	{TORTUGA_TILE_SHEET_NAME, openTileSheetAPI},
 	{TORTUGA_ROOM_NAME, openRoomAPI},
 	{TORTUGA_ROOM_MANAGER_NAME, openRoomManagerAPI},
 
@@ -73,6 +68,7 @@ static const luaL_Reg loadedlibs[] = {
 
 //these libs are preloaded and must be required before used
 static const luaL_Reg preloadedlibs[] = {
+	{TORTUGA_MAP_SYSTEM_API, openMapSystemAPI},
 	{NULL, NULL}
 };
 

@@ -2,11 +2,10 @@ print("Lua script check")
 
 mapMaker = require "map_maker"
 mapSaver = require "map_saver"
+roomSystem = require "room_system"
 
---BUG: #35 The server fails without at least one room
---TODO: Create rooms with names?
-newRoom = RoomManager.CreateRoom("overworld", "overworld.bmp")
-pager = Room.GetPager(newRoom)
-RegionPager.SetOnCreate(pager, mapMaker.debugIsland)
+--create the overworld, set it's generator, loader & saver
+local overworld = roomSystem.CreateRoom("overworld", "overworld.bmp")
+roomSystem.SetOnLoad(overworld, mapMaker.debugIsland, mapSaver.load, mapSaver.save)
 
 print("Finished the lua script")

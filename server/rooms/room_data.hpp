@@ -58,7 +58,6 @@ private:
 	std::list<Entity*> entityList;
 
 	//lua references
-	int createRef = LUA_NOREF;
 	int loadRef = LUA_NOREF;
 	int unloadRef = LUA_NOREF;
 };
