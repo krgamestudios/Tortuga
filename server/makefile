@@ -24,12 +24,12 @@ OUTDIR=../out
 OUT=$(addprefix $(OUTDIR)/,server)
 
 #targets
-all: $(OBJ) $(OUT)
+all: $(OUT)
 	$(MAKE) -C accounts
 	$(MAKE) -C characters
 	$(MAKE) -C rooms
 	$(MAKE) -C server_utilities
-	$(CXX) $(CXXFLAGS) -o $(OUT) $(OBJ) $(LIBS)
+#	$(CXX) $(CXXFLAGS) -o $(OUT) $(OBJ) $(LIBS)
 
 $(OBJ): | $(OBJDIR)
 

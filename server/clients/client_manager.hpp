@@ -36,20 +36,20 @@ class ClientManager:
 {
 public:
 	//common public methods
-	int Create(IPaddress);
-	int Load(IPaddress);
-	int Save(int uid);
-	void Unload(int uid);
-	void Delete(int uid);
+	int Create(IPaddress) override;
+	int Load(IPaddress) override;
+	int Save(int uid) override;
+	void Unload(int uid) override;
+	void Delete(int uid) override;
 
-	void UnloadAll();
-	void UnloadIf(std::function<bool(std::pair<const int, ClientData>)> fn);
+	void UnloadAll() override;
+	void UnloadIf(std::function<bool(std::pair<const int, ClientData>)> fn) override;
 
 	//accessors & mutators
-	ClientData* Get(int uid);
-	int GetLoadedCount();
-	int GetTotalCount();
-	std::map<int, ClientData>* GetContainer();
+	ClientData* Get(int uid) override;
+	int GetLoadedCount() override;
+	int GetTotalCount() override;
+	std::map<int, ClientData>* GetContainer() override;
 
 private:
 	friend Singleton<ClientManager>;

@@ -29,7 +29,7 @@
 //public access methods
 //-------------------------
 
-int RoomManager::Create() {
+int RoomManager::Create(std::string roomName, std::string tilesetName) {
 	//create the room
 	RoomData* newRoom = &elementMap[counter]; //implicitly constructs the element
 	newRoom->pager.SetLuaState(lua);
@@ -38,7 +38,7 @@ int RoomManager::Create() {
 	return counter++;
 }
 
-int RoomManager::Load() {
+int RoomManager::Load(std::string roomName, std::string tilesetName) {
 	//TODO: RoomManager::Load()
 	return -1;
 }

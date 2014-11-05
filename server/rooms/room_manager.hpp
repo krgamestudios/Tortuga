@@ -34,12 +34,12 @@
 
 class RoomManager:
 	public Singleton<RoomManager>,
-	public ManagerInterface<RoomData>
+	public ManagerInterface<RoomData, std::string, std::string>
 {
 public:
 	//common public methods
-	int Create() override;
-	int Load() override;
+	int Create(std::string, std::string) override;
+	int Load(std::string, std::string) override;
 	int Save(int uid) override;
 	void Unload(int uid) override;
 	void Delete(int uid) override;

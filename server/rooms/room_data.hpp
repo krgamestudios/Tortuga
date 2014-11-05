@@ -22,9 +22,12 @@
 #ifndef ROOMDATA_HPP_
 #define ROOMDATA_HPP_
 
-//map system
+#include "entity.hpp"
 #include "region_pager_lua.hpp"
 
+#include "lua.hpp"
+
+#include <list>
 #include <string>
 
 class RoomData {
@@ -48,8 +51,12 @@ private:
 	RegionPagerLua pager;
 	std::string roomName;
 	std::string tilesetName;
-	//TODO: pass the room name & tileset name to the clients
-	//TODO: lua references i.e. create, unload, etc.
+	std::list<Entity*> entityList;
+
+	//lua references
+	int createRef = LUA_NOREF;
+	int loadRef = LUA_NOREF;
+	int unloadRef = LUA_NOREF;
 };
 
 #endif

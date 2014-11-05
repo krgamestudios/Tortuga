@@ -19,43 +19,5 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef DOORMANAGER_HPP_
-#define DOORMANAGER_HPP_
+#include "room_data.hpp"
 
-#include "door_data.hpp"
-#include "manager_interface.hpp"
-#include "singleton.hpp"
-#include "vector2.hpp"
-
-#include <functional>
-#include <string>
-
-class DoorManager:
-	Singleton<DoorManager>,
-	ManagerInterface<DoorData, std::string, Vector2>
-{
-public:
-	//common public methods
-	int Create(std::string, Vector2) override;
-	int Load(std::string, Vector2) override;
-	int Save(int uid) override;
-	void Unload(int uid) override;
-	void Delete(int uid) override;
-
-	void UnloadAll() override;
-	void UnloadIf(std::function<bool(std::pair<const int, DoorData>)> fn) override;
-
-	//accessors & mutators
-	DoorData* Get(int uid) override;
-	int GetLoadedCount() override;
-	int GetTotalCount() override;
-	std::map<int, DoorData>* GetContainer() override;
-
-private:
-	friend Singleton<DoorManager>;
-
-	DoorManager() = default;
-	~DoorManager() = default;
-};
-
-#endif

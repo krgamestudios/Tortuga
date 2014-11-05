@@ -43,26 +43,26 @@ class MonsterManager:
 {
 public:
 	//common public methods
-	int Create(std::string);
-	int Load(std::string);
-	int Save(int uid);
-	void Unload(int uid);
-	void Delete(int uid);
+	int Create(std::string) override;
+	int Load(std::string) override;
+	int Save(int uid) override;
+	void Unload(int uid) override;
+	void Delete(int uid) override;
 
-	void UnloadAll();
-	void UnloadIf(std::function<bool(std::pair<const int, MonsterData>)> fn);
+	void UnloadAll() override;
+	void UnloadIf(std::function<bool(std::pair<const int, MonsterData>)> fn) override;
 
 	//accessors & mutators
-	MonsterData* Get(int uid);
-	int GetLoadedCount();
-	int GetTotalCount();
-	std::map<int, MonsterData>* GetContainer();
+	MonsterData* Get(int uid) override;
+	int GetLoadedCount() override;
+	int GetTotalCount() override;
+	std::map<int, MonsterData>* GetContainer() override;
 
 	//hooks
-	sqlite3* SetDatabase(sqlite3* db);
-	sqlite3* GetDatabase();
-	lua_State* SetLuaState(lua_State* L);
-	lua_State* GetLuaState();
+	sqlite3* SetDatabase(sqlite3* db) override;
+	sqlite3* GetDatabase() override;
+	lua_State* SetLuaState(lua_State* L) override;
+	lua_State* GetLuaState() override;
 
 private:
 	friend Singleton<MonsterManager>;
