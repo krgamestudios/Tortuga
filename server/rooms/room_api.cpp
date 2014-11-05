@@ -53,7 +53,7 @@ static int getPager(lua_State* L) {
 	return 1;
 }
 
-
+//TODO: GetEntityList?
 
 static const luaL_Reg roomLib[] = {
 	{"GetPager",getPager},

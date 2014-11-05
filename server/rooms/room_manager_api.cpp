@@ -26,7 +26,7 @@
 int createRoom(lua_State* L) {
 	//create & get the room
 	RoomManager& roomMgr = RoomManager::GetSingleton();
-	int uid = roomMgr.Create();
+	int uid = roomMgr.Create("",""); //TODO: All new managers need their internals fleshed out
 	RoomData* room = roomMgr.Get(uid);
 
 	//setup the room

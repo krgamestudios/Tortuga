@@ -1,8 +1,6 @@
-TODO: client_manager.cpp
-TODO: door_manager.cpp
-TODO: monster_manager.cpp
-TODO: *_data.cpp
-TODO: reduce friendships
+TODO: All new managers need their internals fleshed out
+TODO: room_system api
+TODO: rewrite the main body of the server
 
 TODO: I need a better way to handle the statistics
 TODO: Fix shoddy movement
