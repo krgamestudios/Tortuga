@@ -21,48 +21,46 @@
 */
 #include "door_manager.hpp"
 
-//TODO: door_manager.cpp
-
 int DoorManager::Create(std::string, Vector2) {
-	//
+	//TODO
 }
 
 int DoorManager::Load(std::string, Vector2) {
-	//
+	//TODO
 }
 
 int DoorManager::Save(int uid) {
-	//
+	//TODO
 }
 
 void DoorManager::Unload(int uid) {
-	//
+	//TODO
 }
 
 void DoorManager::Delete(int uid) {
-	//
+	//TODO
 }
 
 void DoorManager::UnloadAll() {
-	//
+	//TODO
 }
 
 void DoorManager::UnloadIf(std::function<bool(std::pair<const int, DoorData>)> fn) {
-	//
+	//TODO
 }
 
 DoorData* DoorManager::Get(int uid) {
-	//
+	//TODO
 }
 
 int DoorManager::GetLoadedCount() {
-	//
+	//TODO
 }
 
 int DoorManager::GetTotalCount() {
-	//
+	//TODO
 }
 
 std::map<int, DoorData>* DoorManager::GetContainer() {
-	//
+	//TODO
 }

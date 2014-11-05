@@ -21,48 +21,46 @@
 */
 #include "client_manager.hpp"
 
-//TODO: client_manager.cpp
-
 int ClientManager::Create(IPaddress add) {
-	//
+	//TODO
 }
 
 int ClientManager::Load(IPaddress add) {
-	//
+	//TODO
 }
 
 int ClientManager::Save(int uid) {
-	//
+	//TODO
 }
 
 void ClientManager::Unload(int uid) {
-	//
+	//TODO
 }
 
 void ClientManager::Delete(int uid) {
-	//
+	//TODO
 }
 
 void ClientManager::UnloadAll() {
-	//
+	//TODO
 }
 
 void ClientManager::UnloadIf(std::function<bool(std::pair<const int, ClientData>)> fn) {
-	//
+	//TODO
 }
 
 ClientData* ClientManager::Get(int uid) {
-	//
+	//TODO
 }
 
 int ClientManager::GetLoadedCount() {
-	//
+	//TODO
 }
 
 int ClientManager::GetTotalCount() {
-	//
+	//TODO
 }
 
 std::map<int, ClientData>* ClientManager::GetContainer() {
-	//
+	//TODO
 }
