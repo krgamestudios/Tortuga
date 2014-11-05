@@ -24,26 +24,17 @@
 
 //components
 #include "character_defines.hpp"
-#include "vector2.hpp"
+#include "entity.hpp"
 #include "statistics.hpp"
 
 //std namespace
 #include <string>
 #include <cmath>
 
-class CharacterData {
+class CharacterData: public Entity {
 public:
 	CharacterData() = default;
 	~CharacterData() = default;
-
-	//location and movement
-	int SetRoomIndex(int i) { return roomIndex = i; }
-	Vector2 SetOrigin(Vector2 v) { return origin = v; }
-	Vector2 SetMotion(Vector2 v) { return motion = v; }
-
-	int GetRoomIndex() { return roomIndex; }
-	Vector2 GetOrigin() { return origin; }
-	Vector2 GetMotion() { return motion; }
 
 	//accessors and mutators
 	Statistics* GetBaseStats() { return &baseStats; }
@@ -55,11 +46,6 @@ public:
 
 private:
 	friend class CharacterManager;
-
-	//world position
-	int roomIndex = 0;
-	Vector2 origin = {0.0,0.0};
-	Vector2 motion = {0.0,0.0};
 
 	Statistics baseStats;
 

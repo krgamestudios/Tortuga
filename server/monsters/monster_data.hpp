@@ -27,7 +27,7 @@
 
 #include <string>
 
-class MonsterData: Entity {
+class MonsterData: public Entity {
 public:
 	MonsterData() = default;
 	~MonsterData() = default;

@@ -27,7 +27,7 @@
 
 #include <string>
 
-class DoorData: Entity {
+class DoorData: public Entity {
 public:
 	DoorData() = default;
 	~DoorData() = default;
