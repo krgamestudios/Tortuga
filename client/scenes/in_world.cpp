@@ -138,7 +138,7 @@ void InWorld::Update() {
 		}
 	}
 
-	//update the camera
+	//update the camera (following the player)
 	camera.x = localCharacter->GetOrigin().x - camera.marginX;
 	camera.y = localCharacter->GetOrigin().y - camera.marginY;
 
@@ -179,6 +179,7 @@ void InWorld::Render(SDL_Surface* const screen) {
 	//draw characters
 	for (auto& it : characterMap) {
 		//BUG: #29 drawing order according to Y origin
+		//TODO: use a list of renderable objects
 		it.second.DrawTo(screen, camera.x, camera.y);
 	}
 
@@ -209,10 +210,10 @@ void InWorld::MouseButtonDown(SDL_MouseButtonEvent const& button) {
 }
 
 void InWorld::MouseButtonUp(SDL_MouseButtonEvent const& button) {
-	if (disconnectButton.MouseButtonUp(button) == Button::State::HOVER) {
+	if (disconnectButton.MouseButtonUp(button) == Button::State::HOVER && button.button == SDL_BUTTON_LEFT) {
 		RequestDisconnect();
 	}
-	if (shutDownButton.MouseButtonUp(button) == Button::State::HOVER) {
+	if (shutDownButton.MouseButtonUp(button) == Button::State::HOVER && button.button == SDL_BUTTON_LEFT) {
 		RequestShutDown();
 	}
 }
@@ -326,7 +327,7 @@ void InWorld::HandlePing(ServerPacket* const argPacket) {
 
 void InWorld::HandlePong(ServerPacket* const argPacket) {
 	if (network.GetIPAddress(Channels::SERVER)->host != argPacket->srcAddress.host) {
-		throw(std::runtime_error("Heartbeat message received from unknown source"));
+		throw(std::runtime_error("Heartbeat message received from an unknown source"));
 	}
 
 	attemptedBeats = 0;

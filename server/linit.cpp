@@ -34,10 +34,10 @@
 #define linit_c
 #define LUA_LIB
 
-#ifdef __unix__
-#include "lua.hpp"
+#if defined(__MINGW32__)
+ #include "lua/lua.hpp"
 #else
-#include "lua/lua.hpp"
+ #include "lua.hpp"
 #endif
 
 #include "region_api.hpp"

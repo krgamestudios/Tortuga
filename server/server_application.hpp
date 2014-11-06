@@ -35,12 +35,12 @@
 #include "singleton.hpp"
 
 //APIs
-#if __unix__
-#include "lua.hpp"
-#include "sqlite3.h"
+#if defined(__MINGW32__)
+ #include "lua/lua.hpp"
+ #include "sqlite3/sqlite3.h"
 #else
-#include "lua/lua.hpp"
-#include "sqlite3/sqlite3.h"
+ #include "lua.hpp"
+ #include "sqlite3.h"
 #endif
 
 #include "SDL/SDL.h"

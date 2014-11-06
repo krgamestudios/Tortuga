@@ -29,10 +29,8 @@ std::string truncatePath(std::string pathname) {
 			pathname.rbegin(),
 			pathname.rend(),
 			[](char ch) -> bool {
-				//windows only
+				//windows & unix tested
 				return ch == '/' || ch == '\\';
-//				//unix only
-//				return ch == '/';
 			}).base(),
 		pathname.end());
 }

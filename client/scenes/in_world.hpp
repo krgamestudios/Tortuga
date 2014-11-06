@@ -39,6 +39,7 @@
 #include "frame_rate.hpp"
 
 #include "base_character.hpp"
+#include "base_monster.hpp"
 #include "local_character.hpp"
 
 //client
@@ -92,12 +93,13 @@ protected:
 	//utilities
 	void UpdateMap();
 
-	//shared parameters
+	//singleton shortcut
 	UDPNetworkUtility& network = UDPNetworkUtility::GetSingleton();
+
+	//indexes
 	int& clientIndex;
 	int& accountIndex;
 	int characterIndex = -1;
-	std::map<int, BaseCharacter> characterMap;
 
 	//graphics
 	Image buttonImage;
@@ -110,6 +112,7 @@ protected:
 	//UI
 	Button disconnectButton;
 	Button shutDownButton;
+	FrameRate fps;
 
 	//the camera structure
 	struct {
@@ -117,12 +120,13 @@ protected:
 		int width = 0, height = 0;
 		int marginX = 0, marginY = 0;
 	} camera;
-	FrameRate fps;
 
-	//game
+	//game components
 	BaseCharacter* localCharacter = nullptr;
+	std::map<int, BaseCharacter> characterMap;
+	std::map<int, BaseMonster> monsterMap;
 
-	//connections
+	//heartbeat
 	//TODO: This needs it's own utility, for both InWorld and InCombat
 	typedef std::chrono::steady_clock Clock;
 	Clock::time_point lastBeat = Clock::now();
