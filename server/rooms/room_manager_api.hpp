@@ -28,7 +28,7 @@
  #include "lua.hpp"
 #endif
 
-#define TORTUGA_ROOM_MANAGER_NAME "room_manager"
+#define TORTUGA_ROOM_MANAGER_API "room_manager"
 LUAMOD_API int openRoomManagerAPI(lua_State* L);
 
 #endif

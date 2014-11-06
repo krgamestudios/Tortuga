@@ -19,16 +19,38 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef ROOMAPI_HPP_
-#define ROOMAPI_HPP_
+#include "room_system_api.hpp"
 
-#if defined(__MINGW32__)
- #include "lua/lua.hpp"
-#else
- #include "lua.hpp"
-#endif
+//all map API headers
+#include "room_api.hpp"
+#include "room_manager_api.hpp"
 
-#define TORTUGA_ROOM_API "room"
-LUAMOD_API int openRoomAPI(lua_State* L);
+//useful "globals"
+//...
 
-#endif
+//This mimics linit.c to create a nested collection of all map modules.
+static const luaL_Reg funcs[] = {
+	{nullptr, nullptr}
+};
+
+static const luaL_Reg libs[] = {
+	{"Room", openRoomAPI},
+	{"RoomManager", openRoomManagerAPI},
+//	{"TileSheet", openTileSheetAPI},
+	{nullptr, nullptr}
+};
+
+int openMapSystemAPI(lua_State* L) {
+	//create the table
+	luaL_newlibtable(L, libs);
+
+	//push the "global" functions
+	luaL_setfuncs(L, funcs, 0);
+
+	//push the substable
+	for (const luaL_Reg* lib = libs; lib->func; lib++) {
+		lua_pushcfunction(L, lib->func);
+		lua_setfield(L, -2, lib->name);
+	}
+	return 1;
+}

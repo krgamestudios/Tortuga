@@ -24,7 +24,10 @@
 //all map API headers
 #include "region_api.hpp"
 #include "region_pager_api.hpp"
-#include "tile_sheet.hpp"
+#include "tile_sheet_api.hpp"
+
+//macros
+#include "region.hpp"
 
 //useful "globals"
 static int getRegionWidth(lua_State* L) {
@@ -43,7 +46,7 @@ static int getRegionDepth(lua_State* L) {
 }
 
 //This mimics linit.c to create a nested collection of all map modules.
-static const luaL_Reg mapfuncs[] = {
+static const luaL_Reg funcs[] = {
 	//synonyms
 	{"GetRegionWidth", getRegionWidth},
 	{"GetRegionHeight", getRegionHeight},
@@ -51,7 +54,7 @@ static const luaL_Reg mapfuncs[] = {
 	{nullptr, nullptr}
 };
 
-static const luaL_Reg maplibs[] = {
+static const luaL_Reg libs[] = {
 	{"Region", openRegionAPI},
 	{"RegionPager", openRegionPagerAPI},
 //	{"TileSheet", openTileSheetAPI},
@@ -60,13 +63,13 @@ static const luaL_Reg maplibs[] = {
 
 int openMapSystemAPI(lua_State* L) {
 	//create the table
-	luaL_newlibtable(L, maplibs);
+	luaL_newlibtable(L, libs);
 
 	//push the "global" functions
-	luaL_setfuncs(L, mapfuncs, 0);
+	luaL_setfuncs(L, funcs, 0);
 
 	//push the substable
-	for (const luaL_Reg* lib = maplibs; lib->func; lib++) {
+	for (const luaL_Reg* lib = libs; lib->func; lib++) {
 		lua_pushcfunction(L, lib->func);
 		lua_setfield(L, -2, lib->name);
 	}

@@ -41,8 +41,7 @@
 #endif
 
 #include "map_system_api.hpp"
-#include "room_api.hpp"
-#include "room_manager_api.hpp"
+#include "room_system_api.hpp"
 
 //these libs are loaded by lua.c and are readily available to any Lua program
 static const luaL_Reg loadedlibs[] = {
@@ -57,11 +56,6 @@ static const luaL_Reg loadedlibs[] = {
 	{LUA_BITLIBNAME, luaopen_bit32},
 	{LUA_MATHLIBNAME, luaopen_math},
 	{LUA_DBLIBNAME, luaopen_debug},
-
-	//Tortuga's API
-	{TORTUGA_ROOM_NAME, openRoomAPI},
-	{TORTUGA_ROOM_MANAGER_NAME, openRoomManagerAPI},
-
 	{NULL, NULL}
 };
 
@@ -69,6 +63,7 @@ static const luaL_Reg loadedlibs[] = {
 //these libs are preloaded and must be required before used
 static const luaL_Reg preloadedlibs[] = {
 	{TORTUGA_MAP_SYSTEM_API, openMapSystemAPI},
+	{TORTUGA_ROOM_SYSTEM_API, openRoomSystemAPI},
 	{NULL, NULL}
 };
 

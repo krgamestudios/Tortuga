@@ -19,8 +19,8 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef ROOMAPI_HPP_
-#define ROOMAPI_HPP_
+#ifndef ROOMSYSTEMAPI_HPP_
+#define ROOMSYSTEMAPI_HPP_
 
 #if defined(__MINGW32__)
  #include "lua/lua.hpp"
@@ -28,7 +28,7 @@
  #include "lua.hpp"
 #endif
 
-#define TORTUGA_ROOM_API "room"
-LUAMOD_API int openRoomAPI(lua_State* L);
+#define TORTUGA_ROOM_SYSTEM_API "room_system"
+LUAMOD_API int openRoomSystemAPI(lua_State* L);
 
 #endif
