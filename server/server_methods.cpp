@@ -28,12 +28,14 @@
 //basic connections
 //-------------------------
 
+//SET: utility
 void ServerApplication::HandlePing(ServerPacket* const argPacket) {
 	ServerPacket newPacket;
 	newPacket.type = SerialPacketType::PONG;
 	network.SendTo(argPacket->srcAddress, &newPacket);
 }
 
+//SET: utility/manager
 void ServerApplication::HandlePong(ServerPacket* const argPacket) {
 	//find and update the specified client
 	for (auto& it : clientMap) {
@@ -46,6 +48,7 @@ void ServerApplication::HandlePong(ServerPacket* const argPacket) {
 	}
 }
 
+//SET: utility
 void ServerApplication::HandleBroadcastRequest(ServerPacket* const argPacket) {
 	//send the server's data
 	ServerPacket newPacket;
@@ -58,6 +61,7 @@ void ServerApplication::HandleBroadcastRequest(ServerPacket* const argPacket) {
 	network.SendTo(argPacket->srcAddress, static_cast<SerialPacket*>(&newPacket));
 }
 
+//SET: connections
 void ServerApplication::HandleJoinRequest(ClientPacket* const argPacket) {
 	//load the user account
 	//TODO: handle passwords
@@ -91,6 +95,7 @@ void ServerApplication::HandleJoinRequest(ClientPacket* const argPacket) {
 	std::cout << "New connection, " << clientMap.size() << " clients and " << accountMgr.GetLoadedCount() << " accounts total" << std::endl;
 }
 
+//SET: connections
 void ServerApplication::HandleDisconnect(ClientPacket* const argPacket) {
 	//TODO: authenticate who is disconnecting/kicking
 	/*Pseudocode:
@@ -127,6 +132,7 @@ void ServerApplication::HandleDisconnect(ClientPacket* const argPacket) {
 	std::cout << "Disconnection, " << clientMap.size() << " clients and " << accountMgr.GetLoadedCount() << " accounts total" << std::endl;
 }
 
+//SET: connections
 void ServerApplication::HandleShutdown(ClientPacket* const argPacket) {
 	//TODO: authenticate who is shutting the server down
 	/*Pseudocode:
@@ -152,6 +158,7 @@ void ServerApplication::HandleShutdown(ClientPacket* const argPacket) {
 //map management
 //-------------------------
 
+//SET: resources
 void ServerApplication::HandleRegionRequest(RegionPacket* const argPacket) {
 	RegionPacket newPacket;
 
@@ -171,6 +178,7 @@ void ServerApplication::HandleRegionRequest(RegionPacket* const argPacket) {
 //Character Management
 //-------------------------
 
+//SET: entities
 void ServerApplication::HandleCharacterNew(CharacterPacket* const argPacket) {
 	//NOTE: misnomer, try to load the character first
 	int characterIndex = characterMgr.Load(argPacket->accountIndex, argPacket->handle, argPacket->avatar);
@@ -203,6 +211,7 @@ void ServerApplication::HandleCharacterNew(CharacterPacket* const argPacket) {
 	PumpPacket(&newPacket);
 }
 
+//SET: entities
 void ServerApplication::HandleCharacterDelete(CharacterPacket* const argPacket) {
 	//NOTE: Disconnecting only unloads a character, this explicitly deletes it
 
@@ -234,6 +243,7 @@ void ServerApplication::HandleCharacterDelete(CharacterPacket* const argPacket) 
 	PumpCharacterUnload(characterIndex);
 }
 
+//SET: entities
 void ServerApplication::HandleCharacterUpdate(CharacterPacket* const argPacket) {
 	CharacterData* character = characterMgr.Get(argPacket->characterIndex);
 
@@ -259,6 +269,7 @@ void ServerApplication::HandleCharacterUpdate(CharacterPacket* const argPacket) 
 //mismanagement
 //-------------------------
 
+//SET: delete
 void ServerApplication::HandleSynchronize(ClientPacket* const argPacket) {
 	//TODO: compensate for large distances
 	//NOTE: I quite dislike this function
@@ -282,6 +293,7 @@ void ServerApplication::HandleSynchronize(ClientPacket* const argPacket) {
 //utility methods
 //-------------------------
 
+//SET: utility/manager
 void ServerApplication::CheckClientConnections() {
 	for (auto& it : clientMap) {
 		if (std::chrono::steady_clock::now() - it.second.GetLastBeat() > std::chrono::seconds(3)) {
@@ -299,6 +311,7 @@ void ServerApplication::CheckClientConnections() {
 	}
 }
 
+//SET: utility/manager
 void ServerApplication::CleanupLostConnection(int clientIndex) {
 	//NOTE: This assumes each player has only one account and character at a time
 	//TODO: handle multiple characters (bots, etc.)
@@ -341,14 +354,17 @@ void ServerApplication::CleanupLostConnection(int clientIndex) {
 	std::cout << clientMap.size() << " clients and " << accountMgr.GetLoadedCount() << " accounts total" << std::endl;
 }
 
+//SET: utility
 //TODO: a function that only sends to characters in a certain proximity
 
+//SET: utility
 void ServerApplication::PumpPacket(SerialPacket* const argPacket) {
 	for (auto& it : clientMap) {
 		network.SendTo(it.second.GetAddress(), argPacket);
 	}
 }
 
+//??
 void ServerApplication::PumpCharacterUnload(int uid) {
 	//delete the client-side character(s)
 	//NOTE: This is a strange function
@@ -358,6 +374,7 @@ void ServerApplication::PumpCharacterUnload(int uid) {
 	PumpPacket(static_cast<SerialPacket*>(&newPacket));
 }
 
+//SET: utility
 void ServerApplication::CopyCharacterToPacket(CharacterPacket* const packet, int characterIndex) {
 	CharacterData* character = characterMgr.Get(characterIndex);
 	if (!character) {

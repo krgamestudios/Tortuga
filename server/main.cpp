@@ -24,7 +24,10 @@
 //singletons
 #include "account_manager.hpp"
 #include "character_manager.hpp"
+#include "client_manager.hpp"
 #include "config_utility.hpp"
+#include "door_manager.hpp"
+#include "monster_manager.hpp"
 #include "room_manager.hpp"
 #include "udp_network_utility.hpp"
 
@@ -38,7 +41,10 @@ int main(int argc, char* argv[]) {
 		//create the singletons
 		AccountManager::CreateSingleton();
 		CharacterManager::CreateSingleton();
+		ClientManager::CreateSingleton();
 		ConfigUtility::CreateSingleton();
+		DoorManager::CreateSingleton();
+		MonsterManager::CreateSingleton();
 		RoomManager::CreateSingleton();
 		UDPNetworkUtility::CreateSingleton();
 
@@ -55,7 +61,10 @@ int main(int argc, char* argv[]) {
 		//delete the singletons
 		AccountManager::DeleteSingleton();
 		CharacterManager::DeleteSingleton();
+		ClientManager::DeleteSingleton();
 		ConfigUtility::DeleteSingleton();
+		DoorManager::DeleteSingleton();
+		MonsterManager::DeleteSingleton();
 		RoomManager::DeleteSingleton();
 		UDPNetworkUtility::DeleteSingleton();
 	}

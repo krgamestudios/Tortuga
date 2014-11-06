@@ -96,20 +96,9 @@ private:
 	//APIs and utilities
 	sqlite3* database = nullptr;
 	lua_State* luaState = nullptr;
-	UDPNetworkUtility& network = UDPNetworkUtility::GetSingleton();
-	ConfigUtility& config = ConfigUtility::GetSingleton();
-
-	//simple tables
-	std::map<int, ClientData> clientMap;
-
-	//managers
-	AccountManager& accountMgr = AccountManager::GetSingleton();
-	CharacterManager& characterMgr = CharacterManager::GetSingleton();
-	RoomManager& roomMgr = RoomManager::GetSingleton();
 
 	//misc
 	bool running = true;
-	int clientIndex = 0;
 };
 
 #endif
