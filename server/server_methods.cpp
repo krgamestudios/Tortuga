@@ -29,26 +29,6 @@
 //-------------------------
 
 //SET: utility
-void ServerApplication::HandlePing(ServerPacket* const argPacket) {
-	ServerPacket newPacket;
-	newPacket.type = SerialPacketType::PONG;
-	network.SendTo(argPacket->srcAddress, &newPacket);
-}
-
-//SET: utility/manager
-void ServerApplication::HandlePong(ServerPacket* const argPacket) {
-	//find and update the specified client
-	for (auto& it : clientMap) {
-		if (it.second.GetAddress().host == argPacket->srcAddress.host &&
-			it.second.GetAddress().port == argPacket->srcAddress.port
-			) {
-			it.second.ResetAttempts();
-			break;
-		}
-	}
-}
-
-//SET: utility
 void ServerApplication::HandleBroadcastRequest(ServerPacket* const argPacket) {
 	//send the server's data
 	ServerPacket newPacket;
@@ -292,24 +272,6 @@ void ServerApplication::HandleSynchronize(ClientPacket* const argPacket) {
 //-------------------------
 //utility methods
 //-------------------------
-
-//SET: utility/manager
-void ServerApplication::CheckClientConnections() {
-	for (auto& it : clientMap) {
-		if (std::chrono::steady_clock::now() - it.second.GetLastBeat() > std::chrono::seconds(3)) {
-			ServerPacket newPacket;
-			newPacket.type = SerialPacketType::PING;
-			network.SendTo(it.second.GetAddress(), &newPacket);
-			it.second.IncrementAttempts();
-		}
-
-		if (it.second.GetAttempts() > 2) {
-			CleanupLostConnection(it.first);
-			//all iterators are invalid, so we can't continue
-			break;
-		}
-	}
-}
 
 //SET: utility/manager
 void ServerApplication::CleanupLostConnection(int clientIndex) {

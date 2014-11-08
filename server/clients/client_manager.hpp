@@ -24,6 +24,7 @@
 
 #include "client_data.hpp"
 #include "manager_interface.hpp"
+#include "server_packet.hpp"
 #include "singleton.hpp"
 
 #include "SDL/SDL_net.h"
@@ -31,16 +32,17 @@
 #include <functional>
 
 class ClientManager:
-	Singleton<ClientManager>,
-	ManagerInterface<ClientData, IPaddress>
+	public Singleton<ClientManager>,
+	public ManagerInterface<ClientData, IPaddress>
 {
 public:
+	//methods
+	int CheckConnections();
+	void HandlePong(ServerPacket* const argPacket);
+
 	//common public methods
 	int Create(IPaddress) override;
-	int Load(IPaddress) override;
-	int Save(int uid) override;
 	void Unload(int uid) override;
-	void Delete(int uid) override;
 
 	void UnloadAll() override;
 	void UnloadIf(std::function<bool(std::pair<const int, ClientData>)> fn) override;
@@ -56,6 +58,11 @@ private:
 
 	ClientManager() = default;
 	~ClientManager() = default;
+
+	//EMPTY
+	int Load(IPaddress) override { return -1; }
+	int Save(int uid) override { return -1; }
+	void Delete(int uid) override { return; }
 
 	int counter = 0;
 };

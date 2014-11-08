@@ -21,10 +21,21 @@
 */
 #include "server_application.hpp"
 
+//managers
+#include "account_manager.hpp"
+#include "character_manager.hpp"
+#include "client_manager.hpp"
+#include "room_manager.hpp"
+
+//utilities
+#include "config_utility.hpp"
+#include "udp_network_utility.hpp"
+
 //utility functions
 #include "sql_tools.hpp"
 #include "utility.hpp"
 
+//std & STL
 #include <stdexcept>
 #include <chrono>
 #include <iostream>
@@ -41,7 +52,8 @@ void ServerApplication::Init(int argc, char* argv[]) {
 	//NOTE: I might need to rearrange the init process so that lua & SQL can interact with the map system as needed.
 	std::cout << "Beginning " << argv[0] << std::endl;
 
-	//load the prerequisites
+	//load the config settings
+	ConfigUtility& config = ConfigUtility::GetSingleton();
 	config.Load("rsc/config.cfg", argc, argv);
 
 	//-------------------------
@@ -58,7 +70,7 @@ void ServerApplication::Init(int argc, char* argv[]) {
 	if (SDLNet_Init()) {
 		throw(std::runtime_error("Failed to initialize SDL_net"));
 	}
-	network.Open(config.Int("server.port"));
+	UDPNetworkUtility::GetSingleton().Open(config.Int("server.port"));
 	std::cout << "Initialized SDL_net" << std::endl;
 
 	//Init SQL
@@ -77,7 +89,7 @@ void ServerApplication::Init(int argc, char* argv[]) {
 
 	std::cout << "Initialized lua" << std::endl;
 
-	//append config["dir.scripts"] to the module path
+	//prepend config["dir.scripts"] to the module path
 	if (config["dir.scripts"].size() > 0) {
 		//get the original path
 		lua_getglobal(luaState, "package");
@@ -100,10 +112,10 @@ void ServerApplication::Init(int argc, char* argv[]) {
 	//-------------------------
 
 	//set the hooks
-	accountMgr.SetDatabase(database);
-	characterMgr.SetDatabase(database);
+	AccountManager::GetSingleton().SetDatabase(database);
+	CharacterManager::GetSingleton().SetDatabase(database);
 
-	roomMgr.SetLuaState(luaState);
+	RoomManager::GetSingleton().SetLuaState(luaState);
 
 	std::cout << "Internal managers initialized" << std::endl;
 
@@ -164,14 +176,17 @@ void ServerApplication::Proc() {
 	SerialPacket* packetBuffer = reinterpret_cast<SerialPacket*>(new char[MAX_PACKET_SIZE]);
 	while(running) {
 		//suck in the waiting packets & process them
-		while(network.Receive(packetBuffer)) {
+		while(UDPNetworkUtility::GetSingleton().Receive(packetBuffer)) {
 			HandlePacket(packetBuffer);
 		}
 		//update the internals
 		//...
 
 		//Check connections
-		CheckClientConnections();
+		int disconnected = ClientManager::GetSingleton().CheckConnections();
+		if (disconnected != -1) {
+			//TODO: clean up after this disconnection
+		}
 
 		//give the computer a break
 		SDL_Delay(10);
@@ -183,17 +198,15 @@ void ServerApplication::Quit() {
 	std::cout << "Shutting down" << std::endl;
 
 	//close the managers
-	clientMap.clear();
-	accountMgr.UnloadAll();
-	characterMgr.UnloadAll();
-	//TODO: unload combats
-	//TODO: unload enemies
-	roomMgr.UnloadAll();
+	ClientManager::GetSingleton().UnloadAll();
+	AccountManager::GetSingleton().UnloadAll();
+	CharacterManager::GetSingleton().UnloadAll();
+	RoomManager::GetSingleton().UnloadAll();
 
 	//APIs
 	lua_close(luaState);
 	sqlite3_close_v2(database);
-	network.Close();
+	UDPNetworkUtility::GetSingleton().Close();
 	SDLNet_Quit();
 	SDL_Quit();
 
@@ -206,13 +219,18 @@ void ServerApplication::Quit() {
 
 void ServerApplication::HandlePacket(SerialPacket* const argPacket) {
 	switch(argPacket->type) {
-		//basic connections
-		case SerialPacketType::PING:
-			HandlePing(static_cast<ServerPacket*>(argPacket));
+		//heartbeat system
+		case SerialPacketType::PING: {
+			ServerPacket newPacket;
+			newPacket.type = SerialPacketType::PONG;
+			UDPNetworkUtility::GetSingleton().SendTo(argPacket->srcAddress, &newPacket);
+		}
 		break;
 		case SerialPacketType::PONG:
-			HandlePong(static_cast<ServerPacket*>(argPacket));
+			ClientManager::GetSingleton().HandlePong(static_cast<ServerPacket*>(argPacket));
 		break;
+
+		//connections
 		case SerialPacketType::BROADCAST_REQUEST:
 			HandleBroadcastRequest(static_cast<ServerPacket*>(argPacket));
 		break;

@@ -22,16 +22,8 @@
 #ifndef SERVERAPPLICATION_HPP_
 #define SERVERAPPLICATION_HPP_
 
-//server specific stuff, mostly managers
-#include "client_data.hpp"
-#include "account_manager.hpp"
-#include "character_manager.hpp"
-#include "room_manager.hpp"
-
 //common utilities
-#include "udp_network_utility.hpp"
 #include "serial_packet.hpp"
-#include "config_utility.hpp"
 #include "singleton.hpp"
 
 //APIs
@@ -67,8 +59,6 @@ private:
 	void HandlePacket(SerialPacket* const);
 
 	//basic connections
-	void HandlePing(ServerPacket* const);
-	void HandlePong(ServerPacket* const);
 	void HandleBroadcastRequest(ServerPacket* const);
 	void HandleJoinRequest(ClientPacket* const);
 	void HandleDisconnect(ClientPacket* const);
@@ -86,7 +76,6 @@ private:
 	void HandleSynchronize(ClientPacket* const);
 
 	//utility methods
-	void CheckClientConnections();
 	//TODO: a function that only sends to characters in a certain proximity
 	void CleanupLostConnection(int index);
 	void PumpPacket(SerialPacket* const);

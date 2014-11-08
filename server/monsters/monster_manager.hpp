@@ -38,8 +38,8 @@
 #include <string>
 
 class MonsterManager:
-	Singleton<MonsterManager>,
-	ManagerInterface<MonsterData, std::string>
+	public Singleton<MonsterManager>,
+	public ManagerInterface<MonsterData, std::string>
 {
 public:
 	//common public methods

@@ -31,8 +31,8 @@
 #include <string>
 
 class DoorManager:
-	Singleton<DoorManager>,
-	ManagerInterface<DoorData, std::string, Vector2>
+	public Singleton<DoorManager>,
+	public ManagerInterface<DoorData, std::string, Vector2>
 {
 public:
 	//common public methods

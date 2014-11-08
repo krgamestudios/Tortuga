@@ -21,46 +21,89 @@
 */
 #include "client_manager.hpp"
 
+#include "udp_network_utility.hpp"
+
+#include <chrono>
+
+int ClientManager::CheckConnections() {
+	for (auto& it : elementMap) {
+		//3 seconds between beats
+		if (ClientData::Clock::now() - it.second.GetLastBeat() > std::chrono::seconds(3)) {
+			ServerPacket newPacket;
+			newPacket.type = SerialPacketType::PING;
+			UDPNetworkUtility::GetSingleton().SendTo(it.second.GetAddress(), &newPacket);
+			it.second.IncrementAttempts();
+		}
+	}
+
+	for (auto& it : elementMap) {
+		if (it.second.GetAttempts() > 2) {
+			int ret = it.first;
+			elementMap.erase(it.first);
+			return ret;
+		}
+	}
+
+	return -1;
+}
+
+void ClientManager::HandlePong(ServerPacket* const argPacket) {
+	//find and update the specified client
+	for (auto& it : elementMap) {
+		if (it.second.GetAddress().host == argPacket->srcAddress.host &&
+			it.second.GetAddress().port == argPacket->srcAddress.port
+			) {
+			it.second.ResetAttempts();
+			return;
+		}
+	}
+}
+
 int ClientManager::Create(IPaddress add) {
-	//TODO
-}
-
-int ClientManager::Load(IPaddress add) {
-	//TODO
-}
-
-int ClientManager::Save(int uid) {
-	//TODO
+	ClientData& client = elementMap[counter];
+	client.SetAddress(add);
+	return counter++;
 }
 
 void ClientManager::Unload(int uid) {
-	//TODO
-}
-
-void ClientManager::Delete(int uid) {
-	//TODO
+	elementMap.erase(uid);
 }
 
 void ClientManager::UnloadAll() {
-	//TODO
+	elementMap.clear();
 }
 
 void ClientManager::UnloadIf(std::function<bool(std::pair<const int, ClientData>)> fn) {
-	//TODO
+	std::map<int, ClientData>::iterator it = elementMap.begin();
+	while (it != elementMap.end()) {
+		if (fn(*it)) {
+			it = elementMap.erase(it);
+			//TODO: ? disconnect, unload characters, notify other clients
+		}
+		else {
+			++it;
+		}
+	}
 }
 
 ClientData* ClientManager::Get(int uid) {
-	//TODO
+	std::map<int, ClientData>::iterator it = elementMap.find(uid);
+
+	if (it == elementMap.end()) {
+		return nullptr;
+	}
+
+	return &it->second;
 }
 
 int ClientManager::GetLoadedCount() {
-	//TODO
+	return elementMap.size();
 }
 
 int ClientManager::GetTotalCount() {
-	//TODO
+	return elementMap.size();
 }
 
 std::map<int, ClientData>* ClientManager::GetContainer() {
-	//TODO
+	return &elementMap;
 }
