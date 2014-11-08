@@ -49,6 +49,7 @@ private:
 	std::string username;
 	//TODO: password
 
+	//bit fields?
 	bool blackListed = false;
 	bool whiteListed = true;
 	bool mod = false;

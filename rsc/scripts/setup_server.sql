@@ -1,3 +1,5 @@
+--TODO: An archive table of all dead characters
+
 CREATE TABLE IF NOT EXISTS Accounts (
 	uid			INTEGER PRIMARY KEY AUTOINCREMENT,
 	username	varchar(100) UNIQUE,

@@ -6,6 +6,7 @@ TODO: I need a better way to handle the statistics
 TODO: Fix shoddy movement
 TODO: Handle statistics server-side
 TODO: Periodic mass server saves
+TODO: join vs login
 
 TODO: Remove the big "Shut Down" button
 TODO: Make a way for the server owner to control the server directly

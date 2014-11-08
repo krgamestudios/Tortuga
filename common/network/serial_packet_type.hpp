@@ -46,21 +46,19 @@ enum class SerialPacketType {
 
 	//-------------------------
 	//ClientPacket
-	//  client index, account index, character index
+	//  client index, account index, username
 	//-------------------------
 
 	//Connecting to a server as a client
 	JOIN_REQUEST,
 	JOIN_RESPONSE,
 
-	//client requests all information from the server
-	SYNCHRONIZE,
-
 	//disconnect from the server
-	DISCONNECT,
+	DISCONNECT_REQUEST,
+	DISCONNECT_FORCED,
 
 	//shut down the server
-	SHUTDOWN,
+	SHUTDOWN_REQUEST,
 
 	//-------------------------
 	//RegionPacket
@@ -73,19 +71,32 @@ enum class SerialPacketType {
 
 	//-------------------------
 	//CharacterPacket
-	//  handle, avatar, character index, account index,
-	//  room index, origin, motion
+	//  character index,
+	//  handle, avatar,
+	//  account index (owner),
+	//  room index, origin, motion,
 	//  statistics
 	//-------------------------
 
-	//controlling characters
-	CHARACTER_NEW,
-	CHARACTER_DELETE,
-	CHARACTER_UPDATE,
-
-	//authentication, character index => character stats
+	//all stats
 	CHARACTER_STATS_REQUEST,
 	CHARACTER_STATS_RESPONSE,
+
+	//character management
+	//NOTE: The server sends create & delete messages to the clients, but the clients... don't?
+	CHARACTER_CREATE
+	CHARACTER_DELETE
+	CHARACTER_LOAD
+	CHARACTER_UNLOAD
+
+	//find out info from the server
+	CHARACTER_QUERY_EXISTS
+	CHARACTER_QUERY_LOCATION
+
+	//set the info in the server
+	CHARACTER_SET_ROOM
+	CHARACTER_SET_ORIGIN
+	CHARACTER_SET_MOTION
 
 	//-------------------------
 	//TextPacket

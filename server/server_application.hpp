@@ -22,6 +22,18 @@
 #ifndef SERVERAPPLICATION_HPP_
 #define SERVERAPPLICATION_HPP_
 
+//managers
+#include "account_manager.hpp"
+#include "character_manager.hpp"
+#include "client_manager.hpp"
+#include "door_manager.hpp"
+#include "monster_manager.hpp"
+#include "room_manager.hpp"
+
+//utilities
+#include "config_utility.hpp"
+#include "udp_network_utility.hpp"
+
 //common utilities
 #include "serial_packet.hpp"
 #include "singleton.hpp"

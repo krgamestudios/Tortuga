@@ -326,7 +326,7 @@ void ServerApplication::PumpPacket(SerialPacket* const argPacket) {
 	}
 }
 
-//??
+//SET: utility
 void ServerApplication::PumpCharacterUnload(int uid) {
 	//delete the client-side character(s)
 	//NOTE: This is a strange function

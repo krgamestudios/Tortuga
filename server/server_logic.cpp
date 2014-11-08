@@ -21,16 +21,6 @@
 */
 #include "server_application.hpp"
 
-//managers
-#include "account_manager.hpp"
-#include "character_manager.hpp"
-#include "client_manager.hpp"
-#include "room_manager.hpp"
-
-//utilities
-#include "config_utility.hpp"
-#include "udp_network_utility.hpp"
-
 //utility functions
 #include "sql_tools.hpp"
 #include "utility.hpp"
