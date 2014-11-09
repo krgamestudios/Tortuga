@@ -40,7 +40,7 @@ static const luaL_Reg libs[] = {
 	{nullptr, nullptr}
 };
 
-int openMapSystemAPI(lua_State* L) {
+int openRoomSystemAPI(lua_State* L) {
 	//create the table
 	luaL_newlibtable(L, libs);
 

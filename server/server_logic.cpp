@@ -43,7 +43,6 @@ void ServerApplication::Init(int argc, char* argv[]) {
 	std::cout << "Beginning " << argv[0] << std::endl;
 
 	//load the config settings
-	ConfigUtility& config = ConfigUtility::GetSingleton();
 	config.Load("rsc/config.cfg", argc, argv);
 
 	//-------------------------
@@ -60,7 +59,7 @@ void ServerApplication::Init(int argc, char* argv[]) {
 	if (SDLNet_Init()) {
 		throw(std::runtime_error("Failed to initialize SDL_net"));
 	}
-	UDPNetworkUtility::GetSingleton().Open(config.Int("server.port"));
+	network.Open(config.Int("server.port"));
 	std::cout << "Initialized SDL_net" << std::endl;
 
 	//Init SQL
@@ -102,10 +101,10 @@ void ServerApplication::Init(int argc, char* argv[]) {
 	//-------------------------
 
 	//set the hooks
-	AccountManager::GetSingleton().SetDatabase(database);
-	CharacterManager::GetSingleton().SetDatabase(database);
+	accountMgr.SetDatabase(database);
+	characterMgr.SetDatabase(database);
 
-	RoomManager::GetSingleton().SetLuaState(luaState);
+	roomMgr.SetLuaState(luaState);
 
 	std::cout << "Internal managers initialized" << std::endl;
 
@@ -173,9 +172,23 @@ void ServerApplication::Proc() {
 		//...
 
 		//Check connections
-		int disconnected = ClientManager::GetSingleton().CheckConnections();
+		int disconnected = clientMgr.CheckConnections();
 		if (disconnected != -1) {
-			//TODO: clean up after this disconnection
+			//find and unload the accounts associated with this client
+			accountMgr.UnloadIf([&](std::pair<const int, AccountData> account) -> bool {
+				if (account.second.GetClientIndex() == disconnected) {
+					//find and unload the characters associated with this account
+					characterMgr.UnloadIf([&](std::pair<const int, CharacterData> character) -> bool {
+						if (character.second.GetOwner() == account.first) {
+							PumpCharacterUnload(character.first);
+							return true;
+						}
+						return false;
+					});
+					return true;
+				}
+				return false;
+			});
 		}
 
 		//give the computer a break
@@ -187,16 +200,20 @@ void ServerApplication::Proc() {
 void ServerApplication::Quit() {
 	std::cout << "Shutting down" << std::endl;
 
+	//TODO: save the server state
+
 	//close the managers
-	ClientManager::GetSingleton().UnloadAll();
-	AccountManager::GetSingleton().UnloadAll();
-	CharacterManager::GetSingleton().UnloadAll();
-	RoomManager::GetSingleton().UnloadAll();
+	accountMgr.UnloadAll();
+	characterMgr.UnloadAll();
+	clientMgr.UnloadAll();
+	doorMgr.UnloadAll();
+	monsterMgr.UnloadAll();
+	roomMgr.UnloadAll();
 
 	//APIs
 	lua_close(luaState);
 	sqlite3_close_v2(database);
-	UDPNetworkUtility::GetSingleton().Close();
+	network.Close();
 	SDLNet_Quit();
 	SDL_Quit();
 
@@ -213,60 +230,93 @@ void ServerApplication::HandlePacket(SerialPacket* const argPacket) {
 		case SerialPacketType::PING: {
 			ServerPacket newPacket;
 			newPacket.type = SerialPacketType::PONG;
-			UDPNetworkUtility::GetSingleton().SendTo(argPacket->srcAddress, &newPacket);
+			network.SendTo(argPacket->srcAddress, &newPacket);
 		}
 		break;
 		case SerialPacketType::PONG:
-			ClientManager::GetSingleton().HandlePong(static_cast<ServerPacket*>(argPacket));
+			clientMgr.HandlePong(static_cast<ServerPacket*>(argPacket));
 		break;
 
-		//connections
+		//client connections
 		case SerialPacketType::BROADCAST_REQUEST:
-			HandleBroadcastRequest(static_cast<ServerPacket*>(argPacket));
+//			HandleBroadcastRequest(static_cast<ServerPacket*>(argPacket));
 		break;
 		case SerialPacketType::JOIN_REQUEST:
-			HandleJoinRequest(static_cast<ClientPacket*>(argPacket));
+//			HandleJoinRequest(static_cast<ClientPacket*>(argPacket));
 		break;
-		case SerialPacketType::DISCONNECT:
-			HandleDisconnect(static_cast<ClientPacket*>(argPacket));
-		break;
-		case SerialPacketType::SHUTDOWN:
-			HandleShutdown(static_cast<ClientPacket*>(argPacket));
+		case SerialPacketType::LOGIN_REQUEST:
+//			HandleLoginRequest(static_cast<ClientPacket*>(argPacket));
 		break;
 
-		//map management
+		//client disconnections
+		case SerialPacketType::DISCONNECT_REQUEST:
+//			HandleDisconnectRequest(static_cast<ClientPacket*>(argPacket));
+		break;
+		case SerialPacketType::DISCONNECT_FORCED:
+//			HandleDisconnectForced(static_cast<ClientPacket*>(argPacket));
+		break;
+		case SerialPacketType::LOGOUT_REQUEST:
+//			HandleLogoutRequest(static_cast<ClientPacket*>(argPacket));
+		break;
+
+		//server commands
+		case SerialPacketType::SHUTDOWN_REQUEST:
+//			HandleShutdownRequest(static_cast<ClientPacket*>(argPacket));
+		break;
+
+		//data management & queries
 		case SerialPacketType::REGION_REQUEST:
-			HandleRegionRequest(static_cast<RegionPacket*>(argPacket));
+//			HandleRegionRequest(static_cast<RegionPacket*>(argPacket));
 		break;
-
-		//combat management
-		//TODO: combat management
+		case SerialPacketType::QUERY_CHARACTER_EXISTS:
+//			HandleCharacterStatsRequest(static_cast<RegionPacket*>(argPacket));
+		break;
+		case SerialPacketType::QUERY_CHARACTER_STATS:
+//			HandleCharacterStatsRequest(static_cast<RegionPacket*>(argPacket));
+		break;
+		case SerialPacketType::QUERY_CHARACTER_LOCATION:
+//			HandleCharacterStatsRequest(static_cast<RegionPacket*>(argPacket));
+		break;
+		case SerialPacketType::TEXT_BROADCAST:
+//			HandleCharacterStatsRequest(static_cast<RegionPacket*>(argPacket));
+		break;
 
 		//character management
-		case SerialPacketType::CHARACTER_NEW:
-			HandleCharacterNew(static_cast<CharacterPacket*>(argPacket));
+		case SerialPacketType::CHARACTER_CREATE:
+//			HandleCharacterNew(static_cast<CharacterPacket*>(argPacket));
 		break;
 		case SerialPacketType::CHARACTER_DELETE:
-			HandleCharacterDelete(static_cast<CharacterPacket*>(argPacket));
+//			HandleCharacterDelete(static_cast<CharacterPacket*>(argPacket));
 		break;
-		case SerialPacketType::CHARACTER_UPDATE:
-		case SerialPacketType::CHARACTER_STATS_REQUEST:
-			HandleCharacterUpdate(static_cast<CharacterPacket*>(argPacket));
+		case SerialPacketType::CHARACTER_LOAD:
+//			HandleCharacterNew(static_cast<CharacterPacket*>(argPacket));
+		break;
+		case SerialPacketType::CHARACTER_UNLOAD:
+//			HandleCharacterDelete(static_cast<CharacterPacket*>(argPacket));
+		break;
+
+		//character movement
+		case SerialPacketType::CHARACTER_SET_ROOM:
+//			HandleCharacterUpdate(static_cast<CharacterPacket*>(argPacket));
+		break;
+		case SerialPacketType::CHARACTER_SET_ORIGIN:
+//			HandleCharacterUpdate(static_cast<CharacterPacket*>(argPacket));
+		break;
+		case SerialPacketType::CHARACTER_SET_MOTION:
+//			HandleCharacterUpdate(static_cast<CharacterPacket*>(argPacket));
 		break;
 
 		//enemy management
 		//TODO: enemy management
 
-		//mismanagement
-		case SerialPacketType::SYNCHRONIZE:
-			HandleSynchronize(static_cast<ClientPacket*>(argPacket));
-		break;
+		//TODO: text
 
 		//handle errors
 		default: {
-			std::string msg = "Unknown SerialPacketType encountered in the server: ";
-			msg += to_string_custom(static_cast<int>(argPacket->type));
-			throw(std::runtime_error(msg));
+			std::ostringstream msg;
+			msg << "Unknown SerialPacketType encountered in the server: ";
+			msg << to_string_custom(static_cast<int>(argPacket->type));
+			throw(std::runtime_error(msg.str()));
 		}
 		break;
 	}

@@ -27,6 +27,7 @@
  * valid data, but it will still be carried in that packet's format.
 */
 
+//TODO: This needs to be smoothed out
 enum class SerialPacketType {
 	//default: there is something wrong
 	NONE = 0,
@@ -57,6 +58,14 @@ enum class SerialPacketType {
 	DISCONNECT_REQUEST,
 	DISCONNECT_FORCED,
 
+	//load the account
+	LOGIN_REQUEST,
+	LOGIN_RESPONSE,
+
+	//unload the account
+	LOGOUT_REQUEST,
+	LOGOUT_RESPONSE,
+
 	//shut down the server
 	SHUTDOWN_REQUEST,
 
@@ -66,7 +75,7 @@ enum class SerialPacketType {
 	//-------------------------
 
 	//map data
-	REGION_REQUEST,
+	REGION_REQUEST, //NOTE: technically a query
 	REGION_CONTENT,
 
 	//-------------------------
@@ -78,25 +87,23 @@ enum class SerialPacketType {
 	//  statistics
 	//-------------------------
 
-	//all stats
-	CHARACTER_STATS_REQUEST,
-	CHARACTER_STATS_RESPONSE,
-
 	//character management
-	//NOTE: The server sends create & delete messages to the clients, but the clients... don't?
-	CHARACTER_CREATE
-	CHARACTER_DELETE
-	CHARACTER_LOAD
-	CHARACTER_UNLOAD
+	CHARACTER_CREATE,
+	CHARACTER_DELETE,
+	CHARACTER_LOAD,
+	CHARACTER_UNLOAD,
 
 	//find out info from the server
-	CHARACTER_QUERY_EXISTS
-	CHARACTER_QUERY_LOCATION
+	QUERY_CHARACTER_EXISTS,
+	QUERY_CHARACTER_STATS,
+	QUERY_CHARACTER_LOCATION,
 
 	//set the info in the server
-	CHARACTER_SET_ROOM
-	CHARACTER_SET_ORIGIN
-	CHARACTER_SET_MOTION
+	CHARACTER_SET_ROOM,
+	CHARACTER_SET_ORIGIN,
+	CHARACTER_SET_MOTION,
+
+	//TODO: enemy management
 
 	//-------------------------
 	//TextPacket
@@ -107,9 +114,9 @@ enum class SerialPacketType {
 	TEXT_BROADCAST,
 
 	//rejection/error messages
-	SHUTDOWN_REJECTION,
 	JOIN_REJECTION,
 	CHARACTER_REJECTION,
+	SHUTDOWN_REJECTION,
 
 	//-------------------------
 	//not used

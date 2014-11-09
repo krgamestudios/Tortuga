@@ -98,6 +98,17 @@ private:
 	sqlite3* database = nullptr;
 	lua_State* luaState = nullptr;
 
+	//ugly references; I hate this
+	AccountManager& accountMgr = AccountManager::GetSingleton();
+	CharacterManager& characterMgr = CharacterManager::GetSingleton();
+	ClientManager& clientMgr = ClientManager::GetSingleton();
+	DoorManager& doorMgr = DoorManager::GetSingleton();
+	MonsterManager& monsterMgr = MonsterManager::GetSingleton();
+	RoomManager& roomMgr = RoomManager::GetSingleton();
+
+	ConfigUtility& config = ConfigUtility::GetSingleton();
+	UDPNetworkUtility& network = UDPNetworkUtility::GetSingleton();
+
 	//misc
 	bool running = true;
 };
