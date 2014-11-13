@@ -21,14 +21,14 @@
 */
 #include "room_system_api.hpp"
 
-//all map API headers
+//all room API headers
 #include "room_api.hpp"
 #include "room_manager_api.hpp"
 
 //useful "globals"
 //...
 
-//This mimics linit.c to create a nested collection of all map modules.
+//This mimics linit.c to create a nested collection of all room modules.
 static const luaL_Reg funcs[] = {
 	{nullptr, nullptr}
 };
@@ -36,7 +36,6 @@ static const luaL_Reg funcs[] = {
 static const luaL_Reg libs[] = {
 	{"Room", openRoomAPI},
 	{"RoomManager", openRoomManagerAPI},
-//	{"TileSheet", openTileSheetAPI},
 	{nullptr, nullptr}
 };
 
