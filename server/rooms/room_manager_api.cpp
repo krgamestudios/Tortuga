@@ -48,6 +48,8 @@ int unloadRoom(lua_State* L) {
 	return 0;
 }
 
+//TODO: lua API RoomManager.GetRoom(uid)
+
 static const luaL_Reg roomManagerLib[] = {
 	{"CreateRoom", createRoom},
 	{"UnloadRoom", unloadRoom},
