@@ -1,7 +1,9 @@
-TODO: All new managers need their internals fleshed out
-TODO: room_system api
-TODO: rewrite the main body of the server
+TODO: Account system needs salts & hashes for security
+TODO: Character system might need an API
+TODO: Door system needs an API
+TODO: monster system needs an API
 
+TODO: rewrite the main body of the server
 TODO: I need a better way to handle the statistics
 TODO: Fix shoddy movement
 TODO: Handle statistics server-side
@@ -14,4 +16,3 @@ TODO: The TileSheet class should implement the surface itself
 TODO: Passwords/Authentication
 TODO: Time delay for requesting region packets
 TODO: A proper logging system
-TODO: Update Codebase with the improvements from Tortuga
