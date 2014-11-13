@@ -66,6 +66,7 @@ private:
 	std::list<Entity*> entityList;
 
 	//lua references
+	//TODO: use RoomData's lua references for load and unload functions
 	int loadRef = LUA_NOREF;
 	int unloadRef = LUA_NOREF;
 };
