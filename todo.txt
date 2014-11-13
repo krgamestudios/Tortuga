@@ -16,3 +16,11 @@ TODO: The TileSheet class should implement the surface itself
 TODO: Passwords/Authentication
 TODO: Time delay for requesting region packets
 TODO: A proper logging system
+
+-------------------------
+
+The entities might need an API, which interfaces with all entity types (characters, monsters, doors, etc.)
+The Entity base class handles position (including room) and motion, so something generic like this could be used (or aliased by other APIs)
+
+entity:
+	
