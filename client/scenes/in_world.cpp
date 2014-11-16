@@ -67,15 +67,15 @@ InWorld::InWorld(int* const argClientIndex,	int* const argAccountIndex):
 	tileSheet.Load(config["dir.tilesets"] + "overworld.bmp", 32, 32);
 
 	//send this player's character info
-	CharacterPacket newPacket;
-	newPacket.type = SerialPacketType::CHARACTER_NEW;
-	strncpy(newPacket.handle, config["client.handle"].c_str(), PACKET_STRING_SIZE);
-	strncpy(newPacket.avatar, config["client.avatar"].c_str(), PACKET_STRING_SIZE);
-	newPacket.accountIndex = accountIndex;
-	network.SendTo(Channels::SERVER, &newPacket);
+//	CharacterPacket newPacket;
+//	newPacket.type = SerialPacketType::CHARACTER_NEW;
+//	strncpy(newPacket.handle, config["client.handle"].c_str(), PACKET_STRING_SIZE);
+//	strncpy(newPacket.avatar, config["client.avatar"].c_str(), PACKET_STRING_SIZE);
+//	newPacket.accountIndex = accountIndex;
+//	network.SendTo(Channels::SERVER, &newPacket);
 
 	//request a sync
-	RequestSynchronize();
+//	RequestSynchronize();
 
 	//debug
 	//
@@ -288,41 +288,60 @@ void InWorld::KeyUp(SDL_KeyboardEvent const& key) {
 
 void InWorld::HandlePacket(SerialPacket* const argPacket) {
 	switch(argPacket->type) {
-		case SerialPacketType::PING:
-			HandlePing(static_cast<ServerPacket*>(argPacket));
+		//heartbeat system
+		case SerialPacketType::PING: {
+			ServerPacket newPacket;
+			newPacket.type = SerialPacketType::PONG;
+			network.SendTo(argPacket->srcAddress, &newPacket);
+		}
 		break;
 		case SerialPacketType::PONG:
-			HandlePong(static_cast<ServerPacket*>(argPacket));
+//			HandlePong(static_cast<ServerPacket*>(argPacket));
 		break;
-		case SerialPacketType::DISCONNECT:
-			HandleDisconnect(static_cast<ClientPacket*>(argPacket));
+
+		//game server connections
+		case SerialPacketType::LOGOUT_RESPONSE:
+//			HandleLogoutResponse(static_cast<ClientPacket*>(argPacket));
 		break;
-		case SerialPacketType::CHARACTER_NEW:
-			HandleCharacterNew(static_cast<CharacterPacket*>(argPacket));
+		case SerialPacketType::DISCONNECT_REQUEST:
+//			HandleDisconnectRequest(static_cast<ClientPacket*>(argPacket));
 		break;
-		case SerialPacketType::CHARACTER_DELETE:
-			HandleCharacterDelete(static_cast<CharacterPacket*>(argPacket));
+		case SerialPacketType::DISCONNECT_FORCED:
+//			HandleDisconnectForced(static_cast<ClientPacket*>(argPacket));
 		break;
-		case SerialPacketType::CHARACTER_UPDATE:
-			HandleCharacterUpdate(static_cast<CharacterPacket*>(argPacket));
-		break;
-		case SerialPacketType::CHARACTER_REJECTION:
-			HandleCharacterRejection(static_cast<TextPacket*>(argPacket));
-		break;
+
+		//data management
 		case SerialPacketType::REGION_CONTENT:
-			HandleRegionContent(static_cast<RegionPacket*>(argPacket));
+//			HandleRegionContent(static_cast<RegionPacket*>(argPacket));
 		break;
+//		case SerialPacketType::QUERY_CHARACTER_EXISTS:
+//		case SerialPacketType::QUERY_CHARACTER_STATS:
+//		case SerialPacketType::QUERY_CHARACTER_LOCATION:
+
+		//character management
+//		case SerialPacketType::CHARACTER_NEW:
+//			HandleCharacterNew(static_cast<CharacterPacket*>(argPacket));
+//		break;
+//		case SerialPacketType::CHARACTER_DELETE:
+//			HandleCharacterDelete(static_cast<CharacterPacket*>(argPacket));
+//		break;
+//		case SerialPacketType::CHARACTER_UPDATE:
+//			HandleCharacterUpdate(static_cast<CharacterPacket*>(argPacket));
+//		break;
+//		case SerialPacketType::CHARACTER_REJECTION:
+//			HandleCharacterRejection(static_cast<TextPacket*>(argPacket));
+//		break;
+
+		//enemy management
+		//TODO: enemy management
+
+		//TODO: text
+
 		//handle errors
 		default:
 			throw(std::runtime_error(std::string() + "Unknown SerialPacketType encountered in InWorld: " + to_string_custom(static_cast<int>(argPacket->type)) ));
 		break;
 	}
-}
-
-void InWorld::HandlePing(ServerPacket* const argPacket) {
-	ServerPacket newPacket;
-	newPacket.type = SerialPacketType::PONG;
-	network.SendTo(argPacket->srcAddress, &newPacket);
 }
 
 void InWorld::HandlePong(ServerPacket* const argPacket) {
@@ -434,23 +453,23 @@ void InWorld::HandleRegionContent(RegionPacket* const argPacket) {
 //-------------------------
 
 void InWorld::RequestSynchronize() {
-	ClientPacket newPacket;
+//	ClientPacket newPacket;
 
 	//request a sync
-	newPacket.type = SerialPacketType::SYNCHRONIZE;
-	newPacket.clientIndex = clientIndex;
-	newPacket.accountIndex = accountIndex;
+//	newPacket.type = SerialPacketType::SYNCHRONIZE;
+//	newPacket.clientIndex = clientIndex;
+//	newPacket.accountIndex = accountIndex;
 
 	//TODO: location, range for sync request
 
-	network.SendTo(Channels::SERVER, &newPacket);
+//	network.SendTo(Channels::SERVER, &newPacket);
 }
 
 void InWorld::SendPlayerUpdate() {
 	CharacterPacket newPacket;
 
 	//pack the packet
-	newPacket.type = SerialPacketType::CHARACTER_UPDATE;
+//	newPacket.type = SerialPacketType::CHARACTER_UPDATE;
 
 	newPacket.characterIndex = characterIndex;
 	//NOTE: omitting the handle and avatar here
@@ -469,7 +488,7 @@ void InWorld::RequestDisconnect() {
 	ClientPacket newPacket;
 
 	//send a disconnect request
-	newPacket.type = SerialPacketType::DISCONNECT;
+	newPacket.type = SerialPacketType::DISCONNECT_REQUEST;
 	newPacket.clientIndex = clientIndex;
 	newPacket.accountIndex = accountIndex;
 
@@ -480,7 +499,7 @@ void InWorld::RequestShutDown() {
 	ClientPacket newPacket;
 
 	//send a shutdown request
-	newPacket.type = SerialPacketType::SHUTDOWN;
+	newPacket.type = SerialPacketType::SHUTDOWN_REQUEST;
 	newPacket.clientIndex = clientIndex;
 	newPacket.accountIndex = accountIndex;
 

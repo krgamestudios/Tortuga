@@ -73,7 +73,6 @@ protected:
 
 	//Network handlers
 	void HandlePacket(SerialPacket* const);
-	void HandlePing(ServerPacket* const);
 	void HandlePong(ServerPacket* const);
 	void HandleDisconnect(ClientPacket* const);
 	void HandleCharacterNew(CharacterPacket* const);
