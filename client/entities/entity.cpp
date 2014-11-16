@@ -19,37 +19,44 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef BASECHARACTER_HPP_
-#define BASECHARACTER_HPP_
+#include "entity.hpp"
 
-//components
-#include "character_defines.hpp"
-#include "renderable.hpp"
+void Entity::Update() {
+	origin += motion;
+	sprite.Update(0.016);
+}
 
-//std namespace
-#include <string>
+void Entity::DrawTo(SDL_Surface* const dest, int camX, int camY) {
+	sprite.DrawTo(dest, origin.x - camX, origin.y - camY);
+}
 
-class BaseCharacter : public Renderable {
-public:
-	BaseCharacter() = default;
-	virtual ~BaseCharacter() = default;
+int Entity::SetEntityIndex(int i) {
+	return entityIndex = i;
+}
 
-	//graphics
-	void CorrectSprite();
+int Entity::SetRoomIndex(int i) {
+	return roomIndex = i;
+}
 
-	//metadata
-	int SetOwner(int i) { return owner = i; }
-	int GetOwner() { return owner; }
-	std::string SetHandle(std::string s) { return handle = s; }
-	std::string GetHandle() const { return handle; }
-	std::string SetAvatar(std::string s) { return avatar = s; }
-	std::string GetAvatar() const { return avatar; }
+Vector2 Entity::SetOrigin(Vector2 v) {
+	return origin = v;
+}
 
-private:
-	//metadata
-	int owner;
-	std::string handle;
-	std::string avatar;
-};
+Vector2 Entity::SetMotion(Vector2 v) {
+	return motion = v;
+}
+int Entity::GetEntityIndex() {
+	return entityIndex;
+}
 
-#endif
+int Entity::GetRoomIndex() {
+	return roomIndex;
+}
+
+Vector2 Entity::GetOrigin() {
+	return origin;
+}
+
+Vector2 Entity::GetMotion() {
+	return motion;
+}

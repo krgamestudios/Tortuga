@@ -19,5 +19,44 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#include "local_character.hpp"
+#ifndef ENTITY_HPP_
+#define ENTITY_HPP_
 
+#include "bounding_box.hpp"
+#include "sprite_sheet.hpp"
+#include "vector2.hpp"
+
+//The base class for all objects in the world
+class Entity {
+public:
+	virtual void Update();
+	virtual void DrawTo(SDL_Surface* const, int camX, int camY);
+
+	SpriteSheet* GetSprite() { return &sprite; }
+
+	//accessors & mutators
+	int SetEntityIndex(int i);
+	int SetRoomIndex(int i);
+	Vector2 SetOrigin(Vector2 v);
+	Vector2 SetMotion(Vector2 v);
+	BoundingBox SetBounds(BoundingBox b) { return bounds = b; }
+
+	int GetEntityIndex();
+	int GetRoomIndex();
+	Vector2 GetOrigin();
+	Vector2 GetMotion();
+	BoundingBox GetBounds() { return bounds; }
+
+protected:
+	Entity() = default;
+	~Entity() = default;
+
+	SpriteSheet sprite;
+	int entityIndex = -1;
+	int roomIndex = -1;
+	Vector2 origin;
+	Vector2 motion;
+	BoundingBox bounds;
+};
+
+#endif

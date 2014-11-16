@@ -19,26 +19,18 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef LOCALCHARACTER_HPP_
-#define LOCALCHARACTER_HPP_
+#ifndef BASEMONSTER_HPP_
+#define BASEMONSTER_HPP_
 
-#include "base_character.hpp"
-#include "statistics.hpp"
+#include "entity.hpp"
 
-class LocalCharacter : public BaseCharacter {
+class BaseMonster : public Entity {
 public:
-	LocalCharacter() = default;
-	~LocalCharacter() = default;
-
-	int SetRoomIndex(int i) { return roomIndex = i; }
-	int GetRoomIndex() { return roomIndex; }
-
-	Statistics* GetBaseStats() { return &baseStats; }
+	BaseMonster() = default;
+	virtual ~BaseMonster() = default;
 
 private:
-	int roomIndex = -1;
-	Statistics baseStats;
-	//TODO: weapons, armour, buffs, debuffs, etc.
+	//
 };
 
 #endif
