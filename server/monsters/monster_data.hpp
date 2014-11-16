@@ -23,7 +23,6 @@
 #define MONSTERDATA_HPP_
 
 #include "entity.hpp"
-#include "statistics.hpp"
 
 #include <string>
 
@@ -31,8 +30,6 @@ class MonsterData: public Entity {
 public:
 	MonsterData() = default;
 	~MonsterData() = default;
-
-	Statistics* GetBaseStats();
 
 	std::string SetAvatar(std::string);
 	int SetScriptReference(int);
@@ -43,7 +40,6 @@ public:
 private:
 	friend class MonsterManager;
 
-	Statistics baseStats;
 	std::string avatar;
 	int scriptRef;
 };

@@ -21,10 +21,6 @@
 */
 #include "character_data.hpp"
 
-Statistics* CharacterData::GetBaseStats() {
-	return &baseStats;
-}
-
 int CharacterData::GetOwner() {
 	return owner;
 }

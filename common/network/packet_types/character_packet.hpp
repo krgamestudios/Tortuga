@@ -25,7 +25,6 @@
 #include "serial_packet_base.hpp"
 
 #include "vector2.hpp"
-#include "statistics.hpp"
 
 struct CharacterPacket : SerialPacketBase {
 	//identify the character
@@ -41,9 +40,6 @@ struct CharacterPacket : SerialPacketBase {
 	int roomIndex;
 	Vector2 origin;
 	Vector2 motion;
-
-	//gameplay
-	Statistics stats;
 
 	//gameplay components: equipment, items, buffs, debuffs...
 };

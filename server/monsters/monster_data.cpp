@@ -21,10 +21,6 @@
 */
 #include "monster_data.hpp"
 
-Statistics* MonsterData::GetBaseStats() {
-	return &baseStats;
-}
-
 std::string MonsterData::SetAvatar(std::string s) {
 	return avatar = s;
 }

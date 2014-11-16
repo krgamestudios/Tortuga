@@ -240,8 +240,6 @@ void ServerApplication::HandleCharacterUpdate(CharacterPacket* const argPacket) 
 	character->SetOrigin(argPacket->origin);
 	character->SetMotion(argPacket->motion);
 
-	*character->GetBaseStats() = argPacket->stats;
-
 	//TODO: gameplay components: equipment, items, buffs, debuffs
 
 	PumpPacket(argPacket);
@@ -353,5 +351,4 @@ void ServerApplication::CopyCharacterToPacket(CharacterPacket* const packet, int
 	packet->roomIndex = character->GetRoomIndex();
 	packet->origin = character->GetOrigin();
 	packet->motion = character->GetMotion();
-	packet->stats = *character->GetBaseStats();
 }

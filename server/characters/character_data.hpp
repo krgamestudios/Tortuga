@@ -25,7 +25,6 @@
 //components
 #include "character_defines.hpp"
 #include "entity.hpp"
-#include "statistics.hpp"
 
 //std namespace
 #include <string>
@@ -37,7 +36,7 @@ public:
 	~CharacterData() = default;
 
 	//accessors and mutators
-	Statistics* GetBaseStats();
+	//...
 
 	//database stuff
 	int GetOwner();
@@ -46,8 +45,6 @@ public:
 
 private:
 	friend class CharacterManager;
-
-	Statistics baseStats;
 
 	int owner;
 	std::string handle;
