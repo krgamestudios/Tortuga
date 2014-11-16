@@ -115,6 +115,7 @@ enum class SerialPacketType {
 
 	//rejection/error messages
 	JOIN_REJECTION,
+	LOGIN_REJECTION,
 	CHARACTER_REJECTION,
 	SHUTDOWN_REJECTION,
 

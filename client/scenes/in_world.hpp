@@ -40,7 +40,6 @@
 
 #include "base_character.hpp"
 #include "base_monster.hpp"
-#include "local_character.hpp"
 
 //client
 #include "base_scene.hpp"

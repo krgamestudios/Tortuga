@@ -190,15 +190,25 @@ void LobbyMenu::KeyUp(SDL_KeyboardEvent const& key) {
 
 void LobbyMenu::HandlePacket(SerialPacket* const argPacket) {
 		switch(argPacket->type) {
+			//responses
 		case SerialPacketType::BROADCAST_RESPONSE:
 			HandleBroadcastResponse(static_cast<ServerPacket*>(argPacket));
 		break;
 		case SerialPacketType::JOIN_RESPONSE:
 			HandleJoinResponse(static_cast<ClientPacket*>(argPacket));
 		break;
+		case SerialPacketType::LOGIN_RESPONSE:
+			HandleLoginResponse(static_cast<ClientPacket*>(argPacket));
+		break;
+
+		//rejections
 		case SerialPacketType::JOIN_REJECTION:
 			HandleJoinRejection(static_cast<TextPacket*>(argPacket));
 		break;
+		case SerialPacketType::LOGIN_REJECTION:
+			HandleLoginRejection(static_cast<TextPacket*>(argPacket));
+		break;
+
 		//handle errors
 		default:
 			throw(std::runtime_error(std::string() + "Unknown SerialPacketType encountered in LobbyMenu: " + to_string_custom(static_cast<int>(argPacket->type)) ));
@@ -222,14 +232,28 @@ void LobbyMenu::HandleBroadcastResponse(ServerPacket* const argPacket) {
 }
 
 void LobbyMenu::HandleJoinResponse(ClientPacket* const argPacket) {
+	//save the server's data
 	clientIndex = argPacket->clientIndex;
-	accountIndex = argPacket->accountIndex;
 	network.Bind(argPacket->srcAddress, Channels::SERVER);
+
+	//request login data
+	SendLoginRequest();
+}
+
+void LobbyMenu::HandleLoginResponse(ClientPacket* const argPacket) {
+	if (argPacket->clientIndex != clientIndex) {
+		throw(std::runtime_error("Client index invalid during login"));
+	}
+	accountIndex = argPacket->accountIndex;
 	SetNextScene(SceneList::INWORLD);
 }
 
 void LobbyMenu::HandleJoinRejection(TextPacket* const argPacket) {
 	//TODO: Better output for join rejection
+}
+
+void LobbyMenu::HandleLoginRejection(TextPacket* const argPacket) {
+	//TODO: Better output for login rejection
 }
 
 //-------------------------
@@ -251,9 +275,18 @@ void LobbyMenu::SendJoinRequest() {
 	//pack the packet
 		ClientPacket packet;
 		packet.type = SerialPacketType::JOIN_REQUEST;
-		strncpy(packet.username, config["client.username"].c_str(), PACKET_STRING_SIZE);
 
 		//join the selected server
 		network.SendTo(selection->address, &packet);
 		selection = nullptr;
+}
+
+void LobbyMenu::SendLoginRequest() {
+	//NOTE: high cohesion
+	ClientPacket packet;
+	packet.type = SerialPacketType::LOGIN_REQUEST;
+	packet.clientIndex = clientIndex;
+	strncpy(packet.username, config["client.username"].c_str(), PACKET_STRING_SIZE);
+
+	network.SendTo(Channels::SERVER, &packet);
 }

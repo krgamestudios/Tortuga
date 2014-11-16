@@ -24,3 +24,8 @@ The Entity base class handles position (including room) and motion, so something
 
 entity:
 	
+-------------------------
+
+Lobby:
+	JOIN_REQUEST -> JOIN_RESPONSE, JOIN_REJECTION
+	LOGIN_REQUEST -> LOGIN_RESPONSE, LOGIN_REJECTION

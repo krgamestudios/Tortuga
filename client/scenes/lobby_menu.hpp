@@ -63,11 +63,14 @@ protected:
 	void HandlePacket(SerialPacket* const);
 	void HandleBroadcastResponse(ServerPacket* const);
 	void HandleJoinResponse(ClientPacket* const);
+	void HandleLoginResponse(ClientPacket* const);
 	void HandleJoinRejection(TextPacket* const);
+	void HandleLoginRejection(TextPacket* const);
 
 	//server control
 	void SendBroadcastRequest();
 	void SendJoinRequest();
+	void SendLoginRequest();
 
 	//shared parameters
 	ConfigUtility& config = ConfigUtility::GetSingleton();

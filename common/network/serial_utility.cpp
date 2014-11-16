@@ -81,6 +81,7 @@ void serializePacket(void* buffer, SerialPacketBase* packet) {
 		break;
 		case SerialPacketType::TEXT_BROADCAST:
 		case SerialPacketType::JOIN_REJECTION:
+		case SerialPacketType::LOGIN_REJECTION:
 		case SerialPacketType::CHARACTER_REJECTION:
 		case SerialPacketType::SHUTDOWN_REJECTION:
 			serializeText(buffer, static_cast<TextPacket*>(packet));
@@ -129,6 +130,7 @@ void deserializePacket(void* buffer, SerialPacketBase* packet) {
 		break;
 		case SerialPacketType::TEXT_BROADCAST:
 		case SerialPacketType::JOIN_REJECTION:
+		case SerialPacketType::LOGIN_REJECTION:
 		case SerialPacketType::CHARACTER_REJECTION:
 		case SerialPacketType::SHUTDOWN_REJECTION:
 			deserializeText(buffer, static_cast<TextPacket*>(packet));
