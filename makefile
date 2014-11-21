@@ -19,7 +19,7 @@ release: clean all package
 #For use on my machine ONLY
 package:
 	rar a -r -ep Tortuga.rar $(OUTDIR)/*.exe  $(OUTDIR)/*.dll
-	rar a -r Tortuga.rar rsc/* copyright.txt
+	rar a -r Tortuga.rar rsc/* copyright.txt README.txt
 
 $(OUTDIR):
 	mkdir $(OUTDIR)
