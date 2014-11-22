@@ -55,12 +55,44 @@ static int getPager(lua_State* L) {
 
 //TODO: GetEntityList?
 
+static int setLoadReference(lua_State* L) {
+	RoomData* room = reinterpret_cast<RoomData*>(lua_touserdata(L, 1));
+	luaL_unref(L, LUA_REGISTRYINDEX, room->GetLoadReference());
+	room->SetLoadReference(luaL_ref(L, LUA_REGISTRYINDEX));
+	return 0;
+}
+
+static int getLoadReference(lua_State* L) {
+	RoomData* room = reinterpret_cast<RoomData*>(lua_touserdata(L, 1));
+	lua_pushinteger(L, room->GetLoadReference());
+	lua_gettable(L, LUA_REGISTRYINDEX);
+	return 1;
+}
+
+static int setUnloadReference(lua_State* L) {
+	RoomData* room = reinterpret_cast<RoomData*>(lua_touserdata(L, 1));
+	luaL_unref(L, LUA_REGISTRYINDEX, room->GetUnloadReference());
+	room->SetUnloadReference(luaL_ref(L, LUA_REGISTRYINDEX));
+	return 0;
+}
+
+static int getUnloadReference(lua_State* L) {
+	RoomData* room = reinterpret_cast<RoomData*>(lua_touserdata(L, 1));
+	lua_pushinteger(L, room->GetUnloadReference());
+	lua_gettable(L, LUA_REGISTRYINDEX);
+	return 1;
+}
+
 static const luaL_Reg roomLib[] = {
 	{"GetPager",getPager},
 	{"SetRoomName", setRoomName},
 	{"GetRoomName", getRoomName},
 	{"SetTileset", setTilesetName},
 	{"GetTileset", getTilesetName},
+	{"SetOnLoad", setLoadReference},
+	{"GetOnLoad", getLoadReference},
+	{"SetOnUnload", setUnloadReference},
+	{"GetOnUnload", getUnloadReference},
 	{nullptr, nullptr}
 };
 
