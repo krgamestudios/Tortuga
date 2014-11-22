@@ -180,7 +180,7 @@ void ServerApplication::Proc() {
 					//find and unload the characters associated with this account
 					characterMgr.UnloadIf([&](std::pair<const int, CharacterData> character) -> bool {
 						if (character.second.GetOwner() == account.first) {
-							PumpCharacterUnload(character.first);
+//							PumpCharacterUnload(character.first);
 							return true;
 						}
 						return false;
@@ -227,43 +227,40 @@ void ServerApplication::Quit() {
 void ServerApplication::HandlePacket(SerialPacket* const argPacket) {
 	switch(argPacket->type) {
 		//heartbeat system
-		case SerialPacketType::PING: {
-			ServerPacket newPacket;
-			newPacket.type = SerialPacketType::PONG;
-			network.SendTo(argPacket->srcAddress, &newPacket);
-		}
+		case SerialPacketType::PING:
+			HandlePing(static_cast<ServerPacket*>(argPacket));
 		break;
 		case SerialPacketType::PONG:
-			clientMgr.HandlePong(static_cast<ServerPacket*>(argPacket));
+			HandlePong(static_cast<ServerPacket*>(argPacket));
 		break;
 
 		//client connections
 		case SerialPacketType::BROADCAST_REQUEST:
-//			HandleBroadcastRequest(static_cast<ServerPacket*>(argPacket));
+			HandleBroadcastRequest(static_cast<ServerPacket*>(argPacket));
 		break;
 		case SerialPacketType::JOIN_REQUEST:
-//			HandleJoinRequest(static_cast<ClientPacket*>(argPacket));
+			HandleJoinRequest(static_cast<ClientPacket*>(argPacket));
 		break;
 		case SerialPacketType::LOGIN_REQUEST:
-//			HandleLoginRequest(static_cast<ClientPacket*>(argPacket));
+			HandleLoginRequest(static_cast<ClientPacket*>(argPacket));
 		break;
 
 		//client disconnections
-		case SerialPacketType::DISCONNECT_REQUEST:
-//			HandleDisconnectRequest(static_cast<ClientPacket*>(argPacket));
-		break;
-		case SerialPacketType::DISCONNECT_FORCED:
-//			HandleDisconnectForced(static_cast<ClientPacket*>(argPacket));
-		break;
 		case SerialPacketType::LOGOUT_REQUEST:
-//			HandleLogoutRequest(static_cast<ClientPacket*>(argPacket));
+			HandleLogoutRequest(static_cast<ClientPacket*>(argPacket));
+		break;
+		case SerialPacketType::DISCONNECT_REQUEST:
+			HandleDisconnectRequest(static_cast<ClientPacket*>(argPacket));
 		break;
 
 		//server commands
-		case SerialPacketType::SHUTDOWN_REQUEST:
-//			HandleShutdownRequest(static_cast<ClientPacket*>(argPacket));
+		case SerialPacketType::DISCONNECT_FORCED:
+//			HandleDisconnectForced(static_cast<ClientPacket*>(argPacket));
 		break;
-
+		case SerialPacketType::SHUTDOWN_REQUEST:
+			HandleShutdownRequest(static_cast<ClientPacket*>(argPacket));
+		break;
+/*
 		//data management & queries
 		case SerialPacketType::REGION_REQUEST:
 //			HandleRegionRequest(static_cast<RegionPacket*>(argPacket));
@@ -310,7 +307,7 @@ void ServerApplication::HandlePacket(SerialPacket* const argPacket) {
 		//TODO: enemy management
 
 		//TODO: text
-
+*/
 		//handle errors
 		default: {
 			std::ostringstream msg;

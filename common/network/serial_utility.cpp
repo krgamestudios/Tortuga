@@ -55,6 +55,7 @@ void serializePacket(void* buffer, SerialPacketBase* packet) {
 		case SerialPacketType::JOIN_REQUEST:
 		case SerialPacketType::JOIN_RESPONSE:
 		case SerialPacketType::DISCONNECT_REQUEST:
+		case SerialPacketType::DISCONNECT_RESPONSE:
 		case SerialPacketType::DISCONNECT_FORCED:
 		case SerialPacketType::LOGIN_REQUEST:
 		case SerialPacketType::LOGIN_RESPONSE:
@@ -104,6 +105,7 @@ void deserializePacket(void* buffer, SerialPacketBase* packet) {
 		case SerialPacketType::JOIN_REQUEST:
 		case SerialPacketType::JOIN_RESPONSE:
 		case SerialPacketType::DISCONNECT_REQUEST:
+		case SerialPacketType::DISCONNECT_RESPONSE:
 		case SerialPacketType::DISCONNECT_FORCED:
 		case SerialPacketType::LOGIN_REQUEST:
 		case SerialPacketType::LOGIN_RESPONSE:

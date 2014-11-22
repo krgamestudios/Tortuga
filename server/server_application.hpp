@@ -70,29 +70,43 @@ private:
 	//handle incoming traffic
 	void HandlePacket(SerialPacket* const);
 
+	//heartbeat sustem
+	void HandlePing(ServerPacket* const);
+	void HandlePong(ServerPacket* const);
+
 	//basic connections
 	void HandleBroadcastRequest(ServerPacket* const);
 	void HandleJoinRequest(ClientPacket* const);
-	void HandleDisconnect(ClientPacket* const);
-	void HandleShutdown(ClientPacket* const);
+	void HandleLoginRequest(ClientPacket* const);
+
+	//client disconnections
+	void HandleLogoutRequest(ClientPacket* const);
+	void HandleDisconnectRequest(ClientPacket* const);
+
+	//server commands
+//	void HandleDisconnectForced(ClientPacket* const);
+	void HandleShutdownRequest(ClientPacket* const);
 
 	//map management
-	void HandleRegionRequest(RegionPacket* const);
+//	void HandleRegionRequest(RegionPacket* const);
 
 	//character management
-	void HandleCharacterNew(CharacterPacket* const);
-	void HandleCharacterDelete(CharacterPacket* const);
-	void HandleCharacterUpdate(CharacterPacket* const);
+//	void HandleCharacterNew(CharacterPacket* const);
+//	void HandleCharacterDelete(CharacterPacket* const);
+//	void HandleCharacterUpdate(CharacterPacket* const);
 
 	//mismanagement
-	void HandleSynchronize(ClientPacket* const);
+//	void HandleSynchronize(ClientPacket* const);
 
 	//utility methods
 	//TODO: a function that only sends to characters in a certain proximity
-	void CleanupLostConnection(int index);
-	void PumpPacket(SerialPacket* const);
-	void PumpCharacterUnload(int uid);
-	void CopyCharacterToPacket(CharacterPacket* const packet, int characterIndex);
+//	void CleanupLostConnection(int index);
+//	void PumpPacket(SerialPacket* const);
+//	void PumpCharacterUnload(int uid);
+//	void CopyCharacterToPacket(CharacterPacket* const packet, int characterIndex);
+
+	//data management
+	void SaveServerState();
 
 	//APIs and utilities
 	sqlite3* database = nullptr;

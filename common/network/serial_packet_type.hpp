@@ -56,6 +56,7 @@ enum class SerialPacketType {
 
 	//disconnect from the server
 	DISCONNECT_REQUEST,
+	DISCONNECT_RESPONSE,
 	DISCONNECT_FORCED,
 
 	//load the account

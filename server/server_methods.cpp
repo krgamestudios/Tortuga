@@ -26,10 +26,35 @@
 #include <sstream>
 
 //-------------------------
+//these should've come standard
+//-------------------------
+
+bool operator==(IPaddress lhs, IPaddress rhs) {
+	return lhs.host == rhs.host && lhs.port == rhs.port;
+}
+
+bool operator!=(IPaddress lhs, IPaddress rhs) {
+	return !(lhs == rhs);
+}
+
+//-------------------------
+//heartbeat system
+//-------------------------
+
+void ServerApplication::HandlePing(ServerPacket* const argPacket) {
+	ServerPacket newPacket;
+	newPacket.type = SerialPacketType::PONG;
+	network.SendTo(argPacket->srcAddress, &newPacket);
+}
+
+void ServerApplication::HandlePong(ServerPacket* const argPacket) {
+	clientMgr.HandlePong(argPacket);
+}
+
+//-------------------------
 //basic connections
 //-------------------------
 
-//SET: utility
 void ServerApplication::HandleBroadcastRequest(ServerPacket* const argPacket) {
 	//send the server's data
 	ServerPacket newPacket;
@@ -42,14 +67,33 @@ void ServerApplication::HandleBroadcastRequest(ServerPacket* const argPacket) {
 	network.SendTo(argPacket->srcAddress, static_cast<SerialPacket*>(&newPacket));
 }
 
-//SET: connections
 void ServerApplication::HandleJoinRequest(ClientPacket* const argPacket) {
 	//register the client
 	int clientIndex = clientMgr.Create(argPacket->srcAddress);
 
+	//send the client their info
+	ClientPacket newPacket;
+	newPacket.type = SerialPacketType::JOIN_RESPONSE;
+	newPacket.clientIndex = clientIndex;
+
+	network.SendTo(argPacket->srcAddress, static_cast<SerialPacket*>(&newPacket));
+
+	//finished this routine
+	std::cout << "New join, " << clientMgr.GetLoadedCount() << " clients and " << accountMgr.GetLoadedCount() << " accounts total" << std::endl;
+}
+
+void ServerApplication::HandleLoginRequest(ClientPacket* const argPacket) {
+	//get the client data
+	ClientData* clientData = clientMgr.Get(argPacket->clientIndex);
+
+	if (clientData == nullptr || clientData->GetAddress() != argPacket->srcAddress) {
+		std::cerr << "Falsified client index detected: " << argPacket->clientIndex << std::endl;
+		//TODO: rejection message?
+		return;
+	}
+
 	//load the user account
-	//TODO: handle passwords
-	int accountIndex = accountMgr.Load(argPacket->username, clientIndex);
+	int accountIndex = accountMgr.Load(argPacket->username, argPacket->clientIndex);
 
 	//Cannot load
 	if (accountIndex < 0) {
@@ -57,84 +101,131 @@ void ServerApplication::HandleJoinRequest(ClientPacket* const argPacket) {
 		msg << "Account already loaded: " << argPacket->username;
 
 		TextPacket newPacket;
-		newPacket.type = SerialPacketType::JOIN_REJECTION;
-		memset(newPacket.name, 0, PACKET_STRING_SIZE);
+		newPacket.type = SerialPacketType::LOGIN_REJECTION;
+//		memset(newPacket.name, 0, PACKET_STRING_SIZE);
 		strncpy(newPacket.text, msg.str().c_str(), PACKET_STRING_SIZE);
-		network.SendTo(argPacket->srcAddress, static_cast<SerialPacket*>(&newPacket));
-		clientMgr.Unload(clientIndex);
+		network.SendTo(clientData->GetAddress(), static_cast<SerialPacket*>(&newPacket));
 		return;
 	}
 
 	//send the client their info
 	ClientPacket newPacket;
-	newPacket.type = SerialPacketType::JOIN_RESPONSE;
-	newPacket.clientIndex = clientIndex;
+	newPacket.type = SerialPacketType::LOGIN_RESPONSE;
+	newPacket.clientIndex = argPacket->clientIndex;
 	newPacket.accountIndex = accountIndex;
 
-	network.SendTo(argPacket->srcAddress, static_cast<SerialPacket*>(&newPacket));
+	network.SendTo(clientData->GetAddress(), static_cast<SerialPacket*>(&newPacket));
 
 	//finished this routine
-	std::cout << "New connection, " << clientMgr.GetLoadedCount() << " clients and " << accountMgr.GetLoadedCount() << " accounts total" << std::endl;
+	std::cout << "New login, " << clientMgr.GetLoadedCount() << " clients and " << accountMgr.GetLoadedCount() << " accounts total" << std::endl;
 }
 
-//SET: connections
-void ServerApplication::HandleDisconnect(ClientPacket* const argPacket) {
-	//TODO: authenticate who is disconnecting/kicking
-	/*Pseudocode:
-	if sender's account index -> client index -> address == sender's address then
-		continue
-	end
-	if sender's account index -> admin == true OR sender's account index -> mod == true then
-		continue
-	end
-	if neither of the above is true, then output a warning to the console, and return
-	*/
+void ServerApplication::HandleLogoutRequest(ClientPacket* const argPacket) {
+	//get the account and client data
+	AccountData* accountData = accountMgr.Get(argPacket->accountIndex);
+	ClientData* clientData = clientMgr.Get(accountData->GetClientIndex());
 
-	//forward to the specified client
-	network.SendTo(
-		clientMgr.Get(accountMgr.Get(argPacket->accountIndex)->GetClientIndex())->GetAddress(),
-		static_cast<SerialPacket*>(argPacket)
-	);
+	if (clientData->GetAddress() != argPacket->srcAddress) {
+		std::cerr << "Falsified logout detected targeting: " << accountData->GetUsername() << std::endl;
+		return;
+	}
 
-	//save and unload this account's characters
+	//send the logout response
+	ClientPacket newPacket;
+	newPacket.type = SerialPacketType::LOGOUT_RESPONSE;
+	newPacket.clientIndex = accountData->GetClientIndex();
+	newPacket.accountIndex = argPacket->accountIndex;
+
+	network.SendTo(clientData->GetAddress(), static_cast<SerialPacket*>(&newPacket));
+
+	//save and unload this accounts characters
 	characterMgr.UnloadIf([&](std::pair<int, CharacterData> it) -> bool {
 		if (argPacket->accountIndex == it.second.GetOwner()) {
 			//pump the unload message to all remaining clients
-			PumpCharacterUnload(it.first);
+//			PumpCharacterUnload(it.first);
 			return true;
 		}
 		return false;
 	});
 
-	//erase the in-memory stuff
-	clientMgr.Unload(accountMgr.Get(argPacket->accountIndex)->GetClientIndex());
+	//unload this account
 	accountMgr.Unload(argPacket->accountIndex);
 
 	//finished this routine
-	std::cout << "Disconnection, " << clientMgr.GetLoadedCount() << " clients and " << accountMgr.GetLoadedCount() << " accounts total" << std::endl;
+	std::cout << "New logout, " << clientMgr.GetLoadedCount() << " clients and " << accountMgr.GetLoadedCount() << " accounts total" << std::endl;
 }
 
-//SET: connections
-void ServerApplication::HandleShutdown(ClientPacket* const argPacket) {
-	//TODO: authenticate who is shutting the server down
-	/*Pseudocode:
-	if sender's account -> admin is not true then
-		print a warning
-		return
-	end
-	*/
+void ServerApplication::HandleDisconnectRequest(ClientPacket* const argPacket) {
+	//get the client data
+	ClientData* clientData = clientMgr.Get(argPacket->clientIndex);
+
+	if (clientData->GetAddress() != argPacket->srcAddress) {
+		std::cerr << "Falsified disconnection detected targeting: " << argPacket->clientIndex << std::endl;
+		return;
+	}
+
+	//send the disconnect response
+	ClientPacket newPacket;
+	newPacket.type = SerialPacketType::DISCONNECT_RESPONSE;
+	newPacket.clientIndex = argPacket->clientIndex;
+
+	network.SendTo(clientData->GetAddress(), static_cast<SerialPacket*>(&newPacket));
+
+	//TODO: need a method for this redundunt chunk of redundant code
+	//find and unload the accounts associated with this client
+	accountMgr.UnloadIf([&](std::pair<const int, AccountData> account) -> bool {
+		if (account.second.GetClientIndex() == argPacket->clientIndex) {
+			//find and unload the characters associated with this account
+			characterMgr.UnloadIf([&](std::pair<const int, CharacterData> character) -> bool {
+				if (character.second.GetOwner() == account.first) {
+//					PumpCharacterUnload(character.first);
+					return true;
+				}
+				return false;
+			});
+			return true;
+		}
+		return false;
+	});
+
+	//unload this client
+	clientMgr.Unload(argPacket->clientIndex);
+
+	//finished this routine
+	std::cout << "New disconnection, " << clientMgr.GetLoadedCount() << " clients and " << accountMgr.GetLoadedCount() << " accounts total" << std::endl;	
+}
+
+//-------------------------
+//server commands
+//-------------------------
+
+//void ServerApplication::HandleDisconnectForced(ClientPacket* const argPacket) {
+//	//TODO
+//}
+
+void ServerApplication::HandleShutdownRequest(ClientPacket* const argPacket) {
+	//get the account and client data
+	AccountData* accountData = accountMgr.Get(argPacket->accountIndex);
+	ClientData* clientData = clientMgr.Get(accountData->GetClientIndex());
+
+	if (clientData->GetAddress() != argPacket->srcAddress || accountData->GetAdministrator() != true) {
+		std::cerr << "Falsified server shutdown detected from: " << accountData->GetUsername() << std::endl;
+		return;
+	}
 
 	//end the server
 	running = false;
 
 	//disconnect all clients
-	ClientPacket newPacket;
-	newPacket.type = SerialPacketType::DISCONNECT_FORCED;
-	PumpPacket(&newPacket);
+//	ClientPacket newPacket;
+//	newPacket.type = SerialPacketType::DISCONNECT_FORCED;
+//	PumpPacket(&newPacket);
 
 	//finished this routine
 	std::cout << "Shutdown signal accepted" << std::endl;
 }
+
+/*
 
 //-------------------------
 //map management
@@ -352,3 +443,6 @@ void ServerApplication::CopyCharacterToPacket(CharacterPacket* const packet, int
 	packet->origin = character->GetOrigin();
 	packet->motion = character->GetMotion();
 }
+
+//TODO: remove this terminate comment
+//*/
