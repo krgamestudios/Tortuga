@@ -23,6 +23,17 @@
 
 #include <stdexcept>
 
+RegionPagerLua::~RegionPagerLua() {
+	//unload all regions
+	UnloadAll();
+	//clear any stored functions
+	luaL_unref(lua, LUA_REGISTRYINDEX, loadRef);
+	luaL_unref(lua, LUA_REGISTRYINDEX, saveRef);
+	luaL_unref(lua, LUA_REGISTRYINDEX, createRef);
+	luaL_unref(lua, LUA_REGISTRYINDEX, unloadRef);
+}
+
+//return the loaded region, or nullptr on failure
 Region* RegionPagerLua::LoadRegion(int x, int y) {
 	//get the pager's function from the registry
 	lua_rawgeti(lua, LUA_REGISTRYINDEX, loadRef);
@@ -54,6 +65,7 @@ Region* RegionPagerLua::LoadRegion(int x, int y) {
 	}
 }
 
+//return the saved region, or nullptr on failure
 Region* RegionPagerLua::SaveRegion(int x, int y) {
 	//get the pager's function from the registry
 	lua_rawgeti(lua, LUA_REGISTRYINDEX, saveRef);
@@ -88,6 +100,7 @@ Region* RegionPagerLua::SaveRegion(int x, int y) {
 	}
 }
 
+//return the created region, or nullptr on failure
 Region* RegionPagerLua::CreateRegion(int x, int y) {
 	if (FindRegion(x, y)) {
 		throw(std::logic_error("Cannot overwrite an existing region"));
@@ -116,6 +129,7 @@ Region* RegionPagerLua::CreateRegion(int x, int y) {
 	return &regionList.front();
 }
 
+//no return
 void RegionPagerLua::UnloadRegion(int x, int y) {
 	//get the pager's function from the registry
 	lua_rawgeti(lua, LUA_REGISTRYINDEX, unloadRef);

@@ -21,18 +21,71 @@
 */
 #include "room_manager_api.hpp"
 
+#include "room_system_api.hpp"
+#include "room_api.hpp"
+
 #include "room_manager.hpp"
 
+#include <iostream>
+#include <sstream>
+#include <stdexcept>
+
 int createRoom(lua_State* L) {
+	std::cout << "DEBUG: createRoom-1" << std::endl;
+
 	//create & get the room
 	RoomManager& roomMgr = RoomManager::GetSingleton();
-	int uid = roomMgr.Create("",""); //TODO: All new managers need their internals fleshed out
+	std::cout << "DEBUG: createRoom-2" << std::endl;
+	int uid = roomMgr.Create(lua_tostring(L, 1));
+	std::cout << "DEBUG: createRoom-3" << std::endl;
 	RoomData* room = roomMgr.Get(uid);
 
+	std::cout << "DEBUG: createRoom-4" << std::endl;
+
 	//setup the room
-	//TODO: room parameters only set via lua, fix this
-	room->SetRoomName(lua_tostring(L, 1));
-	room->SetTilesetName(lua_tostring(L, 2));
+	if (lua_gettop(L) > 1) {
+		//ensure there are the correct number of parameters on the stack, including nil values
+		lua_settop(L, 6); //5 parameters, + RoomName
+
+		//get Room::Initialize() onto the top of the stack
+		luaL_requiref(L, TORTUGA_ROOM_SYSTEM_API, openRoomSystemAPI, false);
+
+		lua_pushstring(L, TORTUGA_ROOM_API);
+		lua_gettable(L, -2); //RoomSystem[TORTUGA_ROOM_API]
+
+		lua_pushstring(L, "Initialize");
+		lua_gettable(L, -3); //Room[Initialize]
+
+		//push the room onto the stack
+		lua_pushlightuserdata(L, static_cast<void*>(room));
+
+		//push (copies of) the parameters onto the stack
+		if (lua_type(L, 2) == LUA_TTABLE) {
+			//Unroll the table of parameters
+			for (int i = 1; i <= 5; i++) { //should be 5 members, including nil values
+				lua_rawgeti(L, 2, i);
+			}
+		}
+		else {
+			//copy the parameters
+			for (int i = 2; i <= 6; i++) { //there are 5 parameters, including nil values, due to the call to lua_settop above
+				lua_pushvalue(L, i);
+			}
+		}
+
+		//by this point, the stack should look be ready to call Room::Initialize() with 6 parameters, including the room
+		int result = lua_pcall(L, 6, 0, 0);
+
+		if (result != LUA_OK) {
+			//something went wrong
+			std::ostringstream msg;
+			msg << "Failed to initialize a room's parameters in RoomManagerAPI::create(): " << lua_tostring(L, -1);
+			msg << "; Room name: " << lua_tostring(L, 1);
+			throw(std::runtime_error(msg.str()));
+		}
+
+		//wow, that was hard
+	}
 
 	//return room, uid
 	lua_pushlightuserdata(L, static_cast<void*>(room));
@@ -42,21 +95,39 @@ int createRoom(lua_State* L) {
 }
 
 int unloadRoom(lua_State* L) {
-	//TODO: check authorization for room deletion
 	RoomManager& roomMgr = RoomManager::GetSingleton();
+
+	//NOTE: the pager calls the unload function itself
 	roomMgr.Unload(lua_tointeger(L, 1));
+
 	return 0;
 }
 
-//TODO: lua API RoomManager.GetRoom(uid)
+int getRoom(lua_State* L) {
+	RoomManager& roomMgr = RoomManager::GetSingleton();
+
+	RoomData* room = roomMgr.Get(lua_tointeger(L, 1));
+
+	if (room) {
+		lua_pushlightuserdata(L, static_cast<void*>(room));
+	}
+	else {
+		lua_pushnil(L);
+	}
+
+	return 1;
+}
 
 static const luaL_Reg roomManagerLib[] = {
 	{"CreateRoom", createRoom},
 	{"UnloadRoom", unloadRoom},
+	{"GetRoom", getRoom},
 	{nullptr, nullptr}
 };
 
 LUAMOD_API int openRoomManagerAPI(lua_State* L) {
+	std::cout << "DEBUG: openRoomManagerAPI" << std::endl;
+
 	luaL_newlib(L, roomManagerLib);
 	return 1;
 }

@@ -34,15 +34,12 @@
 
 class RoomManager:
 	public Singleton<RoomManager>,
-	public ManagerInterface<RoomData, std::string, std::string>
+	public ManagerInterface<RoomData, std::string>
 {
 public:
 	//common public methods
-	int Create(std::string, std::string) override;
-	int Load(std::string, std::string) override;
-	int Save(int uid) override;
+	int Create(std::string) override;
 	void Unload(int uid) override;
-	void Delete(int uid) override;
 
 	void UnloadAll() override;
 	void UnloadIf(std::function<bool(std::pair<const int,RoomData>)> fn) override;
@@ -62,6 +59,11 @@ private:
 
 	RoomManager() = default;
 	~RoomManager() = default;
+
+	//EMPTY
+	int Load(std::string) override { return -1; }
+	int Save(int uid) override { return -1; }
+	void Delete(int uid) override {}
 
 	lua_State* lua = nullptr;
 	int counter = 0;

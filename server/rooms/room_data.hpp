@@ -49,12 +49,6 @@ public:
 	RegionPagerLua* GetPager();
 	std::list<Entity*>* GetEntityList();
 
-	//hooks
-	int SetLoadReference(int);
-	int GetLoadReference();
-	int SetUnloadReference(int);
-	int GetUnloadReference();
-
 private:
 	friend class RoomManager;
 
@@ -64,11 +58,6 @@ private:
 
 	RegionPagerLua pager;
 	std::list<Entity*> entityList;
-
-	//lua references
-	//TODO: use RoomData's lua references for load and unload functions
-	int loadRef = LUA_NOREF;
-	int unloadRef = LUA_NOREF;
 };
 
 #endif

@@ -11,23 +11,20 @@ local function dumpTable(t)
 	end
 end
 
-dumpTable(mapMaker)
-dumpTable(mapSaver)
-dumpTable(roomSystem)
-dumpTable(roomSystem.Room)
-dumpTable(roomSystem.RoomManager)
-
 --create the overworld, set it's generator, loader & saver
-local overworld = roomSystem.RoomManager.CreateRoom("overworld", "overworld.bmp")
-roomSystem.Room.SetOnLoad(overworld, 1123)
-roomSystem.Room.SetOnUnload(overworld, 458)
+--[[
+local t = {
+	"overworld.bmp", --tileset name
+	mapSaver.load, --load function
+	mapSaver.save, --save function
+	mapMaker.debugIsland, --create function
+	mapSaver.save --unload function
+}]]
 
-if roomSystem.Room.GetOnLoad(overworld) == 1123 then
-	print("onload retreival works")
-end
+dumpTable(roomSystem)
+dumpTable(roomSystem.RoomManager)
+dumpTable(roomSystem.Room)
 
-if roomSystem.Room.GetOnUnload(overworld) == 458 then
-	print("onunload retreival works")
-end
+local overworld = roomSystem.RoomManager.CreateRoom("overworld")
 
 print("Finished the lua script")
