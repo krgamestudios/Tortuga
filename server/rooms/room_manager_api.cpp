@@ -44,11 +44,26 @@ int unloadRoom(lua_State* L) {
 	return 0;
 }
 
-//TODO: lua API RoomManager.GetRoom(uid)
+int getRoom(lua_State* L) {
+	//TODO: integer vs name for getRoom()
+	RoomManager& roomMgr = RoomManager::GetSingleton();
+
+	RoomData* room = roomMgr.Get(lua_tointeger(L, 1));
+
+	if (room) {
+		lua_pushlightuserdata(L, static_cast<void*>(room));
+	}
+	else {
+		lua_pushnil(L);
+	}
+
+	return 1;
+}
 
 static const luaL_Reg roomManagerLib[] = {
 	{"CreateRoom", createRoom},
 	{"UnloadRoom", unloadRoom},
+	{"GetRoom", getRoom},
 	{nullptr, nullptr}
 };
 
