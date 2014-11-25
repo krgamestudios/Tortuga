@@ -130,7 +130,7 @@ void ServerApplication::HandleLogoutRequest(ClientPacket* const argPacket) {
 	ClientData* clientData = clientMgr.Get(accountData->GetClientIndex());
 	if (!clientData) {
 		std::ostringstream msg;
-		msg << "No client found for an account: " << accountData->GetUserName();
+		msg << "No client found for an account: " << accountData->GetUsername();
 		throw(std::logic_error(msg.str()));
 	}
 
@@ -225,7 +225,7 @@ void ServerApplication::HandleShutdownRequest(ClientPacket* const argPacket) {
 	ClientData* clientData = clientMgr.Get(accountData->GetClientIndex());
 	if (!clientData) {
 		std::ostringstream msg;
-		msg << "No client found for an account: " << accountData->GetUserName();
+		msg << "No client found for an account: " << accountData->GetUsername();
 		throw(std::logic_error(msg.str()));
 	}
 
