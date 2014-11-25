@@ -53,34 +53,19 @@ static int getPager(lua_State* L) {
 	return 1;
 }
 
-//TODO: GetEntityList?
+static int initialize(lua_State* L) {
+	//set the members of the given room
+	RoomData* room = static_cast<RoomData*>(lua_touserdata(L, 1));
+	room->SetRoomName(lua_tostring(L, 2));
 
-static int setLoadReference(lua_State* L) {
-	RoomData* room = reinterpret_cast<RoomData*>(lua_touserdata(L, 1));
-	luaL_unref(L, LUA_REGISTRYINDEX, room->GetLoadReference());
-	room->SetLoadReference(luaL_ref(L, LUA_REGISTRYINDEX));
+	//set the refs of these parameters (backwards, since it pops from the top of the stack)
+	room->GetPager()->SetUnloadReference(luaL_ref(L, LUA_REGISTRYINDEX));
+	room->GetPager()->SetCreateReference(luaL_ref(L, LUA_REGISTRYINDEX));
+	room->GetPager()->SetSaveReference(luaL_ref(L, LUA_REGISTRYINDEX));
+	room->GetPager()->SetLoadReference(luaL_ref(L, LUA_REGISTRYINDEX));
+
+	//more parameters can be added here later
 	return 0;
-}
-
-static int getLoadReference(lua_State* L) {
-	RoomData* room = reinterpret_cast<RoomData*>(lua_touserdata(L, 1));
-	lua_pushinteger(L, room->GetLoadReference());
-	lua_gettable(L, LUA_REGISTRYINDEX);
-	return 1;
-}
-
-static int setUnloadReference(lua_State* L) {
-	RoomData* room = reinterpret_cast<RoomData*>(lua_touserdata(L, 1));
-	luaL_unref(L, LUA_REGISTRYINDEX, room->GetUnloadReference());
-	room->SetUnloadReference(luaL_ref(L, LUA_REGISTRYINDEX));
-	return 0;
-}
-
-static int getUnloadReference(lua_State* L) {
-	RoomData* room = reinterpret_cast<RoomData*>(lua_touserdata(L, 1));
-	lua_pushinteger(L, room->GetUnloadReference());
-	lua_gettable(L, LUA_REGISTRYINDEX);
-	return 1;
 }
 
 static const luaL_Reg roomLib[] = {
@@ -89,10 +74,7 @@ static const luaL_Reg roomLib[] = {
 	{"GetRoomName", getRoomName},
 	{"SetTileset", setTilesetName},
 	{"GetTileset", getTilesetName},
-	{"SetOnLoad", setLoadReference},
-	{"GetOnLoad", getLoadReference},
-	{"SetOnUnload", setUnloadReference},
-	{"GetOnUnload", getUnloadReference},
+	{"Initialize", initialize},
 	{nullptr, nullptr}
 };
 

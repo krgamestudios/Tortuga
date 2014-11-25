@@ -24,6 +24,7 @@
 #include "room_manager.hpp"
 
 int createRoom(lua_State* L) {
+
 	//create & get the room
 	RoomManager& roomMgr = RoomManager::GetSingleton();
 	int uid = roomMgr.Create("",""); //TODO: All new managers need their internals fleshed out
@@ -32,7 +33,7 @@ int createRoom(lua_State* L) {
 	//setup the room
 	//TODO: room parameters only set via lua, fix this
 	room->SetRoomName(lua_tostring(L, 1));
-	room->SetTilesetName(lua_tostring(L, 2));
+//	room->SetTilesetName(lua_tostring(L, 2));
 
 	//return room, uid
 	lua_pushlightuserdata(L, static_cast<void*>(room));

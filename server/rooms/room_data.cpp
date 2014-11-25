@@ -44,19 +44,3 @@ RegionPagerLua* RoomData::GetPager() {
 std::list<Entity*>* RoomData::GetEntityList() {
 	return &entityList;
 }
-
-int RoomData::SetLoadReference(int i) {
-	return loadRef = i;
-}
-
-int RoomData::GetLoadReference() {
-	return loadRef;
-}
-
-int RoomData::SetUnloadReference(int i) {
-	return unloadRef = i;
-}
-
-int RoomData::GetUnloadReference() {
-	return unloadRef;
-}
