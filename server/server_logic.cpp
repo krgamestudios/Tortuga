@@ -163,10 +163,18 @@ void ServerApplication::Init(int argc, char* argv[]) {
 
 void ServerApplication::Proc() {
 	SerialPacket* packetBuffer = reinterpret_cast<SerialPacket*>(new char[MAX_PACKET_SIZE]);
+	memset(packetBuffer, 0, MAX_PACKET_SIZE); //zero the buffer
+
 	while(running) {
 		//suck in the waiting packets & process them
 		while(UDPNetworkUtility::GetSingleton().Receive(packetBuffer)) {
-			HandlePacket(packetBuffer);
+			try {
+				HandlePacket(packetBuffer);
+			}
+			catch(std::exception& e) {
+				std::cerr << "HandlePacket Error: " << e.what() << std::endl;
+			}
+			memset(packetBuffer, 0, MAX_PACKET_SIZE); //reset the buffer
 		}
 		//update the internals
 		//...

@@ -95,7 +95,7 @@ void deserializePacket(void* buffer, SerialPacketBase* packet) {
 	SerialPacketType type;
 	memcpy(&type, buffer, sizeof(SerialPacketType));
 
-	switch(packet->type) {
+	switch(type) {
 		case SerialPacketType::PING:
 		case SerialPacketType::PONG:
 		case SerialPacketType::BROADCAST_REQUEST:
