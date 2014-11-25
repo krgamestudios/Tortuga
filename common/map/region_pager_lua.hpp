@@ -35,7 +35,7 @@
 class RegionPagerLua : public RegionPagerBase {
 public:
 	RegionPagerLua() = default;
-	~RegionPagerLua() = default;
+	~RegionPagerLua();
 
 	//region manipulation
 	Region* LoadRegion(int x, int y) override;
