@@ -29,23 +29,14 @@
 //public access methods
 //-------------------------
 
-int RoomManager::Create(std::string roomName, std::string tilesetName) {
+int RoomManager::Create(std::string roomName) {
 	//create the room
 	RoomData* newRoom = &elementMap[counter]; //implicitly constructs the element
+	newRoom->SetRoomName(roomName);
 	newRoom->pager.SetLuaState(lua);
 
 	//finish the routine
 	return counter++;
-}
-
-int RoomManager::Load(std::string roomName, std::string tilesetName) {
-	//TODO: RoomManager::Load()
-	return -1;
-}
-
-int RoomManager::Save(int uid) {
-	//TODO: RoomManager::Save(uid)
-	return -1;
 }
 
 void RoomManager::Unload(int uid) {
@@ -57,12 +48,6 @@ void RoomManager::Unload(int uid) {
 
 	//free the memory
 	elementMap.erase(uid);
-}
-
-void RoomManager::Delete(int uid) {
-	//TODO: RoomManager::Delete(int uid)
-	//NOTE: aliased to RoomManager::Unload(int uid)
-	Unload(uid);
 }
 
 void RoomManager::UnloadAll() {
