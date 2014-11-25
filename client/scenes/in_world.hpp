@@ -25,9 +25,10 @@
 //maps
 #include "region_pager_base.hpp"
 
-//networking
+//utilities
 #include "udp_network_utility.hpp"
 #include "serial_packet.hpp"
+#include "config_utility.hpp"
 
 //graphics
 #include "image.hpp"
@@ -71,33 +72,23 @@ protected:
 	void KeyDown(SDL_KeyboardEvent const&);
 	void KeyUp(SDL_KeyboardEvent const&);
 
-	//Network handlers
+	//Basic connections
 	void HandlePacket(SerialPacket* const);
+	void HandlePing(ServerPacket* const);
 	void HandlePong(ServerPacket* const);
-	void HandleDisconnect(ClientPacket* const);
-	void HandleCharacterNew(CharacterPacket* const);
-	void HandleCharacterDelete(CharacterPacket* const);
-	void HandleCharacterUpdate(CharacterPacket* const);
-	void HandleCharacterRejection(TextPacket* const);
-	void HandleRegionContent(RegionPacket* const);
 
-	//Server control
-	void RequestSynchronize();
-	void SendPlayerUpdate();
-	void RequestDisconnect();
-	void RequestShutDown();
-	void RequestRegion(int roomIndex, int x, int y);
+	//Connection control
+	void SendLogoutRequest();
+	void SendDisconnectRequest();
+	void SendShutdownRequest();
 
-	//utilities
-	void UpdateMap();
-
-	//singleton shortcut
-	UDPNetworkUtility& network = UDPNetworkUtility::GetSingleton();
+	void HandleLogoutResponse(ClientPacket* const);
+	void HandleDisconnectResponse(ClientPacket* const);
+	void HandleDisconnectForced(ClientPacket* const);
 
 	//indexes
 	int& clientIndex;
 	int& accountIndex;
-	int characterIndex = -1;
 
 	//graphics
 	Image buttonImage;
@@ -119,16 +110,16 @@ protected:
 		int marginX = 0, marginY = 0;
 	} camera;
 
-	//game components
-	BaseCharacter* localCharacter = nullptr;
-	std::map<int, BaseCharacter> characterMap;
-	std::map<int, BaseMonster> monsterMap;
 
 	//heartbeat
-	//TODO: This needs it's own utility, for both InWorld and InCombat
+	//TODO: Heartbeat needs it's own utility
 	typedef std::chrono::steady_clock Clock;
 	Clock::time_point lastBeat = Clock::now();
 	int attemptedBeats = 0;
+
+	//ugly references; I hate this
+	ConfigUtility& config = ConfigUtility::GetSingleton();
+	UDPNetworkUtility& network = UDPNetworkUtility::GetSingleton();
 };
 
 #endif

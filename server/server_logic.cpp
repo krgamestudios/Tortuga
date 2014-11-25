@@ -167,7 +167,7 @@ void ServerApplication::Proc() {
 
 	while(running) {
 		//suck in the waiting packets & process them
-		while(UDPNetworkUtility::GetSingleton().Receive(packetBuffer)) {
+		while(network.Receive(packetBuffer)) {
 			try {
 				HandlePacket(packetBuffer);
 			}

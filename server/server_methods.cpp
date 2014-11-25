@@ -123,8 +123,18 @@ void ServerApplication::HandleLoginRequest(ClientPacket* const argPacket) {
 void ServerApplication::HandleLogoutRequest(ClientPacket* const argPacket) {
 	//get the account and client data
 	AccountData* accountData = accountMgr.Get(argPacket->accountIndex);
-	ClientData* clientData = clientMgr.Get(accountData->GetClientIndex());
+	if (!accountData) {
+		return;
+	}
 
+	ClientData* clientData = clientMgr.Get(accountData->GetClientIndex());
+	if (!clientData) {
+		std::ostringstream msg;
+		msg << "No client found for an account: " << accountData->GetUserName();
+		throw(std::logic_error(msg.str()));
+	}
+
+	//check for fraud
 	if (clientData->GetAddress() != argPacket->srcAddress) {
 		std::cerr << "Falsified logout detected targeting: " << accountData->GetUsername() << std::endl;
 		return;
@@ -133,7 +143,6 @@ void ServerApplication::HandleLogoutRequest(ClientPacket* const argPacket) {
 	//send the logout response
 	ClientPacket newPacket;
 	newPacket.type = SerialPacketType::LOGOUT_RESPONSE;
-	newPacket.clientIndex = accountData->GetClientIndex();
 	newPacket.accountIndex = argPacket->accountIndex;
 
 	network.SendTo(clientData->GetAddress(), static_cast<SerialPacket*>(&newPacket));
@@ -158,7 +167,11 @@ void ServerApplication::HandleLogoutRequest(ClientPacket* const argPacket) {
 void ServerApplication::HandleDisconnectRequest(ClientPacket* const argPacket) {
 	//get the client data
 	ClientData* clientData = clientMgr.Get(argPacket->clientIndex);
+	if (!clientData) {
+		return;
+	}
 
+	//check for fraud
 	if (clientData->GetAddress() != argPacket->srcAddress) {
 		std::cerr << "Falsified disconnection detected targeting: " << argPacket->clientIndex << std::endl;
 		return;
@@ -206,8 +219,17 @@ void ServerApplication::HandleDisconnectRequest(ClientPacket* const argPacket) {
 void ServerApplication::HandleShutdownRequest(ClientPacket* const argPacket) {
 	//get the account and client data
 	AccountData* accountData = accountMgr.Get(argPacket->accountIndex);
+	if (!accountData) {
+		return;
+	}
 	ClientData* clientData = clientMgr.Get(accountData->GetClientIndex());
+	if (!clientData) {
+		std::ostringstream msg;
+		msg << "No client found for an account: " << accountData->GetUserName();
+		throw(std::logic_error(msg.str()));
+	}
 
+	//check for fraud
 	if (clientData->GetAddress() != argPacket->srcAddress || accountData->GetAdministrator() != true) {
 		std::cerr << "Falsified server shutdown detected from: " << accountData->GetUsername() << std::endl;
 		return;
