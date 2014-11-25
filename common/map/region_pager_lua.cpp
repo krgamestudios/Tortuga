@@ -23,6 +23,18 @@
 
 #include <stdexcept>
 
+RegionPagerLua::RegionPagerLua() {
+	//
+}
+
+RegionPagerLua::RegionPagerLua(RegionPagerLua&& rhs) {
+	lua = rhs.lua;
+	loadRef = rhs.loadRef;
+	saveRef = rhs.saveRef;
+	createRef = rhs.createRef;
+	unloadRef = rhs.unloadRef;
+}
+
 RegionPagerLua::~RegionPagerLua() {
 	//unload all regions
 	UnloadAll();
@@ -164,6 +176,7 @@ void RegionPagerLua::UnloadRegion(int x, int y) {
 	lua_pop(lua, 1);
 }
 
+//no return
 void RegionPagerLua::UnloadAll() {
 	//get the pager's function from the registry
 	lua_rawgeti(lua, LUA_REGISTRYINDEX, unloadRef);

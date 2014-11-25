@@ -175,10 +175,10 @@ void ServerApplication::Proc() {
 		int disconnected = clientMgr.CheckConnections();
 		if (disconnected != -1) {
 			//find and unload the accounts associated with this client
-			accountMgr.UnloadIf([&](std::pair<const int, AccountData> account) -> bool {
+			accountMgr.UnloadIf([&](std::pair<const int, AccountData>& account) -> bool {
 				if (account.second.GetClientIndex() == disconnected) {
 					//find and unload the characters associated with this account
-					characterMgr.UnloadIf([&](std::pair<const int, CharacterData> character) -> bool {
+					characterMgr.UnloadIf([&](std::pair<const int, CharacterData>& character) -> bool {
 						if (character.second.GetOwner() == account.first) {
 //							PumpCharacterUnload(character.first);
 							return true;

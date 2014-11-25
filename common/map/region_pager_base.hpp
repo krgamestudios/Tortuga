@@ -28,8 +28,9 @@
 
 class RegionPagerBase {
 public:
-	RegionPagerBase() = default;
-	virtual ~RegionPagerBase() { UnloadAll(); };
+	RegionPagerBase();
+	RegionPagerBase(RegionPagerBase&&);
+	virtual ~RegionPagerBase();
 
 	//tile manipulation
 	virtual Region::type_t SetTile(int x, int y, int z, Region::type_t v);

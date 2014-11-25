@@ -33,7 +33,8 @@
 int RoomManager::Create(std::string roomName) {
 	std::cout << "Create-1" << std::endl;
 	//create the room
-	RoomData* newRoom = &elementMap[counter]; //implicitly constructs the element
+	elementMap.emplace(counter); ////explicitly constructs the element
+	RoomData* newRoom = &(elementMap.find(counter)->second);
 	std::cout << "Create-2" << std::endl;
 	newRoom->SetRoomName(roomName);
 	std::cout << "Create-3" << std::endl;
@@ -59,7 +60,7 @@ void RoomManager::UnloadAll() {
 	elementMap.clear();
 }
 
-void RoomManager::UnloadIf(std::function<bool(std::pair<const int,RoomData>)> fn) {
+void RoomManager::UnloadIf(std::function<bool(std::pair<const int,RoomData>&)> fn) {
 	std::map<int, RoomData>::iterator it = elementMap.begin();
 	while (it != elementMap.end()) {
 		if (fn(*it)) {

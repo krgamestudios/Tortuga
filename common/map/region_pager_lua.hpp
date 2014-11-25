@@ -34,7 +34,8 @@
 
 class RegionPagerLua : public RegionPagerBase {
 public:
-	RegionPagerLua() = default;
+	RegionPagerLua();
+	RegionPagerLua(RegionPagerLua&&);
 	~RegionPagerLua();
 
 	//region manipulation

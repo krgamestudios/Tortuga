@@ -227,7 +227,7 @@ void CharacterManager::UnloadAll() {
 	elementMap.clear();
 }
 
-void CharacterManager::UnloadIf(std::function<bool(std::pair<const int, CharacterData>)> fn) {
+void CharacterManager::UnloadIf(std::function<bool(std::pair<const int, CharacterData>&)> fn) {
 	std::map<int, CharacterData>::iterator it = elementMap.begin();
 	while (it != elementMap.end()) {
 		if (fn(*it)) {

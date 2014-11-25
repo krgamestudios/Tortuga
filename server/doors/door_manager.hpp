@@ -43,7 +43,7 @@ public:
 	void Delete(int uid) override;
 
 	void UnloadAll() override;
-	void UnloadIf(std::function<bool(std::pair<const int, DoorData>)> fn) override;
+	void UnloadIf(std::function<bool(std::pair<const int, DoorData>&)> fn) override;
 
 	//accessors & mutators
 	DoorData* Get(int uid) override;

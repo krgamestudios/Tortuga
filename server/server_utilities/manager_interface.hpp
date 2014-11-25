@@ -36,7 +36,7 @@ public:
 	virtual void Delete(int uid) = 0;
 
 	virtual void UnloadAll() = 0;
-	virtual void UnloadIf(std::function<bool(std::pair<const int, T>)> fn) = 0;
+	virtual void UnloadIf(std::function<bool(std::pair<const int, T>&)> fn) = 0;
 
 	//accessors & mutators
 	virtual T* Get(int uid) = 0;

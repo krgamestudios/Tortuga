@@ -21,6 +21,21 @@
 */
 #include "room_data.hpp"
 
+RoomData::RoomData() {
+	//
+}
+
+RoomData::RoomData(RoomData& rhs) {
+	roomName = std::move(rhs.roomName);
+	tilesetName = std::move(rhs.tilesetName);
+	pager = std::move(rhs.pager);
+	//entityList = std::move(rhs.entityList);
+}
+
+RoomData::~RoomData() {
+	//
+}
+
 std::string RoomData::SetRoomName(std::string s) {
 	return roomName = s;
 }
@@ -42,5 +57,5 @@ RegionPagerLua* RoomData::GetPager() {
 }
 
 std::list<Entity*>* RoomData::GetEntityList() {
-	return &entityList;
+//	return &entityList;
 }

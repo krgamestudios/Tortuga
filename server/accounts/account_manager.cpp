@@ -200,7 +200,7 @@ void AccountManager::UnloadAll() {
 	elementMap.clear();
 }
 
-void AccountManager::UnloadIf(std::function<bool(std::pair<const int, AccountData>)> fn) {
+void AccountManager::UnloadIf(std::function<bool(std::pair<const int, AccountData>&)> fn) {
 	//replicate std::remove_if, using custom code
 	std::map<int, AccountData>::iterator it = elementMap.begin();
 	while (it != elementMap.end()) {

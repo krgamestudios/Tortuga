@@ -45,7 +45,7 @@ public:
 	void Unload(int uid) override;
 
 	void UnloadAll() override;
-	void UnloadIf(std::function<bool(std::pair<const int, ClientData>)> fn) override;
+	void UnloadIf(std::function<bool(std::pair<const int, ClientData>&)> fn) override;
 
 	//accessors & mutators
 	ClientData* Get(int uid) override;

@@ -36,8 +36,9 @@
 
 class RoomData {
 public:
-	RoomData() = default;
-	~RoomData() = default;
+	RoomData();
+	RoomData(RoomData&);
+	~RoomData();
 
 	//accessors and mutators
 	std::string SetRoomName(std::string s);
@@ -57,7 +58,7 @@ private:
 	std::string tilesetName;
 
 	RegionPagerLua pager;
-	std::list<Entity*> entityList;
+//	std::list<Entity*> entityList;
 };
 
 #endif

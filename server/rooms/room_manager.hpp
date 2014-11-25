@@ -42,7 +42,7 @@ public:
 	void Unload(int uid) override;
 
 	void UnloadAll() override;
-	void UnloadIf(std::function<bool(std::pair<const int,RoomData>)> fn) override;
+	void UnloadIf(std::function<bool(std::pair<const int,RoomData>&)> fn) override;
 
 	//accessors and mutators
 	RoomData* Get(int uid) override;

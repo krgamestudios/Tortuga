@@ -48,7 +48,7 @@ public:
 	void Delete(int uid) override;
 
 	void UnloadAll() override;
-	void UnloadIf(std::function<bool(std::pair<const int, CharacterData>)> fn) override;
+	void UnloadIf(std::function<bool(std::pair<const int, CharacterData>&)> fn) override;
 
 	//accessors and mutators
 	CharacterData* Get(int uid) override;

@@ -50,7 +50,7 @@ public:
 	void Delete(int uid) override;
 
 	void UnloadAll() override;
-	void UnloadIf(std::function<bool(std::pair<const int, MonsterData>)> fn) override;
+	void UnloadIf(std::function<bool(std::pair<const int, MonsterData>&)> fn) override;
 
 	//accessors & mutators
 	MonsterData* Get(int uid) override;

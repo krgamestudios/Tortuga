@@ -45,7 +45,7 @@ void DoorManager::UnloadAll() {
 	//TODO
 }
 
-void DoorManager::UnloadIf(std::function<bool(std::pair<const int, DoorData>)> fn) {
+void DoorManager::UnloadIf(std::function<bool(std::pair<const int, DoorData>&)> fn) {
 	//TODO
 }
 
