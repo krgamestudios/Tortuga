@@ -71,6 +71,11 @@ InWorld::InWorld(int* const argClientIndex,	int* const argAccountIndex):
 	disconnectButton.SetText("Disconnect");
 	shutDownButton.SetText("Shut Down");
 
+	//load the tilesheet
+	//TODO: add the tilesheet to the map system?
+	//TODO: Tile size and tile sheet should be loaded elsewhere
+	tileSheet.Load(config["dir.tilesets"] + "overworld.bmp", 32, 32);
+
 	//debug
 	//
 }
@@ -105,6 +110,9 @@ void InWorld::Update() {
 	//free the buffer
 	delete reinterpret_cast<char*>(packetBuffer);
 
+	//update the map
+	UpdateMap();
+
 	//check the connection (heartbeat)
 	if (Clock::now() - lastBeat > std::chrono::seconds(3)) {
 		if (attemptedBeats > 2) {
@@ -137,6 +145,11 @@ void InWorld::RenderFrame() {
 }
 
 void InWorld::Render(SDL_Surface* const screen) {
+	//draw the map
+	for (std::list<Region>::iterator it = regionPager.GetContainer()->begin(); it != regionPager.GetContainer()->end(); it++) {
+		tileSheet.DrawRegionTo(screen, &(*it), camera.x, camera.y);
+	}
+
 	//draw UI
 	disconnectButton.DrawTo(screen);
 	shutDownButton.DrawTo(screen);
@@ -298,6 +311,18 @@ void InWorld::HandleDisconnectForced(ClientPacket* const argPacket) {
 //map management
 //-------------------------
 
+void InWorld::SendRegionRequest(int roomIndex, int x, int y) {
+	RegionPacket packet;
+
+	//pack the region's data
+	packet.type = SerialPacketType::REGION_REQUEST;
+	packet.roomIndex = roomIndex;
+	packet.x = x;
+	packet.y = y;
+
+	network.SendTo(Channels::SERVER, &packet);
+}
+
 void InWorld::HandleRegionContent(RegionPacket* const argPacket) {
 	//replace existing regions
 	regionPager.UnloadRegion(argPacket->x, argPacket->y);
@@ -306,4 +331,27 @@ void InWorld::HandleRegionContent(RegionPacket* const argPacket) {
 	//clean up after the serial code
 	delete argPacket->region;
 	argPacket->region = nullptr;
+}
+
+void InWorld::UpdateMap() {
+	//these represent the zone of regions that the client needs loaded, including the mandatory buffers (+1/-1)
+	int xStart = snapToBase(REGION_WIDTH, camera.x/tileSheet.GetTileW()) - REGION_WIDTH;
+	int xEnd = snapToBase(REGION_WIDTH, (camera.x+camera.width)/tileSheet.GetTileW()) + REGION_WIDTH;
+
+	int yStart = snapToBase(REGION_HEIGHT, camera.y/tileSheet.GetTileH()) - REGION_HEIGHT;
+	int yEnd = snapToBase(REGION_HEIGHT, (camera.y+camera.height)/tileSheet.GetTileH()) + REGION_HEIGHT;
+
+	//prune distant regions
+	regionPager.GetContainer()->remove_if([&](Region const& region) -> bool {
+		return region.GetX() < xStart || region.GetX() > xEnd || region.GetY() < yStart || region.GetY() > yEnd;
+	});
+
+	//request empty regions within this zone
+	for (int i = xStart; i <= xEnd; i += REGION_WIDTH) {
+		for (int j = yStart; j <= yEnd; j += REGION_HEIGHT) {
+			if (!regionPager.FindRegion(i, j)) {
+				SendRegionRequest(0, i, j);
+			}
+		}
+	}
 }

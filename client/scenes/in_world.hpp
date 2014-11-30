@@ -87,7 +87,9 @@ protected:
 	void HandleDisconnectForced(ClientPacket* const);
 
 	//map management
+	void SendRegionRequest(int roomIndex, int x, int y);
 	void HandleRegionContent(RegionPacket* const);
+	void UpdateMap();
 
 	//indexes
 	int& clientIndex;
