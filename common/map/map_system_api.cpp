@@ -70,7 +70,7 @@ int openMapSystemAPI(lua_State* L) {
 
 	//push the substable
 	for (const luaL_Reg* lib = libs; lib->func; lib++) {
-		lua_pushcfunction(L, lib->func);
+		lib->func(L);
 		lua_setfield(L, -2, lib->name);
 	}
 	return 1;
