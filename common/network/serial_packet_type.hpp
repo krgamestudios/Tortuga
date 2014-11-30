@@ -117,14 +117,15 @@ enum class SerialPacketType {
 	//rejection/error messages
 	JOIN_REJECTION = 28,
 	LOGIN_REJECTION = 29,
-	CHARACTER_REJECTION = 30,
-	SHUTDOWN_REJECTION = 31,
+	REGION_REJECTION = 30,
+	CHARACTER_REJECTION = 31,
+	SHUTDOWN_REJECTION = 32,
 
 	//-------------------------
 	//not used
 	//-------------------------
 
-	LAST = 32
+	LAST = 33
 };
 
 #endif

@@ -268,11 +268,13 @@ void ServerApplication::HandlePacket(SerialPacket* const argPacket) {
 		case SerialPacketType::SHUTDOWN_REQUEST:
 			HandleShutdownRequest(static_cast<ClientPacket*>(argPacket));
 		break;
-/*
+
 		//data management & queries
 		case SerialPacketType::REGION_REQUEST:
-//			HandleRegionRequest(static_cast<RegionPacket*>(argPacket));
+			HandleRegionRequest(static_cast<RegionPacket*>(argPacket));
 		break;
+
+/*
 		case SerialPacketType::QUERY_CHARACTER_EXISTS:
 //			HandleCharacterStatsRequest(static_cast<RegionPacket*>(argPacket));
 		break;

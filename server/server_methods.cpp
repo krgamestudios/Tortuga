@@ -88,7 +88,6 @@ void ServerApplication::HandleLoginRequest(ClientPacket* const argPacket) {
 
 	if (clientData == nullptr || clientData->GetAddress() != argPacket->srcAddress) {
 		std::cerr << "Falsified client index detected: " << argPacket->clientIndex << std::endl;
-		//TODO: rejection message?
 		return;
 	}
 
@@ -97,14 +96,18 @@ void ServerApplication::HandleLoginRequest(ClientPacket* const argPacket) {
 
 	//Cannot load
 	if (accountIndex < 0) {
+		//build the message
 		std::ostringstream msg;
 		msg << "Account already loaded: " << argPacket->username;
 
+		//build the packet
 		TextPacket newPacket;
 		newPacket.type = SerialPacketType::LOGIN_REJECTION;
-//		memset(newPacket.name, 0, PACKET_STRING_SIZE);
 		strncpy(newPacket.text, msg.str().c_str(), PACKET_STRING_SIZE);
 		network.SendTo(clientData->GetAddress(), static_cast<SerialPacket*>(&newPacket));
+
+		//log the error
+		std::cerr << "Error message sent: " << msg << std::endl;
 		return;
 	}
 
@@ -247,27 +250,44 @@ void ServerApplication::HandleShutdownRequest(ClientPacket* const argPacket) {
 	std::cout << "Shutdown signal accepted" << std::endl;
 }
 
-/*
-
 //-------------------------
-//map management
+//data management
 //-------------------------
 
-//SET: resources
 void ServerApplication::HandleRegionRequest(RegionPacket* const argPacket) {
+	//get the region object, send a rejection on error
+	RoomData* room = roomMgr.Get(argPacket->roomIndex);
+	if (!room) {
+		//build the error message
+		std::ostringstream msg;
+		msg << "Failed to find Region (" << argPacket->roomIndex << "," << argPacket->x << "," << argPacket->y << ");";
+		msg << "Room " << argPacket->roomIndex << "does not exist";
+
+		//build the packet
+		TextPacket newPacket;
+		newPacket.type = SerialPacketType::REGION_REJECTION;
+		strncpy(newPacket.text, msg.str().c_str(), PACKET_STRING_SIZE);
+		network.SendTo(argPacket->srcAddress, static_cast<SerialPacket*>(&newPacket));
+
+		//log the error
+		std::cerr << "Error message sent: " << msg << std::endl;
+		return;
+	}
+	Region* region = room->GetPager()->GetRegion(argPacket->x, argPacket->y);
+
+	//send the content
 	RegionPacket newPacket;
 
 	newPacket.type = SerialPacketType::REGION_CONTENT;
 	newPacket.roomIndex = argPacket->roomIndex;
 	newPacket.x = argPacket->x;
 	newPacket.y = argPacket->y;
+	newPacket.region = region;
 
-	//BUG: possibly related to #35
-	newPacket.region = roomMgr.Get(argPacket->roomIndex)->GetPager()->GetRegion(argPacket->x, argPacket->y);
-
-	//send the content
 	network.SendTo(argPacket->srcAddress, static_cast<SerialPacket*>(&newPacket));
 }
+
+/*
 
 //-------------------------
 //Character Management
@@ -381,10 +401,6 @@ void ServerApplication::HandleSynchronize(ClientPacket* const argPacket) {
 
 	//TODO: more in HandleSynchronize()
 }
-
-//-------------------------
-//utility methods
-//-------------------------
 
 //SET: utility/manager
 void ServerApplication::CleanupLostConnection(int clientIndex) {

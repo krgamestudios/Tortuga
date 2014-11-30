@@ -87,8 +87,9 @@ private:
 //	void HandleDisconnectForced(ClientPacket* const);
 	void HandleShutdownRequest(ClientPacket* const);
 
-	//map management
-//	void HandleRegionRequest(RegionPacket* const);
+	//data management
+	void HandleRegionRequest(RegionPacket* const);
+	void SaveServerState();
 
 	//character management
 //	void HandleCharacterNew(CharacterPacket* const);
@@ -104,9 +105,6 @@ private:
 //	void PumpPacket(SerialPacket* const);
 //	void PumpCharacterUnload(int uid);
 //	void CopyCharacterToPacket(CharacterPacket* const packet, int characterIndex);
-
-	//data management
-	void SaveServerState();
 
 	//APIs and utilities
 	sqlite3* database = nullptr;
