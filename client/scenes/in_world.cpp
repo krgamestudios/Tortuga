@@ -212,6 +212,12 @@ void InWorld::HandlePacket(SerialPacket* const argPacket) {
 			HandleDisconnectForced(static_cast<ClientPacket*>(argPacket));
 		break;
 
+		//map management
+		case SerialPacketType::REGION_CONTENT:
+			HandleRegionContent(static_cast<RegionPacket*>(argPacket));
+		break;
+
+		//errors
 		default: {
 			std::ostringstream msg;
 			msg << "Unknown SerialPacketType encountered in InWorld: " << static_cast<int>(argPacket->type);
@@ -286,4 +292,18 @@ void InWorld::HandleDisconnectForced(ClientPacket* const argPacket) {
 	//TODO: More needed in the disconnection
 	SetNextScene(SceneList::DISCONNECTEDSCREEN);
 	ConfigUtility::GetSingleton()["client.disconnectMessage"] = "You have been forcibly disconnected by the server";
+}
+
+//-------------------------
+//map management
+//-------------------------
+
+void InWorld::HandleRegionContent(RegionPacket* const argPacket) {
+	//replace existing regions
+	regionPager.UnloadRegion(argPacket->x, argPacket->y);
+	regionPager.PushRegion(argPacket->region);
+
+	//clean up after the serial code
+	delete argPacket->region;
+	argPacket->region = nullptr;
 }

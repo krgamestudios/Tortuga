@@ -86,6 +86,9 @@ protected:
 	void HandleDisconnectResponse(ClientPacket* const);
 	void HandleDisconnectForced(ClientPacket* const);
 
+	//map management
+	void HandleRegionContent(RegionPacket* const);
+
 	//indexes
 	int& clientIndex;
 	int& accountIndex;
