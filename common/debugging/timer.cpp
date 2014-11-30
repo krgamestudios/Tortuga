@@ -39,7 +39,7 @@ void Timer::Stop() {
 
 std::ostream& operator<<(std::ostream& os, Timer& t) {
 	os << t.GetName() << ": ";
-	os << std::chrono::duration_cast<std::chrono::milliseconds>(t.GetTime()).count();
-	os << "ms";
+	os << std::chrono::duration_cast<std::chrono::microseconds>(t.GetTime()).count();
+	os << "us";
 	return os;
 }
