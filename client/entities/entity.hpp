@@ -32,24 +32,24 @@ public:
 	virtual void Update();
 	virtual void DrawTo(SDL_Surface* const, int camX, int camY);
 
-	SpriteSheet* GetSprite() { return &sprite; }
+	SpriteSheet* GetSprite();
 
 	//accessors & mutators
 	int SetEntityIndex(int i);
 	int SetRoomIndex(int i);
 	Vector2 SetOrigin(Vector2 v);
 	Vector2 SetMotion(Vector2 v);
-	BoundingBox SetBounds(BoundingBox b) { return bounds = b; }
+	BoundingBox SetBounds(BoundingBox b);
 
 	int GetEntityIndex();
 	int GetRoomIndex();
 	Vector2 GetOrigin();
 	Vector2 GetMotion();
-	BoundingBox GetBounds() { return bounds; }
+	BoundingBox GetBounds();
 
 protected:
 	Entity() = default;
-	~Entity() = default;
+	virtual ~Entity() = default;
 
 	SpriteSheet sprite;
 	int entityIndex = -1;

@@ -24,7 +24,7 @@
 
 #include "entity.hpp"
 
-class BaseMonster : public Entity {
+class BaseMonster: public Entity {
 public:
 	BaseMonster() = default;
 	virtual ~BaseMonster() = default;

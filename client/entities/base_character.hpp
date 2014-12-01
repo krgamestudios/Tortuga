@@ -29,7 +29,7 @@
 //std namespace
 #include <string>
 
-class BaseCharacter : public Entity {
+class BaseCharacter: public Entity {
 public:
 	BaseCharacter() = default;
 	virtual ~BaseCharacter() = default;
@@ -38,12 +38,12 @@ public:
 	void CorrectSprite();
 
 	//metadata
-	int SetOwner(int i) { return owner = i; }
-	int GetOwner() { return owner; }
-	std::string SetHandle(std::string s) { return handle = s; }
-	std::string GetHandle() const { return handle; }
-	std::string SetAvatar(std::string s) { return avatar = s; }
-	std::string GetAvatar() const { return avatar; }
+	int SetOwner(int i);
+	int GetOwner();
+	std::string SetHandle(std::string s);
+	std::string GetHandle() const;
+	std::string SetAvatar(std::string s);
+	std::string GetAvatar() const;
 
 private:
 	//metadata

@@ -21,6 +21,10 @@
 */
 #include "base_character.hpp"
 
+//-------------------------
+//graphics
+//-------------------------
+
 void BaseCharacter::CorrectSprite() {
 	//NOTE: These must correspond to the sprite sheet in use
 	if (motion.y > 0) {
@@ -44,4 +48,32 @@ void BaseCharacter::CorrectSprite() {
 		sprite.SetDelay(0);
 		sprite.SetXIndex(0);
 	}
+}
+
+//-------------------------
+//metadata
+//-------------------------
+
+int BaseCharacter::SetOwner(int i) {
+	return owner = i;
+}
+
+int BaseCharacter::GetOwner() {
+	return owner;
+}
+
+std::string BaseCharacter::SetHandle(std::string s) {
+	return handle = s;
+}
+
+std::string BaseCharacter::GetHandle() const {
+	return handle;
+}
+
+std::string BaseCharacter::SetAvatar(std::string s) {
+	return avatar = s;
+}
+
+std::string BaseCharacter::GetAvatar() const {
+	return avatar;
 }

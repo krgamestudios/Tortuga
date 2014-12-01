@@ -30,6 +30,14 @@ void Entity::DrawTo(SDL_Surface* const dest, int camX, int camY) {
 	sprite.DrawTo(dest, origin.x - camX, origin.y - camY);
 }
 
+SpriteSheet* Entity::GetSprite() {
+	return &sprite;
+}
+
+//-------------------------
+//accessors & mutators
+//-------------------------
+
 int Entity::SetEntityIndex(int i) {
 	return entityIndex = i;
 }
@@ -45,6 +53,11 @@ Vector2 Entity::SetOrigin(Vector2 v) {
 Vector2 Entity::SetMotion(Vector2 v) {
 	return motion = v;
 }
+
+BoundingBox Entity::SetBounds(BoundingBox b) {
+	return bounds = b;
+}
+
 int Entity::GetEntityIndex() {
 	return entityIndex;
 }
@@ -59,4 +72,8 @@ Vector2 Entity::GetOrigin() {
 
 Vector2 Entity::GetMotion() {
 	return motion;
+}
+
+BoundingBox Entity::GetBounds() {
+	return bounds;
 }
