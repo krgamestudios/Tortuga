@@ -24,6 +24,7 @@
 #include "channels.hpp"
 #include "utility.hpp"
 
+#include "terminal_error.hpp"
 #include <stdexcept>
 #include <algorithm>
 #include <cmath>
@@ -102,6 +103,9 @@ void InWorld::Update() {
 		while(network.Receive(packetBuffer)) {
 			HandlePacket(packetBuffer);
 		}
+	}
+	catch(terminal_error& e) {
+		throw(e);
 	}
 	catch(std::exception& e) {
 		std::cerr << "HandlePacket Error: " << e.what() << std::endl;
@@ -228,6 +232,15 @@ void InWorld::HandlePacket(SerialPacket* const argPacket) {
 		//map management
 		case SerialPacketType::REGION_CONTENT:
 			HandleRegionContent(static_cast<RegionPacket*>(argPacket));
+		break;
+
+		//rejection messages
+		case SerialPacketType::REGION_REJECTION:
+		case SerialPacketType::CHARACTER_REJECTION:
+			throw(terminal_error(static_cast<TextPacket*>(argPacket)->text));
+		break;
+		case SerialPacketType::SHUTDOWN_REJECTION:
+			throw(std::runtime_error(static_cast<TextPacket*>(argPacket)->text));
 		break;
 
 		//errors

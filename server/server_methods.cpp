@@ -107,7 +107,7 @@ void ServerApplication::HandleLoginRequest(ClientPacket* const argPacket) {
 		network.SendTo(clientData->GetAddress(), static_cast<SerialPacket*>(&newPacket));
 
 		//log the error
-		std::cerr << "Error message sent: " << msg << std::endl;
+		std::cerr << "Error message sent: " << newPacket.text << std::endl;
 		return;
 	}
 
@@ -233,8 +233,27 @@ void ServerApplication::HandleShutdownRequest(ClientPacket* const argPacket) {
 	}
 
 	//check for fraud
-	if (clientData->GetAddress() != argPacket->srcAddress || accountData->GetAdministrator() != true) {
+	if (clientData->GetAddress() != argPacket->srcAddress) {
 		std::cerr << "Falsified server shutdown detected from: " << accountData->GetUsername() << std::endl;
+		return;
+	}
+
+	//reject non-admin requests
+	if (accountData->GetAdministrator() != true) {
+		std::cerr << "Rejected server shutdown command from: " << accountData->GetUsername() << std::endl;
+
+		//build the message
+		std::ostringstream msg;
+		msg << "Invalid admin status";
+
+		//build the packet
+		TextPacket newPacket;
+		newPacket.type = SerialPacketType::SHUTDOWN_REJECTION;
+		strncpy(newPacket.text, msg.str().c_str(), PACKET_STRING_SIZE);
+
+		//send the rejection message
+		network.SendTo(argPacket->srcAddress, static_cast<SerialPacket*>(&newPacket));
+
 		return;
 	}
 
@@ -260,8 +279,8 @@ void ServerApplication::HandleRegionRequest(RegionPacket* const argPacket) {
 	if (!room) {
 		//build the error message
 		std::ostringstream msg;
-		msg << "Failed to find Region (" << argPacket->roomIndex << "," << argPacket->x << "," << argPacket->y << ");";
-		msg << "Room " << argPacket->roomIndex << "does not exist";
+		msg << "Failed to find Region (" << argPacket->roomIndex << "," << argPacket->x << "," << argPacket->y << "); ";
+		msg << "Room " << argPacket->roomIndex << " does not exist";
 
 		//build the packet
 		TextPacket newPacket;
@@ -270,7 +289,7 @@ void ServerApplication::HandleRegionRequest(RegionPacket* const argPacket) {
 		network.SendTo(argPacket->srcAddress, static_cast<SerialPacket*>(&newPacket));
 
 		//log the error
-		std::cerr << "Error message sent: " << msg << std::endl;
+		std::cerr << "Error message sent: " << newPacket.text << std::endl;
 		return;
 	}
 	Region* region = room->GetPager()->GetRegion(argPacket->x, argPacket->y);

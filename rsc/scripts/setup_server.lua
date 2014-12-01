@@ -25,7 +25,8 @@ dumpTable(roomSystem)
 dumpTable(roomSystem.RoomManager)
 dumpTable(roomSystem.Room)
 
-local overworld = roomSystem.RoomManager.CreateRoom("overworld")
+--NOTE: room 0 is the first that the client asks for, therefore it must exist
+local overworld, uid = roomSystem.RoomManager.CreateRoom("overworld")
 roomSystem.Room.Initialize(overworld, "overworld.bmp", mapSaver.Load, mapSaver.Save, mapMaker.debugIsland, mapSaver.Save)
 
 print("Finished the lua script")
