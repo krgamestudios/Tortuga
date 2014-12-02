@@ -53,6 +53,10 @@
 #include <map>
 #include <string>
 
+//global utility functions
+bool operator==(IPaddress lhs, IPaddress rhs);
+bool operator!=(IPaddress lhs, IPaddress rhs);
+
 //The main application class
 class ServerApplication: public Singleton<ServerApplication> {
 public:
