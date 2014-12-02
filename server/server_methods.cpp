@@ -330,7 +330,7 @@ void ServerApplication::HandleCharacterCreate(CharacterPacket* const argPacket) 
 	//send this character to the player
 	CharacterPacket newPacket;
 	newPacket.type = SerialPacketType::CHARACTER_CREATE;
-	//TODO?
+	//TODO: pump character load
 }
 
 void ServerApplication::HandleCharacterDelete(CharacterPacket* const argPacket) {
@@ -399,11 +399,36 @@ void ServerApplication::HandleCharacterLoad(CharacterPacket* const argPacket) {
 	//send this character to the player
 	CharacterPacket newPacket;
 	newPacket.type = SerialPacketType::CHARACTER_CREATE;
-	//TODO?
+	//TODO: pump character load
 }
 
 void ServerApplication::HandleCharacterUnload(CharacterPacket* const argPacket) {
-	//TODO
+	//get the entries
+	CharacterData* characterData = characterMgr.Get(argPacket->characterIndex);
+	if (!characterData) {
+		return;
+	}
+
+	AccountData* accountData = accountMgr.Get(characterData->GetOwner());
+	if (!accountData) {
+		return; //TODO: logic_error
+	}
+
+	ClientData* clientData = clientMgr.Get(accountData->GetClientIndex());
+	if (!clientData) {
+		return; //TODO: logic_error
+	}
+
+	//check for fraud
+	if (clientData->GetAddress() != argPacket->srcAddress) {
+		std::cerr << "Falsified character unload detected targeting: uid(" << argPacket->characterIndex << ")" << std::endl;
+		return;
+	}
+
+	//unload the character
+	characterMgr.Unload(argPacket->characterIndex);
+
+	//TODO: pump character unload
 }
 
 /*
