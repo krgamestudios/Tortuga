@@ -92,9 +92,10 @@ private:
 	void SaveServerState();
 
 	//character management
-//	void HandleCharacterNew(CharacterPacket* const);
-//	void HandleCharacterDelete(CharacterPacket* const);
-//	void HandleCharacterUpdate(CharacterPacket* const);
+	void HandleCharacterCreate(CharacterPacket* const);
+	void HandleCharacterDelete(CharacterPacket* const);
+	void HandleCharacterLoad(CharacterPacket* const);
+	void HandleCharacterUnload(CharacterPacket* const);
 
 	//mismanagement
 //	void HandleSynchronize(ClientPacket* const);

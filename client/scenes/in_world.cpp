@@ -73,9 +73,18 @@ InWorld::InWorld(int* const argClientIndex,	int* const argAccountIndex):
 	shutDownButton.SetText("Shut Down");
 
 	//load the tilesheet
-	//TODO: add the tilesheet to the map system?
+	//TODO: add the tilesheet to the map system
 	//TODO: Tile size and tile sheet should be loaded elsewhere
 	tileSheet.Load(config["dir.tilesets"] + "overworld.bmp", 32, 32);
+
+	//Send the character data
+	//TODO: login scene, prompt, etc.
+	CharacterPacket newPacket;
+	newPacket.type = SerialPacketType::CHARACTER_LOAD;
+	strncpy(newPacket.handle, config["client.handle"].c_str(), PACKET_STRING_SIZE);
+	strncpy(newPacket.avatar, config["client.avatar"].c_str(), PACKET_STRING_SIZE);
+	newPacket.accountIndex = accountIndex;
+	network.SendTo(Channels::SERVER, &newPacket);
 
 	//debug
 	//

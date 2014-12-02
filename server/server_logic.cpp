@@ -274,6 +274,20 @@ void ServerApplication::HandlePacket(SerialPacket* const argPacket) {
 			HandleRegionRequest(static_cast<RegionPacket*>(argPacket));
 		break;
 
+		//character management
+		case SerialPacketType::CHARACTER_CREATE:
+			HandleCharacterCreate(static_cast<CharacterPacket*>(argPacket));
+		break;
+		case SerialPacketType::CHARACTER_DELETE:
+			HandleCharacterDelete(static_cast<CharacterPacket*>(argPacket));
+		break;
+		case SerialPacketType::CHARACTER_LOAD:
+			HandleCharacterLoad(static_cast<CharacterPacket*>(argPacket));
+		break;
+		case SerialPacketType::CHARACTER_UNLOAD:
+			HandleCharacterUnload(static_cast<CharacterPacket*>(argPacket));
+		break;
+
 /*
 		case SerialPacketType::QUERY_CHARACTER_EXISTS:
 //			HandleCharacterStatsRequest(static_cast<RegionPacket*>(argPacket));
@@ -286,20 +300,6 @@ void ServerApplication::HandlePacket(SerialPacket* const argPacket) {
 		break;
 		case SerialPacketType::TEXT_BROADCAST:
 //			HandleCharacterStatsRequest(static_cast<RegionPacket*>(argPacket));
-		break;
-
-		//character management
-		case SerialPacketType::CHARACTER_CREATE:
-//			HandleCharacterNew(static_cast<CharacterPacket*>(argPacket));
-		break;
-		case SerialPacketType::CHARACTER_DELETE:
-//			HandleCharacterDelete(static_cast<CharacterPacket*>(argPacket));
-		break;
-		case SerialPacketType::CHARACTER_LOAD:
-//			HandleCharacterNew(static_cast<CharacterPacket*>(argPacket));
-		break;
-		case SerialPacketType::CHARACTER_UNLOAD:
-//			HandleCharacterDelete(static_cast<CharacterPacket*>(argPacket));
 		break;
 
 		//character movement

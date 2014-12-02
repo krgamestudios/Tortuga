@@ -306,44 +306,69 @@ void ServerApplication::HandleRegionRequest(RegionPacket* const argPacket) {
 	network.SendTo(argPacket->srcAddress, static_cast<SerialPacket*>(&newPacket));
 }
 
-/*
-
 //-------------------------
 //Character Management
 //-------------------------
 
-//SET: entities
-void ServerApplication::HandleCharacterNew(CharacterPacket* const argPacket) {
-	//NOTE: misnomer, try to load the character first
-	int characterIndex = characterMgr.Load(argPacket->accountIndex, argPacket->handle, argPacket->avatar);
+void ServerApplication::HandleCharacterCreate(CharacterPacket* const argPacket) {
+	int characterIndex = characterMgr.Create(argPacket->accountIndex, argPacket->handle, argPacket->avatar);
 
-	//cannot load or create
 	if (characterIndex < 0) {
 		//build the error message
 		std::ostringstream msg;
-		if (characterIndex == -1) {
-			msg << "Character already loaded: ";
-		}
-		else if (characterIndex == -2) {
-			msg << "Character already exists: ";
-		}
-		msg << argPacket->handle;
+		msg << "Character already exists: " << argPacket->handle;
 
-		//create, fill and send the packet
+		//build & send the packet
 		TextPacket newPacket;
 		newPacket.type = SerialPacketType::CHARACTER_REJECTION;
-		memset(newPacket.name, 0, PACKET_STRING_SIZE);
 		strncpy(newPacket.text, msg.str().c_str(), PACKET_STRING_SIZE);
 		network.SendTo(argPacket->srcAddress, static_cast<SerialPacket*>(&newPacket));
+
 		return;
 	}
 
-	//send this new character to all clients
+	//send this character to the player
 	CharacterPacket newPacket;
 	newPacket.type = SerialPacketType::CHARACTER_CREATE;
-	CopyCharacterToPacket(&newPacket, characterIndex);
-	PumpPacket(&newPacket);
+	//TODO?
 }
+
+void ServerApplication::HandleCharacterDelete(CharacterPacket* const argPacket) {
+	//TODO
+}
+
+void ServerApplication::HandleCharacterLoad(CharacterPacket* const argPacket) {
+	int characterIndex = characterMgr.Load(argPacket->accountIndex, argPacket->handle, argPacket->avatar);
+
+	if (characterIndex < 0) {
+		//build the error message
+		std::ostringstream msg;
+		if (characterIndex == -1)
+			msg << "Character already loaded: ";
+		if (characterIndex == -1)
+			msg << "Character name is taken: ";
+		msg << argPacket->handle;
+
+		//build & send the packet
+		TextPacket newPacket;
+		newPacket.type = SerialPacketType::CHARACTER_REJECTION;
+		strncpy(newPacket.text, msg.str().c_str(), PACKET_STRING_SIZE);
+		network.SendTo(argPacket->srcAddress, static_cast<SerialPacket*>(&newPacket));
+
+		return;
+	}
+
+	//send this character to the player
+	CharacterPacket newPacket;
+	newPacket.type = SerialPacketType::CHARACTER_CREATE;
+	//TODO?
+}
+
+void ServerApplication::HandleCharacterUnload(CharacterPacket* const argPacket) {
+	//TODO
+}
+
+/*
 
 //SET: entities
 void ServerApplication::HandleCharacterDelete(CharacterPacket* const argPacket) {
