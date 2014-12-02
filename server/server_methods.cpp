@@ -334,7 +334,43 @@ void ServerApplication::HandleCharacterCreate(CharacterPacket* const argPacket) 
 }
 
 void ServerApplication::HandleCharacterDelete(CharacterPacket* const argPacket) {
-	//TODO
+	//get the user's data
+	AccountData* accountData = accountMgr.Get(argPacket->accountIndex);
+	if (!accountData) {
+		return;
+	}
+	ClientData* clientData = clientMgr.Get(accountData->GetClientIndex());
+	if (!clientData) {
+		return;
+	}
+
+	//check for fraud
+	if (clientData->GetAddress() != argPacket->srcAddress) {
+		std::cerr << "Falsified character deletion detected targeting: " << argPacket->handle << std::endl;
+		return;
+	}
+
+	//load the character into memory
+	int characterIndex = characterMgr.Load(argPacket->accountIndex, argPacket->handle, argPacket->avatar);
+
+	if (characterIndex < 0) {
+		//build the error message
+		std::ostringstream msg;
+		msg << "Cannot delete this character";
+
+		//build & send the packet
+		TextPacket newPacket;
+		newPacket.type = SerialPacketType::CHARACTER_REJECTION;
+		strncpy(newPacket.text, msg.str().c_str(), PACKET_STRING_SIZE);
+		network.SendTo(argPacket->srcAddress, static_cast<SerialPacket*>(&newPacket));
+
+		return;
+	}
+
+	//delete the character
+	characterMgr.Delete(characterIndex);
+
+	//TODO: pump character unload
 }
 
 void ServerApplication::HandleCharacterLoad(CharacterPacket* const argPacket) {
@@ -343,10 +379,12 @@ void ServerApplication::HandleCharacterLoad(CharacterPacket* const argPacket) {
 	if (characterIndex < 0) {
 		//build the error message
 		std::ostringstream msg;
-		if (characterIndex == -1)
+		if (characterIndex == -1) {
 			msg << "Character already loaded: ";
-		if (characterIndex == -1)
+		}
+		if (characterIndex == -1) {
 			msg << "Character name is taken: ";
+		}
 		msg << argPacket->handle;
 
 		//build & send the packet
@@ -369,38 +407,6 @@ void ServerApplication::HandleCharacterUnload(CharacterPacket* const argPacket) 
 }
 
 /*
-
-//SET: entities
-void ServerApplication::HandleCharacterDelete(CharacterPacket* const argPacket) {
-	//NOTE: Disconnecting only unloads a character, this explicitly deletes it
-
-	//Authenticate the owner is doing this
-	int characterIndex = characterMgr.Load(argPacket->accountIndex, argPacket->handle, argPacket->avatar);
-
-	//if this is not your character
-	if (characterIndex < 0 && characterMgr.Get(characterIndex)->GetOwner() != argPacket->accountIndex) {
-		//send the rejection packet
-		TextPacket newPacket;
-		newPacket.type = SerialPacketType::CHARACTER_REJECTION;
-		memset(newPacket.name, 0, PACKET_STRING_SIZE);
-		strncpy(newPacket.text, "Character cannot be deleted", PACKET_STRING_SIZE);
-		network.SendTo(argPacket->srcAddress, static_cast<SerialPacket*>(&newPacket));
-
-		//unload an unneeded character
-		if (characterIndex != -1) {
-			characterMgr.Unload(characterIndex);
-		}
-		return;
-	}
-
-	//delete it
-	characterMgr.Delete(characterIndex);
-
-	//TODO: success packet
-
-	//Unload this character from all clients
-	PumpCharacterUnload(characterIndex);
-}
 
 //SET: entities
 void ServerApplication::HandleCharacterUpdate(CharacterPacket* const argPacket) {

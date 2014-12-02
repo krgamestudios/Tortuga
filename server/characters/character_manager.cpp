@@ -110,6 +110,8 @@ int CharacterManager::Load(int owner, std::string handle, std::string avatar) {
 		//check the owner
 		if (owner != sqlite3_column_int(statement, 1)) {
 			sqlite3_finalize(statement);
+			//unload the already loaded character
+			Unload(uid);
 			return -2;
 		}
 
