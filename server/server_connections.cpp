@@ -197,3 +197,7 @@ void ServerApplication::HandleDisconnectRequest(ClientPacket* const argPacket) {
 	//finished this routine
 	std::cout << "New disconnection, " << clientMgr.GetLoadedCount() << " clients and " << accountMgr.GetLoadedCount() << " accounts total" << std::endl;	
 }
+
+void ServerApplication::HandleDisconnectForced(ClientPacket* const argPacket) {
+	//TODO: HandleDisconnectForced
+}

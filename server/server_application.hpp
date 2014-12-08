@@ -88,7 +88,7 @@ private:
 	void HandleDisconnectRequest(ClientPacket* const);
 
 	//server commands
-//	void HandleDisconnectForced(ClientPacket* const);
+	void HandleDisconnectForced(ClientPacket* const);
 	void HandleShutdownRequest(ClientPacket* const);
 
 	//data management
@@ -101,13 +101,12 @@ private:
 	void HandleCharacterLoad(CharacterPacket* const);
 	void HandleCharacterUnload(CharacterPacket* const);
 
-	//mismanagement
-//	void HandleSynchronize(ClientPacket* const);
+	//utility methods
+	void PumpPacket(SerialPacket* const);
+	void PumpPacketProximity(SerialPacket* const, int roomIndex, int x, int y, int radius);
 
 	//utility methods
-	//TODO: a function that only sends to characters in a certain proximity
 //	void CleanupLostConnection(int index);
-//	void PumpPacket(SerialPacket* const);
 //	void PumpCharacterUnload(int uid);
 //	void CopyCharacterToPacket(CharacterPacket* const packet, int characterIndex);
 
