@@ -51,3 +51,23 @@ void ServerApplication::PumpPacketProximity(SerialPacket* const argPacket, int r
 	//send the packet to that client
 	//NOTE: this is perhaps too complex; I write it if I need it
 }
+
+//-------------------------
+//common copy methods
+//-------------------------
+
+void ServerApplication::CopyCharacterToPacket(CharacterPacket* const packet, int characterIndex) {
+	CharacterData* character = characterMgr.Get(characterIndex);
+	if (!character) {
+		throw(std::runtime_error("Failed to copy a character to a packet"));
+	}
+
+	//NOTE: keep this up to date when the character changes
+	packet->characterIndex = characterIndex;
+	strncpy(packet->handle, character->GetHandle().c_str(), PACKET_STRING_SIZE);
+	strncpy(packet->avatar, character->GetAvatar().c_str(), PACKET_STRING_SIZE);
+	packet->accountIndex = character->GetOwner();
+	packet->roomIndex = character->GetRoomIndex();
+	packet->origin = character->GetOrigin();
+	packet->motion = character->GetMotion();
+}

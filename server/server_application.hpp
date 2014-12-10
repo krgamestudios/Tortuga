@@ -104,11 +104,7 @@ private:
 	//utility methods
 	void PumpPacket(SerialPacket* const);
 	void PumpPacketProximity(SerialPacket* const, int roomIndex, int x, int y, int radius);
-
-	//utility methods
-//	void CleanupLostConnection(int index);
-//	void PumpCharacterUnload(int uid);
-//	void CopyCharacterToPacket(CharacterPacket* const packet, int characterIndex);
+	void CopyCharacterToPacket(CharacterPacket* const packet, int characterIndex);
 
 	//APIs and utilities
 	sqlite3* database = nullptr;

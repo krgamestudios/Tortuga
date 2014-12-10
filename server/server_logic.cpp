@@ -188,7 +188,13 @@ void ServerApplication::Proc() {
 					//find and unload the characters associated with this account
 					characterMgr.UnloadIf([&](std::pair<const int, CharacterData> character) -> bool {
 						if (character.second.GetOwner() == account.first) {
-//							PumpCharacterUnload(character.first);
+							//pump character delete
+							CharacterPacket newPacket;
+							newPacket.type = SerialPacketType::CHARACTER_DELETE;
+							newPacket.characterIndex = character.first;
+							PumpPacket(static_cast<SerialPacket*>(&newPacket));
+
+							//unload this character
 							return true;
 						}
 						return false;

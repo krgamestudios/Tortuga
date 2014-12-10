@@ -91,6 +91,10 @@ protected:
 	void HandleRegionContent(RegionPacket* const);
 	void UpdateMap();
 
+	//character management
+	void HandleCharacterCreate(CharacterPacket* const);
+	void HandleCharacterDelete(CharacterPacket* const);
+
 	//indexes
 	int& clientIndex;
 	int& accountIndex;

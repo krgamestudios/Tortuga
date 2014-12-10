@@ -92,10 +92,11 @@ void ServerApplication::HandleCharacterCreate(CharacterPacket* const argPacket) 
 		return;
 	}
 
-	//send this character to the player
+	//pump this character to all clients
 	CharacterPacket newPacket;
+	CopyCharacterToPacket(&newPacket, characterIndex);
 	newPacket.type = SerialPacketType::CHARACTER_CREATE;
-	//TODO: pump character load
+	PumpPacket(&newPacket);
 }
 
 void ServerApplication::HandleCharacterDelete(CharacterPacket* const argPacket) {
@@ -135,7 +136,11 @@ void ServerApplication::HandleCharacterDelete(CharacterPacket* const argPacket) 
 	//delete the character
 	characterMgr.Delete(characterIndex);
 
-	//TODO: pump character unload
+	//pump character delete
+	CharacterPacket newPacket;
+	newPacket.type = SerialPacketType::CHARACTER_DELETE;
+	newPacket.characterIndex = characterIndex;
+	PumpPacket(static_cast<SerialPacket*>(&newPacket));
 }
 
 void ServerApplication::HandleCharacterLoad(CharacterPacket* const argPacket) {
@@ -161,10 +166,11 @@ void ServerApplication::HandleCharacterLoad(CharacterPacket* const argPacket) {
 		return;
 	}
 
-	//send this character to the player
+	//pump this character to all clients
 	CharacterPacket newPacket;
+	CopyCharacterToPacket(&newPacket, characterIndex);
 	newPacket.type = SerialPacketType::CHARACTER_CREATE;
-	//TODO: pump character load
+	PumpPacket(&newPacket);
 }
 
 void ServerApplication::HandleCharacterUnload(CharacterPacket* const argPacket) {
@@ -193,5 +199,9 @@ void ServerApplication::HandleCharacterUnload(CharacterPacket* const argPacket) 
 	//unload the character
 	characterMgr.Unload(argPacket->characterIndex);
 
-	//TODO: pump character unload
+	//pump character delete
+	CharacterPacket newPacket;
+	newPacket.type = SerialPacketType::CHARACTER_DELETE;
+	newPacket.characterIndex = argPacket->characterIndex;
+	PumpPacket(static_cast<SerialPacket*>(&newPacket));
 }

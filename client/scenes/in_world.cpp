@@ -243,6 +243,14 @@ void InWorld::HandlePacket(SerialPacket* const argPacket) {
 			HandleRegionContent(static_cast<RegionPacket*>(argPacket));
 		break;
 
+		//character management
+		case SerialPacketType::CHARACTER_CREATE:
+			HandleCharacterCreate(static_cast<CharacterPacket*>(argPacket));
+		break;
+		case SerialPacketType::CHARACTER_DELETE:
+			HandleCharacterDelete(static_cast<CharacterPacket*>(argPacket));
+		break;
+
 		//rejection messages
 		case SerialPacketType::REGION_REJECTION:
 		case SerialPacketType::CHARACTER_REJECTION:
@@ -376,4 +384,14 @@ void InWorld::UpdateMap() {
 			}
 		}
 	}
+}
+
+void InWorld::HandleCharacterCreate(CharacterPacket* const argPacket) {
+	//TODO: HandleCharacterCreate()
+	std::cout << "HandleCharacterCreate" << std::endl;
+}
+
+void InWorld::HandleCharacterDelete(CharacterPacket* const argPacket) {
+	//TODO: HandleCharacterDelete()
+	std::cout << "HandleCharacterDelete" << std::endl;
 }
