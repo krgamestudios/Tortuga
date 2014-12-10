@@ -71,6 +71,16 @@ void ServerApplication::HandleRegionRequest(RegionPacket* const argPacket) {
 	network.SendTo(argPacket->srcAddress, static_cast<SerialPacket*>(&newPacket));
 }
 
+void ServerApplication::HandleCharacterExists(CharacterPacket* const argPacket) {
+	//respond with all character data
+	CharacterPacket newPacket;
+	for (auto& it : *characterMgr.GetContainer()) {
+		CopyCharacterToPacket(&newPacket, it.first);
+		newPacket.type = SerialPacketType::QUERY_CHARACTER_EXISTS;
+		network.SendTo(argPacket->srcAddress, static_cast<SerialPacket*>(&newPacket));
+	}
+}
+
 //-------------------------
 //Character Management
 //-------------------------

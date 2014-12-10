@@ -94,6 +94,7 @@ protected:
 	//character management
 	void HandleCharacterCreate(CharacterPacket* const);
 	void HandleCharacterDelete(CharacterPacket* const);
+	void HandleCharacterQueryExists(CharacterPacket* const);
 
 	//indexes
 	int& clientIndex;

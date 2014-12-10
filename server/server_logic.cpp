@@ -279,6 +279,9 @@ void ServerApplication::HandlePacket(SerialPacket* const argPacket) {
 		case SerialPacketType::REGION_REQUEST:
 			HandleRegionRequest(static_cast<RegionPacket*>(argPacket));
 		break;
+		case SerialPacketType::QUERY_CHARACTER_EXISTS:
+			HandleCharacterExists(static_cast<CharacterPacket*>(argPacket));
+		break;
 
 		//character management
 		case SerialPacketType::CHARACTER_CREATE:

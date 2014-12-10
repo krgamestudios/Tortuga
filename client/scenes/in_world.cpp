@@ -86,6 +86,11 @@ InWorld::InWorld(int* const argClientIndex,	int* const argAccountIndex):
 	newPacket.accountIndex = accountIndex;
 	network.SendTo(Channels::SERVER, &newPacket);
 
+	//query the world state
+	memset(&newPacket, 0, MAX_PACKET_SIZE);
+	newPacket.type = SerialPacketType::QUERY_CHARACTER_EXISTS;
+	network.SendTo(Channels::SERVER, &newPacket);
+
 	//debug
 	//
 }
@@ -250,6 +255,9 @@ void InWorld::HandlePacket(SerialPacket* const argPacket) {
 		case SerialPacketType::CHARACTER_DELETE:
 			HandleCharacterDelete(static_cast<CharacterPacket*>(argPacket));
 		break;
+		case SerialPacketType::QUERY_CHARACTER_EXISTS:
+			HandleCharacterQueryExists(static_cast<CharacterPacket*>(argPacket));
+		break;
 
 		//rejection messages
 		case SerialPacketType::REGION_REJECTION:
@@ -394,4 +402,12 @@ void InWorld::HandleCharacterCreate(CharacterPacket* const argPacket) {
 void InWorld::HandleCharacterDelete(CharacterPacket* const argPacket) {
 	//TODO: HandleCharacterDelete()
 	std::cout << "HandleCharacterDelete" << std::endl;
+}
+
+void InWorld::HandleCharacterQueryExists(CharacterPacket* const argPacket) {
+	//TODO: HandleCharacterQueryExists()
+	std::cout << "HandleCharacterQueryExists" << std::endl;
+	//NOTE: preexisting characters will result in query responses
+	//NOTE: new characters will result in create messages
+	//NOTE: this client's character will exist in both
 }

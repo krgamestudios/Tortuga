@@ -93,6 +93,8 @@ private:
 
 	//data management
 	void HandleRegionRequest(RegionPacket* const);
+	void HandleCharacterExists(CharacterPacket* const);
+
 	void SaveServerState();
 
 	//character management
