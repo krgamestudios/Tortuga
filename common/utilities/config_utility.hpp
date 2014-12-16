@@ -27,9 +27,9 @@
 #include <map>
 #include <string>
 
-class ConfigUtility : public Singleton<ConfigUtility> {
+class ConfigUtility: public Singleton<ConfigUtility> {
 public:
-	void Load(std::string fname, int argc = 0, char* argv[] = nullptr);
+	void Load(std::string fname, bool skipMissingFile = false, int argc = 0, char* argv[] = nullptr);
 
 	//convert to a type
 	std::string& String(std::string);
@@ -47,10 +47,7 @@ private:
 
 	friend Singleton<ConfigUtility>;
 
-	ConfigUtility() = default;
-	~ConfigUtility() = default;
-
-	table_t Read(std::string fname);
+	table_t Read(std::string fname, bool skipMissingFile);
 
 	table_t configMap;
 };
