@@ -96,7 +96,9 @@ InWorld::InWorld(int* const argClientIndex,	int* const argAccountIndex):
 }
 
 InWorld::~InWorld() {
-	//
+	//unload the local data
+	characterMap.clear();
+	monsterMap.clear();
 }
 
 //-------------------------
@@ -166,6 +168,16 @@ void InWorld::Render(SDL_Surface* const screen) {
 	//draw the map
 	for (std::list<Region>::iterator it = regionPager.GetContainer()->begin(); it != regionPager.GetContainer()->end(); it++) {
 		tileSheet.DrawRegionTo(screen, &(*it), camera.x, camera.y);
+	}
+
+	//draw the entities
+	for (auto& it : characterMap) {
+		//TODO: depth ordering
+		it.second.DrawTo(screen, camera.x, camera.y);
+	}
+	for (auto& it : monsterMap) {
+		//TODO: depth ordering
+		it.second.DrawTo(screen, camera.x, camera.y);
 	}
 
 	//draw UI
@@ -328,8 +340,7 @@ void InWorld::SendShutdownRequest() {
 
 void InWorld::HandleLogoutResponse(ClientPacket* const argPacket) {
 	accountIndex = -1;
-
-	//TODO: unload the character
+	characterIndex = -1;
 
 	SendDisconnectRequest();
 }
@@ -340,7 +351,10 @@ void InWorld::HandleDisconnectResponse(ClientPacket* const argPacket) {
 }
 
 void InWorld::HandleDisconnectForced(ClientPacket* const argPacket) {
-	//TODO: More needed in the disconnection
+	//clear the local data
+	accountIndex = -1;
+	characterIndex = -1;
+
 	SetNextScene(SceneList::DISCONNECTEDSCREEN);
 	ConfigUtility::GetSingleton()["client.disconnectMessage"] = "You have been forcibly disconnected by the server";
 }
@@ -394,9 +408,36 @@ void InWorld::UpdateMap() {
 	}
 }
 
+//-------------------------
+//entity management
+//-------------------------
+
+//NOTE: preexisting characters will result in query responses
+//NOTE: new characters will result in create messages
+//NOTE: this client's character will exist in both
+
 void InWorld::HandleCharacterCreate(CharacterPacket* const argPacket) {
-	//TODO: HandleCharacterCreate()
-	std::cout << "HandleCharacterCreate" << std::endl;
+	//prevent double message
+	if (characterMap.find(argPacket->characterIndex) != characterMap.end()) {
+		std::ostringstream msg;
+		msg << "Double character creation event; ";
+		msg << "Index: " << argPacket->characterIndex << "; ";
+		msg << "Handle: " << argPacket->handle;
+		throw(std::runtime_error(msg.str()));
+	}
+
+	//implicity create and retrieve the entity
+	BaseCharacter& character = characterMap[argPacket->characterIndex];
+
+	//fill the character's info
+	character.SetOrigin({0, 0});
+	character.SetMotion({0, 0});
+	character.SetBounds({CHARACTER_BOUNDS_X, CHARACTER_BOUNDS_Y, CHARACTER_BOUNDS_WIDTH, CHARACTER_BOUNDS_HEIGHT});
+	character.SetHandle(argPacket->handle);
+	character.SetAvatar(argPacket->avatar);
+
+	//debug
+	std::cout << "Create, total: " << characterMap.size() << std::endl;
 }
 
 void InWorld::HandleCharacterDelete(CharacterPacket* const argPacket) {
@@ -407,7 +448,4 @@ void InWorld::HandleCharacterDelete(CharacterPacket* const argPacket) {
 void InWorld::HandleCharacterQueryExists(CharacterPacket* const argPacket) {
 	//TODO: HandleCharacterQueryExists()
 	std::cout << "HandleCharacterQueryExists" << std::endl;
-	//NOTE: preexisting characters will result in query responses
-	//NOTE: new characters will result in create messages
-	//NOTE: this client's character will exist in both
 }

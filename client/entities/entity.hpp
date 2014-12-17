@@ -36,13 +36,11 @@ public:
 
 	//accessors & mutators
 	int SetEntityIndex(int i);
-	int SetRoomIndex(int i);
 	Vector2 SetOrigin(Vector2 v);
 	Vector2 SetMotion(Vector2 v);
 	BoundingBox SetBounds(BoundingBox b);
 
 	int GetEntityIndex();
-	int GetRoomIndex();
 	Vector2 GetOrigin();
 	Vector2 GetMotion();
 	BoundingBox GetBounds();
@@ -53,7 +51,6 @@ protected:
 
 	SpriteSheet sprite;
 	int entityIndex = -1;
-	int roomIndex = -1;
 	Vector2 origin;
 	Vector2 motion;
 	BoundingBox bounds;

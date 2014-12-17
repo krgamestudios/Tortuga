@@ -44,6 +44,8 @@
 
 //client
 #include "base_scene.hpp"
+#include "base_character.hpp"
+#include "base_monster.hpp"
 
 //STL
 #include <map>
@@ -99,6 +101,7 @@ protected:
 	//indexes
 	int& clientIndex;
 	int& accountIndex;
+	int characterIndex = -1;
 
 	//graphics
 	Image buttonImage;
@@ -120,6 +123,9 @@ protected:
 		int marginX = 0, marginY = 0;
 	} camera;
 
+	//entities
+	std::map<int, BaseCharacter> characterMap;
+	std::map<int, BaseMonster> monsterMap;
 
 	//heartbeat
 	//TODO: Heartbeat needs it's own utility

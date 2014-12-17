@@ -21,6 +21,8 @@
 */
 #include "base_character.hpp"
 
+#include "config_utility.hpp"
+
 //-------------------------
 //graphics
 //-------------------------
@@ -71,7 +73,9 @@ std::string BaseCharacter::GetHandle() const {
 }
 
 std::string BaseCharacter::SetAvatar(std::string s) {
-	return avatar = s;
+	avatar = s;
+	sprite.LoadSurface(ConfigUtility::GetSingleton()["dir.sprites"] + avatar, CHARACTER_CELLS_X, CHARACTER_CELLS_Y);
+	return avatar;
 }
 
 std::string BaseCharacter::GetAvatar() const {
