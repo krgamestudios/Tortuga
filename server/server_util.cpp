@@ -43,14 +43,14 @@ void ServerApplication::PumpPacket(SerialPacket* const argPacket) {
 	}
 }
 
-void ServerApplication::PumpPacketProximity(SerialPacket* const argPacket, int roomIndex, int x, int y, int radius) {
+/*void ServerApplication::PumpPacketProximity(SerialPacket* const argPacket, int roomIndex, int x, int y, int radius) {
 	//TODO: PumpPacketProximity
 	//for position (roomIndex, x, y), find all characters within that distance
 	//find that character's owner
 	//find that account's client
 	//send the packet to that client
 	//NOTE: this is perhaps too complex; I write it if I need it
-}
+*/}
 
 //-------------------------
 //common copy methods

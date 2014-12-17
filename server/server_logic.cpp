@@ -298,9 +298,6 @@ void ServerApplication::HandlePacket(SerialPacket* const argPacket) {
 		break;
 
 /*
-		case SerialPacketType::QUERY_CHARACTER_EXISTS:
-//			HandleCharacterStatsRequest(static_cast<RegionPacket*>(argPacket));
-		break;
 		case SerialPacketType::QUERY_CHARACTER_STATS:
 //			HandleCharacterStatsRequest(static_cast<RegionPacket*>(argPacket));
 		break;

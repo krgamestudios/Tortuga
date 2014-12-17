@@ -79,26 +79,3 @@ void ServerApplication::HandleShutdownRequest(ClientPacket* const argPacket) {
 	//finished this routine
 	std::cout << "Shutdown signal accepted" << std::endl;
 }
-
-/*
-
-//SET: entities
-void ServerApplication::HandleCharacterUpdate(CharacterPacket* const argPacket) {
-	CharacterData* character = characterMgr.Get(argPacket->characterIndex);
-
-	//make a new character if this one doesn't exist
-	if (!character) {
-		HandleCharacterNew(argPacket);
-		return;
-	}
-
-	//accept client-side logic
-	character->SetRoomIndex(argPacket->roomIndex);
-	character->SetOrigin(argPacket->origin);
-	character->SetMotion(argPacket->motion);
-
-	//TODO: gameplay components: equipment, items, buffs, debuffs
-
-	PumpPacket(argPacket);
-}
-*/
