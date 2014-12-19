@@ -45,7 +45,7 @@ public:
 	std::string SetAvatar(std::string s);
 	std::string GetAvatar() const;
 
-private:
+protected:
 	//metadata
 	int owner;
 	std::string handle;

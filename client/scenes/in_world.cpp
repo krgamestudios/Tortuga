@@ -91,6 +91,10 @@ InWorld::InWorld(int* const argClientIndex,	int* const argAccountIndex):
 	newPacket.type = SerialPacketType::QUERY_CHARACTER_EXISTS;
 	network.SendTo(Channels::SERVER, &newPacket);
 
+	//set the camera's values
+	camera.width = GetScreen()->w;
+	camera.height = GetScreen()->h;
+
 	//debug
 	//
 }
@@ -132,6 +136,14 @@ void InWorld::Update() {
 
 	//update the map
 	UpdateMap();
+
+	//update all entities
+	for (auto& it : characterMap) {
+		it.second.Update();
+	}
+	for (auto& it : monsterMap) {
+		it.second.Update();
+	}
 
 	//check the connection (heartbeat)
 	if (Clock::now() - lastBeat > std::chrono::seconds(3)) {
@@ -342,6 +354,10 @@ void InWorld::HandleLogoutResponse(ClientPacket* const argPacket) {
 	accountIndex = -1;
 	characterIndex = -1;
 
+	//reset the camera
+	camera.x = camera .y = 0;
+	camera.marginX = camera.marginY = 0;
+
 	SendDisconnectRequest();
 }
 
@@ -354,6 +370,10 @@ void InWorld::HandleDisconnectForced(ClientPacket* const argPacket) {
 	//clear the local data
 	accountIndex = -1;
 	characterIndex = -1;
+
+	//reset the camera
+	camera.x = camera .y = 0;
+	camera.marginX = camera.marginY = 0;
 
 	SetNextScene(SceneList::DISCONNECTEDSCREEN);
 	ConfigUtility::GetSingleton()["client.disconnectMessage"] = "You have been forcibly disconnected by the server";
@@ -414,7 +434,7 @@ void InWorld::UpdateMap() {
 
 //NOTE: preexisting characters will result in query responses
 //NOTE: new characters will result in create messages
-//NOTE: this client's character will exist in both
+//NOTE: this client's character will exist in both (skipped)
 
 void InWorld::HandleCharacterCreate(CharacterPacket* const argPacket) {
 	//prevent double message
@@ -435,10 +455,16 @@ void InWorld::HandleCharacterCreate(CharacterPacket* const argPacket) {
 	character->SetBounds({CHARACTER_BOUNDS_X, CHARACTER_BOUNDS_Y, CHARACTER_BOUNDS_WIDTH, CHARACTER_BOUNDS_HEIGHT});
 	character->SetHandle(argPacket->handle);
 	character->SetAvatar(argPacket->avatar);
+	character->SetOwner(argPacket->accountIndex);
 
-	//TODO: check for this player's character
+	//check for this player's character
+	if (character->GetOwner() == accountIndex) {
+		localCharacter = static_cast<LocalCharacter*>(character);
 
-	//TODO: setup the camera
+		//focus the camera on this character
+		camera.marginX = (camera.width / 2 - localCharacter->GetSprite()->GetImage()->GetClipW() / 2);
+		camera.marginY = (camera.height/ 2 - localCharacter->GetSprite()->GetImage()->GetClipH() / 2);
+	}
 
 	//debug
 	std::cout << "Create, total: " << characterMap.size() << std::endl;
@@ -453,7 +479,14 @@ void InWorld::HandleCharacterDelete(CharacterPacket* const argPacket) {
 		return;
 	}
 
-	//TODO: check for this player's character
+	//check for this player's character
+	if ((*characterIt).second.GetOwner() == accountIndex) {
+		localCharacter = nullptr;
+
+		//clear the camera
+		camera.marginX = 0;
+		camera.marginY = 0;
+	}
 
 	//remove this character
 	characterMap.erase(characterIt);
@@ -463,6 +496,11 @@ void InWorld::HandleCharacterDelete(CharacterPacket* const argPacket) {
 }
 
 void InWorld::HandleCharacterQueryExists(CharacterPacket* const argPacket) {
+	//prevent a double message about this player's character
+	if (argPacket->accountIndex == accountIndex) {
+		return;
+	}
+
 	//implicitly construct the character if it doesn't exist
 	BaseCharacter* character = &characterMap[argPacket->characterIndex];
 
@@ -472,6 +510,7 @@ void InWorld::HandleCharacterQueryExists(CharacterPacket* const argPacket) {
 	character->SetBounds({CHARACTER_BOUNDS_X, CHARACTER_BOUNDS_Y, CHARACTER_BOUNDS_WIDTH, CHARACTER_BOUNDS_HEIGHT});
 	character->SetHandle(argPacket->handle);
 	character->SetAvatar(argPacket->avatar);
+	character->SetOwner(argPacket->accountIndex);
 
 	//debug
 	std::cout << "Query, total: " << characterMap.size() << std::endl;

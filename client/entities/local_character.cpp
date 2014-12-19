@@ -19,45 +19,5 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#include "entity.hpp"
+#include "local_character.hpp"
 
-void Entity::Update() {
-	origin += motion;
-	sprite.Update(0.016);
-}
-
-void Entity::DrawTo(SDL_Surface* const dest, int camX, int camY) {
-	sprite.DrawTo(dest, origin.x - camX, origin.y - camY);
-}
-
-SpriteSheet* Entity::GetSprite() {
-	return &sprite;
-}
-
-//-------------------------
-//accessors & mutators
-//-------------------------
-
-Vector2 Entity::SetOrigin(Vector2 v) {
-	return origin = v;
-}
-
-Vector2 Entity::SetMotion(Vector2 v) {
-	return motion = v;
-}
-
-BoundingBox Entity::SetBounds(BoundingBox b) {
-	return bounds = b;
-}
-
-Vector2 Entity::GetOrigin() {
-	return origin;
-}
-
-Vector2 Entity::GetMotion() {
-	return motion;
-}
-
-BoundingBox Entity::GetBounds() {
-	return bounds;
-}

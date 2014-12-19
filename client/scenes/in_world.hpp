@@ -39,13 +39,10 @@
 //common
 #include "frame_rate.hpp"
 
-#include "base_character.hpp"
-#include "base_monster.hpp"
-
 //client
 #include "base_scene.hpp"
-#include "base_character.hpp"
 #include "base_monster.hpp"
+#include "local_character.hpp"
 
 //STL
 #include <map>
@@ -126,6 +123,7 @@ protected:
 	//entities
 	std::map<int, BaseCharacter> characterMap;
 	std::map<int, BaseMonster> monsterMap;
+	LocalCharacter* localCharacter = nullptr;
 
 	//heartbeat
 	//TODO: Heartbeat needs it's own utility

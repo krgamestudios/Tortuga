@@ -28,12 +28,10 @@
 class Entity {
 public:
 	//accessors & mutators
-	int SetEntityIndex(int i);
 	int SetRoomIndex(int i);
 	Vector2 SetOrigin(Vector2 v);
 	Vector2 SetMotion(Vector2 v);
 
-	int GetEntityIndex();
 	int GetRoomIndex();
 	Vector2 GetOrigin();
 	Vector2 GetMotion();
@@ -42,7 +40,6 @@ protected:
 	Entity() = default;
 	~Entity() = default;
 
-	int entityIndex = -1;
 	int roomIndex = -1;
 	Vector2 origin;
 	Vector2 motion;

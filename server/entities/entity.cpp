@@ -21,10 +21,6 @@
 */
 #include "entity.hpp"
 
-int Entity::SetEntityIndex(int i) {
-	return entityIndex = i;
-}
-
 int Entity::SetRoomIndex(int i) {
 	return roomIndex = i;
 }
@@ -35,9 +31,6 @@ Vector2 Entity::SetOrigin(Vector2 v) {
 
 Vector2 Entity::SetMotion(Vector2 v) {
 	return motion = v;
-}
-int Entity::GetEntityIndex() {
-	return entityIndex;
 }
 
 int Entity::GetRoomIndex() {

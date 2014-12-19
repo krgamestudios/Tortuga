@@ -29,7 +29,7 @@ public:
 	BaseMonster() = default;
 	virtual ~BaseMonster() = default;
 
-private:
+protected:
 	//
 };
 

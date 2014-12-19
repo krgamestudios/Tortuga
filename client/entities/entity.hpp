@@ -35,12 +35,10 @@ public:
 	SpriteSheet* GetSprite();
 
 	//accessors & mutators
-	int SetEntityIndex(int i);
 	Vector2 SetOrigin(Vector2 v);
 	Vector2 SetMotion(Vector2 v);
 	BoundingBox SetBounds(BoundingBox b);
 
-	int GetEntityIndex();
 	Vector2 GetOrigin();
 	Vector2 GetMotion();
 	BoundingBox GetBounds();
@@ -50,7 +48,6 @@ protected:
 	virtual ~Entity() = default;
 
 	SpriteSheet sprite;
-	int entityIndex = -1;
 	Vector2 origin;
 	Vector2 motion;
 	BoundingBox bounds;
