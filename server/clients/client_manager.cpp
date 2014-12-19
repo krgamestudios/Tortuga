@@ -39,7 +39,7 @@ int ClientManager::CheckConnections() {
 	for (auto& it : elementMap) {
 		if (it.second.GetAttempts() > 2) {
 			int ret = it.first;
-			elementMap.erase(it.first);
+//			elementMap.erase(it.first);
 			return ret;
 		}
 	}

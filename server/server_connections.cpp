@@ -137,18 +137,8 @@ void ServerApplication::HandleLogoutRequest(ClientPacket* const argPacket) {
 
 	network.SendTo(clientData->GetAddress(), static_cast<SerialPacket*>(&newPacket));
 
-	//save and unload this accounts characters
-	characterMgr.UnloadIf([&](std::pair<int, CharacterData> it) -> bool {
-		if (argPacket->accountIndex == it.second.GetOwner()) {
-			//pump the unload message to all remaining clients
-			//TODO: pump character unload
-			return true;
-		}
-		return false;
-	});
-
-	//unload this account
-	accountMgr.Unload(argPacket->accountIndex);
+	//save and unload this account and it's characters
+	FullAccountUnload(argPacket->accountIndex);
 
 	//finished this routine
 	std::cout << "New logout, " << clientMgr.GetLoadedCount() << " clients and " << accountMgr.GetLoadedCount() << " accounts total" << std::endl;
@@ -174,25 +164,8 @@ void ServerApplication::HandleDisconnectRequest(ClientPacket* const argPacket) {
 
 	network.SendTo(clientData->GetAddress(), static_cast<SerialPacket*>(&newPacket));
 
-	//TODO: need a method for this redundunt chunk of redundant code
-	//find and unload the accounts associated with this client
-	accountMgr.UnloadIf([&](std::pair<const int, AccountData> account) -> bool {
-		if (account.second.GetClientIndex() == argPacket->clientIndex) {
-			//find and unload the characters associated with this account
-			characterMgr.UnloadIf([&](std::pair<const int, CharacterData> character) -> bool {
-				if (character.second.GetOwner() == account.first) {
-					//TODO: pump character unload
-					return true;
-				}
-				return false;
-			});
-			return true;
-		}
-		return false;
-	});
-
-	//unload this client
-	clientMgr.Unload(argPacket->clientIndex);
+	//unload the client, it's accounts, and their characters
+	FullClientUnload(argPacket->clientIndex);
 
 	//finished this routine
 	std::cout << "New disconnection, " << clientMgr.GetLoadedCount() << " clients and " << accountMgr.GetLoadedCount() << " accounts total" << std::endl;	

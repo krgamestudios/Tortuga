@@ -182,27 +182,7 @@ void ServerApplication::Proc() {
 		//Check connections
 		int disconnected = clientMgr.CheckConnections();
 		if (disconnected != -1) {
-			//find and unload the accounts associated with this client
-			accountMgr.UnloadIf([&](std::pair<const int, AccountData> account) -> bool {
-				if (account.second.GetClientIndex() == disconnected) {
-					//find and unload the characters associated with this account
-					characterMgr.UnloadIf([&](std::pair<const int, CharacterData> character) -> bool {
-						if (character.second.GetOwner() == account.first) {
-							//pump character delete
-							CharacterPacket newPacket;
-							newPacket.type = SerialPacketType::CHARACTER_DELETE;
-							newPacket.characterIndex = character.first;
-							PumpPacket(static_cast<SerialPacket*>(&newPacket));
-
-							//unload this character
-							return true;
-						}
-						return false;
-					});
-					return true;
-				}
-				return false;
-			});
+			FullClientUnload(disconnected);
 		}
 
 		//give the computer a break
