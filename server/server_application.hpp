@@ -96,6 +96,9 @@ private:
 	void HandleCharacterExists(CharacterPacket* const);
 
 	void SaveServerState();
+	void FullClientUnload(int index);
+	void FullAccountUnload(int index);
+	void FullCharacterUnload(int index);
 
 	//character management
 	void HandleCharacterCreate(CharacterPacket* const);

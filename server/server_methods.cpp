@@ -79,3 +79,65 @@ void ServerApplication::HandleShutdownRequest(ClientPacket* const argPacket) {
 	//finished this routine
 	std::cout << "Shutdown signal accepted" << std::endl;
 }
+
+//-------------------------
+//full unload methods
+//-------------------------
+
+void ServerApplication::FullClientUnload(int index) {
+	clientMgr.UnloadIf([&](std::pair<const int, ClientData> client) -> bool {
+		//skip the wrong clients
+		if (client.first != index) {
+			return false;
+		}
+
+		//unload associated accounts
+		for (auto& it : *accountMgr.GetContainer()) {
+			if (it.second.GetClientIndex() == index) {
+				FullAccountUnload(it.first);
+			}
+		}
+
+		//unload this client
+		return true;
+	});
+}
+
+void ServerApplication::FullAccountUnload(int index) {
+	accountMgr.UnloadIf([&](std::pair<const int, AccountData> account) -> bool {
+		//skip the wrong accounts
+		if (account.first != index) {
+			return false;
+		}
+
+		//unload associated characters
+		for (auto& it : *characterMgr.GetContainer()) {
+			if (it.second.GetOwner() == index) {
+				FullCharacterUnload(it.first);
+			}
+		}
+
+		//unload this account
+		return true;
+	});
+}
+
+void ServerApplication::FullCharacterUnload(int index) {
+	characterMgr.UnloadIf([&](std::pair<const int, CharacterData> character) -> bool {
+		//skip the wrong characters
+		if (character.first != index) {
+			return false;
+		}
+
+		//pump character unload
+		CharacterPacket newPacket;
+		newPacket.type = SerialPacketType::CHARACTER_DELETE;
+		newPacket.characterIndex = character.first;
+		//NOTE: more character info as needed
+
+		PumpPacket(&newPacket);
+
+		//unload this character
+		return true;
+	});
+}
