@@ -50,7 +50,7 @@ void ServerApplication::PumpPacket(SerialPacket* const argPacket) {
 	//find that account's client
 	//send the packet to that client
 	//NOTE: this is perhaps too complex; I write it if I need it
-*/}
+}*/
 
 //-------------------------
 //common copy methods

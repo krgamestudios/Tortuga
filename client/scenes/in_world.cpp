@@ -427,22 +427,39 @@ void InWorld::HandleCharacterCreate(CharacterPacket* const argPacket) {
 	}
 
 	//implicity create and retrieve the entity
-	BaseCharacter& character = characterMap[argPacket->characterIndex];
+	BaseCharacter* character = &characterMap[argPacket->characterIndex];
 
 	//fill the character's info
-	character.SetOrigin({0, 0});
-	character.SetMotion({0, 0});
-	character.SetBounds({CHARACTER_BOUNDS_X, CHARACTER_BOUNDS_Y, CHARACTER_BOUNDS_WIDTH, CHARACTER_BOUNDS_HEIGHT});
-	character.SetHandle(argPacket->handle);
-	character.SetAvatar(argPacket->avatar);
+	character->SetOrigin({0, 0});
+	character->SetMotion({0, 0});
+	character->SetBounds({CHARACTER_BOUNDS_X, CHARACTER_BOUNDS_Y, CHARACTER_BOUNDS_WIDTH, CHARACTER_BOUNDS_HEIGHT});
+	character->SetHandle(argPacket->handle);
+	character->SetAvatar(argPacket->avatar);
+
+	//TODO: check for this player's character
+
+	//TODO: setup the camera
 
 	//debug
 	std::cout << "Create, total: " << characterMap.size() << std::endl;
 }
 
 void InWorld::HandleCharacterDelete(CharacterPacket* const argPacket) {
-	//TODO: HandleCharacterDelete()
-	std::cout << "HandleCharacterDelete" << std::endl;
+	//ignore if this character doesn't exist
+	std::map<int, BaseCharacter>::iterator characterIt = characterMap.find(argPacket->characterIndex);
+	if (characterIt == characterMap.end()) {
+		//debug
+		std::cout << "Ignoring character deletion" << std::endl;
+		return;
+	}
+
+	//TODO: check for this player's character
+
+	//remove this character
+	characterMap.erase(characterIt);
+
+	//debug
+	std::cout << "Delete, total: " << characterMap.size() << std::endl;
 }
 
 void InWorld::HandleCharacterQueryExists(CharacterPacket* const argPacket) {
