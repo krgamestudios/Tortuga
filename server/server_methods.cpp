@@ -92,9 +92,13 @@ void ServerApplication::FullClientUnload(int index) {
 		}
 
 		//unload associated accounts
-		for (auto& it : *accountMgr.GetContainer()) {
-			if (it.second.GetClientIndex() == index) {
-				FullAccountUnload(it.first);
+		for (std::map<int, AccountData>::iterator it = accountMgr.GetContainer()->begin(); it != accountMgr.GetContainer()->end(); /* EMPTY */) {
+			if (it->second.GetClientIndex() == index) {
+				FullAccountUnload(it->first);
+				it = accountMgr.GetContainer()->begin();
+			}
+			else {
+				++it;
 			}
 		}
 
@@ -111,9 +115,13 @@ void ServerApplication::FullAccountUnload(int index) {
 		}
 
 		//unload associated characters
-		for (auto& it : *characterMgr.GetContainer()) {
-			if (it.second.GetOwner() == index) {
-				FullCharacterUnload(it.first);
+		for (std::map<int, CharacterData>::iterator it = characterMgr.GetContainer()->begin(); it != characterMgr.GetContainer()->end(); /* EMPTY */) {
+			if (it->second.GetOwner() == index) {
+				FullCharacterUnload(it->first);
+				it = characterMgr.GetContainer()->begin();
+			}
+			else {
+				++it;
 			}
 		}
 
