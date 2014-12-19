@@ -430,8 +430,8 @@ void InWorld::HandleCharacterCreate(CharacterPacket* const argPacket) {
 	BaseCharacter* character = &characterMap[argPacket->characterIndex];
 
 	//fill the character's info
-	character->SetOrigin({0, 0});
-	character->SetMotion({0, 0});
+	character->SetOrigin(argPacket->origin);
+	character->SetMotion(argPacket->motion);
 	character->SetBounds({CHARACTER_BOUNDS_X, CHARACTER_BOUNDS_Y, CHARACTER_BOUNDS_WIDTH, CHARACTER_BOUNDS_HEIGHT});
 	character->SetHandle(argPacket->handle);
 	character->SetAvatar(argPacket->avatar);
@@ -463,6 +463,16 @@ void InWorld::HandleCharacterDelete(CharacterPacket* const argPacket) {
 }
 
 void InWorld::HandleCharacterQueryExists(CharacterPacket* const argPacket) {
-	//TODO: HandleCharacterQueryExists()
-	std::cout << "HandleCharacterQueryExists" << std::endl;
+	//implicitly construct the character if it doesn't exist
+	BaseCharacter* character = &characterMap[argPacket->characterIndex];
+
+	//set/update the character's info
+	character->SetOrigin(argPacket->origin);
+	character->SetMotion(argPacket->motion);
+	character->SetBounds({CHARACTER_BOUNDS_X, CHARACTER_BOUNDS_Y, CHARACTER_BOUNDS_WIDTH, CHARACTER_BOUNDS_HEIGHT});
+	character->SetHandle(argPacket->handle);
+	character->SetAvatar(argPacket->avatar);
+
+	//debug
+	std::cout << "Query, total: " << characterMap.size() << std::endl;
 }
