@@ -145,6 +145,12 @@ void InWorld::Update() {
 		it.second.Update();
 	}
 
+	//update the camera
+	if (localCharacter) {
+		camera.x = localCharacter->GetOrigin().x - camera.marginX;
+		camera.y = localCharacter->GetOrigin().y - camera.marginY;
+	}
+
 	//check the connection (heartbeat)
 	if (Clock::now() - lastBeat > std::chrono::seconds(3)) {
 		if (attemptedBeats > 2) {
@@ -355,7 +361,7 @@ void InWorld::HandleLogoutResponse(ClientPacket* const argPacket) {
 	characterIndex = -1;
 
 	//reset the camera
-	camera.x = camera .y = 0;
+	camera.x = camera.y = 0;
 	camera.marginX = camera.marginY = 0;
 
 	SendDisconnectRequest();

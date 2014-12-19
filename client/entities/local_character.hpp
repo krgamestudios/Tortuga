@@ -26,7 +26,9 @@
 
 class LocalCharacter: public BaseCharacter {
 public:
-	//
+	LocalCharacter() = default;
+	virtual ~LocalCharacter() = default;
+
 private:
 	//NOTE: NO MEMBERS
 };

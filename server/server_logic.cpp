@@ -183,6 +183,7 @@ void ServerApplication::Proc() {
 		int disconnected = clientMgr.CheckConnections();
 		if (disconnected != -1) {
 			FullClientUnload(disconnected);
+			std::cerr << "Client dropped: " << disconnected << std::endl;
 		}
 
 		//give the computer a break
