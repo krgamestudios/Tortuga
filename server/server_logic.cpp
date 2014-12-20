@@ -249,9 +249,9 @@ void ServerApplication::HandlePacket(SerialPacket* const argPacket) {
 		break;
 
 		//server commands
-		case SerialPacketType::DISCONNECT_FORCED:
+//		case SerialPacketType::DISCONNECT_FORCED:
 //			HandleDisconnectForced(static_cast<ClientPacket*>(argPacket));
-		break;
+//		break;
 		case SerialPacketType::SHUTDOWN_REQUEST:
 			HandleShutdownRequest(static_cast<ClientPacket*>(argPacket));
 		break;
@@ -278,6 +278,16 @@ void ServerApplication::HandlePacket(SerialPacket* const argPacket) {
 			HandleCharacterUnload(static_cast<CharacterPacket*>(argPacket));
 		break;
 
+		//character movement
+		case SerialPacketType::CHARACTER_SET_ROOM:
+			HandleCharacterSetRoom(static_cast<CharacterPacket*>(argPacket));
+		break;
+		case SerialPacketType::CHARACTER_SET_ORIGIN:
+			HandleCharacterSetOrigin(static_cast<CharacterPacket*>(argPacket));
+		break;
+		case SerialPacketType::CHARACTER_SET_MOTION:
+			HandleCharacterSetMotion(static_cast<CharacterPacket*>(argPacket));
+		break;
 /*
 		case SerialPacketType::QUERY_CHARACTER_STATS:
 //			HandleCharacterStatsRequest(static_cast<RegionPacket*>(argPacket));
@@ -287,17 +297,6 @@ void ServerApplication::HandlePacket(SerialPacket* const argPacket) {
 		break;
 		case SerialPacketType::TEXT_BROADCAST:
 //			HandleCharacterStatsRequest(static_cast<RegionPacket*>(argPacket));
-		break;
-
-		//character movement
-		case SerialPacketType::CHARACTER_SET_ROOM:
-//			HandleCharacterUpdate(static_cast<CharacterPacket*>(argPacket));
-		break;
-		case SerialPacketType::CHARACTER_SET_ORIGIN:
-//			HandleCharacterUpdate(static_cast<CharacterPacket*>(argPacket));
-		break;
-		case SerialPacketType::CHARACTER_SET_MOTION:
-//			HandleCharacterUpdate(static_cast<CharacterPacket*>(argPacket));
 		break;
 
 		//enemy management

@@ -106,9 +106,13 @@ private:
 	void HandleCharacterLoad(CharacterPacket* const);
 	void HandleCharacterUnload(CharacterPacket* const);
 
+	//character movement
+	void HandleCharacterSetRoom(CharacterPacket* const);
+	void HandleCharacterSetOrigin(CharacterPacket* const);
+	void HandleCharacterSetMotion(CharacterPacket* const);
+
 	//utility methods
 	void PumpPacket(SerialPacket* const);
-//	void PumpPacketProximity(SerialPacket* const, int roomIndex, int x, int y, int radius);
 	void CopyCharacterToPacket(CharacterPacket* const packet, int characterIndex);
 
 	//APIs and utilities

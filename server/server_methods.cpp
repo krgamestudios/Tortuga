@@ -26,6 +26,18 @@
 #include <sstream>
 
 //-------------------------
+//these should've come standard
+//-------------------------
+
+bool operator==(IPaddress lhs, IPaddress rhs) {
+	return lhs.host == rhs.host && lhs.port == rhs.port;
+}
+
+bool operator!=(IPaddress lhs, IPaddress rhs) {
+	return !(lhs == rhs);
+}
+
+//-------------------------
 //server commands
 //-------------------------
 
@@ -148,4 +160,30 @@ void ServerApplication::FullCharacterUnload(int index) {
 		//unload this character
 		return true;
 	});
+}
+
+//-------------------------
+//utility methods
+//-------------------------
+
+void ServerApplication::PumpPacket(SerialPacket* const argPacket) {
+	for (auto& it : *clientMgr.GetContainer()) {
+		network.SendTo(it.second.GetAddress(), argPacket);
+	}
+}
+
+void ServerApplication::CopyCharacterToPacket(CharacterPacket* const packet, int characterIndex) {
+	CharacterData* character = characterMgr.Get(characterIndex);
+	if (!character) {
+		throw(std::runtime_error("Failed to copy a character to a packet"));
+	}
+
+	//NOTE: keep this up to date when the character changes
+	packet->characterIndex = characterIndex;
+	strncpy(packet->handle, character->GetHandle().c_str(), PACKET_STRING_SIZE);
+	strncpy(packet->avatar, character->GetAvatar().c_str(), PACKET_STRING_SIZE);
+	packet->accountIndex = character->GetOwner();
+	packet->roomIndex = character->GetRoomIndex();
+	packet->origin = character->GetOrigin();
+	packet->motion = character->GetMotion();
 }
