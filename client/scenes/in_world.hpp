@@ -94,11 +94,15 @@ protected:
 	void HandleCharacterCreate(CharacterPacket* const);
 	void HandleCharacterDelete(CharacterPacket* const);
 	void HandleCharacterQueryExists(CharacterPacket* const);
+	void HandleCharacterSetRoom(CharacterPacket* const);
+	void HandleCharacterSetOrigin(CharacterPacket* const);
+	void HandleCharacterSetMotion(CharacterPacket* const);
 
 	//indexes
 	int& clientIndex;
 	int& accountIndex;
 	int characterIndex = -1;
+	int roomIndex = -1;
 
 	//graphics
 	Image buttonImage;

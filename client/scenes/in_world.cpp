@@ -289,6 +289,17 @@ void InWorld::HandlePacket(SerialPacket* const argPacket) {
 			HandleCharacterQueryExists(static_cast<CharacterPacket*>(argPacket));
 		break;
 
+		//character movement
+		case SerialPacketType::CHARACTER_SET_ROOM:
+			HandleCharacterSetRoom(static_cast<CharacterPacket*>(argPacket));
+		break;
+		case SerialPacketType::CHARACTER_SET_ORIGIN:
+			HandleCharacterSetOrigin(static_cast<CharacterPacket*>(argPacket));
+		break;
+		case SerialPacketType::CHARACTER_SET_MOTION:
+			HandleCharacterSetMotion(static_cast<CharacterPacket*>(argPacket));
+		break;
+
 		//rejection messages
 		case SerialPacketType::REGION_REJECTION:
 		case SerialPacketType::CHARACTER_REJECTION:
@@ -412,6 +423,10 @@ void InWorld::HandleRegionContent(RegionPacket* const argPacket) {
 }
 
 void InWorld::UpdateMap() {
+	if (roomIndex == -1) {
+		return;
+	}
+
 	//these represent the zone of regions that the client needs loaded, including the mandatory buffers (+1/-1)
 	int xStart = snapToBase(REGION_WIDTH, camera.x/tileSheet.GetTileW()) - REGION_WIDTH;
 	int xEnd = snapToBase(REGION_WIDTH, (camera.x+camera.width)/tileSheet.GetTileW()) + REGION_WIDTH;
@@ -428,7 +443,7 @@ void InWorld::UpdateMap() {
 	for (int i = xStart; i <= xEnd; i += REGION_WIDTH) {
 		for (int j = yStart; j <= yEnd; j += REGION_HEIGHT) {
 			if (!regionPager.FindRegion(i, j)) {
-				SendRegionRequest(0, i, j);
+				SendRegionRequest(roomIndex, i, j);
 			}
 		}
 	}
@@ -470,6 +485,9 @@ void InWorld::HandleCharacterCreate(CharacterPacket* const argPacket) {
 		//focus the camera on this character
 		camera.marginX = (camera.width / 2 - localCharacter->GetSprite()->GetImage()->GetClipW() / 2);
 		camera.marginY = (camera.height/ 2 - localCharacter->GetSprite()->GetImage()->GetClipH() / 2);
+
+		//focus on this character's room
+		roomIndex = argPacket->roomIndex;
 	}
 
 	//debug
@@ -492,6 +510,9 @@ void InWorld::HandleCharacterDelete(CharacterPacket* const argPacket) {
 		//clear the camera
 		camera.marginX = 0;
 		camera.marginY = 0;
+
+		//clear the room
+		roomIndex = -1;
 	}
 
 	//remove this character
@@ -504,6 +525,11 @@ void InWorld::HandleCharacterDelete(CharacterPacket* const argPacket) {
 void InWorld::HandleCharacterQueryExists(CharacterPacket* const argPacket) {
 	//prevent a double message about this player's character
 	if (argPacket->accountIndex == accountIndex) {
+		return;
+	}
+
+	//ignore characters in a different room (sub-optimal)
+	if (argPacket->roomIndex != roomIndex) {
 		return;
 	}
 
@@ -520,4 +546,58 @@ void InWorld::HandleCharacterQueryExists(CharacterPacket* const argPacket) {
 
 	//debug
 	std::cout << "Query, total: " << characterMap.size() << std::endl;
+}
+
+void InWorld::HandleCharacterSetRoom(CharacterPacket* const argPacket) {
+	//someone else's character
+	if (argPacket->characterIndex != characterIndex) {
+		characterMap.erase(argPacket->characterIndex);
+		return;
+	}
+
+	//this character is moving between rooms
+	roomIndex = argPacket->roomIndex;
+
+	//set the character's info
+	localCharacter->SetOrigin(argPacket->origin);
+	localCharacter->SetMotion(argPacket->motion);
+
+	//clear the old room's data
+	regionPager.UnloadAll();
+	monsterMap.clear();
+
+	//use the jenky pattern for std::map to skip this player's character
+	for (std::map<int, BaseCharacter>::iterator it = characterMap.begin(); it != characterMap.end(); /* EMPTY */ ) {
+		if (it->first != characterIndex) {
+			it = characterMap.erase(it);
+		}
+		else {
+			++it;
+		}
+	}
+
+	//request the info on characters in this room
+	CharacterPacket newPacket;
+	newPacket.type = SerialPacketType::QUERY_CHARACTER_EXISTS;
+	network.SendTo(Channels::SERVER, &newPacket);
+}
+
+void InWorld::HandleCharacterSetOrigin(CharacterPacket* const argPacket) {
+	//check that this character exists
+	std::map<int, BaseCharacter>::iterator characterIt = characterMap.find(argPacket->characterIndex);
+	if (characterIt != characterMap.end()) {
+		//set the origin and motion
+		characterIt->second.SetOrigin(argPacket->origin);
+		characterIt->second.SetMotion(argPacket->motion);
+	}
+}
+
+void InWorld::HandleCharacterSetMotion(CharacterPacket* const argPacket) {
+	//check that this character exists
+	std::map<int, BaseCharacter>::iterator characterIt = characterMap.find(argPacket->characterIndex);
+	if (characterIt != characterMap.end()) {
+		//set the origin and motion
+		characterIt->second.SetOrigin(argPacket->origin);
+		characterIt->second.SetMotion(argPacket->motion);
+	}
 }

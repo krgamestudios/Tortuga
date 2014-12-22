@@ -192,7 +192,7 @@ void ServerApplication::HandleCharacterSetRoom(CharacterPacket* const argPacket)
 
 	//set the character's room, zero it's origin, zero it's motion
 	//TODO: Set the origin here
-	characterData->SetRoom(argPacket->roomIndex);
+	characterData->SetRoomIndex(argPacket->roomIndex);
 	characterData->SetOrigin({0, 0});
 	characterData->SetMotion({0, 0});
 

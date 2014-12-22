@@ -73,6 +73,7 @@ void ServerApplication::HandleRegionRequest(RegionPacket* const argPacket) {
 
 void ServerApplication::HandleCharacterExists(CharacterPacket* const argPacket) {
 	//respond with all character data
+	//TODO: handle room and location specifications
 	CharacterPacket newPacket;
 	for (auto& it : *characterMgr.GetContainer()) {
 		CopyCharacterToPacket(&newPacket, it.first);
