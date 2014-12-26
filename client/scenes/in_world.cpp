@@ -242,10 +242,59 @@ void InWorld::KeyDown(SDL_KeyboardEvent const& key) {
 			SendLogoutRequest();
 		break;
 	}
+
+	//character movement
+	if (!localCharacter) {
+		return;
+	}
+	Vector2 motion = localCharacter->GetMotion();
+	switch(key.keysym.sym) {
+		case SDLK_w:
+			motion.y -= CHARACTER_WALKING_SPEED;
+		break;
+		case SDLK_a:
+			motion.x -= CHARACTER_WALKING_SPEED;
+		break;
+		case SDLK_s:
+			motion.y += CHARACTER_WALKING_SPEED;
+		break;
+		case SDLK_d:
+			motion.x += CHARACTER_WALKING_SPEED;
+		break;
+	}
+	//handle diagonals
+	if (motion.x != 0 && motion.y != 0) {
+		motion *= CHARACTER_WALKING_MOD;
+	}
+	localCharacter->SetMotion(motion);
+	localCharacter->CorrectSprite();
+	SendLocalCharacterMotion();
 }
 
 void InWorld::KeyUp(SDL_KeyboardEvent const& key) {
-	//
+	//character movement
+	if (!localCharacter) {
+		return;
+	}
+	Vector2 motion = localCharacter->GetMotion();
+	switch(key.keysym.sym) {
+		case SDLK_w:
+			motion.y = std::min(0.0, motion.y += CHARACTER_WALKING_SPEED);
+		break;
+		case SDLK_a:
+			motion.x = std::min(0.0, motion.x += CHARACTER_WALKING_SPEED);
+		break;
+		case SDLK_s:
+			motion.y = std::max(0.0, motion.y -= CHARACTER_WALKING_SPEED);
+		break;
+		case SDLK_d:
+			motion.x = std::max(0.0, motion.x -= CHARACTER_WALKING_SPEED);
+		break;
+	}
+	//handle diagonals
+	localCharacter->SetMotion(motion);
+	localCharacter->CorrectSprite();
+	SendLocalCharacterMotion();
 }
 
 //-------------------------
@@ -477,6 +526,7 @@ void InWorld::HandleCharacterCreate(CharacterPacket* const argPacket) {
 	character->SetHandle(argPacket->handle);
 	character->SetAvatar(argPacket->avatar);
 	character->SetOwner(argPacket->accountIndex);
+	character->CorrectSprite();
 
 	//check for this player's character
 	if (character->GetOwner() == accountIndex) {
@@ -486,7 +536,8 @@ void InWorld::HandleCharacterCreate(CharacterPacket* const argPacket) {
 		camera.marginX = (camera.width / 2 - localCharacter->GetSprite()->GetImage()->GetClipW() / 2);
 		camera.marginY = (camera.height/ 2 - localCharacter->GetSprite()->GetImage()->GetClipH() / 2);
 
-		//focus on this character's room
+		//focus on this character's info
+		characterIndex = argPacket->characterIndex;
 		roomIndex = argPacket->roomIndex;
 	}
 
@@ -543,6 +594,7 @@ void InWorld::HandleCharacterQueryExists(CharacterPacket* const argPacket) {
 	character->SetHandle(argPacket->handle);
 	character->SetAvatar(argPacket->avatar);
 	character->SetOwner(argPacket->accountIndex);
+	character->CorrectSprite();
 
 	//debug
 	std::cout << "Query, total: " << characterMap.size() << std::endl;
@@ -561,6 +613,7 @@ void InWorld::HandleCharacterSetRoom(CharacterPacket* const argPacket) {
 	//set the character's info
 	localCharacter->SetOrigin(argPacket->origin);
 	localCharacter->SetMotion(argPacket->motion);
+	localCharacter->CorrectSprite();
 
 	//clear the old room's data
 	regionPager.UnloadAll();
@@ -590,6 +643,7 @@ void InWorld::HandleCharacterSetOrigin(CharacterPacket* const argPacket) {
 		//set the origin and motion
 		characterIt->second.SetOrigin(argPacket->origin);
 		characterIt->second.SetMotion(argPacket->motion);
+		characterIt->second.CorrectSprite();
 	}
 }
 
@@ -600,5 +654,24 @@ void InWorld::HandleCharacterSetMotion(CharacterPacket* const argPacket) {
 		//set the origin and motion
 		characterIt->second.SetOrigin(argPacket->origin);
 		characterIt->second.SetMotion(argPacket->motion);
+		characterIt->second.CorrectSprite();
 	}
+}
+
+//-------------------------
+//player movement
+//-------------------------
+
+//TODO: add a "movement" packet type
+void InWorld::SendLocalCharacterMotion() {
+	CharacterPacket newPacket;
+	newPacket.type = SerialPacketType::CHARACTER_SET_MOTION;
+
+	newPacket.accountIndex = accountIndex;
+	newPacket.characterIndex = characterIndex;
+	newPacket.roomIndex = roomIndex;
+	newPacket.origin = localCharacter->GetOrigin();
+	newPacket.motion = localCharacter->GetMotion();
+
+	network.SendTo(Channels::SERVER, &newPacket);
 }

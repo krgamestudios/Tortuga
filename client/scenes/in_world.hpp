@@ -98,6 +98,9 @@ protected:
 	void HandleCharacterSetOrigin(CharacterPacket* const);
 	void HandleCharacterSetMotion(CharacterPacket* const);
 
+	//player movement
+	void SendLocalCharacterMotion();
+
 	//indexes
 	int& clientIndex;
 	int& accountIndex;

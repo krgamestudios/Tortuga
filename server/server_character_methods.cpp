@@ -242,10 +242,21 @@ void ServerApplication::HandleCharacterSetOrigin(CharacterPacket* const argPacke
 void ServerApplication::HandleCharacterSetMotion(CharacterPacket* const argPacket) {
 	//get the specified objects
 	AccountData* accountData = accountMgr.Get(argPacket->accountIndex);
+
+	if (!accountData) {
+		std::ostringstream msg;
+		msg << "Failed to set character motion, missing account: Index " << argPacket->accountIndex << "; ";
+		msg << "Number of accounts loaded: " << accountMgr.GetContainer()->size();
+		throw(std::runtime_error(msg.str()));
+	}
+
 	CharacterData* characterData = characterMgr.Get(argPacket->characterIndex);
 
-	if (!accountData || !characterData) {
-		throw(std::runtime_error("Failed to set character motion, missing data"));
+	if (!characterData) {
+		std::ostringstream msg;
+		msg << "Failed to set character motion, missing character: Index " << argPacket->characterIndex << "; ";
+		msg << "Number of characters loaded: " << characterMgr.GetContainer()->size();
+		throw(std::runtime_error(msg.str()));
 	}
 
 	//get this account's client
