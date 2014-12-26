@@ -579,6 +579,7 @@ void InWorld::HandleCharacterSetRoom(CharacterPacket* const argPacket) {
 	//request the info on characters in this room
 	CharacterPacket newPacket;
 	newPacket.type = SerialPacketType::QUERY_CHARACTER_EXISTS;
+	newPacket.roomIndex = roomIndex;
 	network.SendTo(Channels::SERVER, &newPacket);
 }
 

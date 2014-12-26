@@ -73,9 +73,12 @@ void ServerApplication::HandleRegionRequest(RegionPacket* const argPacket) {
 
 void ServerApplication::HandleCharacterExists(CharacterPacket* const argPacket) {
 	//respond with all character data
-	//TODO: handle room and location specifications
 	CharacterPacket newPacket;
+
 	for (auto& it : *characterMgr.GetContainer()) {
+		if (argPacket->roomIndex != -1 && it.second.GetRoomIndex() != argPacket->roomIndex) {
+			continue;
+		}
 		CopyCharacterToPacket(&newPacket, it.first);
 		newPacket.type = SerialPacketType::QUERY_CHARACTER_EXISTS;
 		network.SendTo(argPacket->srcAddress, static_cast<SerialPacket*>(&newPacket));
