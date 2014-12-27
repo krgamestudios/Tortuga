@@ -156,6 +156,10 @@ void InWorld::Update() {
 
 	//update all entities
 	for (auto& it : characterMap) {
+		//skip this player's character
+		if (it.first == characterIndex) {
+			continue;
+		}
 		it.second.Update();
 	}
 	for (auto& it : monsterMap) {
@@ -198,7 +202,7 @@ void InWorld::Update() {
 	}
 
 	//process the collisions
-	std::cout << "boxList.size(): " << boxList.size() << std::endl;
+	localCharacter->ProcessCollisions(boxList);
 
 	//update the camera
 	camera.x = localCharacter->GetOrigin().x - camera.marginX;

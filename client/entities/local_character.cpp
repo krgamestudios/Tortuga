@@ -21,3 +21,42 @@
 */
 #include "local_character.hpp"
 
+void LocalCharacter::ProcessCollisions(std::list<BoundingBox>& boxList) {
+	if (CheckCollisionSimple(boxList, origin + motion)) {
+		Vector2 velocity;
+		velocity.x = CorrectVelocityX(boxList, motion.x);
+		velocity.y = CorrectVelocityY(boxList, motion.y);
+		origin += velocity;
+	}
+	else {
+		origin += motion;
+	}
+}
+
+bool LocalCharacter::CheckCollisionSimple(std::list<BoundingBox>& boxList, Vector2 newPos) {
+	for (auto& it : boxList) {
+		if (it.CheckOverlap(bounds + newPos)) {
+			return true;
+		}
+	}
+	return false;
+}
+
+double LocalCharacter::CorrectVelocityX(std::list<BoundingBox>& boxList, double velocityX) {
+	double ret = velocityX;
+	for (auto& it : boxList) {
+		if (it.CheckOverlap(bounds + origin + Vector2(velocityX, 0) )) {
+			if (velocityX > 0) {
+				ret = std::min(ret, it.x - origin.x - (bounds.w - bounds.x - 1));
+			}
+			else if (velocityX < 0) {
+				ret = std::max(ret, (it.x + it.w) - origin.x);
+			}
+		}
+	}
+	return ret;
+}
+
+double LocalCharacter::CorrectVelocityY(std::list<BoundingBox>& boxList, double velocityY) {
+	return velocityY;
+}

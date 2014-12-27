@@ -23,14 +23,22 @@
 #define LOCALCHARACTER_HPP_
 
 #include "base_character.hpp"
+#include "bounding_box.hpp"
+#include "vector2.hpp"
+
+#include <list>
 
 class LocalCharacter: public BaseCharacter {
 public:
 	LocalCharacter() = default;
 	virtual ~LocalCharacter() = default;
 
-private:
-	//NOTE: NO MEMBERS
+	void ProcessCollisions(std::list<BoundingBox>& boxList);
+
+protected:
+	bool CheckCollisionSimple(std::list<BoundingBox>& boxList, Vector2 newPos);
+	double CorrectVelocityX(std::list<BoundingBox>& boxList, double velocityX);
+	double CorrectVelocityY(std::list<BoundingBox>& boxList, double velocityY);
 };
 
 #endif
