@@ -266,6 +266,7 @@ void InWorld::KeyDown(SDL_KeyboardEvent const& key) {
 	if (motion.x != 0 && motion.y != 0) {
 		motion *= CHARACTER_WALKING_MOD;
 	}
+	//set the info
 	localCharacter->SetMotion(motion);
 	localCharacter->CorrectSprite();
 	SendLocalCharacterMotion();
@@ -291,7 +292,24 @@ void InWorld::KeyUp(SDL_KeyboardEvent const& key) {
 			motion.x = std::max(0.0, motion.x -= CHARACTER_WALKING_SPEED);
 		break;
 	}
+	//BUGFIX: reset cardinal direction speed on key release
+	if (motion.x > 0) {
+		motion.x = CHARACTER_WALKING_SPEED;
+	}
+	else if (motion.x < 0) {
+		motion.x = -CHARACTER_WALKING_SPEED;
+	}
+	if (motion.y > 0) {
+		motion.y = CHARACTER_WALKING_SPEED;
+	}
+	else if (motion.y < 0) {
+		motion.y = -CHARACTER_WALKING_SPEED;
+	}
 	//handle diagonals
+	if (motion.x != 0 && motion.y != 0) {
+		motion *= CHARACTER_WALKING_MOD;
+	}
+	//set the info
 	localCharacter->SetMotion(motion);
 	localCharacter->CorrectSprite();
 	SendLocalCharacterMotion();
