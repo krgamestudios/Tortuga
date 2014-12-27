@@ -85,6 +85,8 @@ protected:
 	void HandleDisconnectResponse(ClientPacket* const);
 	void HandleDisconnectForced(ClientPacket* const);
 
+	void CheckHeartBeat();
+
 	//map management
 	void SendRegionRequest(int roomIndex, int x, int y);
 	void HandleRegionContent(RegionPacket* const);
@@ -100,6 +102,7 @@ protected:
 
 	//player movement
 	void SendLocalCharacterMotion();
+	std::list<BoundingBox> GenerateCollisionGrid(Entity*, int tileWidth, int tileHeight);
 
 	//indexes
 	int& clientIndex;

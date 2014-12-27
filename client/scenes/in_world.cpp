@@ -134,23 +134,8 @@ void InWorld::Update() {
 	//free the buffer
 	delete reinterpret_cast<char*>(packetBuffer);
 
-	//check the connection (heartbeat)
-	if (Clock::now() - lastBeat > std::chrono::seconds(3)) {
-		if (attemptedBeats > 2) {
-			//escape to the disconnect screen
-			SendDisconnectRequest();
-			SetNextScene(SceneList::DISCONNECTEDSCREEN);
-			ConfigUtility::GetSingleton()["client.disconnectMessage"] = "Error: Lost connection to the server";
-		}
-		else {
-			ServerPacket newPacket;
-			newPacket.type = SerialPacketType::PING;
-			network.SendTo(Channels::SERVER, &newPacket);
-
-			attemptedBeats++;
-			lastBeat = Clock::now();
-		}
-	}
+	//heartbeat system
+	CheckHeartBeat();
 
 	//update all entities
 	for (auto& it : characterMap) {
@@ -168,32 +153,8 @@ void InWorld::Update() {
 		return;
 	}
 
-	//prepare for collisions
-	BoundingBox wallBounds = {0, 0, tileSheet.GetTileW(), tileSheet.GetTileH()};
-	std::list<BoundingBox> boxList;
-
-	//NOTE: for loops were too dense to work with, so I've just used while loops
-	//NOTE: this code is complex, and can be replaced with hard-coded relative positions, at the cost of variable-sized sprites/bounding boxes
-
-	//outer loop
-	wallBounds.x = snapToBase((double)wallBounds.w, localCharacter->GetOrigin().x) - wallBounds.w;
-	while(wallBounds.x < (localCharacter->GetOrigin() + localCharacter->GetBounds()).x + localCharacter->GetBounds().w) {
-		//inner loop
-		wallBounds.y = snapToBase((double)wallBounds.h, localCharacter->GetOrigin().y) - wallBounds.h;
-		while(wallBounds.y < (localCharacter->GetOrigin() + localCharacter->GetBounds()).y + localCharacter->GetBounds().h) {
-			//check to see if this tile is solid
-			if (regionPager.GetSolid(wallBounds.x / wallBounds.w, wallBounds.y / wallBounds.h)) {
-				//push onto the box set
-				boxList.push_front(wallBounds);
-			}
-
-			//increment
-			wallBounds.y += wallBounds.h;
-		}
-
-		//increment
-		wallBounds.x += wallBounds.w;
-	}
+	//get the collidable boxes
+	std::list<BoundingBox> boxList = GenerateCollisionGrid(localCharacter, tileSheet.GetTileW(), tileSheet.GetTileH());
 
 	//process the collisions
 	std::cout << "boxList.size(): " << boxList.size() << std::endl;
@@ -499,6 +460,26 @@ void InWorld::HandleDisconnectForced(ClientPacket* const argPacket) {
 	ConfigUtility::GetSingleton()["client.disconnectMessage"] = "You have been forcibly disconnected by the server";
 }
 
+void InWorld::CheckHeartBeat() {
+	//check the connection (heartbeat)
+	if (Clock::now() - lastBeat > std::chrono::seconds(3)) {
+		if (attemptedBeats > 2) {
+			//escape to the disconnect screen
+			SendDisconnectRequest();
+			SetNextScene(SceneList::DISCONNECTEDSCREEN);
+			ConfigUtility::GetSingleton()["client.disconnectMessage"] = "Error: Lost connection to the server";
+		}
+		else {
+			ServerPacket newPacket;
+			newPacket.type = SerialPacketType::PING;
+			network.SendTo(Channels::SERVER, &newPacket);
+
+			attemptedBeats++;
+			lastBeat = Clock::now();
+		}
+	}
+}
+
 //-------------------------
 //map management
 //-------------------------
@@ -728,4 +709,34 @@ void InWorld::SendLocalCharacterMotion() {
 	newPacket.motion = localCharacter->GetMotion();
 
 	network.SendTo(Channels::SERVER, &newPacket);
+}
+
+std::list<BoundingBox> InWorld::GenerateCollisionGrid(Entity* ptr, int tileWidth, int tileHeight) {
+	//prepare for collisions
+	BoundingBox wallBounds = {0, 0, tileWidth, tileHeight};
+	std::list<BoundingBox> boxList;
+
+	//NOTE: for loops were too dense to work with, so I've just used while loops
+
+	//outer loop
+	wallBounds.x = snapToBase((double)wallBounds.w, ptr->GetOrigin().x) - wallBounds.w;
+	while(wallBounds.x < (ptr->GetOrigin() + ptr->GetBounds()).x + ptr->GetBounds().w) {
+		//inner loop
+		wallBounds.y = snapToBase((double)wallBounds.h, ptr->GetOrigin().y) - wallBounds.h;
+		while(wallBounds.y < (ptr->GetOrigin() + ptr->GetBounds()).y + ptr->GetBounds().h) {
+			//check to see if this tile is solid
+			if (regionPager.GetSolid(wallBounds.x / wallBounds.w, wallBounds.y / wallBounds.h)) {
+				//push onto the box set
+				boxList.push_front(wallBounds);
+			}
+
+			//increment
+			wallBounds.y += wallBounds.h;
+		}
+
+		//increment
+		wallBounds.x += wallBounds.w;
+	}
+
+	return std::move(boxList);
 }
