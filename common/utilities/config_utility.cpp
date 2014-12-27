@@ -27,13 +27,13 @@
 #include <sstream>
 #include <stdexcept>
 
-void ConfigUtility::Load(std::string fname, int argc, char* argv[]) {
+void ConfigUtility::Load(std::string fname, bool skipMissingFile, int argc, char* argv[]) {
 	//clear the stored configuration
 	configMap.clear();
 
 	//use the default file
 	if (argc < 2) {
-		configMap = Read(fname);
+		configMap = Read(fname, skipMissingFile);
 		return;
 	}
 
@@ -47,7 +47,9 @@ void ConfigUtility::Load(std::string fname, int argc, char* argv[]) {
 	for (int i = 1; i < argc; ++i) {
 		//read from a specified config file
 		if (!strncmp(argv[i], "-config=", 8)) {
-			redirectedFile = Read(argv[i] + 8);
+			//older specified files take precedence
+			table_t tmp = Read(argv[i] + 8, skipMissingFile);
+			redirectedFile.insert(tmp.begin(), tmp.end());
 			redirectUsed = true;
 			continue;
 		}
@@ -73,18 +75,21 @@ void ConfigUtility::Load(std::string fname, int argc, char* argv[]) {
 
 	//finally, construct the final config table
 	if (!redirectUsed) {
-		redirectedFile = Read(fname);
+		redirectedFile = Read(fname, skipMissingFile);
 	}
 	configMap.insert(cmdLineParams.begin(), cmdLineParams.end());
 	configMap.insert(redirectedFile.begin(), redirectedFile.end());
 }
 
-ConfigUtility::table_t ConfigUtility::Read(std::string fname) {
+ConfigUtility::table_t ConfigUtility::Read(std::string fname, bool skipMissingFile) {
 	//read in and return this file's data
 	table_t retTable;
 	std::ifstream is(fname);
 
 	if (!is.is_open()) {
+		if (skipMissingFile) {
+			return {}; //empty table
+		}
 		std::ostringstream os;
 		os << "Failed to open a config file: " << fname;
 		throw(std::runtime_error( os.str() ));
@@ -143,7 +148,7 @@ ConfigUtility::table_t ConfigUtility::Read(std::string fname) {
 
 	//load in any subordinate config files
 	if (retTable.find("config.next") != retTable.end()) {
-		table_t subTable = Read(retTable["config.next"]);
+		table_t subTable = Read(retTable["config.next"], skipMissingFile);
 		retTable.insert(subTable.begin(), subTable.end());
 	}
 

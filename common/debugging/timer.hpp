@@ -34,8 +34,8 @@ public:
 	Timer(std::string s);
 	~Timer() = default;
 
-	inline void Start();
-	inline void Stop();
+	void Start();
+	void Stop();
 
 	//accessors and mutators
 	Clock::duration GetTime() { return timeSpan; }

@@ -137,10 +137,8 @@ void InWorld::Update() {
 	//check the connection (heartbeat)
 	if (Clock::now() - lastBeat > std::chrono::seconds(3)) {
 		if (attemptedBeats > 2) {
-			//two-step logout
-			SendLogoutRequest();
+			//escape to the disconnect screen
 			SendDisconnectRequest();
-
 			SetNextScene(SceneList::DISCONNECTEDSCREEN);
 			ConfigUtility::GetSingleton()["client.disconnectMessage"] = "Error: Lost connection to the server";
 		}
@@ -248,7 +246,6 @@ void InWorld::Render(SDL_Surface* const screen) {
 
 void InWorld::QuitEvent() {
 	//two-step logout
-	SendLogoutRequest();
 	SendDisconnectRequest();
 	SetNextScene(SceneList::QUIT);
 }
@@ -276,9 +273,9 @@ void InWorld::KeyDown(SDL_KeyboardEvent const& key) {
 	//hotkeys
 	switch(key.keysym.sym) {
 		case SDLK_ESCAPE:
-			//the escape key should actually control menus and stuff
+			//TODO: the escape key should actually control menus and stuff
 			SendLogoutRequest();
-		break;
+		return;
 	}
 
 	//character movement
@@ -299,6 +296,9 @@ void InWorld::KeyDown(SDL_KeyboardEvent const& key) {
 		case SDLK_d:
 			motion.x += CHARACTER_WALKING_SPEED;
 		break;
+		default:
+			//DOCS: prevents wrong keys screwing with character movement
+			return;
 	}
 	//handle diagonals
 	if (motion.x != 0 && motion.y != 0) {
@@ -329,6 +329,9 @@ void InWorld::KeyUp(SDL_KeyboardEvent const& key) {
 		case SDLK_d:
 			motion.x = std::max(0.0, motion.x -= CHARACTER_WALKING_SPEED);
 		break;
+		default:
+			//DOCS: prevents wrong keys screwing with character movement
+			return;
 	}
 	//BUGFIX: reset cardinal direction speed on key release
 	if (motion.x > 0) {
@@ -473,30 +476,29 @@ void InWorld::SendShutdownRequest() {
 }
 
 void InWorld::HandleLogoutResponse(ClientPacket* const argPacket) {
+	if (localCharacter) {
+		characterMap.erase(characterIndex);
+		localCharacter = nullptr;
+	}
+
 	accountIndex = -1;
 	characterIndex = -1;
 
 	//reset the camera
-	camera.x = camera.y = 0;
 	camera.marginX = camera.marginY = 0;
 
+	//because, why not? I guess...
 	SendDisconnectRequest();
 }
 
 void InWorld::HandleDisconnectResponse(ClientPacket* const argPacket) {
+	HandleLogoutResponse(argPacket);//shortcut
 	SetNextScene(SceneList::DISCONNECTEDSCREEN);
 	ConfigUtility::GetSingleton()["client.disconnectMessage"] = "You have successfully logged out";
 }
 
 void InWorld::HandleDisconnectForced(ClientPacket* const argPacket) {
-	//clear the local data
-	accountIndex = -1;
-	characterIndex = -1;
-
-	//reset the camera
-	camera.x = camera .y = 0;
-	camera.marginX = camera.marginY = 0;
-
+	HandleDisconnectResponse(argPacket);//shortcut
 	SetNextScene(SceneList::DISCONNECTEDSCREEN);
 	ConfigUtility::GetSingleton()["client.disconnectMessage"] = "You have been forcibly disconnected by the server";
 }

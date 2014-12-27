@@ -36,7 +36,7 @@ int main(int argc, char* argv[]) {
 		ConfigUtility::CreateSingleton();
 		UDPNetworkUtility::CreateSingleton();
 
-		//call the server's routines
+		//call the client's routines
 		ClientApplication::CreateSingleton();
 		ClientApplication& app = ClientApplication::GetSingleton();
 
