@@ -1,11 +1,11 @@
-/* Copyright: (c) Kayne Ruse 2013, 2014
+/* Copyright: (c) Kayne Ruse 2013-2015
  * 
  * This software is provided 'as-is', without any express or implied
  * warranty. In no event will the authors be held liable for any damages
  * arising from the use of this software.
  * 
  * Permission is granted to anyone to use this software for any purpose,
- * including commercial ClientApplications, and to alter it and redistribute it
+ * including commercial applications, and to alter it and redistribute it
  * freely, subject to the following restrictions:
  * 
  * 1. The origin of this software must not be misrepresented; you must not
@@ -49,7 +49,7 @@ void ClientApplication::Init(int argc, char* argv[]) {
 
 	//load the prerequisites
 	ConfigUtility& config = ConfigUtility::GetSingleton();
-	config.Load("rsc/config.cfg", argc, argv);
+	config.Load("rsc/config.cfg", false, argc, argv);
 
 	//-------------------------
 	//Initialize the APIs
@@ -178,7 +178,7 @@ void ClientApplication::LoadScene(SceneList sceneIndex) {
 			activeScene = new OptionsMenu();
 		break;
 		case SceneList::LOBBYMENU:
-			activeScene = new LobbyMenu(&clientIndex, &accountIndex); //TODO: can I use the ConfigUtility for these parameters?
+			activeScene = new LobbyMenu(&clientIndex, &accountIndex);
 		break;
 		case SceneList::INWORLD:
 			activeScene = new InWorld(&clientIndex, &accountIndex);

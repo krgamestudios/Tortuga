@@ -1,4 +1,4 @@
-/* Copyright: (c) Kayne Ruse 2014
+/* Copyright: (c) Kayne Ruse 2013-2015
  * 
  * This software is provided 'as-is', without any express or implied
  * warranty. In no event will the authors be held liable for any damages
@@ -19,13 +19,5 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#include "renderable.hpp"
+#include "base_monster.hpp"
 
-void Renderable::Update() {
-	origin += motion;
-	sprite.Update(0.016);
-}
-
-void Renderable::DrawTo(SDL_Surface* const dest, int camX, int camY) {
-	sprite.DrawTo(dest, origin.x - camX, origin.y - camY);
-}

@@ -1,4 +1,4 @@
-/* Copyright: (c) Kayne Ruse 2014
+/* Copyright: (c) Kayne Ruse 2013-2015
  * 
  * This software is provided 'as-is', without any express or implied
  * warranty. In no event will the authors be held liable for any damages
@@ -19,29 +19,16 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#include "base_character.hpp"
+#ifndef ROOMSYSTEMAPI_HPP_
+#define ROOMSYSTEMAPI_HPP_
 
-void BaseCharacter::CorrectSprite() {
-	//NOTE: These must correspond to the sprite sheet in use
-	if (motion.y > 0) {
-		sprite.SetYIndex(0);
-	}
-	else if (motion.y < 0) {
-		sprite.SetYIndex(1);
-	}
-	else if (motion.x > 0) {
-		sprite.SetYIndex(3);
-	}
-	else if (motion.x < 0) {
-		sprite.SetYIndex(2);
-	}
+#if defined(__MINGW32__)
+ #include "lua/lua.hpp"
+#else
+ #include "lua.hpp"
+#endif
 
-	//animation
-	if (motion != 0) {
-		sprite.SetDelay(0.1);
-	}
-	else {
-		sprite.SetDelay(0);
-		sprite.SetXIndex(0);
-	}
-}
+#define TORTUGA_ROOM_SYSTEM_API "room_system"
+LUAMOD_API int openRoomSystemAPI(lua_State* L);
+
+#endif

@@ -1,4 +1,4 @@
-/* Copyright: (c) Kayne Ruse 2014
+/* Copyright: (c) Kayne Ruse 2013-2015
  * 
  * This software is provided 'as-is', without any express or implied
  * warranty. In no event will the authors be held liable for any damages
@@ -34,15 +34,12 @@
 
 class RoomManager:
 	public Singleton<RoomManager>,
-	public ManagerInterface<RoomData>
+	public ManagerInterface<RoomData, std::string>
 {
 public:
 	//common public methods
-	int Create() override;
-	int Load() override;
-	int Save(int uid) override;
+	int Create(std::string) override;
 	void Unload(int uid) override;
-	void Delete(int uid) override;
 
 	void UnloadAll() override;
 	void UnloadIf(std::function<bool(std::pair<const int,RoomData>)> fn) override;
@@ -62,6 +59,10 @@ private:
 
 	RoomManager() = default;
 	~RoomManager() = default;
+
+	int Load(std::string) override { return -1; }
+	int Save(int uid) override { return -1; }
+	void Delete(int uid) override { }
 
 	lua_State* lua = nullptr;
 	int counter = 0;

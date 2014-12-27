@@ -1,4 +1,4 @@
-/* Copyright: (c) Kayne Ruse 2014
+/* Copyright: (c) Kayne Ruse 2013-2015
  * 
  * This software is provided 'as-is', without any express or implied
  * warranty. In no event will the authors be held liable for any damages
@@ -28,7 +28,7 @@
  #include "lua.hpp"
 #endif
 
-#define TORTUGA_REGION_PAGER_NAME "RegionPager"
+#define TORTUGA_REGION_PAGER_NAME "region_pager"
 LUAMOD_API int openRegionPagerAPI(lua_State* L);
 
 #endif

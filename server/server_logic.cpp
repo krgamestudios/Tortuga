@@ -1,4 +1,4 @@
-/* Copyright: (c) Kayne Ruse 2014
+/* Copyright: (c) Kayne Ruse 2013-2015
  * 
  * This software is provided 'as-is', without any express or implied
  * warranty. In no event will the authors be held liable for any damages
@@ -25,6 +25,7 @@
 #include "sql_tools.hpp"
 #include "utility.hpp"
 
+//std & STL
 #include <stdexcept>
 #include <chrono>
 #include <iostream>
@@ -35,12 +36,14 @@
 //public methods
 //-------------------------
 
+//BUG: #35 The server fails without at least one room
+
 void ServerApplication::Init(int argc, char* argv[]) {
 	//NOTE: I might need to rearrange the init process so that lua & SQL can interact with the map system as needed.
 	std::cout << "Beginning " << argv[0] << std::endl;
 
-	//load the prerequisites
-	config.Load("rsc/config.cfg", argc, argv);
+	//load the config settings
+	config.Load("rsc/config.cfg", false, argc, argv);
 
 	//-------------------------
 	//Initialize the APIs
@@ -75,7 +78,7 @@ void ServerApplication::Init(int argc, char* argv[]) {
 
 	std::cout << "Initialized lua" << std::endl;
 
-	//append config["dir.scripts"] to the module path
+	//prepend config["dir.scripts"] to the module path
 	if (config["dir.scripts"].size() > 0) {
 		//get the original path
 		lua_getglobal(luaState, "package");
@@ -160,16 +163,28 @@ void ServerApplication::Init(int argc, char* argv[]) {
 
 void ServerApplication::Proc() {
 	SerialPacket* packetBuffer = reinterpret_cast<SerialPacket*>(new char[MAX_PACKET_SIZE]);
+	memset(packetBuffer, 0, MAX_PACKET_SIZE); //zero the buffer
+
 	while(running) {
 		//suck in the waiting packets & process them
 		while(network.Receive(packetBuffer)) {
-			HandlePacket(packetBuffer);
+			try {
+				HandlePacket(packetBuffer);
+			}
+			catch(std::exception& e) {
+				std::cerr << "HandlePacket Error: " << e.what() << std::endl;
+			}
+			memset(packetBuffer, 0, MAX_PACKET_SIZE); //reset the buffer
 		}
 		//update the internals
 		//...
 
 		//Check connections
-		CheckClientConnections();
+		int disconnected = clientMgr.CheckConnections();
+		if (disconnected != -1) {
+			FullClientUnload(disconnected);
+			std::cerr << "Client dropped: " << disconnected << std::endl;
+		}
 
 		//give the computer a break
 		SDL_Delay(10);
@@ -180,12 +195,14 @@ void ServerApplication::Proc() {
 void ServerApplication::Quit() {
 	std::cout << "Shutting down" << std::endl;
 
+	//TODO: save the server state
+
 	//close the managers
-	clientMap.clear();
 	accountMgr.UnloadAll();
 	characterMgr.UnloadAll();
-	//TODO: unload combats
-	//TODO: unload enemies
+	clientMgr.UnloadAll();
+	doorMgr.UnloadAll();
+	monsterMgr.UnloadAll();
 	roomMgr.UnloadAll();
 
 	//APIs
@@ -204,59 +221,95 @@ void ServerApplication::Quit() {
 
 void ServerApplication::HandlePacket(SerialPacket* const argPacket) {
 	switch(argPacket->type) {
-		//basic connections
+		//heartbeat system
 		case SerialPacketType::PING:
 			HandlePing(static_cast<ServerPacket*>(argPacket));
 		break;
 		case SerialPacketType::PONG:
 			HandlePong(static_cast<ServerPacket*>(argPacket));
 		break;
+
+		//client connections
 		case SerialPacketType::BROADCAST_REQUEST:
 			HandleBroadcastRequest(static_cast<ServerPacket*>(argPacket));
 		break;
 		case SerialPacketType::JOIN_REQUEST:
 			HandleJoinRequest(static_cast<ClientPacket*>(argPacket));
 		break;
-		case SerialPacketType::DISCONNECT:
-			HandleDisconnect(static_cast<ClientPacket*>(argPacket));
-		break;
-		case SerialPacketType::SHUTDOWN:
-			HandleShutdown(static_cast<ClientPacket*>(argPacket));
+		case SerialPacketType::LOGIN_REQUEST:
+			HandleLoginRequest(static_cast<ClientPacket*>(argPacket));
 		break;
 
-		//map management
+		//client disconnections
+		case SerialPacketType::LOGOUT_REQUEST:
+			HandleLogoutRequest(static_cast<ClientPacket*>(argPacket));
+		break;
+		case SerialPacketType::DISCONNECT_REQUEST:
+			HandleDisconnectRequest(static_cast<ClientPacket*>(argPacket));
+		break;
+
+		//server commands
+//		case SerialPacketType::DISCONNECT_FORCED:
+//			HandleDisconnectForced(static_cast<ClientPacket*>(argPacket));
+//		break;
+		case SerialPacketType::SHUTDOWN_REQUEST:
+			HandleShutdownRequest(static_cast<ClientPacket*>(argPacket));
+		break;
+
+		//data management & queries
 		case SerialPacketType::REGION_REQUEST:
 			HandleRegionRequest(static_cast<RegionPacket*>(argPacket));
 		break;
-
-		//combat management
-		//TODO: combat management
+		case SerialPacketType::QUERY_CHARACTER_EXISTS:
+			HandleCharacterExists(static_cast<CharacterPacket*>(argPacket));
+		break;
 
 		//character management
-		case SerialPacketType::CHARACTER_NEW:
-			HandleCharacterNew(static_cast<CharacterPacket*>(argPacket));
+		case SerialPacketType::CHARACTER_CREATE:
+			HandleCharacterCreate(static_cast<CharacterPacket*>(argPacket));
 		break;
 		case SerialPacketType::CHARACTER_DELETE:
 			HandleCharacterDelete(static_cast<CharacterPacket*>(argPacket));
 		break;
-		case SerialPacketType::CHARACTER_UPDATE:
-		case SerialPacketType::CHARACTER_STATS_REQUEST:
-			HandleCharacterUpdate(static_cast<CharacterPacket*>(argPacket));
+		case SerialPacketType::CHARACTER_LOAD:
+			HandleCharacterLoad(static_cast<CharacterPacket*>(argPacket));
+		break;
+		case SerialPacketType::CHARACTER_UNLOAD:
+			HandleCharacterUnload(static_cast<CharacterPacket*>(argPacket));
+		break;
+
+		//character movement
+		case SerialPacketType::CHARACTER_SET_ROOM:
+			HandleCharacterSetRoom(static_cast<CharacterPacket*>(argPacket));
+		break;
+		case SerialPacketType::CHARACTER_SET_ORIGIN:
+			HandleCharacterSetOrigin(static_cast<CharacterPacket*>(argPacket));
+		break;
+		case SerialPacketType::CHARACTER_SET_MOTION:
+			HandleCharacterSetMotion(static_cast<CharacterPacket*>(argPacket));
+		break;
+/*
+		case SerialPacketType::QUERY_CHARACTER_STATS:
+//			HandleCharacterStatsRequest(static_cast<RegionPacket*>(argPacket));
+		break;
+		case SerialPacketType::QUERY_CHARACTER_LOCATION:
+//			HandleCharacterStatsRequest(static_cast<RegionPacket*>(argPacket));
+		break;
+		case SerialPacketType::TEXT_BROADCAST:
+//			HandleCharacterStatsRequest(static_cast<RegionPacket*>(argPacket));
 		break;
 
 		//enemy management
 		//TODO: enemy management
 
-		//mismanagement
-		case SerialPacketType::SYNCHRONIZE:
-			HandleSynchronize(static_cast<ClientPacket*>(argPacket));
-		break;
-
+		//TODO: text
+*/
 		//handle errors
 		default: {
-			std::string msg = "Unknown SerialPacketType encountered in the server: ";
-			msg += to_string_custom(static_cast<int>(argPacket->type));
-			throw(std::runtime_error(msg));
+			std::ostringstream msg;
+			msg << "Unknown SerialPacketType encountered in the server: ";
+			msg << to_string_custom(static_cast<int>(argPacket->type));
+			throw(std::runtime_error(msg.str()));
 		}
 		break;
 	}

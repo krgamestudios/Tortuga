@@ -1,4 +1,4 @@
-/* Copyright: (c) Kayne Ruse 2013, 2014
+/* Copyright: (c) Kayne Ruse 2013-2015
  * 
  * This software is provided 'as-is', without any express or implied
  * warranty. In no event will the authors be held liable for any damages
@@ -36,7 +36,7 @@ int main(int argc, char* argv[]) {
 		ConfigUtility::CreateSingleton();
 		UDPNetworkUtility::CreateSingleton();
 
-		//call the server's routines
+		//call the client's routines
 		ClientApplication::CreateSingleton();
 		ClientApplication& app = ClientApplication::GetSingleton();
 

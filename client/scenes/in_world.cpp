@@ -1,4 +1,4 @@
-/* Copyright: (c) Kayne Ruse 2013, 2014
+/* Copyright: (c) Kayne Ruse 2013-2015
  * 
  * This software is provided 'as-is', without any express or implied
  * warranty. In no event will the authors be held liable for any damages
@@ -23,12 +23,25 @@
 
 #include "channels.hpp"
 #include "utility.hpp"
-#include "config_utility.hpp"
 
+#include "terminal_error.hpp"
 #include <stdexcept>
 #include <algorithm>
 #include <cmath>
 #include <iostream>
+#include <sstream>
+
+//-------------------------
+//these should've come standard
+//-------------------------
+
+bool operator==(IPaddress lhs, IPaddress rhs) {
+	return lhs.host == rhs.host && lhs.port == rhs.port;
+}
+
+bool operator!=(IPaddress lhs, IPaddress rhs) {
+	return !(lhs == rhs);
+}
 
 //-------------------------
 //Public access members
@@ -38,8 +51,6 @@ InWorld::InWorld(int* const argClientIndex,	int* const argAccountIndex):
 	clientIndex(*argClientIndex),
 	accountIndex(*argAccountIndex)
 {
-	ConfigUtility& config = ConfigUtility::GetSingleton();
-
 	//setup the utility objects
 	buttonImage.LoadSurface(config["dir.interface"] + "button_menu.bmp");
 	buttonImage.SetClipH(buttonImage.GetClipH()/3);
@@ -62,27 +73,36 @@ InWorld::InWorld(int* const argClientIndex,	int* const argAccountIndex):
 	shutDownButton.SetText("Shut Down");
 
 	//load the tilesheet
-	//TODO: add the tilesheet to the map system?
+	//TODO: add the tilesheet to the map system
 	//TODO: Tile size and tile sheet should be loaded elsewhere
 	tileSheet.Load(config["dir.tilesets"] + "overworld.bmp", 32, 32);
 
-	//send this player's character info
+	//Send the character data
+	//TODO: login scene, prompt, etc.
 	CharacterPacket newPacket;
-	newPacket.type = SerialPacketType::CHARACTER_NEW;
+	newPacket.type = SerialPacketType::CHARACTER_LOAD;
 	strncpy(newPacket.handle, config["client.handle"].c_str(), PACKET_STRING_SIZE);
 	strncpy(newPacket.avatar, config["client.avatar"].c_str(), PACKET_STRING_SIZE);
 	newPacket.accountIndex = accountIndex;
 	network.SendTo(Channels::SERVER, &newPacket);
 
-	//request a sync
-	RequestSynchronize();
+	//query the world state
+	memset(&newPacket, 0, MAX_PACKET_SIZE);
+	newPacket.type = SerialPacketType::QUERY_CHARACTER_EXISTS;
+	network.SendTo(Channels::SERVER, &newPacket);
+
+	//set the camera's values
+	camera.width = GetScreen()->w;
+	camera.height = GetScreen()->h;
 
 	//debug
 	//
 }
 
 InWorld::~InWorld() {
-	//
+	//unload the local data
+	characterMap.clear();
+	monsterMap.clear();
 }
 
 //-------------------------
@@ -94,69 +114,57 @@ void InWorld::FrameStart() {
 }
 
 void InWorld::Update() {
-	//suck in and process all waiting packets
+	//create and zero the buffer
 	SerialPacket* packetBuffer = reinterpret_cast<SerialPacket*>(new char[MAX_PACKET_SIZE]);
-	while(network.Receive(packetBuffer)) {
-		HandlePacket(packetBuffer);
+	memset(packetBuffer, 0, MAX_PACKET_SIZE);
+
+	try {
+		//suck in and process all waiting packets
+		while(network.Receive(packetBuffer)) {
+			HandlePacket(packetBuffer);
+		}
 	}
+	catch(terminal_error& e) {
+		throw(e);
+	}
+	catch(std::exception& e) {
+		std::cerr << "HandlePacket Error: " << e.what() << std::endl;
+	}
+
+	//free the buffer
 	delete reinterpret_cast<char*>(packetBuffer);
 
-	//update the characters
+	//heartbeat system
+	CheckHeartBeat();
+
+	//update all entities
 	for (auto& it : characterMap) {
 		it.second.Update();
 	}
+	for (auto& it : monsterMap) {
+		it.second.Update();
+	}
 
-	//check the map
+	//update the map
 	UpdateMap();
 
-	//skip the rest
+	//skip the rest without a local character
 	if (!localCharacter) {
 		return;
 	}
 
-	//check for collisions with the map
-	BoundingBox wallBounds = {0, 0, tileSheet.GetTileW(), tileSheet.GetTileH()};
-	const int xCount = localCharacter->GetBounds().w / wallBounds.w + 1;
-	const int yCount = localCharacter->GetBounds().h / wallBounds.h + 1;
+	//get the collidable boxes
+	std::list<BoundingBox> boxList = GenerateCollisionGrid(localCharacter, tileSheet.GetTileW(), tileSheet.GetTileH());
 
-	for (int i = -1; i <= xCount; ++i) {
-		for (int j = -1; j <= yCount; ++j) {
-			//set the wall's position
-			wallBounds.x = wallBounds.w * i + snapToBase((double)wallBounds.w, localCharacter->GetOrigin().x);
-			wallBounds.y = wallBounds.h * j + snapToBase((double)wallBounds.h, localCharacter->GetOrigin().y);
-
-			if (!regionPager.GetSolid(wallBounds.x / wallBounds.w, wallBounds.y / wallBounds.h)) {
-				continue;
-			}
-
-			if ((localCharacter->GetOrigin() + localCharacter->GetBounds()).CheckOverlap(wallBounds)) {
-				localCharacter->SetOrigin(localCharacter->GetOrigin() - (localCharacter->GetMotion()));
-				localCharacter->SetMotion({0,0});
-				localCharacter->CorrectSprite();
-				SendPlayerUpdate();
-			}
-		}
+	//process the collisions
+	if (localCharacter->ProcessCollisionGrid(boxList)) {
+		localCharacter->CorrectSprite();
+		SendLocalCharacterMotion();
 	}
 
-	//update the camera (following the player)
+	//update the camera
 	camera.x = localCharacter->GetOrigin().x - camera.marginX;
 	camera.y = localCharacter->GetOrigin().y - camera.marginY;
-
-	//check the connection
-	if (Clock::now() - lastBeat > std::chrono::seconds(3)) {
-		if (attemptedBeats > 2) {
-			RequestDisconnect();
-			SetNextScene(SceneList::DISCONNECTEDSCREEN);
-			ConfigUtility::GetSingleton()["client.disconnectMessage"] = "Error: Lost connection to the server";
-		}
-
-		ServerPacket newPacket;
-		newPacket.type = SerialPacketType::PING;
-		network.SendTo(Channels::SERVER, &newPacket);
-
-		attemptedBeats++;
-		lastBeat = Clock::now();
-	}
 }
 
 void InWorld::FrameEnd() {
@@ -164,7 +172,7 @@ void InWorld::FrameEnd() {
 }
 
 void InWorld::RenderFrame() {
-//	SDL_FillRect(GetScreen(), 0, 0);
+	SDL_FillRect(GetScreen(), 0, 0);
 	Render(GetScreen());
 	SDL_Flip(GetScreen());
 	fps.Calculate();
@@ -176,10 +184,13 @@ void InWorld::Render(SDL_Surface* const screen) {
 		tileSheet.DrawRegionTo(screen, &(*it), camera.x, camera.y);
 	}
 
-	//draw characters
+	//draw the entities
 	for (auto& it : characterMap) {
-		//BUG: #29 drawing order according to Y origin
-		//TODO: use a list of renderable objects
+		//TODO: depth ordering
+		it.second.DrawTo(screen, camera.x, camera.y);
+	}
+	for (auto& it : monsterMap) {
+		//TODO: depth ordering
 		it.second.DrawTo(screen, camera.x, camera.y);
 	}
 
@@ -194,8 +205,8 @@ void InWorld::Render(SDL_Surface* const screen) {
 //-------------------------
 
 void InWorld::QuitEvent() {
-	//exit the game AND the server
-	RequestDisconnect();
+	//two-step logout
+	SendDisconnectRequest();
 	SetNextScene(SceneList::QUIT);
 }
 
@@ -211,110 +222,167 @@ void InWorld::MouseButtonDown(SDL_MouseButtonEvent const& button) {
 
 void InWorld::MouseButtonUp(SDL_MouseButtonEvent const& button) {
 	if (disconnectButton.MouseButtonUp(button) == Button::State::HOVER && button.button == SDL_BUTTON_LEFT) {
-		RequestDisconnect();
+		SendLogoutRequest();
 	}
 	if (shutDownButton.MouseButtonUp(button) == Button::State::HOVER && button.button == SDL_BUTTON_LEFT) {
-		RequestShutDown();
+		SendShutdownRequest();
 	}
 }
 
 void InWorld::KeyDown(SDL_KeyboardEvent const& key) {
-	if (!localCharacter) {
-		return;
-	}
-
 	//hotkeys
 	switch(key.keysym.sym) {
 		case SDLK_ESCAPE:
-			RequestDisconnect();
-		break;
-	}
-
-	//player movement
-	Vector2 motion = localCharacter->GetMotion();
-	switch(key.keysym.sym) {
-		case SDLK_LEFT:
-			motion.x -= CHARACTER_WALKING_SPEED;
-		break;
-		case SDLK_RIGHT:
-			motion.x += CHARACTER_WALKING_SPEED;
-		break;
-		case SDLK_UP:
-			motion.y -= CHARACTER_WALKING_SPEED;
-		break;
-		case SDLK_DOWN:
-			motion.y += CHARACTER_WALKING_SPEED;
-		break;
-		default:
-			return;
-	}
-	localCharacter->SetMotion(motion);
-	localCharacter->CorrectSprite();
-	SendPlayerUpdate();
-}
-
-void InWorld::KeyUp(SDL_KeyboardEvent const& key) {
-	if (!localCharacter) {
+			//TODO: the escape key should actually control menus and stuff
+			SendLogoutRequest();
 		return;
 	}
 
-	//player movement
+	//character movement
+	if (!localCharacter) {
+		return;
+	}
 	Vector2 motion = localCharacter->GetMotion();
 	switch(key.keysym.sym) {
-		//NOTE: The use of min/max here are to prevent awkward movements
-		case SDLK_LEFT:
-			motion.x = std::min(motion.x + CHARACTER_WALKING_SPEED, 0.0);
+		case SDLK_w:
+			motion.y -= CHARACTER_WALKING_SPEED;
 		break;
-		case SDLK_RIGHT:
-			motion.x = std::max(motion.x - CHARACTER_WALKING_SPEED, 0.0);
+		case SDLK_a:
+			motion.x -= CHARACTER_WALKING_SPEED;
 		break;
-		case SDLK_UP:
-			motion.y = std::min(motion.y + CHARACTER_WALKING_SPEED, 0.0);
+		case SDLK_s:
+			motion.y += CHARACTER_WALKING_SPEED;
 		break;
-		case SDLK_DOWN:
-			motion.y = std::max(motion.y - CHARACTER_WALKING_SPEED, 0.0);
+		case SDLK_d:
+			motion.x += CHARACTER_WALKING_SPEED;
 		break;
 		default:
+			//DOCS: prevents wrong keys screwing with character movement
 			return;
 	}
+	//handle diagonals
+	if (motion.x != 0 && motion.y != 0) {
+		motion *= CHARACTER_WALKING_MOD;
+	}
+	//set the info
 	localCharacter->SetMotion(motion);
 	localCharacter->CorrectSprite();
-	SendPlayerUpdate();
+	SendLocalCharacterMotion();
+}
+
+void InWorld::KeyUp(SDL_KeyboardEvent const& key) {
+	//character movement
+	if (!localCharacter) {
+		return;
+	}
+	Vector2 motion = localCharacter->GetMotion();
+	switch(key.keysym.sym) {
+		case SDLK_w:
+			motion.y = std::min(0.0, motion.y += CHARACTER_WALKING_SPEED);
+		break;
+		case SDLK_a:
+			motion.x = std::min(0.0, motion.x += CHARACTER_WALKING_SPEED);
+		break;
+		case SDLK_s:
+			motion.y = std::max(0.0, motion.y -= CHARACTER_WALKING_SPEED);
+		break;
+		case SDLK_d:
+			motion.x = std::max(0.0, motion.x -= CHARACTER_WALKING_SPEED);
+		break;
+		default:
+			//DOCS: prevents wrong keys screwing with character movement
+			return;
+	}
+	//BUGFIX: reset cardinal direction speed on key release
+	if (motion.x > 0) {
+		motion.x = CHARACTER_WALKING_SPEED;
+	}
+	else if (motion.x < 0) {
+		motion.x = -CHARACTER_WALKING_SPEED;
+	}
+	if (motion.y > 0) {
+		motion.y = CHARACTER_WALKING_SPEED;
+	}
+	else if (motion.y < 0) {
+		motion.y = -CHARACTER_WALKING_SPEED;
+	}
+	//handle diagonals
+	if (motion.x != 0 && motion.y != 0) {
+		motion *= CHARACTER_WALKING_MOD;
+	}
+	//set the info
+	localCharacter->SetMotion(motion);
+	localCharacter->CorrectSprite();
+	SendLocalCharacterMotion();
 }
 
 //-------------------------
-//Network handlers
+//Basic connections
 //-------------------------
 
 void InWorld::HandlePacket(SerialPacket* const argPacket) {
 	switch(argPacket->type) {
+		//heartbeat system
 		case SerialPacketType::PING:
 			HandlePing(static_cast<ServerPacket*>(argPacket));
 		break;
 		case SerialPacketType::PONG:
 			HandlePong(static_cast<ServerPacket*>(argPacket));
 		break;
-		case SerialPacketType::DISCONNECT:
-			HandleDisconnect(static_cast<ClientPacket*>(argPacket));
+
+		//game server connections
+		case SerialPacketType::LOGOUT_RESPONSE:
+			HandleLogoutResponse(static_cast<ClientPacket*>(argPacket));
 		break;
-		case SerialPacketType::CHARACTER_NEW:
-			HandleCharacterNew(static_cast<CharacterPacket*>(argPacket));
+		case SerialPacketType::DISCONNECT_RESPONSE:
+			HandleDisconnectResponse(static_cast<ClientPacket*>(argPacket));
+		break;
+		case SerialPacketType::DISCONNECT_FORCED:
+			HandleDisconnectForced(static_cast<ClientPacket*>(argPacket));
+		break;
+
+		//map management
+		case SerialPacketType::REGION_CONTENT:
+			HandleRegionContent(static_cast<RegionPacket*>(argPacket));
+		break;
+
+		//character management
+		case SerialPacketType::CHARACTER_CREATE:
+			HandleCharacterCreate(static_cast<CharacterPacket*>(argPacket));
 		break;
 		case SerialPacketType::CHARACTER_DELETE:
 			HandleCharacterDelete(static_cast<CharacterPacket*>(argPacket));
 		break;
-		case SerialPacketType::CHARACTER_UPDATE:
-			HandleCharacterUpdate(static_cast<CharacterPacket*>(argPacket));
+		case SerialPacketType::QUERY_CHARACTER_EXISTS:
+			HandleCharacterQueryExists(static_cast<CharacterPacket*>(argPacket));
 		break;
+
+		//character movement
+		case SerialPacketType::CHARACTER_SET_ROOM:
+			HandleCharacterSetRoom(static_cast<CharacterPacket*>(argPacket));
+		break;
+		case SerialPacketType::CHARACTER_SET_ORIGIN:
+			HandleCharacterSetOrigin(static_cast<CharacterPacket*>(argPacket));
+		break;
+		case SerialPacketType::CHARACTER_SET_MOTION:
+			HandleCharacterSetMotion(static_cast<CharacterPacket*>(argPacket));
+		break;
+
+		//rejection messages
+		case SerialPacketType::REGION_REJECTION:
 		case SerialPacketType::CHARACTER_REJECTION:
-			HandleCharacterRejection(static_cast<TextPacket*>(argPacket));
+			throw(terminal_error(static_cast<TextPacket*>(argPacket)->text));
 		break;
-		case SerialPacketType::REGION_CONTENT:
-			HandleRegionContent(static_cast<RegionPacket*>(argPacket));
+		case SerialPacketType::SHUTDOWN_REJECTION:
+			throw(std::runtime_error(static_cast<TextPacket*>(argPacket)->text));
 		break;
-		//handle errors
-		default:
-			throw(std::runtime_error(std::string() + "Unknown SerialPacketType encountered in InWorld: " + to_string_custom(static_cast<int>(argPacket->type)) ));
+
+		//errors
+		default: {
+			std::ostringstream msg;
+			msg << "Unknown SerialPacketType encountered in InWorld: " << static_cast<int>(argPacket->type);
+			throw(std::runtime_error(msg.str()));
+		}
 		break;
 	}
 }
@@ -326,97 +394,109 @@ void InWorld::HandlePing(ServerPacket* const argPacket) {
 }
 
 void InWorld::HandlePong(ServerPacket* const argPacket) {
-	if (network.GetIPAddress(Channels::SERVER)->host != argPacket->srcAddress.host) {
+	if (*network.GetIPAddress(Channels::SERVER) != argPacket->srcAddress) {
 		throw(std::runtime_error("Heartbeat message received from an unknown source"));
 	}
-
 	attemptedBeats = 0;
 	lastBeat = Clock::now();
 }
 
-void InWorld::HandleDisconnect(ClientPacket* const argPacket) {
-	//TODO: More needed in the disconnection
-	SetNextScene(SceneList::DISCONNECTEDSCREEN);
-	ConfigUtility::GetSingleton()["client.disconnectMessage"] = "You have been disconnected";
+//-------------------------
+//Connection control
+//-------------------------
+
+void InWorld::SendLogoutRequest() {
+	ClientPacket newPacket;
+
+	//send a logout request
+	newPacket.type = SerialPacketType::LOGOUT_REQUEST;
+	newPacket.accountIndex = accountIndex;
+
+	network.SendTo(Channels::SERVER, &newPacket);
 }
 
-void InWorld::HandleCharacterNew(CharacterPacket* const argPacket) {
-	if (characterMap.find(argPacket->characterIndex) != characterMap.end()) {
-		throw(std::runtime_error("Cannot create duplicate characters"));
-	}
+void InWorld::SendDisconnectRequest() {
+	ClientPacket newPacket;
 
-	//create the character object
-	BaseCharacter& newCharacter = characterMap[argPacket->characterIndex];
+	//send a disconnect request
+	newPacket.type = SerialPacketType::DISCONNECT_REQUEST;
+	newPacket.clientIndex = clientIndex;
 
-	//fill out the character's members
-	newCharacter.SetHandle(argPacket->handle);
-	newCharacter.SetAvatar(argPacket->avatar);
-
-	newCharacter.GetSprite()->LoadSurface(ConfigUtility::GetSingleton()["dir.sprites"] + newCharacter.GetAvatar(), 4, 4);
-
-	newCharacter.SetOrigin(argPacket->origin);
-	newCharacter.SetMotion(argPacket->motion);
-	newCharacter.SetBounds({
-		CHARACTER_BOUNDS_X,
-		CHARACTER_BOUNDS_Y,
-		CHARACTER_BOUNDS_WIDTH,
-		CHARACTER_BOUNDS_HEIGHT
-	});
-
-//	(*newCharacter.GetBaseStats()) = argPacket->stats;
-
-	//bookkeeping code
-	newCharacter.CorrectSprite();
-
-	//catch this client's player object
-	if (argPacket->accountIndex == accountIndex && !localCharacter) {
-		characterIndex = argPacket->characterIndex;
-		localCharacter = &newCharacter;
-
-		//setup the camera
-		camera.width = GetScreen()->w;
-		camera.height = GetScreen()->h;
-
-		//center on the player's character
-		camera.marginX = (GetScreen()->w / 2 - localCharacter->GetSprite()->GetImage()->GetClipW() / 2);
-		camera.marginY = (GetScreen()->h / 2 - localCharacter->GetSprite()->GetImage()->GetClipH() / 2);
-	}
+	network.SendTo(Channels::SERVER, &newPacket);
 }
 
-void InWorld::HandleCharacterDelete(CharacterPacket* const argPacket) {
-	//TODO: authenticate when own character is being deleted (linked to a TODO in the server)
+void InWorld::SendShutdownRequest() {
+	ClientPacket newPacket;
 
-	//catch this client's player object
-	if (argPacket->characterIndex == characterIndex) {
-		characterIndex = -1;
+	//send a shutdown request
+	newPacket.type = SerialPacketType::SHUTDOWN_REQUEST;
+	newPacket.accountIndex = accountIndex;
+
+	network.SendTo(Channels::SERVER, &newPacket);
+}
+
+void InWorld::HandleLogoutResponse(ClientPacket* const argPacket) {
+	if (localCharacter) {
+		characterMap.erase(characterIndex);
 		localCharacter = nullptr;
 	}
 
-	characterMap.erase(argPacket->characterIndex);
+	accountIndex = -1;
+	characterIndex = -1;
+
+	//reset the camera
+	camera.marginX = camera.marginY = 0;
+
+	//because, why not? I guess...
+	SendDisconnectRequest();
 }
 
-void InWorld::HandleCharacterUpdate(CharacterPacket* const argPacket) {
-	if (characterMap.find(argPacket->characterIndex) == characterMap.end()) {
-		HandleCharacterNew(argPacket);
-		return;
-	}
-
-	BaseCharacter& character = characterMap[argPacket->characterIndex];
-
-	//other characters moving
-	if (argPacket->characterIndex != characterIndex) {
-		character.SetOrigin(argPacket->origin);
-		character.SetMotion(argPacket->motion);
-		character.CorrectSprite();
-	}
-}
-
-void InWorld::HandleCharacterRejection(TextPacket* const argPacket) {
-	RequestDisconnect();
+void InWorld::HandleDisconnectResponse(ClientPacket* const argPacket) {
+	HandleLogoutResponse(argPacket);//shortcut
 	SetNextScene(SceneList::DISCONNECTEDSCREEN);
-	ConfigUtility& config = ConfigUtility::GetSingleton();
-	config["client.disconnectMessage"] = "Error: ";
-	config["client.disconnectMessage"] += argPacket->text;
+	ConfigUtility::GetSingleton()["client.disconnectMessage"] = "You have successfully logged out";
+}
+
+void InWorld::HandleDisconnectForced(ClientPacket* const argPacket) {
+	HandleDisconnectResponse(argPacket);//shortcut
+	SetNextScene(SceneList::DISCONNECTEDSCREEN);
+	ConfigUtility::GetSingleton()["client.disconnectMessage"] = "You have been forcibly disconnected by the server";
+}
+
+void InWorld::CheckHeartBeat() {
+	//check the connection (heartbeat)
+	if (Clock::now() - lastBeat > std::chrono::seconds(3)) {
+		if (attemptedBeats > 2) {
+			//escape to the disconnect screen
+			SendDisconnectRequest();
+			SetNextScene(SceneList::DISCONNECTEDSCREEN);
+			ConfigUtility::GetSingleton()["client.disconnectMessage"] = "Error: Lost connection to the server";
+		}
+		else {
+			ServerPacket newPacket;
+			newPacket.type = SerialPacketType::PING;
+			network.SendTo(Channels::SERVER, &newPacket);
+
+			attemptedBeats++;
+			lastBeat = Clock::now();
+		}
+	}
+}
+
+//-------------------------
+//map management
+//-------------------------
+
+void InWorld::SendRegionRequest(int roomIndex, int x, int y) {
+	RegionPacket packet;
+
+	//pack the region's data
+	packet.type = SerialPacketType::REGION_REQUEST;
+	packet.roomIndex = roomIndex;
+	packet.x = x;
+	packet.y = y;
+
+	network.SendTo(Channels::SERVER, &packet);
 }
 
 void InWorld::HandleRegionContent(RegionPacket* const argPacket) {
@@ -429,82 +509,11 @@ void InWorld::HandleRegionContent(RegionPacket* const argPacket) {
 	argPacket->region = nullptr;
 }
 
-//-------------------------
-//Server control
-//-------------------------
-
-void InWorld::RequestSynchronize() {
-	ClientPacket newPacket;
-
-	//request a sync
-	newPacket.type = SerialPacketType::SYNCHRONIZE;
-	newPacket.clientIndex = clientIndex;
-	newPacket.accountIndex = accountIndex;
-
-	//TODO: location, range for sync request
-
-	network.SendTo(Channels::SERVER, &newPacket);
-}
-
-void InWorld::SendPlayerUpdate() {
-	CharacterPacket newPacket;
-
-	//pack the packet
-	newPacket.type = SerialPacketType::CHARACTER_UPDATE;
-
-	newPacket.characterIndex = characterIndex;
-	//NOTE: omitting the handle and avatar here
-	newPacket.accountIndex = accountIndex;
-	newPacket.roomIndex = 0; //TODO: room index
-	newPacket.origin = localCharacter->GetOrigin();
-	newPacket.motion = localCharacter->GetMotion();
-//	newPacket.stats = *localCharacter->GetBaseStats();
-
-	//TODO: gameplay components: equipment, items, buffs, debuffs
-
-	network.SendTo(Channels::SERVER, &newPacket);
-}
-
-void InWorld::RequestDisconnect() {
-	ClientPacket newPacket;
-
-	//send a disconnect request
-	newPacket.type = SerialPacketType::DISCONNECT;
-	newPacket.clientIndex = clientIndex;
-	newPacket.accountIndex = accountIndex;
-
-	network.SendTo(Channels::SERVER, &newPacket);
-}
-
-void InWorld::RequestShutDown() {
-	ClientPacket newPacket;
-
-	//send a shutdown request
-	newPacket.type = SerialPacketType::SHUTDOWN;
-	newPacket.clientIndex = clientIndex;
-	newPacket.accountIndex = accountIndex;
-
-	network.SendTo(Channels::SERVER, &newPacket);
-}
-
-void InWorld::RequestRegion(int roomIndex, int x, int y) {
-	RegionPacket packet;
-
-	//pack the region's data
-	packet.type = SerialPacketType::REGION_REQUEST;
-	packet.roomIndex = roomIndex;
-	packet.x = x;
-	packet.y = y;
-
-	network.SendTo(Channels::SERVER, &packet);
-}
-
-//-------------------------
-//Utilities
-//-------------------------
-
-//TODO: convert this into a more generic function?; using parameters for the bounds
 void InWorld::UpdateMap() {
+	if (roomIndex == -1) {
+		return;
+	}
+
 	//these represent the zone of regions that the client needs loaded, including the mandatory buffers (+1/-1)
 	int xStart = snapToBase(REGION_WIDTH, camera.x/tileSheet.GetTileW()) - REGION_WIDTH;
 	int xEnd = snapToBase(REGION_WIDTH, (camera.x+camera.width)/tileSheet.GetTileW()) + REGION_WIDTH;
@@ -513,27 +522,234 @@ void InWorld::UpdateMap() {
 	int yEnd = snapToBase(REGION_HEIGHT, (camera.y+camera.height)/tileSheet.GetTileH()) + REGION_HEIGHT;
 
 	//prune distant regions
-	for (std::list<Region>::iterator it = regionPager.GetContainer()->begin(); it != regionPager.GetContainer()->end(); /* EMPTY */) {
-		//check if the region is outside of this area
-		if (it->GetX() < xStart || it->GetX() > xEnd || it->GetY() < yStart || it->GetY() > yEnd) {
-
-			//clunky, but the alternative was time consuming
-			int tmpX = it->GetX();
-			int tmpY = it->GetY();
-			++it;
-
-			regionPager.UnloadRegion(tmpX, tmpY);
-			continue;
-		}
-		++it;
-	}
+	regionPager.GetContainer()->remove_if([&](Region const& region) -> bool {
+		return region.GetX() < xStart || region.GetX() > xEnd || region.GetY() < yStart || region.GetY() > yEnd;
+	});
 
 	//request empty regions within this zone
 	for (int i = xStart; i <= xEnd; i += REGION_WIDTH) {
 		for (int j = yStart; j <= yEnd; j += REGION_HEIGHT) {
 			if (!regionPager.FindRegion(i, j)) {
-				RequestRegion(0, i, j);
+				SendRegionRequest(roomIndex, i, j);
 			}
 		}
 	}
+}
+
+//-------------------------
+//entity management
+//-------------------------
+
+//NOTE: preexisting characters will result in query responses
+//NOTE: new characters will result in create messages
+//NOTE: this client's character will exist in both (skipped)
+
+void InWorld::HandleCharacterCreate(CharacterPacket* const argPacket) {
+	//prevent double message
+	if (characterMap.find(argPacket->characterIndex) != characterMap.end()) {
+		std::ostringstream msg;
+		msg << "Double character creation event; ";
+		msg << "Index: " << argPacket->characterIndex << "; ";
+		msg << "Handle: " << argPacket->handle;
+		throw(std::runtime_error(msg.str()));
+	}
+
+	//implicity create and retrieve the entity
+	BaseCharacter* character = &characterMap[argPacket->characterIndex];
+
+	//fill the character's info
+	character->SetOrigin(argPacket->origin);
+	character->SetMotion(argPacket->motion);
+	character->SetBounds({CHARACTER_BOUNDS_X, CHARACTER_BOUNDS_Y, CHARACTER_BOUNDS_WIDTH, CHARACTER_BOUNDS_HEIGHT});
+	character->SetHandle(argPacket->handle);
+	character->SetAvatar(argPacket->avatar);
+	character->SetOwner(argPacket->accountIndex);
+	character->CorrectSprite();
+
+	//check for this player's character
+	if (character->GetOwner() == accountIndex) {
+		localCharacter = static_cast<LocalCharacter*>(character);
+
+		//focus the camera on this character
+		camera.marginX = (camera.width / 2 - localCharacter->GetSprite()->GetImage()->GetClipW() / 2);
+		camera.marginY = (camera.height/ 2 - localCharacter->GetSprite()->GetImage()->GetClipH() / 2);
+
+		//focus on this character's info
+		characterIndex = argPacket->characterIndex;
+		roomIndex = argPacket->roomIndex;
+	}
+
+	//debug
+	std::cout << "Create, total: " << characterMap.size() << std::endl;
+}
+
+void InWorld::HandleCharacterDelete(CharacterPacket* const argPacket) {
+	//ignore if this character doesn't exist
+	std::map<int, BaseCharacter>::iterator characterIt = characterMap.find(argPacket->characterIndex);
+	if (characterIt == characterMap.end()) {
+		//debug
+		std::cout << "Ignoring character deletion" << std::endl;
+		return;
+	}
+
+	//check for this player's character
+	if ((*characterIt).second.GetOwner() == accountIndex) {
+		localCharacter = nullptr;
+
+		//clear the camera
+		camera.marginX = 0;
+		camera.marginY = 0;
+
+		//clear the room
+		roomIndex = -1;
+	}
+
+	//remove this character
+	characterMap.erase(characterIt);
+
+	//debug
+	std::cout << "Delete, total: " << characterMap.size() << std::endl;
+}
+
+void InWorld::HandleCharacterQueryExists(CharacterPacket* const argPacket) {
+	//prevent a double message about this player's character
+	if (argPacket->accountIndex == accountIndex) {
+		return;
+	}
+
+	//ignore characters in a different room (sub-optimal)
+	if (argPacket->roomIndex != roomIndex) {
+		return;
+	}
+
+	//implicitly construct the character if it doesn't exist
+	BaseCharacter* character = &characterMap[argPacket->characterIndex];
+
+	//set/update the character's info
+	character->SetOrigin(argPacket->origin);
+	character->SetMotion(argPacket->motion);
+	character->SetBounds({CHARACTER_BOUNDS_X, CHARACTER_BOUNDS_Y, CHARACTER_BOUNDS_WIDTH, CHARACTER_BOUNDS_HEIGHT});
+	character->SetHandle(argPacket->handle);
+	character->SetAvatar(argPacket->avatar);
+	character->SetOwner(argPacket->accountIndex);
+	character->CorrectSprite();
+
+	//debug
+	std::cout << "Query, total: " << characterMap.size() << std::endl;
+}
+
+void InWorld::HandleCharacterSetRoom(CharacterPacket* const argPacket) {
+	//someone else's character
+	if (argPacket->characterIndex != characterIndex) {
+		characterMap.erase(argPacket->characterIndex);
+		return;
+	}
+
+	//this character is moving between rooms
+	roomIndex = argPacket->roomIndex;
+
+	//set the character's info
+	localCharacter->SetOrigin(argPacket->origin);
+	localCharacter->SetMotion(argPacket->motion);
+	localCharacter->CorrectSprite();
+
+	//clear the old room's data
+	regionPager.UnloadAll();
+	monsterMap.clear();
+
+	//use the jenky pattern for std::map to skip this player's character
+	for (std::map<int, BaseCharacter>::iterator it = characterMap.begin(); it != characterMap.end(); /* EMPTY */ ) {
+		if (it->first != characterIndex) {
+			it = characterMap.erase(it);
+		}
+		else {
+			++it;
+		}
+	}
+
+	//request the info on characters in this room
+	CharacterPacket newPacket;
+	newPacket.type = SerialPacketType::QUERY_CHARACTER_EXISTS;
+	newPacket.roomIndex = roomIndex;
+	network.SendTo(Channels::SERVER, &newPacket);
+}
+
+void InWorld::HandleCharacterSetOrigin(CharacterPacket* const argPacket) {
+	//TODO: Authentication
+	if (argPacket->characterIndex == characterIndex) {
+		return;
+	}
+
+	//check that this character exists
+	std::map<int, BaseCharacter>::iterator characterIt = characterMap.find(argPacket->characterIndex);
+	if (characterIt != characterMap.end()) {
+		//set the origin and motion
+		characterIt->second.SetOrigin(argPacket->origin);
+		characterIt->second.SetMotion(argPacket->motion);
+		characterIt->second.CorrectSprite();
+	}
+}
+
+void InWorld::HandleCharacterSetMotion(CharacterPacket* const argPacket) {
+	//TODO: Authentication
+	if (argPacket->characterIndex == characterIndex) {
+		return;
+	}
+
+	//check that this character exists
+	std::map<int, BaseCharacter>::iterator characterIt = characterMap.find(argPacket->characterIndex);
+	if (characterIt != characterMap.end()) {
+		//set the origin and motion
+		characterIt->second.SetOrigin(argPacket->origin);
+		characterIt->second.SetMotion(argPacket->motion);
+		characterIt->second.CorrectSprite();
+	}
+}
+
+//-------------------------
+//player movement
+//-------------------------
+
+//TODO: add a "movement" packet type
+void InWorld::SendLocalCharacterMotion() {
+	CharacterPacket newPacket;
+	newPacket.type = SerialPacketType::CHARACTER_SET_MOTION;
+
+	newPacket.accountIndex = accountIndex;
+	newPacket.characterIndex = characterIndex;
+	newPacket.roomIndex = roomIndex;
+	newPacket.origin = localCharacter->GetOrigin();
+	newPacket.motion = localCharacter->GetMotion();
+
+	network.SendTo(Channels::SERVER, &newPacket);
+}
+
+std::list<BoundingBox> InWorld::GenerateCollisionGrid(Entity* ptr, int tileWidth, int tileHeight) {
+	//prepare for collisions
+	BoundingBox wallBounds = {0, 0, tileWidth, tileHeight};
+	std::list<BoundingBox> boxList;
+
+	//NOTE: for loops were too dense to work with, so I've just used while loops
+
+	//outer loop
+	wallBounds.x = snapToBase((double)wallBounds.w, ptr->GetOrigin().x);
+	while(wallBounds.x < (ptr->GetOrigin() + ptr->GetBounds()).x + ptr->GetBounds().w) {
+		//inner loop
+		wallBounds.y = snapToBase((double)wallBounds.h, ptr->GetOrigin().y);
+		while(wallBounds.y < (ptr->GetOrigin() + ptr->GetBounds()).y + ptr->GetBounds().h) {
+			//check to see if this tile is solid
+			if (regionPager.GetSolid(wallBounds.x / wallBounds.w, wallBounds.y / wallBounds.h)) {
+				//push onto the box set
+				boxList.push_front(wallBounds);
+			}
+
+			//increment
+			wallBounds.y += wallBounds.h;
+		}
+
+		//increment
+		wallBounds.x += wallBounds.w;
+	}
+
+	return std::move(boxList);
 }

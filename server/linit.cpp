@@ -10,7 +10,7 @@
  * Modified for use in Tortuga, renamed to linit.cpp
  * Modifications are released under the zlib license:
  * 
- * Copyright: (c) Kayne Ruse 2014
+ * Copyright: (c) Kayne Ruse 2013-2015
  * 
  * This software is provided 'as-is', without any express or implied
  * warranty. In no event will the authors be held liable for any damages
@@ -40,11 +40,8 @@
  #include "lua.hpp"
 #endif
 
-#include "region_api.hpp"
-#include "region_pager_api.hpp"
-#include "tile_sheet_api.hpp"
-#include "room_api.hpp"
-#include "room_manager_api.hpp"
+#include "map_system_api.hpp"
+#include "room_system_api.hpp"
 
 //these libs are loaded by lua.c and are readily available to any Lua program
 static const luaL_Reg loadedlibs[] = {
@@ -59,20 +56,14 @@ static const luaL_Reg loadedlibs[] = {
 	{LUA_BITLIBNAME, luaopen_bit32},
 	{LUA_MATHLIBNAME, luaopen_math},
 	{LUA_DBLIBNAME, luaopen_debug},
-
-	//Tortuga's API
-	{TORTUGA_REGION_NAME, openRegionAPI},
-	{TORTUGA_REGION_PAGER_NAME, openRegionPagerAPI},
-	{TORTUGA_TILE_SHEET_NAME, openTileSheetAPI},
-	{TORTUGA_ROOM_NAME, openRoomAPI},
-	{TORTUGA_ROOM_MANAGER_NAME, openRoomManagerAPI},
-
 	{NULL, NULL}
 };
 
 
 //these libs are preloaded and must be required before used
 static const luaL_Reg preloadedlibs[] = {
+	{TORTUGA_MAP_SYSTEM_API, openMapSystemAPI},
+	{TORTUGA_ROOM_SYSTEM_API, openRoomSystemAPI},
 	{NULL, NULL}
 };
 

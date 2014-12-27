@@ -1,4 +1,4 @@
-/* Copyright: (c) Kayne Ruse 2013, 2014
+/* Copyright: (c) Kayne Ruse 2013-2015
  * 
  * This software is provided 'as-is', without any express or implied
  * warranty. In no event will the authors be held liable for any damages
@@ -25,7 +25,6 @@
 #include "serial_packet_base.hpp"
 
 #include "vector2.hpp"
-#include "statistics.hpp"
 
 struct CharacterPacket : SerialPacketBase {
 	//identify the character
@@ -35,14 +34,12 @@ struct CharacterPacket : SerialPacketBase {
 
 	//the owner
 	int accountIndex;
+	//TODO: Authentication token?
 
 	//location
 	int roomIndex;
 	Vector2 origin;
 	Vector2 motion;
-
-	//gameplay
-	Statistics stats;
 
 	//gameplay components: equipment, items, buffs, debuffs...
 };

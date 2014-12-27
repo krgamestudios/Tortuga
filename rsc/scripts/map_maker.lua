@@ -1,3 +1,5 @@
+local mapSystem = require "map_system"
+
 local mapMaker = {}
 
 --utility functions
@@ -19,16 +21,16 @@ mapMaker.dirt	= 18 + 3 * 4
 
 --custom generation systems here
 function mapMaker.debugIsland(region)
-	for i = 1, Region.GetWidth(region) do
-		for j = 1, Region.GetHeight(region) do
-			local dist = mapMaker.dist(0, 0, i + Region.GetX(region) -1, j + Region.GetY(region) -1)
+	for i = 1, mapSystem.Region.GetWidth(region) do
+		for j = 1, mapSystem.Region.GetHeight(region) do
+			local dist = mapMaker.dist(0, 0, i + mapSystem.Region.GetX(region) -1, j + mapSystem.Region.GetY(region) -1)
 			if dist < 10 then
-				Region.SetTile(region, i, j, 1, mapMaker.plains)
+				mapSystem.Region.SetTile(region, i, j, 1, mapMaker.plains)
 			elseif dist < 12 then
-				Region.SetTile(region, i, j, 1, mapMaker.sand)
+				mapSystem.Region.SetTile(region, i, j, 1, mapMaker.sand)
 			else
-				Region.SetTile(region, i, j, 1, mapMaker.water)
-				Region.SetSolid(region, i, j, true)
+				mapSystem.Region.SetTile(region, i, j, 1, mapMaker.water)
+				mapSystem.Region.SetSolid(region, i, j, true)
 			end
 		end
 	end

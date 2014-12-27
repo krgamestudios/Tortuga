@@ -1,4 +1,4 @@
-/* Copyright: (c) Kayne Ruse 2014
+/* Copyright: (c) Kayne Ruse 2013-2015
  * 
  * This software is provided 'as-is', without any express or implied
  * warranty. In no event will the authors be held liable for any damages
@@ -24,15 +24,11 @@
 #include "room_manager.hpp"
 
 int createRoom(lua_State* L) {
+
 	//create & get the room
 	RoomManager& roomMgr = RoomManager::GetSingleton();
-	int uid = roomMgr.Create();
+	int uid = roomMgr.Create(lua_tostring(L, 1));
 	RoomData* room = roomMgr.Get(uid);
-
-	//setup the room
-	//TODO: room parameters only set via lua, fix this
-	room->SetRoomName(lua_tostring(L, 1));
-	room->SetTilesetName(lua_tostring(L, 2));
 
 	//return room, uid
 	lua_pushlightuserdata(L, static_cast<void*>(room));
@@ -48,9 +44,26 @@ int unloadRoom(lua_State* L) {
 	return 0;
 }
 
+int getRoom(lua_State* L) {
+	//TODO: integer vs name for getRoom()
+	RoomManager& roomMgr = RoomManager::GetSingleton();
+
+	RoomData* room = roomMgr.Get(lua_tointeger(L, 1));
+
+	if (room) {
+		lua_pushlightuserdata(L, static_cast<void*>(room));
+	}
+	else {
+		lua_pushnil(L);
+	}
+
+	return 1;
+}
+
 static const luaL_Reg roomManagerLib[] = {
 	{"CreateRoom", createRoom},
 	{"UnloadRoom", unloadRoom},
+	{"GetRoom", getRoom},
 	{nullptr, nullptr}
 };
 

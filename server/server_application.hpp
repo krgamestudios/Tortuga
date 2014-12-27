@@ -1,4 +1,4 @@
-/* Copyright: (c) Kayne Ruse 2013, 2014
+/* Copyright: (c) Kayne Ruse 2013-2015
  * 
  * This software is provided 'as-is', without any express or implied
  * warranty. In no event will the authors be held liable for any damages
@@ -22,16 +22,20 @@
 #ifndef SERVERAPPLICATION_HPP_
 #define SERVERAPPLICATION_HPP_
 
-//server specific stuff, mostly managers
-#include "client_data.hpp"
+//managers
 #include "account_manager.hpp"
 #include "character_manager.hpp"
+#include "client_manager.hpp"
+#include "door_manager.hpp"
+#include "monster_manager.hpp"
 #include "room_manager.hpp"
 
-//common utilities
-#include "udp_network_utility.hpp"
-#include "serial_packet.hpp"
+//utilities
 #include "config_utility.hpp"
+#include "udp_network_utility.hpp"
+
+//common utilities
+#include "serial_packet.hpp"
 #include "singleton.hpp"
 
 //APIs
@@ -48,6 +52,10 @@
 //STL
 #include <map>
 #include <string>
+
+//global utility functions
+bool operator==(IPaddress lhs, IPaddress rhs);
+bool operator!=(IPaddress lhs, IPaddress rhs);
 
 //The main application class
 class ServerApplication: public Singleton<ServerApplication> {
@@ -66,50 +74,64 @@ private:
 	//handle incoming traffic
 	void HandlePacket(SerialPacket* const);
 
-	//basic connections
+	//heartbeat sustem
 	void HandlePing(ServerPacket* const);
 	void HandlePong(ServerPacket* const);
+
+	//basic connections
 	void HandleBroadcastRequest(ServerPacket* const);
 	void HandleJoinRequest(ClientPacket* const);
-	void HandleDisconnect(ClientPacket* const);
-	void HandleShutdown(ClientPacket* const);
+	void HandleLoginRequest(ClientPacket* const);
 
-	//map management
+	//client disconnections
+	void HandleLogoutRequest(ClientPacket* const);
+	void HandleDisconnectRequest(ClientPacket* const);
+
+	//server commands
+	void HandleDisconnectForced(ClientPacket* const);
+	void HandleShutdownRequest(ClientPacket* const);
+
+	//data management
 	void HandleRegionRequest(RegionPacket* const);
+	void HandleCharacterExists(CharacterPacket* const);
+
+	void SaveServerState();
+	void FullClientUnload(int index);
+	void FullAccountUnload(int index);
+	void FullCharacterUnload(int index);
 
 	//character management
-	void HandleCharacterNew(CharacterPacket* const);
+	void HandleCharacterCreate(CharacterPacket* const);
 	void HandleCharacterDelete(CharacterPacket* const);
-	void HandleCharacterUpdate(CharacterPacket* const);
+	void HandleCharacterLoad(CharacterPacket* const);
+	void HandleCharacterUnload(CharacterPacket* const);
 
-	//mismanagement
-	void HandleSynchronize(ClientPacket* const);
+	//character movement
+	void HandleCharacterSetRoom(CharacterPacket* const);
+	void HandleCharacterSetOrigin(CharacterPacket* const);
+	void HandleCharacterSetMotion(CharacterPacket* const);
 
 	//utility methods
-	void CheckClientConnections();
-	//TODO: a function that only sends to characters in a certain proximity
-	void CleanupLostConnection(int index);
 	void PumpPacket(SerialPacket* const);
-	void PumpCharacterUnload(int uid);
 	void CopyCharacterToPacket(CharacterPacket* const packet, int characterIndex);
 
 	//APIs and utilities
 	sqlite3* database = nullptr;
 	lua_State* luaState = nullptr;
-	UDPNetworkUtility& network = UDPNetworkUtility::GetSingleton();
-	ConfigUtility& config = ConfigUtility::GetSingleton();
 
-	//simple tables
-	std::map<int, ClientData> clientMap;
-
-	//managers
+	//ugly references; I hate this
 	AccountManager& accountMgr = AccountManager::GetSingleton();
 	CharacterManager& characterMgr = CharacterManager::GetSingleton();
+	ClientManager& clientMgr = ClientManager::GetSingleton();
+	DoorManager& doorMgr = DoorManager::GetSingleton();
+	MonsterManager& monsterMgr = MonsterManager::GetSingleton();
 	RoomManager& roomMgr = RoomManager::GetSingleton();
+
+	ConfigUtility& config = ConfigUtility::GetSingleton();
+	UDPNetworkUtility& network = UDPNetworkUtility::GetSingleton();
 
 	//misc
 	bool running = true;
-	int clientIndex = 0;
 };
 
 #endif

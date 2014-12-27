@@ -1,4 +1,4 @@
-/* Copyright: (c) Kayne Ruse 2014
+/* Copyright: (c) Kayne Ruse 2013-2015
  * 
  * This software is provided 'as-is', without any express or implied
  * warranty. In no event will the authors be held liable for any damages
@@ -19,37 +19,37 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef BASECHARACTER_HPP_
-#define BASECHARACTER_HPP_
+#include "room_system_api.hpp"
 
-//components
-#include "character_defines.hpp"
-#include "renderable.hpp"
+//all room API headers
+#include "room_api.hpp"
+#include "room_manager_api.hpp"
 
-//std namespace
-#include <string>
+//useful "globals"
+//...
 
-class BaseCharacter : public Renderable {
-public:
-	BaseCharacter() = default;
-	virtual ~BaseCharacter() = default;
-
-	//graphics
-	void CorrectSprite();
-
-	//metadata
-	int SetOwner(int i) { return owner = i; }
-	int GetOwner() { return owner; }
-	std::string SetHandle(std::string s) { return handle = s; }
-	std::string GetHandle() const { return handle; }
-	std::string SetAvatar(std::string s) { return avatar = s; }
-	std::string GetAvatar() const { return avatar; }
-
-private:
-	//metadata
-	int owner;
-	std::string handle;
-	std::string avatar;
+//This mimics linit.c to create a nested collection of all room modules.
+static const luaL_Reg funcs[] = {
+	{nullptr, nullptr}
 };
 
-#endif
+static const luaL_Reg libs[] = {
+	{"Room", openRoomAPI},
+	{"RoomManager", openRoomManagerAPI},
+	{nullptr, nullptr}
+};
+
+int openRoomSystemAPI(lua_State* L) {
+	//create the table
+	luaL_newlibtable(L, libs);
+
+	//push the "global" functions
+	luaL_setfuncs(L, funcs, 0);
+
+	//push the substable
+	for (const luaL_Reg* lib = libs; lib->func; lib++) {
+		lib->func(L);
+		lua_setfield(L, -2, lib->name);
+	}
+	return 1;
+}

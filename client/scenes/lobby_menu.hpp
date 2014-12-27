@@ -1,4 +1,4 @@
-/* Copyright: (c) Kayne Ruse 2013, 2014
+/* Copyright: (c) Kayne Ruse 2013-2015
  * 
  * This software is provided 'as-is', without any express or implied
  * warranty. In no event will the authors be held liable for any damages
@@ -63,11 +63,14 @@ protected:
 	void HandlePacket(SerialPacket* const);
 	void HandleBroadcastResponse(ServerPacket* const);
 	void HandleJoinResponse(ClientPacket* const);
+	void HandleLoginResponse(ClientPacket* const);
 	void HandleJoinRejection(TextPacket* const);
+	void HandleLoginRejection(TextPacket* const);
 
 	//server control
 	void SendBroadcastRequest();
 	void SendJoinRequest();
+	void SendLoginRequest();
 
 	//shared parameters
 	ConfigUtility& config = ConfigUtility::GetSingleton();

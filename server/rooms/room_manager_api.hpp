@@ -1,4 +1,4 @@
-/* Copyright: (c) Kayne Ruse 2014
+/* Copyright: (c) Kayne Ruse 2013-2015
  * 
  * This software is provided 'as-is', without any express or implied
  * warranty. In no event will the authors be held liable for any damages
@@ -28,7 +28,7 @@
  #include "lua.hpp"
 #endif
 
-#define TORTUGA_ROOM_MANAGER_NAME "RoomManager"
+#define TORTUGA_ROOM_MANAGER_API "room_manager"
 LUAMOD_API int openRoomManagerAPI(lua_State* L);
 
 #endif

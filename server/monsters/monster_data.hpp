@@ -1,4 +1,4 @@
-/* Copyright: (c) Kayne Ruse 2014
+/* Copyright: (c) Kayne Ruse 2013-2015
  * 
  * This software is provided 'as-is', without any express or implied
  * warranty. In no event will the authors be held liable for any damages
@@ -19,36 +19,29 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef CLIENTDATA_HPP_
-#define CLIENTDATA_HPP_
+#ifndef MONSTERDATA_HPP_
+#define MONSTERDATA_HPP_
 
-#include "SDL/SDL_net.h"
+#include "entity.hpp"
 
-#include <chrono>
+#include <string>
 
-//TODO: ClientManager?
-class ClientData {
+class MonsterData: public Entity {
 public:
-	typedef std::chrono::steady_clock Clock;
+	MonsterData() = default;
+	~MonsterData() = default;
 
-	ClientData() = default;
-	ClientData(IPaddress add): address(add) {}
-	~ClientData() = default;
+	std::string SetAvatar(std::string);
+	int SetScriptReference(int);
 
-	IPaddress SetAddress(IPaddress add) { return address = add; }
-	IPaddress GetAddress() { return address; }
-
-	Clock::time_point GetLastBeat() { return lastBeat; }
-
-	int GetAttempts() { return attemptedBeats; }
-	int IncrementAttempts();
-	int ResetAttempts();
+	std::string GetAvatar();
+	int GetScriptReference();
 
 private:
-	IPaddress address = {0,0};
+	friend class MonsterManager;
 
-	Clock::time_point lastBeat = Clock::now();
-	int attemptedBeats = 0;
+	std::string avatar;
+	int scriptRef;
 };
 
 #endif

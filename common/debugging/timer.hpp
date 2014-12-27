@@ -1,4 +1,4 @@
-/* Copyright: (c) Kayne Ruse 2014
+/* Copyright: (c) Kayne Ruse 2013-2015
  * 
  * This software is provided 'as-is', without any express or implied
  * warranty. In no event will the authors be held liable for any damages
@@ -34,8 +34,8 @@ public:
 	Timer(std::string s);
 	~Timer() = default;
 
-	inline void Start();
-	inline void Stop();
+	void Start();
+	void Stop();
 
 	//accessors and mutators
 	Clock::duration GetTime() { return timeSpan; }

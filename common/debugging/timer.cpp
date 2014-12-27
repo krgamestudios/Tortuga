@@ -1,4 +1,4 @@
-/* Copyright: (c) Kayne Ruse 2014
+/* Copyright: (c) Kayne Ruse 2013-2015
  * 
  * This software is provided 'as-is', without any express or implied
  * warranty. In no event will the authors be held liable for any damages
@@ -39,7 +39,7 @@ void Timer::Stop() {
 
 std::ostream& operator<<(std::ostream& os, Timer& t) {
 	os << t.GetName() << ": ";
-	os << std::chrono::duration_cast<std::chrono::milliseconds>(t.GetTime()).count();
-	os << "ms";
+	os << std::chrono::duration_cast<std::chrono::microseconds>(t.GetTime()).count();
+	os << "us";
 	return os;
 }

@@ -1,4 +1,4 @@
-/* Copyright: (c) Kayne Ruse 2014
+/* Copyright: (c) Kayne Ruse 2013-2015
  * 
  * This software is provided 'as-is', without any express or implied
  * warranty. In no event will the authors be held liable for any damages
@@ -19,5 +19,16 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#include "base_monster.hpp"
+#ifndef TERMINALERROR_HPP_
+#define TERMINALERROR_HPP_
 
+#include <stdexcept>
+#include <string>
+
+class terminal_error: public std::runtime_error {
+public:
+	explicit terminal_error(const std::string& str): runtime_error(str) {}
+	explicit terminal_error(const char* cstr): runtime_error(cstr) {}
+};
+
+#endif

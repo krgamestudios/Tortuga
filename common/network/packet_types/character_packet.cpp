@@ -1,4 +1,4 @@
-/* Copyright: (c) Kayne Ruse 2014
+/* Copyright: (c) Kayne Ruse 2013-2015
  * 
  * This software is provided 'as-is', without any express or implied
  * warranty. In no event will the authors be held liable for any damages
@@ -23,8 +23,6 @@
 
 #include "serial_utility.hpp"
 
-#include "serial_statistics.hpp"
-
 void serializeCharacter(void* buffer, CharacterPacket* packet) {
 	serialCopy(&buffer, &packet->type, sizeof(SerialPacketType));
 
@@ -42,9 +40,6 @@ void serializeCharacter(void* buffer, CharacterPacket* packet) {
 	serialCopy(&buffer, &packet->origin.y, sizeof(double));
 	serialCopy(&buffer, &packet->motion.x, sizeof(double));
 	serialCopy(&buffer, &packet->motion.y, sizeof(double));
-
-	//stats structure
-	serializeStatistics(&buffer, &packet->stats);
 
 	//gameplay components: equipment, items, buffs, debuffs...
 }
@@ -66,9 +61,6 @@ void deserializeCharacter(void* buffer, CharacterPacket* packet) {
 	deserialCopy(&buffer, &packet->origin.y, sizeof(double));
 	deserialCopy(&buffer, &packet->motion.x, sizeof(double));
 	deserialCopy(&buffer, &packet->motion.y, sizeof(double));
-
-	//stats structure
-	deserializeStatistics(&buffer, &packet->stats);
 
 	//gameplay components: equipment, items, buffs, debuffs...
 }

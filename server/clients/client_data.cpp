@@ -1,4 +1,4 @@
-/* Copyright: (c) Kayne Ruse 2014
+/* Copyright: (c) Kayne Ruse 2013-2015
  * 
  * This software is provided 'as-is', without any express or implied
  * warranty. In no event will the authors be held liable for any damages
@@ -19,26 +19,34 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef LOCALCHARACTER_HPP_
-#define LOCALCHARACTER_HPP_
+#include "client_data.hpp"
 
-#include "base_character.hpp"
-#include "statistics.hpp"
+ClientData::ClientData(IPaddress add) {
+	address = add;
+}
 
-class LocalCharacter : public BaseCharacter {
-public:
-	LocalCharacter() = default;
-	~LocalCharacter() = default;
+IPaddress ClientData::SetAddress(IPaddress add) {
+	return address = add;
+}
 
-	int SetRoomIndex(int i) { return roomIndex = i; }
-	int GetRoomIndex() { return roomIndex; }
+IPaddress ClientData::GetAddress() {
+	return address;
+}
 
-	Statistics* GetBaseStats() { return &baseStats; }
+ClientData::Clock::time_point ClientData::GetLastBeat() {
+	return lastBeat;
+}
 
-private:
-	int roomIndex = -1;
-	Statistics baseStats;
-	//TODO: weapons, armour, buffs, debuffs, etc.
-};
+int ClientData::GetAttempts() {
+	return attemptedBeats;
+}
 
-#endif
+int ClientData::IncrementAttempts() {
+	lastBeat = Clock::now();
+	return attemptedBeats++;
+}
+
+int ClientData::ResetAttempts() {
+	lastBeat = Clock::now();
+	return attemptedBeats = 0;
+}

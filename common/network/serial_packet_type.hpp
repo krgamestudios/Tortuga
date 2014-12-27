@@ -1,4 +1,4 @@
-/* Copyright: (c) Kayne Ruse 2013, 2014
+/* Copyright: (c) Kayne Ruse 2013-2015
  * 
  * This software is provided 'as-is', without any express or implied
  * warranty. In no event will the authors be held liable for any damages
@@ -27,6 +27,7 @@
  * valid data, but it will still be carried in that packet's format.
 */
 
+//TODO: This needs to be smoothed out
 enum class SerialPacketType {
 	//default: there is something wrong
 	NONE = 0,
@@ -37,30 +38,37 @@ enum class SerialPacketType {
 	//-------------------------
 
 	//heartbeat
-	PING,
-	PONG,
+	PING = 1,
+	PONG = 2,
 
 	//Used for finding available servers
-	BROADCAST_REQUEST,
-	BROADCAST_RESPONSE,
+	BROADCAST_REQUEST = 3,
+	BROADCAST_RESPONSE = 4,
 
 	//-------------------------
 	//ClientPacket
-	//  client index, account index, character index
+	//  client index, account index, username
 	//-------------------------
 
 	//Connecting to a server as a client
-	JOIN_REQUEST,
-	JOIN_RESPONSE,
-
-	//client requests all information from the server
-	SYNCHRONIZE,
+	JOIN_REQUEST = 5,
+	JOIN_RESPONSE = 6,
 
 	//disconnect from the server
-	DISCONNECT,
+	DISCONNECT_REQUEST = 7,
+	DISCONNECT_RESPONSE = 8,
+	DISCONNECT_FORCED = 9,
+
+	//load the account
+	LOGIN_REQUEST = 10,
+	LOGIN_RESPONSE = 11,
+
+	//unload the account
+	LOGOUT_REQUEST = 12,
+	LOGOUT_RESPONSE = 13,
 
 	//shut down the server
-	SHUTDOWN,
+	SHUTDOWN_REQUEST = 14,
 
 	//-------------------------
 	//RegionPacket
@@ -68,24 +76,35 @@ enum class SerialPacketType {
 	//-------------------------
 
 	//map data
-	REGION_REQUEST,
-	REGION_CONTENT,
+	REGION_REQUEST = 15, //NOTE: technically a query
+	REGION_CONTENT = 16,
 
 	//-------------------------
 	//CharacterPacket
-	//  handle, avatar, character index, account index,
-	//  room index, origin, motion
+	//  character index,
+	//  handle, avatar,
+	//  account index (owner),
+	//  room index, origin, motion,
 	//  statistics
 	//-------------------------
 
-	//controlling characters
-	CHARACTER_NEW,
-	CHARACTER_DELETE,
-	CHARACTER_UPDATE,
+	//character management
+	CHARACTER_CREATE = 17,
+	CHARACTER_DELETE = 18,
+	CHARACTER_LOAD = 19,
+	CHARACTER_UNLOAD = 20,
 
-	//authentication, character index => character stats
-	CHARACTER_STATS_REQUEST,
-	CHARACTER_STATS_RESPONSE,
+	//find out info from the server
+	QUERY_CHARACTER_EXISTS = 21,
+	QUERY_CHARACTER_STATS = 22,
+	QUERY_CHARACTER_LOCATION = 23,
+
+	//set the info in the server
+	CHARACTER_SET_ROOM = 24,
+	CHARACTER_SET_ORIGIN = 25,
+	CHARACTER_SET_MOTION = 26,
+
+	//TODO: enemy management
 
 	//-------------------------
 	//TextPacket
@@ -93,18 +112,20 @@ enum class SerialPacketType {
 	//-------------------------
 
 	//general speech
-	TEXT_BROADCAST,
+	TEXT_BROADCAST = 27,
 
 	//rejection/error messages
-	SHUTDOWN_REJECTION,
-	JOIN_REJECTION,
-	CHARACTER_REJECTION,
+	JOIN_REJECTION = 28,
+	LOGIN_REJECTION = 29,
+	REGION_REJECTION = 30,
+	CHARACTER_REJECTION = 31,
+	SHUTDOWN_REJECTION = 32,
 
 	//-------------------------
 	//not used
 	//-------------------------
 
-	LAST
+	LAST = 33
 };
 
 #endif

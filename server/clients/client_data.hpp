@@ -1,4 +1,4 @@
-/* Copyright: (c) Kayne Ruse 2014
+/* Copyright: (c) Kayne Ruse 2013-2015
  * 
  * This software is provided 'as-is', without any express or implied
  * warranty. In no event will the authors be held liable for any damages
@@ -19,12 +19,35 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef SERIALSTATISTICS_HPP_
-#define SERIALSTATISTICS_HPP_
+#ifndef CLIENTDATA_HPP_
+#define CLIENTDATA_HPP_
 
-#include "statistics.hpp"
+#include "SDL/SDL_net.h"
 
-void serializeStatistics(void** buffer, Statistics* stats);
-void deserializeStatistics(void** buffer, Statistics* stats);
+#include <chrono>
+
+class ClientData {
+public:
+	typedef std::chrono::steady_clock Clock;
+
+	ClientData() = default;
+	ClientData(IPaddress add);
+	~ClientData() = default;
+
+	IPaddress SetAddress(IPaddress add);
+	IPaddress GetAddress();
+
+	Clock::time_point GetLastBeat();
+
+	int GetAttempts();
+	int IncrementAttempts();
+	int ResetAttempts();
+
+private:
+	IPaddress address = {0,0};
+
+	Clock::time_point lastBeat = Clock::now();
+	int attemptedBeats = 0;
+};
 
 #endif
