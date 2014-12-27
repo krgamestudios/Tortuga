@@ -154,11 +154,7 @@ void InWorld::Update() {
 
 	//update all entities
 	for (auto& it : characterMap) {
-		//skip this player's character
-		if (it.first == characterIndex) {
-			continue;
-		}
-		it.second.Update();
+//		it.second.Update();
 	}
 	for (auto& it : monsterMap) {
 		it.second.Update();

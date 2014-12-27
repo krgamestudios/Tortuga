@@ -21,15 +21,17 @@
 */
 #include "local_character.hpp"
 
-void LocalCharacter::ProcessCollisions(std::list<BoundingBox>& boxList) {
+bool LocalCharacter::ProcessCollisions(std::list<BoundingBox>& boxList) {
 	if (CheckCollisionSimple(boxList, origin + motion)) {
 		Vector2 velocity;
 		velocity.x = CorrectVelocityX(boxList, motion.x);
 		velocity.y = CorrectVelocityY(boxList, motion.y);
 		origin += velocity;
+		return true;
 	}
 	else {
 		origin += motion;
+		return false;
 	}
 }
 
@@ -47,10 +49,12 @@ double LocalCharacter::CorrectVelocityX(std::list<BoundingBox>& boxList, double 
 	for (auto& it : boxList) {
 		if (it.CheckOverlap(bounds + origin + Vector2(velocityX, 0) )) {
 			if (velocityX > 0) {
-				ret = std::min(ret, it.x - origin.x - (bounds.w - bounds.x - 1));
+				ret = std::min(ret, it.x - (origin.x + bounds.x + bounds.w -1));
+				ret = std::min(ret, 0.0);
 			}
 			else if (velocityX < 0) {
-				ret = std::max(ret, (it.x + it.w) - origin.x);
+				ret = std::max(ret, (it.x + it.w) - (origin.x + bounds.x));
+				ret = std::max(ret, 0.0);
 			}
 		}
 	}
@@ -58,5 +62,18 @@ double LocalCharacter::CorrectVelocityX(std::list<BoundingBox>& boxList, double 
 }
 
 double LocalCharacter::CorrectVelocityY(std::list<BoundingBox>& boxList, double velocityY) {
-	return velocityY;
+	double ret = velocityY;
+	for (auto& it : boxList) {
+		if (it.CheckOverlap(bounds + origin + Vector2(0, velocityY) )) {
+			if (velocityY > 0) {
+				ret = std::min(ret, it.y - (origin.y + bounds.y + bounds.h -1));
+				ret = std::min(ret, 0.0);
+			}
+			else if (velocityY < 0) {
+				ret = std::max(ret, (it.y + it.h) - (origin.y + bounds.y));
+				ret = std::max(ret, 0.0);
+			}
+		}
+	}
+	return ret;
 }

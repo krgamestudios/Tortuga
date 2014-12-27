@@ -33,7 +33,7 @@ public:
 	LocalCharacter() = default;
 	virtual ~LocalCharacter() = default;
 
-	void ProcessCollisions(std::list<BoundingBox>& boxList);
+	bool ProcessCollisions(std::list<BoundingBox>& boxList);
 
 protected:
 	bool CheckCollisionSimple(std::list<BoundingBox>& boxList, Vector2 newPos);

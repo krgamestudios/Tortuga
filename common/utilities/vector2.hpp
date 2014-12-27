@@ -92,6 +92,10 @@ public:
 		return ret;
 	}
 
+	//unary operators
+	Vector2 operator-() { return {-x, -y}; }
+
+	//comparison operators
 	bool operator==(Vector2 v) { return (x == v.x && y == v.y); }
 	bool operator!=(Vector2 v) { return (x != v.x || y != v.y); }
 
