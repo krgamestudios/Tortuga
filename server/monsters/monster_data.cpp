@@ -1,4 +1,4 @@
-/* Copyright: (c) Kayne Ruse 2014
+/* Copyright: (c) Kayne Ruse 2013-2015
  * 
  * This software is provided 'as-is', without any express or implied
  * warranty. In no event will the authors be held liable for any damages
@@ -19,38 +19,20 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef RENDERABLE_HPP_
-#define RENDERABLE_HPP_
+#include "monster_data.hpp"
 
-#include "bounding_box.hpp"
-#include "sprite_sheet.hpp"
-#include "vector2.hpp"
+std::string MonsterData::SetAvatar(std::string s) {
+	return avatar = s;
+}
 
-class Renderable {
-public:
-	Renderable() = default;
-	virtual ~Renderable() = default;
+int MonsterData::SetScriptReference(int i) {
+	return scriptRef = i;
+}
 
-	virtual void Update();
-	virtual void DrawTo(SDL_Surface* const, int camX, int camY);
+std::string MonsterData::GetAvatar() {
+	return avatar;
+}
 
-	SpriteSheet* GetSprite() { return &sprite; }
-
-	//position
-	Vector2 SetOrigin(Vector2 v) { return origin = v; }
-	Vector2 GetOrigin() const { return origin; }
-	Vector2 SetMotion(Vector2 v) { return motion = v; }
-	Vector2 GetMotion() const { return motion; }
-
-	//collision
-	BoundingBox SetBounds(BoundingBox b) { return bounds = b; }
-	BoundingBox GetBounds() { return bounds; }
-
-protected: //TODO: should be private
-	SpriteSheet sprite;
-	Vector2 origin = {0, 0};
-	Vector2 motion = {0, 0};
-	BoundingBox bounds;
-};
-
-#endif
+int MonsterData::GetScriptReference() {
+	return scriptRef;
+}

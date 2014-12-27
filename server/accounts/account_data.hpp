@@ -1,4 +1,4 @@
-/* Copyright: (c) Kayne Ruse 2014
+/* Copyright: (c) Kayne Ruse 2013-2015
  * 
  * This software is provided 'as-is', without any express or implied
  * warranty. In no event will the authors be held liable for any damages
@@ -30,17 +30,17 @@ public:
 	~AccountData() = default;
 
 	//accessors and mutators
-	int SetClientIndex(int i) { return clientIndex = i; }
-	int GetClientIndex() { return clientIndex; }
+	int SetClientIndex(int i);
+	int GetClientIndex();
 
-	std::string SetUsername(std::string s) { return username = s; }
-	std::string GetUsername() { return username; }
+	std::string SetUsername(std::string s);
+	std::string GetUsername();
 
 	//database stuff
-	bool GetBlackListed() { return blackListed; }
-	bool GetWhiteListed() { return whiteListed; }
-	bool GetModerator() { return mod; }
-	bool GetAdministrator() { return admin; }
+	bool GetBlackListed();
+	bool GetWhiteListed();
+	bool GetModerator();
+	bool GetAdministrator();
 
 private:
 	friend class AccountManager;
@@ -49,6 +49,7 @@ private:
 	std::string username;
 	//TODO: password
 
+	//bit fields?
 	bool blackListed = false;
 	bool whiteListed = true;
 	bool mod = false;

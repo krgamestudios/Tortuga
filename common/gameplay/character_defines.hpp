@@ -1,4 +1,4 @@
-/* Copyright: (c) Kayne Ruse 2014
+/* Copyright: (c) Kayne Ruse 2013-2015
  * 
  * This software is provided 'as-is', without any express or implied
  * warranty. In no event will the authors be held liable for any damages
@@ -34,5 +34,9 @@ constexpr int CHARACTER_BOUNDS_X = 0;
 constexpr int CHARACTER_BOUNDS_Y = 16;
 constexpr int CHARACTER_BOUNDS_WIDTH = 32;
 constexpr int CHARACTER_BOUNDS_HEIGHT = 32;
+
+//the character's sprite format
+constexpr int CHARACTER_CELLS_X = 4;
+constexpr int CHARACTER_CELLS_Y = 4;
 
 #endif

@@ -1,4 +1,4 @@
-/* Copyright: (c) Kayne Ruse 2014
+/* Copyright: (c) Kayne Ruse 2013-2015
  * 
  * This software is provided 'as-is', without any express or implied
  * warranty. In no event will the authors be held liable for any damages
@@ -24,44 +24,27 @@
 
 //components
 #include "character_defines.hpp"
-#include "vector2.hpp"
-#include "statistics.hpp"
+#include "entity.hpp"
 
 //std namespace
 #include <string>
 #include <cmath>
 
-class CharacterData {
+class CharacterData: public Entity {
 public:
 	CharacterData() = default;
 	~CharacterData() = default;
 
-	//location and movement
-	int SetRoomIndex(int i) { return roomIndex = i; }
-	Vector2 SetOrigin(Vector2 v) { return origin = v; }
-	Vector2 SetMotion(Vector2 v) { return motion = v; }
-
-	int GetRoomIndex() { return roomIndex; }
-	Vector2 GetOrigin() { return origin; }
-	Vector2 GetMotion() { return motion; }
-
 	//accessors and mutators
-	Statistics* GetBaseStats() { return &baseStats; }
+	//...
 
 	//database stuff
-	int GetOwner() { return owner; }
-	std::string GetHandle() { return handle; }
-	std::string GetAvatar() { return avatar; }
+	int GetOwner();
+	std::string GetHandle();
+	std::string GetAvatar();
 
 private:
 	friend class CharacterManager;
-
-	//world position
-	int roomIndex = 0;
-	Vector2 origin = {0.0,0.0};
-	Vector2 motion = {0.0,0.0};
-
-	Statistics baseStats;
 
 	int owner;
 	std::string handle;

@@ -1,4 +1,4 @@
-/* Copyright: (c) Kayne Ruse 2014
+/* Copyright: (c) Kayne Ruse 2013-2015
  * 
  * This software is provided 'as-is', without any express or implied
  * warranty. In no event will the authors be held liable for any damages
@@ -29,23 +29,14 @@
 //public access methods
 //-------------------------
 
-int RoomManager::Create() {
+int RoomManager::Create(std::string roomName) {
 	//create the room
 	RoomData* newRoom = &elementMap[counter]; //implicitly constructs the element
+	newRoom->SetRoomName(roomName);
 	newRoom->pager.SetLuaState(lua);
 
 	//finish the routine
 	return counter++;
-}
-
-int RoomManager::Load() {
-	//TODO: RoomManager::Load()
-	return -1;
-}
-
-int RoomManager::Save(int uid) {
-	//TODO: RoomManager::Save(uid)
-	return -1;
 }
 
 void RoomManager::Unload(int uid) {
@@ -57,12 +48,6 @@ void RoomManager::Unload(int uid) {
 
 	//free the memory
 	elementMap.erase(uid);
-}
-
-void RoomManager::Delete(int uid) {
-	//TODO: RoomManager::Delete(int uid)
-	//NOTE: aliased to RoomManager::Unload(int uid)
-	Unload(uid);
 }
 
 void RoomManager::UnloadAll() {

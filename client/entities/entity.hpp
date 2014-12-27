@@ -1,4 +1,4 @@
-/* Copyright: (c) Kayne Ruse 2014
+/* Copyright: (c) Kayne Ruse 2013-2015
  * 
  * This software is provided 'as-is', without any express or implied
  * warranty. In no event will the authors be held liable for any damages
@@ -19,24 +19,38 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef STATISTICS_HPP_
-#define STATISTICS_HPP_
+#ifndef ENTITY_HPP_
+#define ENTITY_HPP_
 
-struct Statistics {
-	int level = 0;
-	int exp = 0;
-	int maxHP = 0;
-	int health = 0;
-	int maxMP = 0;
-	int mana = 0;
-	int attack = 0;
-	int defence = 0;
-	int intelligence = 0;
-	int resistance = 0;
-	int speed = 0;
-	float accuracy = 0.0;
-	float evasion = 0.0;
-	float luck = 0.0;
+#include "bounding_box.hpp"
+#include "sprite_sheet.hpp"
+#include "vector2.hpp"
+
+//The base class for all objects in the world
+class Entity {
+public:
+	virtual void Update();
+	virtual void DrawTo(SDL_Surface* const, int camX, int camY);
+
+	SpriteSheet* GetSprite();
+
+	//accessors & mutators
+	Vector2 SetOrigin(Vector2 v);
+	Vector2 SetMotion(Vector2 v);
+	BoundingBox SetBounds(BoundingBox b);
+
+	Vector2 GetOrigin();
+	Vector2 GetMotion();
+	BoundingBox GetBounds();
+
+protected:
+	Entity() = default;
+	virtual ~Entity() = default;
+
+	SpriteSheet sprite;
+	Vector2 origin;
+	Vector2 motion;
+	BoundingBox bounds;
 };
 
 #endif

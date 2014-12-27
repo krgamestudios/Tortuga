@@ -1,4 +1,4 @@
-/* Copyright: (c) Kayne Ruse 2014
+/* Copyright: (c) Kayne Ruse 2013-2015
  * 
  * This software is provided 'as-is', without any express or implied
  * warranty. In no event will the authors be held liable for any damages
@@ -110,6 +110,8 @@ int CharacterManager::Load(int owner, std::string handle, std::string avatar) {
 		//check the owner
 		if (owner != sqlite3_column_int(statement, 1)) {
 			sqlite3_finalize(statement);
+			//unload the already loaded character
+			Unload(uid);
 			return -2;
 		}
 

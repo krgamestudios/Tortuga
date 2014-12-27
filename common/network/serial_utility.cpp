@@ -1,4 +1,4 @@
-/* Copyright: (c) Kayne Ruse 2014
+/* Copyright: (c) Kayne Ruse 2013-2015
  * 
  * This software is provided 'as-is', without any express or implied
  * warranty. In no event will the authors be held liable for any damages
@@ -54,26 +54,38 @@ void serializePacket(void* buffer, SerialPacketBase* packet) {
 		break;
 		case SerialPacketType::JOIN_REQUEST:
 		case SerialPacketType::JOIN_RESPONSE:
-		case SerialPacketType::SYNCHRONIZE:
-		case SerialPacketType::DISCONNECT:
-		case SerialPacketType::SHUTDOWN:
+		case SerialPacketType::DISCONNECT_REQUEST:
+		case SerialPacketType::DISCONNECT_RESPONSE:
+		case SerialPacketType::DISCONNECT_FORCED:
+		case SerialPacketType::LOGIN_REQUEST:
+		case SerialPacketType::LOGIN_RESPONSE:
+		case SerialPacketType::LOGOUT_REQUEST:
+		case SerialPacketType::LOGOUT_RESPONSE:
+		case SerialPacketType::SHUTDOWN_REQUEST:
 			serializeClient(buffer, static_cast<ClientPacket*>(packet));
 		break;
 		case SerialPacketType::REGION_REQUEST:
 		case SerialPacketType::REGION_CONTENT:
 			serializeRegion(buffer, static_cast<RegionPacket*>(packet));
 		break;
-		case SerialPacketType::CHARACTER_NEW:
+		case SerialPacketType::CHARACTER_CREATE:
 		case SerialPacketType::CHARACTER_DELETE:
-		case SerialPacketType::CHARACTER_UPDATE:
-		case SerialPacketType::CHARACTER_STATS_REQUEST:
-		case SerialPacketType::CHARACTER_STATS_RESPONSE:
+		case SerialPacketType::CHARACTER_LOAD:
+		case SerialPacketType::CHARACTER_UNLOAD:
+		case SerialPacketType::QUERY_CHARACTER_EXISTS:
+		case SerialPacketType::QUERY_CHARACTER_STATS:
+		case SerialPacketType::QUERY_CHARACTER_LOCATION:
+		case SerialPacketType::CHARACTER_SET_ROOM:
+		case SerialPacketType::CHARACTER_SET_ORIGIN:
+		case SerialPacketType::CHARACTER_SET_MOTION:
 			serializeCharacter(buffer, static_cast<CharacterPacket*>(packet));
 		break;
 		case SerialPacketType::TEXT_BROADCAST:
 		case SerialPacketType::JOIN_REJECTION:
-		case SerialPacketType::SHUTDOWN_REJECTION:
+		case SerialPacketType::LOGIN_REJECTION:
+		case SerialPacketType::REGION_REJECTION:
 		case SerialPacketType::CHARACTER_REJECTION:
+		case SerialPacketType::SHUTDOWN_REJECTION:
 			serializeText(buffer, static_cast<TextPacket*>(packet));
 		break;
 	}
@@ -93,26 +105,38 @@ void deserializePacket(void* buffer, SerialPacketBase* packet) {
 		break;
 		case SerialPacketType::JOIN_REQUEST:
 		case SerialPacketType::JOIN_RESPONSE:
-		case SerialPacketType::SYNCHRONIZE:
-		case SerialPacketType::DISCONNECT:
-		case SerialPacketType::SHUTDOWN:
+		case SerialPacketType::DISCONNECT_REQUEST:
+		case SerialPacketType::DISCONNECT_RESPONSE:
+		case SerialPacketType::DISCONNECT_FORCED:
+		case SerialPacketType::LOGIN_REQUEST:
+		case SerialPacketType::LOGIN_RESPONSE:
+		case SerialPacketType::LOGOUT_REQUEST:
+		case SerialPacketType::LOGOUT_RESPONSE:
+		case SerialPacketType::SHUTDOWN_REQUEST:
 			deserializeClient(buffer, static_cast<ClientPacket*>(packet));
 		break;
 		case SerialPacketType::REGION_REQUEST:
 		case SerialPacketType::REGION_CONTENT:
 			deserializeRegion(buffer, static_cast<RegionPacket*>(packet));
 		break;
-		case SerialPacketType::CHARACTER_NEW:
+		case SerialPacketType::CHARACTER_CREATE:
 		case SerialPacketType::CHARACTER_DELETE:
-		case SerialPacketType::CHARACTER_UPDATE:
-		case SerialPacketType::CHARACTER_STATS_REQUEST:
-		case SerialPacketType::CHARACTER_STATS_RESPONSE:
+		case SerialPacketType::CHARACTER_LOAD:
+		case SerialPacketType::CHARACTER_UNLOAD:
+		case SerialPacketType::QUERY_CHARACTER_EXISTS:
+		case SerialPacketType::QUERY_CHARACTER_STATS:
+		case SerialPacketType::QUERY_CHARACTER_LOCATION:
+		case SerialPacketType::CHARACTER_SET_ROOM:
+		case SerialPacketType::CHARACTER_SET_ORIGIN:
+		case SerialPacketType::CHARACTER_SET_MOTION:
 			deserializeCharacter(buffer, static_cast<CharacterPacket*>(packet));
 		break;
 		case SerialPacketType::TEXT_BROADCAST:
 		case SerialPacketType::JOIN_REJECTION:
-		case SerialPacketType::SHUTDOWN_REJECTION:
+		case SerialPacketType::LOGIN_REJECTION:
+		case SerialPacketType::REGION_REJECTION:
 		case SerialPacketType::CHARACTER_REJECTION:
+		case SerialPacketType::SHUTDOWN_REJECTION:
 			deserializeText(buffer, static_cast<TextPacket*>(packet));
 		break;
 	}

@@ -1,4 +1,4 @@
-/* Copyright: (c) Kayne Ruse 2014
+/* Copyright: (c) Kayne Ruse 2013-2015
  * 
  * This software is provided 'as-is', without any express or implied
  * warranty. In no event will the authors be held liable for any damages
@@ -19,14 +19,28 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#include "client_data.hpp"
+#include "room_data.hpp"
 
-int ClientData::IncrementAttempts() {
-	lastBeat = Clock::now();
-	return attemptedBeats++;
+std::string RoomData::SetRoomName(std::string s) {
+	return roomName = s;
 }
 
-int ClientData::ResetAttempts() {
-	lastBeat = Clock::now();
-	return attemptedBeats = 0;
+std::string RoomData::GetRoomName() {
+	return roomName;
+}
+
+std::string RoomData::SetTilesetName(std::string s) {
+	return tilesetName = s;
+}
+
+std::string RoomData::GetTilesetName() {
+	return tilesetName;
+}
+
+RegionPagerLua* RoomData::GetPager() {
+	return &pager;
+}
+
+std::list<Entity*>* RoomData::GetEntityList() {
+	return &entityList;
 }

@@ -1,39 +1,31 @@
-TODO: Get the rooms working, even if only via hotkeys
-TODO: SerialPacketType::CHARACTER_LOCATION, CHARACTER_MOVE, CHARACTER_TELEPORT, ROOM_CHANGE, etc.
+TODO: Account system needs salts & hashes for security
+TODO: Character system might need an API
+TODO: Door system needs an API
+TODO: monster system needs an API
+
+TODO: rewrite the main body of the server
+TODO: I need a better way to handle the statistics
 TODO: Fix shoddy movement
 TODO: Handle statistics server-side
 TODO: Periodic mass server saves
+TODO: join vs login
 
 TODO: Remove the big "Shut Down" button
 TODO: Make a way for the server owner to control the server directly
-TODO: Move the map system into it's own namespace?
 TODO: The TileSheet class should implement the surface itself
-TODO: make the whole thing more fault tolerant
-TODO: Authentication
-
+TODO: Passwords/Authentication
 TODO: Time delay for requesting region packets
 TODO: A proper logging system
-TODO: Update Codebase with the improvements from Tortuga
 
 -------------------------
-Serial Packet Types
+
+The entities might need an API, which interfaces with all entity types (characters, monsters, doors, etc.)
+The Entity base class handles position (including room) and motion, so something generic like this could be used (or aliased by other APIs)
+
+entity:
+	
 -------------------------
 
-//character management
-* CHARACTER_CREATE //make this character
-* CHARACTER_DELETE //unmake this character
-* CHARACTER_LOAD //load this character into the world
-* CHARACTER_UNLOAD //unload this character from the world
-
-//find out info from the server
-* CHARACTER_QUERY_EXISTS //also sends the owner's info
-* CHARACTER_QUERY_LOCATION
-* CHARACTER_get all the entities within a distance of this
-
-//set the info in the server
-* CHARACTER_SET_ORIGIN
-* CHARACTER_SET_MOTION
-
-//authentication, character index => character stats
-CHARACTER_STATS_REQUEST
-CHARACTER_STATS_RESPONSE
+Lobby:
+	JOIN_REQUEST -> JOIN_RESPONSE, JOIN_REJECTION
+	LOGIN_REQUEST -> LOGIN_RESPONSE, LOGIN_REJECTION

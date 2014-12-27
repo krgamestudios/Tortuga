@@ -1,4 +1,4 @@
-/* Copyright: (c) Kayne Ruse 2014
+/* Copyright: (c) Kayne Ruse 2013-2015
  * 
  * This software is provided 'as-is', without any express or implied
  * warranty. In no event will the authors be held liable for any damages
@@ -22,9 +22,16 @@
 #ifndef ROOMDATA_HPP_
 #define ROOMDATA_HPP_
 
-//map system
+#include "entity.hpp"
 #include "region_pager_lua.hpp"
 
+#if defined(__MINGW32__)
+ #include "lua/lua.hpp"
+#else
+ #include "lua.hpp"
+#endif
+
+#include <list>
 #include <string>
 
 class RoomData {
@@ -33,23 +40,24 @@ public:
 	~RoomData() = default;
 
 	//accessors and mutators
-	RegionPagerLua* GetPager() { return &pager; }
+	std::string SetRoomName(std::string s);
+	std::string GetRoomName();
 
-	std::string SetRoomName(std::string s) { return roomName = s; }
-	std::string GetRoomName() { return roomName; }
+	std::string SetTilesetName(std::string s);
+	std::string GetTilesetName();
 
-	std::string SetTilesetName(std::string s) { return tilesetName = s; }
-	std::string GetTilesetName() { return tilesetName; }
+	RegionPagerLua* GetPager();
+	std::list<Entity*>* GetEntityList();
 
 private:
 	friend class RoomManager;
 
 	//members
-	RegionPagerLua pager;
 	std::string roomName;
 	std::string tilesetName;
-	//TODO: pass the room name & tileset name to the clients
-	//TODO: lua references i.e. create, unload, etc.
+
+	RegionPagerLua pager;
+	std::list<Entity*> entityList;
 };
 
 #endif

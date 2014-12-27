@@ -1,4 +1,4 @@
-/* Copyright: (c) Kayne Ruse 2014
+/* Copyright: (c) Kayne Ruse 2013-2015
  * 
  * This software is provided 'as-is', without any express or implied
  * warranty. In no event will the authors be held liable for any damages
@@ -19,18 +19,36 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef BASEMONSTER_HPP_
-#define BASEMONSTER_HPP_
+#include "account_data.hpp"
 
-#include "renderable.hpp"
+int AccountData::SetClientIndex(int i) {
+	return clientIndex = i;
+}
 
-class BaseMonster {
-public:
-	BaseMonster() = default;
-	virtual ~BaseMonster() = default;
+int AccountData::GetClientIndex() {
+	return clientIndex;
+}
 
-private:
-	//
-};
+std::string AccountData::SetUsername(std::string s) {
+	return username = s;
+}
 
-#endif
+std::string AccountData::GetUsername() {
+	return username;
+}
+
+bool AccountData::GetBlackListed() {
+	return blackListed;
+}
+
+bool AccountData::GetWhiteListed() {
+	return whiteListed;
+}
+
+bool AccountData::GetModerator() {
+	return mod;
+}
+
+bool AccountData::GetAdministrator() {
+	return admin;
+}
