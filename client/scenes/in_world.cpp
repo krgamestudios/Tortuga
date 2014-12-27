@@ -134,26 +134,6 @@ void InWorld::Update() {
 	//free the buffer
 	delete reinterpret_cast<char*>(packetBuffer);
 
-	//update the map
-	UpdateMap();
-
-	//update all entities
-	for (auto& it : characterMap) {
-		it.second.Update();
-	}
-	for (auto& it : monsterMap) {
-		it.second.Update();
-	}
-
-	//process collisions
-	//
-
-	//update the camera
-	if (localCharacter) {
-		camera.x = localCharacter->GetOrigin().x - camera.marginX;
-		camera.y = localCharacter->GetOrigin().y - camera.marginY;
-	}
-
 	//check the connection (heartbeat)
 	if (Clock::now() - lastBeat > std::chrono::seconds(3)) {
 		if (attemptedBeats > 2) {
@@ -164,14 +144,65 @@ void InWorld::Update() {
 			SetNextScene(SceneList::DISCONNECTEDSCREEN);
 			ConfigUtility::GetSingleton()["client.disconnectMessage"] = "Error: Lost connection to the server";
 		}
+		else {
+			ServerPacket newPacket;
+			newPacket.type = SerialPacketType::PING;
+			network.SendTo(Channels::SERVER, &newPacket);
 
-		ServerPacket newPacket;
-		newPacket.type = SerialPacketType::PING;
-		network.SendTo(Channels::SERVER, &newPacket);
-
-		attemptedBeats++;
-		lastBeat = Clock::now();
+			attemptedBeats++;
+			lastBeat = Clock::now();
+		}
 	}
+
+	//update all entities
+	for (auto& it : characterMap) {
+		it.second.Update();
+	}
+	for (auto& it : monsterMap) {
+		it.second.Update();
+	}
+
+	//update the map
+	UpdateMap();
+
+	//skip the rest without a local character
+	if (!localCharacter) {
+		return;
+	}
+
+	//prepare for collisions
+	BoundingBox wallBounds = {0, 0, tileSheet.GetTileW(), tileSheet.GetTileH()};
+	std::list<BoundingBox> boxList;
+
+	//NOTE: for loops were too dense to work with, so I've just used while loops
+	//NOTE: this code is complex, and can be replaced with hard-coded relative positions, at the cost of variable-sized sprites/bounding boxes
+
+	//outer loop
+	wallBounds.x = snapToBase((double)wallBounds.w, localCharacter->GetOrigin().x) - wallBounds.w;
+	while(wallBounds.x < (localCharacter->GetOrigin() + localCharacter->GetBounds()).x + localCharacter->GetBounds().w) {
+		//inner loop
+		wallBounds.y = snapToBase((double)wallBounds.h, localCharacter->GetOrigin().y) - wallBounds.h;
+		while(wallBounds.y < (localCharacter->GetOrigin() + localCharacter->GetBounds()).y + localCharacter->GetBounds().h) {
+			//check to see if this tile is solid
+			if (regionPager.GetSolid(wallBounds.x / wallBounds.w, wallBounds.y / wallBounds.h)) {
+				//push onto the box set
+				boxList.push_front(wallBounds);
+			}
+
+			//increment
+			wallBounds.y += wallBounds.h;
+		}
+
+		//increment
+		wallBounds.x += wallBounds.w;
+	}
+
+	//process the collisions
+	std::cout << "boxList.size(): " << boxList.size() << std::endl;
+
+	//update the camera
+	camera.x = localCharacter->GetOrigin().x - camera.marginX;
+	camera.y = localCharacter->GetOrigin().y - camera.marginY;
 }
 
 void InWorld::FrameEnd() {
