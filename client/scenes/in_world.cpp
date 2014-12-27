@@ -157,7 +157,10 @@ void InWorld::Update() {
 	std::list<BoundingBox> boxList = GenerateCollisionGrid(localCharacter, tileSheet.GetTileW(), tileSheet.GetTileH());
 
 	//process the collisions
-	std::cout << "boxList.size(): " << boxList.size() << std::endl;
+	if (localCharacter->ProcessCollisionGrid(boxList)) {
+		localCharacter->CorrectSprite();
+		SendLocalCharacterMotion();
+	}
 
 	//update the camera
 	camera.x = localCharacter->GetOrigin().x - camera.marginX;
@@ -672,6 +675,11 @@ void InWorld::HandleCharacterSetRoom(CharacterPacket* const argPacket) {
 }
 
 void InWorld::HandleCharacterSetOrigin(CharacterPacket* const argPacket) {
+	//TODO: Authentication
+	if (argPacket->characterIndex == characterIndex) {
+		return;
+	}
+
 	//check that this character exists
 	std::map<int, BaseCharacter>::iterator characterIt = characterMap.find(argPacket->characterIndex);
 	if (characterIt != characterMap.end()) {
@@ -683,6 +691,11 @@ void InWorld::HandleCharacterSetOrigin(CharacterPacket* const argPacket) {
 }
 
 void InWorld::HandleCharacterSetMotion(CharacterPacket* const argPacket) {
+	//TODO: Authentication
+	if (argPacket->characterIndex == characterIndex) {
+		return;
+	}
+
 	//check that this character exists
 	std::map<int, BaseCharacter>::iterator characterIt = characterMap.find(argPacket->characterIndex);
 	if (characterIt != characterMap.end()) {
@@ -719,10 +732,10 @@ std::list<BoundingBox> InWorld::GenerateCollisionGrid(Entity* ptr, int tileWidth
 	//NOTE: for loops were too dense to work with, so I've just used while loops
 
 	//outer loop
-	wallBounds.x = snapToBase((double)wallBounds.w, ptr->GetOrigin().x) - wallBounds.w;
+	wallBounds.x = snapToBase((double)wallBounds.w, ptr->GetOrigin().x);
 	while(wallBounds.x < (ptr->GetOrigin() + ptr->GetBounds()).x + ptr->GetBounds().w) {
 		//inner loop
-		wallBounds.y = snapToBase((double)wallBounds.h, ptr->GetOrigin().y) - wallBounds.h;
+		wallBounds.y = snapToBase((double)wallBounds.h, ptr->GetOrigin().y);
 		while(wallBounds.y < (ptr->GetOrigin() + ptr->GetBounds()).y + ptr->GetBounds().h) {
 			//check to see if this tile is solid
 			if (regionPager.GetSolid(wallBounds.x / wallBounds.w, wallBounds.y / wallBounds.h)) {

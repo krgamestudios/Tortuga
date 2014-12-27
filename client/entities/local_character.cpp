@@ -21,3 +21,15 @@
 */
 #include "local_character.hpp"
 
+#include <iostream>
+
+bool LocalCharacter::ProcessCollisionGrid(std::list<BoundingBox> boxList) {
+	for(auto& box : boxList) {
+		if (box.CheckOverlap(origin + bounds)) {
+			origin -= motion;
+			motion = {0, 0};
+			return true;
+		}
+	}
+	return false;
+}

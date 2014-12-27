@@ -23,11 +23,17 @@
 #define LOCALCHARACTER_HPP_
 
 #include "base_character.hpp"
+#include "bounding_box.hpp"
+#include "vector2.hpp"
+
+#include <list>
 
 class LocalCharacter: public BaseCharacter {
 public:
 	LocalCharacter() = default;
 	virtual ~LocalCharacter() = default;
+
+	bool ProcessCollisionGrid(std::list<BoundingBox>);
 
 private:
 	//NOTE: NO MEMBERS
