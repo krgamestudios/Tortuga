@@ -23,7 +23,51 @@
 
 #include "entity.hpp"
 
+static int setRoomIndex(lua_State* L) {
+	Entity* entity = static_cast<Entity*>(lua_touserdata(L, 1));
+	entity->SetRoomIndex(lua_tointeger(L, 2));
+	return 0;
+}
+
+static int setOrigin(lua_State* L) {
+	Entity* entity = static_cast<Entity*>(lua_touserdata(L, 1));
+	entity->SetOrigin({lua_tonumber(L, 2), lua_tonumber(L, 3)});
+	return 0;
+}
+
+static int setMotion(lua_State* L) {
+	Entity* entity = static_cast<Entity*>(lua_touserdata(L, 1));
+	entity->SetMotion({lua_tonumber(L, 2), lua_tonumber(L, 3)});
+	return 0;
+}
+
+static int getRoomIndex(lua_State* L) {
+	Entity* entity = static_cast<Entity*>(lua_touserdata(L, 1));
+	lua_pushinteger(L, entity->GetRoomIndex());
+	return 1;
+}
+
+static int getOrigin(lua_State* L) {
+	Entity* entity = static_cast<Entity*>(lua_touserdata(L, 1));
+	lua_pushnumber(L, entity->GetOrigin().x);
+	lua_pushnumber(L, entity->GetOrigin().y);
+	return 2;
+}
+
+static int getMotion(lua_State* L) {
+	Entity* entity = static_cast<Entity*>(lua_touserdata(L, 1));
+	lua_pushnumber(L, entity->GetOrigin().x);
+	lua_pushnumber(L, entity->GetOrigin().y);
+	return 2;
+}
+
 static const luaL_Reg entityLib[] = {
+	{"SetRoomIndex", setRoomIndex},
+	{"SetOrigin", setOrigin},
+	{"SetMotion", setMotion},
+	{"GetRoomIndex", getRoomIndex},
+	{"GetOrigin", getOrigin},
+	{"GetMotion", getMotion},
 	{nullptr, nullptr}
 };
 

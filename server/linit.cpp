@@ -42,6 +42,7 @@
 
 #include "map_system_api.hpp"
 #include "room_system_api.hpp"
+#include "waypoint_system_api.hpp"
 
 //these libs are loaded by lua.c and are readily available to any Lua program
 static const luaL_Reg loadedlibs[] = {
@@ -64,6 +65,7 @@ static const luaL_Reg loadedlibs[] = {
 static const luaL_Reg preloadedlibs[] = {
 	{TORTUGA_MAP_SYSTEM_API, openMapSystemAPI},
 	{TORTUGA_ROOM_SYSTEM_API, openRoomSystemAPI},
+	{TORTUGA_WAYPOINT_SYSTEM_API, openWaypointSystemAPI},
 	{NULL, NULL}
 };
 
