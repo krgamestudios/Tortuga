@@ -1,31 +1,20 @@
-TODO: Account system needs salts & hashes for security
-TODO: Character system might need an API
-TODO: Door system needs an API
-TODO: monster system needs an API
+TODO: In need of script APIs (list)
+	* Characters
+	* Monsters
+	* Doors
+	* Waypoints
 
-TODO: rewrite the main body of the server
-TODO: I need a better way to handle the statistics
+TODO: Account passwords (list)
+	* backbone account server OR
+	* social network login OR
+	* ...
+	* salts & hashes
+
+TODO: Waypoints, with positions and trigger zones (collision areas) for doors, monster spawns, etc.
 TODO: Fix shoddy movement
-TODO: Handle statistics server-side
 TODO: Periodic mass server saves
-TODO: join vs login
-
 TODO: Remove the big "Shut Down" button
 TODO: Make a way for the server owner to control the server directly
 TODO: The TileSheet class should implement the surface itself
-TODO: Passwords/Authentication
 TODO: Time delay for requesting region packets
 TODO: A proper logging system
-
--------------------------
-
-The entities might need an API, which interfaces with all entity types (characters, monsters, doors, etc.)
-The Entity base class handles position (including room) and motion, so something generic like this could be used (or aliased by other APIs)
-
-entity:
-	
--------------------------
-
-Lobby:
-	JOIN_REQUEST -> JOIN_RESPONSE, JOIN_REJECTION
-	LOGIN_REQUEST -> LOGIN_RESPONSE, LOGIN_REJECTION

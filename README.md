@@ -26,7 +26,7 @@ The most recent stable build for Windows can be found [here](https://dl.dropboxu
 
 The current version of Tortuga is released under the [zlib license](http://en.wikipedia.org/wiki/Zlib_License).  
 
-Copyright (c) 2013, 2014 Kayne Ruse
+Copyright (c) 2013-2015 Kayne Ruse
 
 This software is provided 'as-is', without any express or implied warranty. In no event will the authors be held liable for any damages arising from the use of this software.
 
