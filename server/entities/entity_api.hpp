@@ -19,20 +19,16 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#include "door_data.hpp"
+#ifndef ENTITYAPI_HPP_
+#define ENTITYAPI_HPP_
 
-std::string DoorData::SetRoomName(std::string s) {
-	return roomName = s;
-}
+#if defined(__MINGW32__)
+ #include "lua/lua.hpp"
+#else
+ #include "lua.hpp"
+#endif
 
-Vector2 DoorData::SetDestPosition(Vector2 v) {
-	return destPosition = v;
-}
+#define TORTUGA_ENTITY_API "entity"
+LUAMOD_API int openEntityAPI(lua_State* L);
 
-std::string DoorData::GetRoomName() {
-	return roomName;
-}
-
-Vector2 DoorData::GetDestPosition() {
-	return destPosition;
-}
+#endif

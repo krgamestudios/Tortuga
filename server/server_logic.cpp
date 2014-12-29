@@ -201,9 +201,9 @@ void ServerApplication::Quit() {
 	accountMgr.UnloadAll();
 	characterMgr.UnloadAll();
 	clientMgr.UnloadAll();
-	doorMgr.UnloadAll();
 	monsterMgr.UnloadAll();
 	roomMgr.UnloadAll();
+	waypointMgr.UnloadAll();
 
 	//APIs
 	lua_close(luaState);

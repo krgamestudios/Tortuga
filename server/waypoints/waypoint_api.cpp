@@ -19,43 +19,15 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef DOORMANAGER_HPP_
-#define DOORMANAGER_HPP_
+#include "waypoint_api.hpp"
 
-#include "door_data.hpp"
-#include "manager_interface.hpp"
-#include "singleton.hpp"
-#include "vector2.hpp"
+#include "waypoint_data.hpp"
 
-#include <functional>
-#include <string>
-
-class DoorManager:
-	public Singleton<DoorManager>,
-	public ManagerInterface<DoorData, std::string, Vector2>
-{
-public:
-	//common public methods
-	int Create(std::string, Vector2) override;
-	int Load(std::string, Vector2) override;
-	int Save(int uid) override;
-	void Unload(int uid) override;
-	void Delete(int uid) override;
-
-	void UnloadAll() override;
-	void UnloadIf(std::function<bool(std::pair<const int, DoorData>)> fn) override;
-
-	//accessors & mutators
-	DoorData* Get(int uid) override;
-	int GetLoadedCount() override;
-	int GetTotalCount() override;
-	std::map<int, DoorData>* GetContainer() override;
-
-private:
-	friend Singleton<DoorManager>;
-
-	DoorManager() = default;
-	~DoorManager() = default;
+static const luaL_Reg waypointLib[] = {
+	{nullptr, nullptr}
 };
 
-#endif
+LUAMOD_API int openWaypointAPI(lua_State* L) {
+	luaL_newlib(L, waypointLib);
+	return 1;
+}

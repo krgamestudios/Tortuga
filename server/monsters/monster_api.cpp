@@ -19,31 +19,15 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef DOORDATA_HPP_
-#define DOORDATA_HPP_
+#include "monster_api.hpp"
 
-#include "entity.hpp"
-#include "vector2.hpp"
+#include "monster_data.hpp"
 
-#include <string>
-
-class DoorData: public Entity {
-public:
-	DoorData() = default;
-	~DoorData() = default;
-
-	//accessors & mutators
-	std::string SetRoomName(std::string);
-	Vector2 SetDestPosition(Vector2);
-
-	std::string GetRoomName();
-	Vector2 GetDestPosition();
-
-private:
-	friend class DoorManager;
-
-	std::string roomName;
-	Vector2 destPosition;
+static const luaL_Reg monsterLib[] = {
+	{nullptr, nullptr}
 };
 
-#endif
+LUAMOD_API int openMonsterAPI(lua_State* L) {
+	luaL_newlib(L, monsterLib);
+	return 1;
+}
