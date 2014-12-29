@@ -19,31 +19,48 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef DOORDATA_HPP_
-#define DOORDATA_HPP_
+#include "waypoint_manager.hpp"
 
-#include "entity.hpp"
-#include "vector2.hpp"
+int WaypointManager::Create() {
+	//TODO
+}
 
-#include <string>
+int WaypointManager::Load() {
+	//TODO
+}
 
-class DoorData: public Entity {
-public:
-	DoorData() = default;
-	~DoorData() = default;
+int WaypointManager::Save(int uid) {
+	//TODO
+}
 
-	//accessors & mutators
-	std::string SetRoomName(std::string);
-	Vector2 SetDestPosition(Vector2);
+void WaypointManager::Unload(int uid) {
+	//TODO
+}
 
-	std::string GetRoomName();
-	Vector2 GetDestPosition();
+void WaypointManager::Delete(int uid) {
+	//TODO
+}
 
-private:
-	friend class DoorManager;
+void WaypointManager::UnloadAll() {
+	//TODO
+}
 
-	std::string roomName;
-	Vector2 destPosition;
-};
+void WaypointManager::UnloadIf(std::function<bool(std::pair<const int, WaypointData>)> fn) {
+	//TODO
+}
 
-#endif
+WaypointData* WaypointManager::Get(int uid) {
+	//TODO
+}
+
+int WaypointManager::GetLoadedCount() {
+	//TODO
+}
+
+int WaypointManager::GetTotalCount() {
+	//TODO
+}
+
+std::map<int, WaypointData>* WaypointManager::GetContainer() {
+	//TODO
+}

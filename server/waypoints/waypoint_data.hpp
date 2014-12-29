@@ -19,20 +19,18 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#include "door_data.hpp"
+#ifndef WAYPOINTDATA_HPP_
+#define WAYPOINTDATA_HPP_
 
-std::string DoorData::SetRoomName(std::string s) {
-	return roomName = s;
-}
+#include <string>
 
-Vector2 DoorData::SetDestPosition(Vector2 v) {
-	return destPosition = v;
-}
+class WaypointData {
+public:
+	WaypointData() = default;
+	~WaypointData() = default;
 
-std::string DoorData::GetRoomName() {
-	return roomName;
-}
+private:
+	friend class WaypointManager;
+};
 
-Vector2 DoorData::GetDestPosition() {
-	return destPosition;
-}
+#endif

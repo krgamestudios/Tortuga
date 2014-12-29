@@ -19,48 +19,43 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#include "door_manager.hpp"
+#ifndef WAYPOINTMANAGER_HPP_
+#define WAYPOINTMANAGER_HPP_
 
-int DoorManager::Create(std::string, Vector2) {
-	//TODO
-}
+#include "waypoint_data.hpp"
+#include "manager_interface.hpp"
+#include "singleton.hpp"
+#include "vector2.hpp"
 
-int DoorManager::Load(std::string, Vector2) {
-	//TODO
-}
+#include <functional>
+#include <string>
 
-int DoorManager::Save(int uid) {
-	//TODO
-}
+class WaypointManager:
+	public Singleton<WaypointManager>,
+	public ManagerInterface<WaypointData>
+{
+public:
+	//common public methods
+	int Create() override;
+	int Load() override;
+	int Save(int uid) override;
+	void Unload(int uid) override;
+	void Delete(int uid) override;
 
-void DoorManager::Unload(int uid) {
-	//TODO
-}
+	void UnloadAll() override;
+	void UnloadIf(std::function<bool(std::pair<const int, WaypointData>)> fn) override;
 
-void DoorManager::Delete(int uid) {
-	//TODO
-}
+	//accessors & mutators
+	WaypointData* Get(int uid) override;
+	int GetLoadedCount() override;
+	int GetTotalCount() override;
+	std::map<int, WaypointData>* GetContainer() override;
 
-void DoorManager::UnloadAll() {
-	//TODO
-}
+private:
+	friend Singleton<WaypointManager>;
 
-void DoorManager::UnloadIf(std::function<bool(std::pair<const int, DoorData>)> fn) {
-	//TODO
-}
+	WaypointManager() = default;
+	~WaypointManager() = default;
+};
 
-DoorData* DoorManager::Get(int uid) {
-	//TODO
-}
-
-int DoorManager::GetLoadedCount() {
-	//TODO
-}
-
-int DoorManager::GetTotalCount() {
-	//TODO
-}
-
-std::map<int, DoorData>* DoorManager::GetContainer() {
-	//TODO
-}
+#endif
