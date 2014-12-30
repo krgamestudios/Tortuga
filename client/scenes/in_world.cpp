@@ -501,7 +501,9 @@ void InWorld::SendRegionRequest(int roomIndex, int x, int y) {
 
 void InWorld::HandleRegionContent(RegionPacket* const argPacket) {
 	//replace existing regions
-	regionPager.UnloadRegion(argPacket->x, argPacket->y);
+	regionPager.UnloadIf([&](Region const& region) -> bool {
+		return region.GetX() == argPacket->x && region.GetY() == argPacket->y;
+	});
 	regionPager.PushRegion(argPacket->region);
 
 	//clean up after the serial code

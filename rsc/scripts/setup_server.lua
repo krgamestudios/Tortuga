@@ -23,3 +23,45 @@ mapSystem.RegionPager.SetOnCreate(roomSystem.Room.GetPager(overworld), mapMaker.
 mapSystem.RegionPager.SetOnUnload(roomSystem.Room.GetPager(overworld), mapSaver.Save)
 
 print("Finished the lua script")
+
+--[[
+debugging test
+
+Ideal output:
+
+-------------------------
+pager:	userdata:	[memory location]
+Size 0:	0
+[debug output from load]
+Size 1: 1
+[debug output from save]
+Size 2: 0
+[debug output from load]
+Size 3: 1
+[debug output from save]
+Size 4: 0
+-------------------------
+
+--]-]
+
+print("-------------------------")
+local pager = roomSystem.Room.GetPager(overworld)
+
+print("pager:", pager)
+
+print("Size 0:", mapSystem.RegionPager.ContainerSize(pager))
+
+local regionFoo = mapSystem.RegionPager.GetRegion(pager, 0, 0)
+print("Size 1:", mapSystem.RegionPager.ContainerSize(pager))
+
+mapSystem.RegionPager.UnloadRegion(pager, regionFoo)
+print("Size 2:", mapSystem.RegionPager.ContainerSize(pager))
+
+local regionFoo = mapSystem.RegionPager.GetRegion(pager, 0, 0)
+print("Size 3:", mapSystem.RegionPager.ContainerSize(pager))
+
+mapSystem.RegionPager.UnloadRegion(pager, 0, 0)
+print("Size 4:", mapSystem.RegionPager.ContainerSize(pager))
+
+print("-------------------------")
+--]]

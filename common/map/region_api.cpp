@@ -85,6 +85,8 @@ static const luaL_Reg regionLib[] = {
 	{"GetSolid",getSolid},
 	{"GetX",getX},
 	{"GetY",getY},
+
+	//the global macros
 	{"GetWidth",getWidth},
 	{"GetHeight",getHeight},
 	{"GetDepth",getDepth},

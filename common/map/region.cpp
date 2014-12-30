@@ -21,9 +21,9 @@
 */
 #include "region.hpp"
 
-#include <stdexcept>
 #include <cmath>
 #include <cstring>
+#include <stdexcept>
 
 int snapToBase(int base, int x) {
 	return floor((double)x / base) * base;
@@ -55,4 +55,16 @@ bool Region::SetSolid(int x, int y, bool b) {
 
 bool Region::GetSolid(int x, int y) {
 	return solid[x * REGION_WIDTH + y];
+}
+
+int Region::GetX() const {
+	return x;
+}
+
+int Region::GetY() const {
+	return y;
+}
+
+std::bitset<REGION_WIDTH*REGION_HEIGHT>* Region::GetSolidBitset() {
+	return &solid;
 }

@@ -84,7 +84,22 @@ static int createRegion(lua_State* L) {
 
 static int unloadRegion(lua_State* L) {
 	RegionPagerLua* pager = reinterpret_cast<RegionPagerLua*>(lua_touserdata(L, 1));
-	pager->UnloadRegion(lua_tointeger(L, 2), lua_tointeger(L, 3));
+
+	//two argument types: coords & the region itself
+	switch(lua_type(L, 2)) {
+		case LUA_TNUMBER:
+			pager->UnloadIf([&](Region const& region) -> bool {
+				int x = lua_tointeger(L, 2);
+				int y = lua_tointeger(L, 3);
+				return region.GetX() == x && region.GetY() == y;
+			});
+		break;
+		case LUA_TLIGHTUSERDATA:
+			pager->UnloadIf([&](Region const& region) -> bool {
+				return (&region) == lua_touserdata(L, 2);
+			});
+		break;
+	}
 	return 0;
 }
 
@@ -116,6 +131,13 @@ static int setOnUnload(lua_State* L) {
 	return 0;
 }
 
+//debugging
+static int containerSize(lua_State* L) {
+	RegionPagerLua* pager = static_cast<RegionPagerLua*>(lua_touserdata(L, 1));
+	lua_pushinteger(L, pager->GetContainer()->size());
+	return 1;
+}
+
 static const luaL_Reg regionPagerLib[] = {
 	//curry
 	{"SetTile", setTile},
@@ -135,6 +157,9 @@ static const luaL_Reg regionPagerLib[] = {
 	{"SetOnSave",setOnSave},
 	{"SetOnCreate",setOnCreate},
 	{"SetOnUnload",setOnUnload},
+
+	//debugging
+	{"ContainerSize", containerSize},
 
 	//sentinel
 	{nullptr, nullptr}

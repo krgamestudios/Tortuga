@@ -24,12 +24,13 @@
 
 #include "region.hpp"
 
+#include <functional>
 #include <list>
 
 class RegionPagerBase {
 public:
 	RegionPagerBase() = default;
-	virtual ~RegionPagerBase() { UnloadAll(); };
+	virtual ~RegionPagerBase();
 
 	//tile manipulation
 	virtual Region::type_t SetTile(int x, int y, int z, Region::type_t v);
@@ -47,12 +48,12 @@ public:
 	virtual Region* LoadRegion(int x, int y);
 	virtual Region* SaveRegion(int x, int y);
 	virtual Region* CreateRegion(int x, int y);
-	virtual void UnloadRegion(int x, int y);
 
+	virtual void UnloadIf(std::function<bool(Region const&)> fn);
 	virtual void UnloadAll();
 
 	//accessors & mutators
-	std::list<Region>* GetContainer() { return &regionList; }
+	std::list<Region>* GetContainer();
 protected:
 	std::list<Region> regionList;
 };
