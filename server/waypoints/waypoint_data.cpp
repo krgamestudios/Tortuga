@@ -21,3 +21,10 @@
 */
 #include "waypoint_data.hpp"
 
+int WaypointData::SetTriggerReference(int i) {
+	return triggerRef = i;
+}
+
+int WaypointData::GetTriggerReference() {
+	return triggerRef;
+}

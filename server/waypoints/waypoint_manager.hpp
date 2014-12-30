@@ -26,10 +26,17 @@
 #include "singleton.hpp"
 #include "vector2.hpp"
 
+#if defined(__MINGW32__)
+ #include "lua/lua.hpp"
+#else
+ #include "lua.hpp"
+#endif
+
 #include <functional>
 #include <map>
 #include <string>
 
+//TODO: should waypoints be managed on a per-room basis?
 class WaypointManager: public Singleton<WaypointManager> {
 public:
 	//common public methods
@@ -48,6 +55,10 @@ public:
 	int GetTotalCount();
 	std::map<int, WaypointData>* GetContainer();
 
+	//hooks
+	lua_State* SetLuaState(lua_State* L) { return lua = L; }
+	lua_State* GetLuaState() { return lua; }
+
 private:
 	friend Singleton<WaypointManager>;
 
@@ -56,6 +67,8 @@ private:
 
 	//members
 	std::map<int, WaypointData> elementMap;
+	lua_State* lua = nullptr;
+	int counter = 0;
 };
 
 #endif

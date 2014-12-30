@@ -219,7 +219,6 @@ void AccountManager::UnloadIf(std::function<bool(std::pair<const int, AccountDat
 //-------------------------
 
 AccountData* AccountManager::Get(int uid) {
-	//TODO: could this load an account first?
 	std::map<int, AccountData>::iterator it = elementMap.find(uid);
 
 	if (it == elementMap.end()) {

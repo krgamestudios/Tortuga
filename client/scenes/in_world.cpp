@@ -540,9 +540,9 @@ void InWorld::UpdateMap() {
 //entity management
 //-------------------------
 
-//NOTE: preexisting characters will result in query responses
-//NOTE: new characters will result in create messages
-//NOTE: this client's character will exist in both (skipped)
+//DOCS: preexisting characters will result in query responses
+//DOCS: new characters will result in create messages
+//DOCS: this client's character will exist in both (skipped)
 
 void InWorld::HandleCharacterCreate(CharacterPacket* const argPacket) {
 	//prevent double message
