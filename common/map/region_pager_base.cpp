@@ -24,6 +24,10 @@
 #include <stdexcept>
 #include <algorithm>
 
+RegionPagerBase::~RegionPagerBase() {
+	UnloadAll();
+};
+
 Region::type_t RegionPagerBase::SetTile(int x, int y, int z, Region::type_t v) {
 	Region* ptr = GetRegion(x, y);
 	return ptr->SetTile(x - ptr->GetX(), y - ptr->GetY(), z, v);
@@ -88,12 +92,14 @@ Region* RegionPagerBase::CreateRegion(int x, int y) {
 	return &regionList.front();
 }
 
-void RegionPagerBase::UnloadRegion(int x, int y) {
-	regionList.remove_if([x, y](Region& region) -> bool {
-		return region.GetX() == x && region.GetY() == y;
-	});
+void RegionPagerBase::UnloadIf(std::function<bool(Region const&)> fn) {
+	regionList.remove_if(fn);
 }
 
 void RegionPagerBase::UnloadAll() {
 	regionList.clear();
+}
+
+std::list<Region>* RegionPagerBase::GetContainer() {
+	return &regionList;
 }

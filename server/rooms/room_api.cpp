@@ -25,25 +25,25 @@
 
 static int setRoomName(lua_State* L) {
 	RoomData* room = reinterpret_cast<RoomData*>(lua_touserdata(L, 1));
-	room->SetRoomName(lua_tostring(L, 2));
+	room->SetName(lua_tostring(L, 2));
 	return 0;
 }
 
 static int getRoomName(lua_State* L) {
 	RoomData* room = reinterpret_cast<RoomData*>(lua_touserdata(L, 1));
-	lua_pushstring(L, room->GetRoomName().c_str());
+	lua_pushstring(L, room->GetName().c_str());
 	return 1;
 }
 
 static int setTilesetName(lua_State* L) {
 	RoomData* room = reinterpret_cast<RoomData*>(lua_touserdata(L, 1));
-	room->SetTilesetName(lua_tostring(L, 2));
+	room->SetTileset(lua_tostring(L, 2));
 	return 0;
 }
 
 static int getTilesetName(lua_State* L) {
 	RoomData* room = reinterpret_cast<RoomData*>(lua_touserdata(L, 1));
-	lua_pushstring(L, room->GetTilesetName().c_str());
+	lua_pushstring(L, room->GetTileset().c_str());
 	return 1;
 }
 
@@ -56,7 +56,8 @@ static int getPager(lua_State* L) {
 static int initialize(lua_State* L) {
 	//set the members of the given room
 	RoomData* room = static_cast<RoomData*>(lua_touserdata(L, 1));
-	room->SetRoomName(lua_tostring(L, 2));
+	room->SetName(lua_tostring(L, 2));
+	room->SetTileset(lua_tostring(L, 3));
 
 	//set the refs of these parameters (backwards, since it pops from the top of the stack)
 	room->GetPager()->SetUnloadReference(luaL_ref(L, LUA_REGISTRYINDEX));
@@ -70,8 +71,8 @@ static int initialize(lua_State* L) {
 
 static const luaL_Reg roomLib[] = {
 	{"GetPager",getPager},
-	{"SetRoomName", setRoomName},
-	{"GetRoomName", getRoomName},
+	{"SetName", setRoomName},
+	{"GetName", getRoomName},
 	{"SetTileset", setTilesetName},
 	{"GetTileset", getTilesetName},
 	{"Initialize", initialize},

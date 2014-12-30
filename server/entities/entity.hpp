@@ -38,7 +38,7 @@ public:
 
 protected:
 	Entity() = default;
-	~Entity() = default;
+	virtual ~Entity() = default;
 
 	int roomIndex = -1;
 	Vector2 origin;

@@ -78,7 +78,6 @@ void ClientManager::UnloadIf(std::function<bool(std::pair<const int, ClientData>
 	while (it != elementMap.end()) {
 		if (fn(*it)) {
 			it = elementMap.erase(it);
-			//TODO: ? disconnect, unload characters, notify other clients
 		}
 		else {
 			++it;

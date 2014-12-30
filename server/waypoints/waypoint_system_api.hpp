@@ -19,12 +19,8 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef WAYPOINTMANAGER_HPP_
-#define WAYPOINTMANAGER_HPP_
-
-#include "waypoint_data.hpp"
-#include "singleton.hpp"
-#include "vector2.hpp"
+#ifndef WAYPOINTSYSTEMAPI_HPP_
+#define WAYPOINTSYSTEMAPI_HPP_
 
 #if defined(__MINGW32__)
  #include "lua/lua.hpp"
@@ -32,43 +28,7 @@
  #include "lua.hpp"
 #endif
 
-#include <functional>
-#include <map>
-#include <string>
-
-//TODO: should waypoints be managed on a per-room basis?
-class WaypointManager: public Singleton<WaypointManager> {
-public:
-	//common public methods
-	int Create();
-	int Load();
-	int Save(int uid);
-	void Unload(int uid);
-	void Delete(int uid);
-
-	void UnloadAll();
-	void UnloadIf(std::function<bool(std::pair<const int, WaypointData>)> fn);
-
-	//accessors & mutators
-	WaypointData* Get(int uid);
-	int GetLoadedCount();
-	int GetTotalCount();
-	std::map<int, WaypointData>* GetContainer();
-
-	//hooks
-	lua_State* SetLuaState(lua_State* L) { return lua = L; }
-	lua_State* GetLuaState() { return lua; }
-
-private:
-	friend Singleton<WaypointManager>;
-
-	WaypointManager() = default;
-	~WaypointManager() = default;
-
-	//members
-	std::map<int, WaypointData> elementMap;
-	lua_State* lua = nullptr;
-	int counter = 0;
-};
+#define TORTUGA_WAYPOINT_SYSTEM_API "waypoint_system"
+LUAMOD_API int openWaypointSystemAPI(lua_State* L);
 
 #endif

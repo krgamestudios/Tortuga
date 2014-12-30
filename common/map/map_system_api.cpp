@@ -26,31 +26,11 @@
 #include "region_pager_api.hpp"
 #include "tile_sheet_api.hpp"
 
-//macros
-#include "region.hpp"
-
 //useful "globals"
-static int getRegionWidth(lua_State* L) {
-	lua_pushinteger(L, REGION_WIDTH);
-	return 1;
-}
-
-static int getRegionHeight(lua_State* L) {
-	lua_pushinteger(L, REGION_HEIGHT);
-	return 1;
-}
-
-static int getRegionDepth(lua_State* L) {
-	lua_pushinteger(L, REGION_DEPTH);
-	return 1;
-}
+//...
 
 //This mimics linit.c to create a nested collection of all map modules.
 static const luaL_Reg funcs[] = {
-	//synonyms
-	{"GetRegionWidth", getRegionWidth},
-	{"GetRegionHeight", getRegionHeight},
-	{"GetRegionDepth", getRegionDepth},
 	{nullptr, nullptr}
 };
 

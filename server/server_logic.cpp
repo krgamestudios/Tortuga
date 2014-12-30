@@ -105,6 +105,7 @@ void ServerApplication::Init(int argc, char* argv[]) {
 	characterMgr.SetDatabase(database);
 
 	roomMgr.SetLuaState(luaState);
+	waypointMgr.SetLuaState(luaState);
 
 	std::cout << "Internal managers initialized" << std::endl;
 

@@ -48,10 +48,10 @@ public:
 	bool GetSolid(int x, int y);
 
 	//accessors
-	int GetX() const { return x; }
-	int GetY() const { return y; }
+	int GetX() const;
+	int GetY() const;
 
-	std::bitset<REGION_WIDTH*REGION_HEIGHT>* GetSolidBitset() { return &solid; }
+	std::bitset<REGION_WIDTH*REGION_HEIGHT>* GetSolidBitset();
 private:
 	const int x;
 	const int y;

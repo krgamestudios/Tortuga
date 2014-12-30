@@ -22,15 +22,28 @@
 #ifndef WAYPOINTDATA_HPP_
 #define WAYPOINTDATA_HPP_
 
+#include "entity.hpp"
+
+#if defined(__MINGW32__)
+ #include "lua/lua.hpp"
+#else
+ #include "lua.hpp"
+#endif
+
 #include <string>
 
-class WaypointData {
+class WaypointData: public Entity {
 public:
 	WaypointData() = default;
 	~WaypointData() = default;
 
+	int SetTriggerReference(int i);
+	int GetTriggerReference();
+
 private:
 	friend class WaypointManager;
+
+	int triggerRef = LUA_NOREF;
 };
 
 #endif

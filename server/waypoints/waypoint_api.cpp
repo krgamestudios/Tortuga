@@ -23,6 +23,7 @@
 
 #include "waypoint_data.hpp"
 
+//TODO: Can I alias the entity API for this?
 static const luaL_Reg waypointLib[] = {
 	{nullptr, nullptr}
 };

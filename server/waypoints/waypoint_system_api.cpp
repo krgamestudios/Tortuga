@@ -19,37 +19,37 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef MANAGERINTERFACE_HPP_
-#define MANAGERINTERFACE_HPP_
+#include "waypoint_system_api.hpp"
 
-#include <functional>
-#include <map>
+//all waypoint API headers
+#include "waypoint_api.hpp"
+#include "waypoint_manager_api.hpp"
 
-template<typename T, typename... Arguments>
-class ManagerInterface {
-public:
-	//common public methods
-	virtual int Create(Arguments... parameters) = 0;
-	virtual int Load(Arguments... parameters) = 0;
-	virtual int Save(int uid) = 0;
-	virtual void Unload(int uid) = 0;
-	virtual void Delete(int uid) = 0;
+//useful "globals"
+//...
 
-	virtual void UnloadAll() = 0;
-	virtual void UnloadIf(std::function<bool(std::pair<const int, T>)> fn) = 0;
-
-	//accessors & mutators
-	virtual T* Get(int uid) = 0;
-	virtual int GetLoadedCount() = 0;
-	virtual int GetTotalCount() = 0; //can be an alias of GetLoadedCount()
-	virtual std::map<int, T>* GetContainer() = 0;
-
-protected:
-	ManagerInterface() = default;
-	~ManagerInterface() = default;
-
-	//members
-	std::map<int, T> elementMap;
+//This mimics linit.c to create a nested collection of all waypoint modules.
+static const luaL_Reg funcs[] = {
+	{nullptr, nullptr}
 };
 
-#endif
+static const luaL_Reg libs[] = {
+	{"Waypoint", openWaypointAPI},
+	{"WaypointManager", openWaypointManagerAPI},
+	{nullptr, nullptr}
+};
+
+int openWaypointSystemAPI(lua_State* L) {
+	//create the table
+	luaL_newlibtable(L, libs);
+
+	//push the "global" functions
+	luaL_setfuncs(L, funcs, 0);
+
+	//push the substable
+	for (const luaL_Reg* lib = libs; lib->func; lib++) {
+		lib->func(L);
+		lua_setfield(L, -2, lib->name);
+	}
+	return 1;
+}

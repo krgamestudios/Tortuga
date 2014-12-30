@@ -30,6 +30,7 @@
  #include "lua.hpp"
 #endif
 
+#include <functional>
 #include <string>
 
 class RegionPagerLua : public RegionPagerBase {
@@ -41,8 +42,8 @@ public:
 	Region* LoadRegion(int x, int y) override;
 	Region* SaveRegion(int x, int y) override;
 	Region* CreateRegion(int x, int y) override;
-	void UnloadRegion(int x, int y) override;
 
+	void UnloadIf(std::function<bool(Region const&)> fn) override;
 	void UnloadAll() override;
 
 	//accessors & mutators

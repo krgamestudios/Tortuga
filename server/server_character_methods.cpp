@@ -105,7 +105,7 @@ void ServerApplication::HandleCharacterLoad(CharacterPacket* const argPacket) {
 		if (characterIndex == -1) {
 			msg << "Character already loaded: ";
 		}
-		if (characterIndex == -1) {
+		if (characterIndex == -2) {
 			msg << "Character name is taken: ";
 		}
 		msg << argPacket->handle;
@@ -191,7 +191,6 @@ void ServerApplication::HandleCharacterSetRoom(CharacterPacket* const argPacket)
 	}
 
 	//set the character's room, zero it's origin, zero it's motion
-	//TODO: Set the origin here
 	characterData->SetRoomIndex(argPacket->roomIndex);
 	characterData->SetOrigin({0, 0});
 	characterData->SetMotion({0, 0});

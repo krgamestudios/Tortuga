@@ -23,6 +23,9 @@
 
 #include <stdexcept>
 
+//DOCS: Load, Save and Create fail unless the lua function has been set
+//DOCS: UnloadIf and UnloadAll will still continue without the function set
+
 RegionPagerLua::~RegionPagerLua() {
 	//unload all regions
 	UnloadAll();
@@ -130,23 +133,25 @@ Region* RegionPagerLua::CreateRegion(int x, int y) {
 }
 
 //no return
-void RegionPagerLua::UnloadRegion(int x, int y) {
+void RegionPagerLua::UnloadIf(std::function<bool(Region const&)> fn) {
 	//get the pager's function from the registry
 	lua_rawgeti(lua, LUA_REGISTRYINDEX, unloadRef);
 
 	//check if this function is available
 	if (lua_isnil(lua, -1)) {
 		lua_pop(lua, 1);
+		//remove the regions anyway
+		regionList.remove_if(fn);
 		return;
 	}
 
 	//run each region through this lambda
 	regionList.remove_if([&](Region& region) -> bool {
-		if (region.GetX() == x && region.GetY() == y) {
+		if (fn(region)) {
 
 			//push a copy of the function onto the stack with the region
 			lua_pushvalue(lua, -1);
-			lua_pushlightuserdata(lua, &region);
+			lua_pushlightuserdata(lua, static_cast<void*>(&region));
 
 			//call the function, 1 arg, 0 return
 			if (lua_pcall(lua, 1, 0, 0) != LUA_OK) {
@@ -171,6 +176,8 @@ void RegionPagerLua::UnloadAll() {
 	//check if this function is available
 	if (lua_isnil(lua, -1)) {
 		lua_pop(lua, 1);
+		//remove the regions anyway
+		regionList.clear();
 		return;
 	}
 

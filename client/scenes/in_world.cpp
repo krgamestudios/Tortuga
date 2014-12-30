@@ -501,7 +501,9 @@ void InWorld::SendRegionRequest(int roomIndex, int x, int y) {
 
 void InWorld::HandleRegionContent(RegionPacket* const argPacket) {
 	//replace existing regions
-	regionPager.UnloadRegion(argPacket->x, argPacket->y);
+	regionPager.UnloadIf([&](Region const& region) -> bool {
+		return region.GetX() == argPacket->x && region.GetY() == argPacket->y;
+	});
 	regionPager.PushRegion(argPacket->region);
 
 	//clean up after the serial code
@@ -540,9 +542,9 @@ void InWorld::UpdateMap() {
 //entity management
 //-------------------------
 
-//NOTE: preexisting characters will result in query responses
-//NOTE: new characters will result in create messages
-//NOTE: this client's character will exist in both (skipped)
+//DOCS: preexisting characters will result in query responses
+//DOCS: new characters will result in create messages
+//DOCS: this client's character will exist in both (skipped)
 
 void InWorld::HandleCharacterCreate(CharacterPacket* const argPacket) {
 	//prevent double message
