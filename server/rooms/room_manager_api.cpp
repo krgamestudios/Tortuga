@@ -24,31 +24,67 @@
 #include "room_manager.hpp"
 
 int createRoom(lua_State* L) {
-
 	//create & get the room
 	RoomManager& roomMgr = RoomManager::GetSingleton();
-	int uid = roomMgr.Create(lua_tostring(L, 1));
+	int uid = roomMgr.Create(lua_tostring(L, 1), lua_tostring(L, 2));
 	RoomData* room = roomMgr.Get(uid);
+
+	//TODO: initialization parameters here?
 
 	//return room, uid
 	lua_pushlightuserdata(L, static_cast<void*>(room));
-	lua_pushinteger(L, uid);
+	lua_pushinteger(L, uid); //for debugging, mostly
 
 	return 2;
 }
 
 int unloadRoom(lua_State* L) {
-	//TODO: check authorization for room deletion
 	RoomManager& roomMgr = RoomManager::GetSingleton();
-	roomMgr.Unload(lua_tointeger(L, 1));
+
+	switch(lua_type(L, 1)) {
+		case LUA_TNUMBER: {
+			//number
+			int uid = lua_tointeger(L, 1);
+			roomMgr.UnloadIf([uid](std::pair<int, RoomData> it){
+				return it.first == uid;
+			});
+		}
+		break;
+		case LUA_TSTRING: {
+			//name
+			std::string name = lua_tostring(L, 1);
+			roomMgr.UnloadIf([name](std::pair<int, RoomData> it){
+				return it.second.GetName() == name;
+			});
+		}
+		break;
+		case LUA_TLIGHTUSERDATA: {
+			//the room itself
+			std::string name = static_cast<RoomData*>(lua_touserdata(L, 1))->GetName();
+			roomMgr.UnloadIf([name](std::pair<int, RoomData> it){
+				return it.second.GetName() == name;
+			});
+		}
+		break;
+	}
 	return 0;
 }
 
 int getRoom(lua_State* L) {
 	//TODO: integer vs name for getRoom()
 	RoomManager& roomMgr = RoomManager::GetSingleton();
+	RoomData* room = nullptr;
 
-	RoomData* room = roomMgr.Get(lua_tointeger(L, 1));
+	switch(lua_type(L, 1)) {
+		case LUA_TNUMBER:
+			//number
+			room = roomMgr.Get(lua_tointeger(L, 1));
+		break;
+		case LUA_TSTRING:
+			//name
+			room = roomMgr.Get(lua_tostring(L, 1));
+		break;
+	}
 
 	if (room) {
 		lua_pushlightuserdata(L, static_cast<void*>(room));

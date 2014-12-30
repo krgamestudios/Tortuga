@@ -10,6 +10,7 @@ TODO: Account passwords (list)
 	* ...
 	* salts & hashes
 
+TODO: Pagers giving their region counts in the API
 TODO: Waypoints, with positions and trigger zones (collision areas) for doors, monster spawns, etc.
 TODO: Fix shoddy movement
 TODO: Periodic mass server saves

@@ -40,14 +40,16 @@ public:
 	~RoomData() = default;
 
 	//accessors and mutators
-	std::string SetRoomName(std::string s);
-	std::string GetRoomName();
+	std::string SetName(std::string);
+	std::string GetName();
 
-	std::string SetTilesetName(std::string s);
-	std::string GetTilesetName();
+	std::string SetTileset(std::string);
+	std::string GetTileset();
 
 	RegionPagerLua* GetPager();
 	std::list<Entity*>* GetEntityList();
+
+	//TODO: triggers for unload, save, per-second, player enter, player exit, etc.
 
 private:
 	friend class RoomManager;

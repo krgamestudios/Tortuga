@@ -37,21 +37,20 @@
 class RoomManager: public Singleton<RoomManager> {
 public:
 	//common public methods
-	int Create(std::string);
-	void Unload(int uid);
+	int Create(std::string name, std::string tileset);
 
 	void UnloadAll();
 	void UnloadIf(std::function<bool(std::pair<const int,RoomData>)> fn);
 
 	//accessors and mutators
 	RoomData* Get(int uid);
+	RoomData* Get(std::string name);
 	int GetLoadedCount();
-	int GetTotalCount();
 	std::map<int, RoomData>* GetContainer();
 
 	//hooks
-	lua_State* SetLuaState(lua_State* L) { return lua = L; }
-	lua_State* GetLuaState() { return lua; }
+	lua_State* SetLuaState(lua_State* L);
+	lua_State* GetLuaState();
 
 private:
 	friend Singleton<RoomManager>;

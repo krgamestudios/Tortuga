@@ -1,5 +1,6 @@
 print("Lua script check")
 
+mapSystem = require "map_system"
 mapMaker = require "map_maker"
 mapSaver = require "map_saver"
 roomSystem = require "room_system"
@@ -12,10 +13,13 @@ local function dumpTable(t)
 	end
 end
 
-dumpTable(waypointSystem)
-
 --NOTE: room 0 is the first that the client asks for, therefore it must exist
-local overworld, uid = roomSystem.RoomManager.CreateRoom("overworld")
-roomSystem.Room.Initialize(overworld, "overworld.bmp", mapSaver.Load, mapSaver.Save, mapMaker.debugIsland, mapSaver.Save)
+local overworld, uid = roomSystem.RoomManager.CreateRoom("overworld", "overworld.bmp")
+
+--NOTE: This is horrible; room initialization is important
+mapSystem.RegionPager.SetOnLoad(roomSystem.Room.GetPager(overworld), mapSaver.Load)
+mapSystem.RegionPager.SetOnSave(roomSystem.Room.GetPager(overworld), mapSaver.Save)
+mapSystem.RegionPager.SetOnCreate(roomSystem.Room.GetPager(overworld), mapMaker.debugIsland)
+mapSystem.RegionPager.SetOnUnload(roomSystem.Room.GetPager(overworld), mapSaver.Save)
 
 print("Finished the lua script")

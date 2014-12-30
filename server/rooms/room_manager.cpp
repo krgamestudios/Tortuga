@@ -29,25 +29,16 @@
 //public access methods
 //-------------------------
 
-int RoomManager::Create(std::string roomName) {
+int RoomManager::Create(std::string roomName, std::string tileset) {
 	//create the room
 	RoomData* newRoom = &elementMap[counter]; //implicitly constructs the element
-	newRoom->SetRoomName(roomName);
+	newRoom->SetName(roomName);
+	newRoom->SetTileset(tileset);
+
 	newRoom->pager.SetLuaState(lua);
 
 	//finish the routine
 	return counter++;
-}
-
-void RoomManager::Unload(int uid) {
-	//find the room
-	std::map<int, RoomData>::iterator it = elementMap.find(uid);
-	if (it == elementMap.end()) {
-		return;
-	}
-
-	//free the memory
-	elementMap.erase(uid);
 }
 
 void RoomManager::UnloadAll() {
@@ -76,14 +67,27 @@ RoomData* RoomManager::Get(int uid) {
 	return &it->second;
 }
 
-int RoomManager::GetLoadedCount() {
-	return elementMap.size();
+RoomData* RoomManager::Get(std::string name) {
+	for (std::map<int, RoomData>::iterator it = elementMap.begin(); it != elementMap.end(); ++it) {
+		if (it->second.GetName() == name) {
+			return &it->second;
+		}
+	}
+	return nullptr;
 }
 
-int RoomManager::GetTotalCount() {
+int RoomManager::GetLoadedCount() {
 	return elementMap.size();
 }
 
 std::map<int, RoomData>* RoomManager::GetContainer() {
 	return &elementMap;
+}
+
+lua_State* RoomManager::SetLuaState(lua_State* L) {
+	return lua = L;
+}
+
+lua_State* RoomManager::GetLuaState() {
+	return lua;
 }

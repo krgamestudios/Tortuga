@@ -21,19 +21,19 @@
 */
 #include "room_data.hpp"
 
-std::string RoomData::SetRoomName(std::string s) {
+std::string RoomData::SetName(std::string s) {
 	return roomName = s;
 }
 
-std::string RoomData::GetRoomName() {
+std::string RoomData::GetName() {
 	return roomName;
 }
 
-std::string RoomData::SetTilesetName(std::string s) {
+std::string RoomData::SetTileset(std::string s) {
 	return tilesetName = s;
 }
 
-std::string RoomData::GetTilesetName() {
+std::string RoomData::GetTileset() {
 	return tilesetName;
 }
 
