@@ -22,7 +22,6 @@
 #ifndef MONSTERMANAGER_HPP_
 #define MONSTERMANAGER_HPP_
 
-#include "manager_interface.hpp"
 #include "monster_data.hpp"
 #include "singleton.hpp"
 
@@ -35,28 +34,26 @@
 #endif
 
 #include <functional>
+#include <map>
 #include <string>
 
-class MonsterManager:
-	public Singleton<MonsterManager>,
-	public ManagerInterface<MonsterData, std::string>
-{
+class MonsterManager: public Singleton<MonsterManager> {
 public:
 	//common public methods
-	int Create(std::string) override;
-	int Load(std::string) override;
-	int Save(int uid) override;
-	void Unload(int uid) override;
-	void Delete(int uid) override;
+	int Create(std::string);
+	int Load(std::string);
+	int Save(int uid);
+	void Unload(int uid);
+	void Delete(int uid);
 
-	void UnloadAll() override;
-	void UnloadIf(std::function<bool(std::pair<const int, MonsterData>)> fn) override;
+	void UnloadAll();
+	void UnloadIf(std::function<bool(std::pair<const int, MonsterData>)> fn);
 
 	//accessors & mutators
-	MonsterData* Get(int uid) override;
-	int GetLoadedCount() override;
-	int GetTotalCount() override;
-	std::map<int, MonsterData>* GetContainer() override;
+	MonsterData* Get(int uid);
+	int GetLoadedCount();
+	int GetTotalCount();
+	std::map<int, MonsterData>* GetContainer();
 
 	//hooks
 	sqlite3* SetDatabase(sqlite3* db);
@@ -70,6 +67,8 @@ private:
 	MonsterManager() = default;
 	~MonsterManager() = default;
 
+	//members
+	std::map<int, MonsterData> elementMap;
 	sqlite3* database = nullptr;
 	lua_State* lua = nullptr;
 };

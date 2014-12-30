@@ -23,39 +23,39 @@
 #define WAYPOINTMANAGER_HPP_
 
 #include "waypoint_data.hpp"
-#include "manager_interface.hpp"
 #include "singleton.hpp"
 #include "vector2.hpp"
 
 #include <functional>
+#include <map>
 #include <string>
 
-class WaypointManager:
-	public Singleton<WaypointManager>,
-	public ManagerInterface<WaypointData>
-{
+class WaypointManager: public Singleton<WaypointManager> {
 public:
 	//common public methods
-	int Create() override;
-	int Load() override;
-	int Save(int uid) override;
-	void Unload(int uid) override;
-	void Delete(int uid) override;
+	int Create();
+	int Load();
+	int Save(int uid);
+	void Unload(int uid);
+	void Delete(int uid);
 
-	void UnloadAll() override;
-	void UnloadIf(std::function<bool(std::pair<const int, WaypointData>)> fn) override;
+	void UnloadAll();
+	void UnloadIf(std::function<bool(std::pair<const int, WaypointData>)> fn);
 
 	//accessors & mutators
-	WaypointData* Get(int uid) override;
-	int GetLoadedCount() override;
-	int GetTotalCount() override;
-	std::map<int, WaypointData>* GetContainer() override;
+	WaypointData* Get(int uid);
+	int GetLoadedCount();
+	int GetTotalCount();
+	std::map<int, WaypointData>* GetContainer();
 
 private:
 	friend Singleton<WaypointManager>;
 
 	WaypointManager() = default;
 	~WaypointManager() = default;
+
+	//members
+	std::map<int, WaypointData> elementMap;
 };
 
 #endif

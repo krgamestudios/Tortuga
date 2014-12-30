@@ -23,35 +23,32 @@
 #define CLIENTMANAGER_HPP_
 
 #include "client_data.hpp"
-#include "manager_interface.hpp"
 #include "server_packet.hpp"
 #include "singleton.hpp"
 
 #include "SDL/SDL_net.h"
 
 #include <functional>
+#include <map>
 
-class ClientManager:
-	public Singleton<ClientManager>,
-	public ManagerInterface<ClientData, IPaddress>
-{
+class ClientManager: public Singleton<ClientManager> {
 public:
 	//methods
 	int CheckConnections();
 	void HandlePong(ServerPacket* const argPacket);
 
 	//common public methods
-	int Create(IPaddress) override;
-	void Unload(int uid) override;
+	int Create(IPaddress);
+	void Unload(int uid);
 
-	void UnloadAll() override;
-	void UnloadIf(std::function<bool(std::pair<const int, ClientData>)> fn) override;
+	void UnloadAll();
+	void UnloadIf(std::function<bool(std::pair<const int, ClientData>)> fn);
 
 	//accessors & mutators
-	ClientData* Get(int uid) override;
-	int GetLoadedCount() override;
-	int GetTotalCount() override;
-	std::map<int, ClientData>* GetContainer() override;
+	ClientData* Get(int uid);
+	int GetLoadedCount();
+	int GetTotalCount();
+	std::map<int, ClientData>* GetContainer();
 
 private:
 	friend Singleton<ClientManager>;
@@ -59,11 +56,8 @@ private:
 	ClientManager() = default;
 	~ClientManager() = default;
 
-	//EMPTY
-	int Load(IPaddress) override { return -1; }
-	int Save(int uid) override { return -1; }
-	void Delete(int uid) override { return; }
-
+	//members
+	std::map<int, ClientData> elementMap;
 	int counter = 0;
 };
 

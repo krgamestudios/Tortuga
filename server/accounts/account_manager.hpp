@@ -24,7 +24,6 @@
 
 #include "account_data.hpp"
 #include "singleton.hpp"
-#include "manager_interface.hpp"
 
 #if defined(__MINGW32__)
  #include "sqlite3/sqlite3.h"
@@ -35,26 +34,23 @@
 #include <functional>
 #include <map>
 
-class AccountManager:
-	public Singleton<AccountManager>,
-	public ManagerInterface<AccountData, std::string, int>
-{
+class AccountManager: public Singleton<AccountManager> {
 public:
 	//common public methods
-	int Create(std::string username, int clientIndex) override;
-	int Load(std::string username, int clientIndex) override;
-	int Save(int uid) override;
-	void Unload(int uid) override;
-	void Delete(int uid) override;
+	int Create(std::string username, int clientIndex);
+	int Load(std::string username, int clientIndex);
+	int Save(int uid);
+	void Unload(int uid);
+	void Delete(int uid);
 
-	void UnloadAll() override;
-	void UnloadIf(std::function<bool(std::pair<const int, AccountData>)> fn) override;
+	void UnloadAll();
+	void UnloadIf(std::function<bool(std::pair<const int, AccountData>)> fn);
 
 	//accessors and mutators
-	AccountData* Get(int uid) override;
-	int GetLoadedCount() override;
-	int GetTotalCount() override;
-	std::map<int, AccountData>* GetContainer() override;
+	AccountData* Get(int uid);
+	int GetLoadedCount();
+	int GetTotalCount();
+	std::map<int, AccountData>* GetContainer();
 
 	sqlite3* SetDatabase(sqlite3* db);
 	sqlite3* GetDatabase();
@@ -65,6 +61,8 @@ private:
 	AccountManager() = default;
 	~AccountManager() = default;
 
+	//members
+	std::map<int, AccountData> elementMap;
 	sqlite3* database = nullptr;
 };
 

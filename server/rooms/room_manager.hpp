@@ -24,7 +24,6 @@
 
 #include "room_data.hpp"
 #include "singleton.hpp"
-#include "manager_interface.hpp"
 
 #if defined(__MINGW32__)
  #include "lua/lua.hpp"
@@ -32,23 +31,23 @@
  #include "lua.hpp"
 #endif
 
-class RoomManager:
-	public Singleton<RoomManager>,
-	public ManagerInterface<RoomData, std::string>
-{
+#include <functional>
+#include <map>
+
+class RoomManager: public Singleton<RoomManager> {
 public:
 	//common public methods
-	int Create(std::string) override;
-	void Unload(int uid) override;
+	int Create(std::string);
+	void Unload(int uid);
 
-	void UnloadAll() override;
-	void UnloadIf(std::function<bool(std::pair<const int,RoomData>)> fn) override;
+	void UnloadAll();
+	void UnloadIf(std::function<bool(std::pair<const int,RoomData>)> fn);
 
 	//accessors and mutators
-	RoomData* Get(int uid) override;
-	int GetLoadedCount() override;
-	int GetTotalCount() override;
-	std::map<int, RoomData>* GetContainer() override;
+	RoomData* Get(int uid);
+	int GetLoadedCount();
+	int GetTotalCount();
+	std::map<int, RoomData>* GetContainer();
 
 	//hooks
 	lua_State* SetLuaState(lua_State* L) { return lua = L; }
@@ -60,10 +59,8 @@ private:
 	RoomManager() = default;
 	~RoomManager() = default;
 
-	int Load(std::string) override { return -1; }
-	int Save(int uid) override { return -1; }
-	void Delete(int uid) override { }
-
+	//members
+	std::map<int, RoomData> elementMap;
 	lua_State* lua = nullptr;
 	int counter = 0;
 };
