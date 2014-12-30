@@ -105,7 +105,7 @@ void ServerApplication::HandleCharacterLoad(CharacterPacket* const argPacket) {
 		if (characterIndex == -1) {
 			msg << "Character already loaded: ";
 		}
-		if (characterIndex == -1) {
+		if (characterIndex == -2) {
 			msg << "Character name is taken: ";
 		}
 		msg << argPacket->handle;
