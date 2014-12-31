@@ -22,6 +22,7 @@
 #ifndef ROOMMANAGER_HPP_
 #define ROOMMANAGER_HPP_
 
+#include "entity.hpp"
 #include "room_data.hpp"
 #include "singleton.hpp"
 
@@ -38,6 +39,9 @@ class RoomManager: public Singleton<RoomManager> {
 public:
 	//common public methods
 	int Create(std::string name, std::string tileset);
+
+	void PushEntity(Entity* entity);
+	void PopEntity(Entity* entity);
 
 	void UnloadAll();
 	void UnloadIf(std::function<bool(std::pair<const int,RoomData>)> fn);

@@ -24,6 +24,7 @@
 #include "room_api.hpp"
 
 #include <stdexcept>
+#include <sstream>
 
 //-------------------------
 //public access methods
@@ -39,6 +40,32 @@ int RoomManager::Create(std::string roomName, std::string tileset) {
 
 	//finish the routine
 	return counter++;
+}
+
+void RoomManager::PushEntity(Entity* entity) {
+	std::map<int, RoomData>::iterator it = elementMap.find(entity->GetRoomIndex());
+
+	if (it == elementMap.end()) {
+		std::ostringstream msg;
+		msg << "Failed to push entity; Room index not found: " << entity->GetRoomIndex() << std::endl;
+		throw(std::runtime_error(msg.str()));
+	}
+
+	it->second.entityList.push_back(entity);
+}
+
+void RoomManager::PopEntity(Entity* entity) {
+	std::map<int, RoomData>::iterator it = elementMap.find(entity->GetRoomIndex());
+
+	if (it == elementMap.end()) {
+		std::ostringstream msg;
+		msg << "Failed to pop entity; Room index not found: " << entity->GetRoomIndex() << std::endl;
+		throw(std::runtime_error(msg.str()));
+	}
+
+	it->second.entityList.remove_if([&](Entity* ptr) -> bool {
+		return ptr == entity;
+	});
 }
 
 void RoomManager::UnloadAll() {

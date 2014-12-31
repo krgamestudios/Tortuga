@@ -22,6 +22,10 @@ mapSystem.RegionPager.SetOnSave(roomSystem.Room.GetPager(overworld), mapSaver.Sa
 mapSystem.RegionPager.SetOnCreate(roomSystem.Room.GetPager(overworld), mapMaker.debugIsland)
 mapSystem.RegionPager.SetOnUnload(roomSystem.Room.GetPager(overworld), mapSaver.Save)
 
+--Dirt Land
+local dirtLand = roomSystem.RoomManager.CreateRoom("dirt land", "overworld.bmp")
+roomSystem.Room.Initialize(dirtLand, mapSaver.Load, mapSaver.Save, mapMaker.dirtLand, mapSaver.Save)
+
 print("Finished the lua script")
 
 --[[

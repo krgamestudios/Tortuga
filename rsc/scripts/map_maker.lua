@@ -36,4 +36,12 @@ function mapMaker.debugIsland(region)
 	end
 end
 
+function mapMaker.dirtLand(region)
+	for i = 1, mapSystem.Region.GetWidth(region) do
+		for j = 1, mapSystem.Region.GetHeight(region) do
+			mapSystem.Region.SetTile(region, i, j, 1, mapMaker.dirt)
+		end
+	end
+end
+
 return mapMaker
