@@ -253,7 +253,7 @@ CharacterData* CharacterManager::Get(int uid) {
 		return nullptr;
 	}
 
-	return &it->second;
+	return &(it->second);
 }
 
 int CharacterManager::GetLoadedCount() {

@@ -26,6 +26,9 @@
 #include <stdexcept>
 #include <sstream>
 
+//debug
+#include <iostream>
+
 //-------------------------
 //public access methods
 //-------------------------
@@ -43,6 +46,10 @@ int RoomManager::Create(std::string roomName, std::string tileset) {
 }
 
 void RoomManager::PushEntity(Entity* entity) {
+	if (!entity) {
+		throw(std::runtime_error("Failed to push null entity"));
+	}
+
 	std::map<int, RoomData>::iterator it = elementMap.find(entity->GetRoomIndex());
 
 	if (it == elementMap.end()) {
@@ -51,10 +58,16 @@ void RoomManager::PushEntity(Entity* entity) {
 		throw(std::runtime_error(msg.str()));
 	}
 
-	it->second.entityList.push_back(entity);
+	it->second.entityList.push_back(&(*entity));
+
+	std::cout << "\troom[" << it->first << "].entityList.size(): " << it->second.entityList.size() << std::endl;
 }
 
 void RoomManager::PopEntity(Entity* entity) {
+	if (!entity) {
+		throw(std::runtime_error("Failed to pop null entity"));
+	}
+
 	std::map<int, RoomData>::iterator it = elementMap.find(entity->GetRoomIndex());
 
 	if (it == elementMap.end()) {
@@ -64,8 +77,12 @@ void RoomManager::PopEntity(Entity* entity) {
 	}
 
 	it->second.entityList.remove_if([&](Entity* ptr) -> bool {
-		return ptr == entity;
+		bool b = &(*ptr) == &(*entity);
+		std::cout << "\tmatch(" << int(&(*ptr)) << "," << int(&(*entity)) << "): " << b << std::endl;
+		return b;
 	});
+
+	std::cout << "\troom[" << it->first << "].entityList.size(): " << it->second.entityList.size() << std::endl;
 }
 
 void RoomManager::UnloadAll() {
