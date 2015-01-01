@@ -47,7 +47,7 @@ public:
 	void Delete(int uid);
 
 	void UnloadAll();
-	void UnloadIf(std::function<bool(std::pair<const int, WaypointData>)> fn);
+	void UnloadIf(std::function<bool(std::pair<const int, WaypointData const&>)> fn);
 
 	//accessors & mutators
 	WaypointData* Get(int uid);

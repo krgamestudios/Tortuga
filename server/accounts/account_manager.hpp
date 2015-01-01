@@ -44,7 +44,7 @@ public:
 	void Delete(int uid);
 
 	void UnloadAll();
-	void UnloadIf(std::function<bool(std::pair<const int, AccountData>)> fn);
+	void UnloadIf(std::function<bool(std::pair<const int, AccountData const&>)> fn);
 
 	//accessors and mutators
 	AccountData* Get(int uid);
