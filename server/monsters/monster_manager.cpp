@@ -45,7 +45,7 @@ void MonsterManager::UnloadAll() {
 	//TODO
 }
 
-void MonsterManager::UnloadIf(std::function<bool(std::pair<const int, MonsterData>)> fn) {
+void MonsterManager::UnloadIf(std::function<bool(std::pair<const int, MonsterData const&>)> fn) {
 	//TODO
 }
 
