@@ -150,7 +150,7 @@ void ServerApplication::FullCharacterUnload(int index) {
 		}
 
 		//pop from the rooms
-		roomMgr.PopEntity(&character.second);
+		roomMgr.PopEntity(static_cast<Entity*>(&character.second));
 
 		//pump character unload
 		CharacterPacket newPacket;
