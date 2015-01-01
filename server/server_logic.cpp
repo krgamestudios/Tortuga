@@ -78,7 +78,7 @@ void ServerApplication::Init(int argc, char* argv[]) {
 
 	std::cout << "Initialized lua" << std::endl;
 
-	//prepend config["dir.scripts"] to the module path
+	//append config["dir.scripts"] to the module path
 	if (config["dir.scripts"].size() > 0) {
 		//get the original path
 		lua_getglobal(luaState, "package");

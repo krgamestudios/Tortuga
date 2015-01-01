@@ -1,7 +1,6 @@
 TODO: In need of script APIs (list)
 	* Characters
 	* Monsters
-	* Doors
 	* Waypoints
 
 TODO: Account passwords (list)
@@ -10,11 +9,10 @@ TODO: Account passwords (list)
 	* ...
 	* salts & hashes
 
-TODO: Pagers giving their region counts in the API
 TODO: Waypoints, with positions and trigger zones (collision areas) for doors, monster spawns, etc.
 TODO: Fix shoddy movement
 TODO: Periodic mass server saves
-TODO: Remove the big "Shut Down" button
+TODO: Remove the big "Shut Down" button (currently broken...)
 TODO: Make a way for the server owner to control the server directly
 TODO: The TileSheet class should implement the surface itself
 TODO: Time delay for requesting region packets

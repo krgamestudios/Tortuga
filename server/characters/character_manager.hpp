@@ -44,7 +44,7 @@ public:
 	void Delete(int uid);
 
 	void UnloadAll();
-	void UnloadIf(std::function<bool(std::pair<const int, CharacterData>)> fn);
+	void UnloadIf(std::function<bool(std::pair<const int, CharacterData const&>)> fn);
 
 	//accessors and mutators
 	CharacterData* Get(int uid);
