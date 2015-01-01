@@ -90,7 +90,7 @@ void RoomManager::UnloadAll() {
 	elementMap.clear();
 }
 
-void RoomManager::UnloadIf(std::function<bool(std::pair<const int,RoomData>)> fn) {
+void RoomManager::UnloadIf(std::function<bool(std::pair<const int, RoomData const&>)> fn) {
 	std::map<int, RoomData>::iterator it = elementMap.begin();
 	while (it != elementMap.end()) {
 		if (fn(*it)) {

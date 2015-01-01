@@ -45,7 +45,7 @@ void WaypointManager::UnloadAll() {
 	//TODO
 }
 
-void WaypointManager::UnloadIf(std::function<bool(std::pair<const int, WaypointData>)> fn) {
+void WaypointManager::UnloadIf(std::function<bool(std::pair<const int, WaypointData const&>)> fn) {
 	//TODO
 }
 

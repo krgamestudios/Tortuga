@@ -47,7 +47,7 @@ public:
 	void Delete(int uid);
 
 	void UnloadAll();
-	void UnloadIf(std::function<bool(std::pair<const int, MonsterData>)> fn);
+	void UnloadIf(std::function<bool(std::pair<const int, MonsterData const&>)> fn);
 
 	//accessors & mutators
 	MonsterData* Get(int uid);

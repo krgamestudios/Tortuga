@@ -97,7 +97,7 @@ void ServerApplication::HandleShutdownRequest(ClientPacket* const argPacket) {
 //-------------------------
 
 void ServerApplication::FullClientUnload(int index) {
-	clientMgr.UnloadIf([&](std::pair<const int, ClientData> client) -> bool {
+	clientMgr.UnloadIf([&](std::pair<const int, ClientData const&> client) -> bool {
 		//skip the wrong clients
 		if (client.first != index) {
 			return false;
@@ -120,7 +120,7 @@ void ServerApplication::FullClientUnload(int index) {
 }
 
 void ServerApplication::FullAccountUnload(int index) {
-	accountMgr.UnloadIf([&](std::pair<const int, AccountData> account) -> bool {
+	accountMgr.UnloadIf([&](std::pair<const int, AccountData const&> account) -> bool {
 		//skip the wrong accounts
 		if (account.first != index) {
 			return false;
@@ -144,7 +144,7 @@ void ServerApplication::FullAccountUnload(int index) {
 
 void ServerApplication::FullCharacterUnload(int index) {
 	//BUG: #38 UnloadIf() lambas are taking COPIES of data structures, rather than the structures themselves
-	characterMgr.UnloadIf([&](std::pair<const int, CharacterData> character) -> bool {
+	characterMgr.UnloadIf([&](std::pair<const int, CharacterData const&> character) -> bool {
 		//skip the wrong characters
 		if (character.first != index) {
 			return false;

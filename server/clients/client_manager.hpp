@@ -42,7 +42,7 @@ public:
 	void Unload(int uid);
 
 	void UnloadAll();
-	void UnloadIf(std::function<bool(std::pair<const int, ClientData>)> fn);
+	void UnloadIf(std::function<bool(std::pair<const int, ClientData const&>)> fn);
 
 	//accessors & mutators
 	ClientData* Get(int uid);

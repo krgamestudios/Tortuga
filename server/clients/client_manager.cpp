@@ -73,7 +73,7 @@ void ClientManager::UnloadAll() {
 	elementMap.clear();
 }
 
-void ClientManager::UnloadIf(std::function<bool(std::pair<const int, ClientData>)> fn) {
+void ClientManager::UnloadIf(std::function<bool(std::pair<const int, ClientData const&>)> fn) {
 	std::map<int, ClientData>::iterator it = elementMap.begin();
 	while (it != elementMap.end()) {
 		if (fn(*it)) {

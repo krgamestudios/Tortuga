@@ -44,7 +44,7 @@ public:
 	void PopEntity(Entity* entity);
 
 	void UnloadAll();
-	void UnloadIf(std::function<bool(std::pair<const int,RoomData>)> fn);
+	void UnloadIf(std::function<bool(std::pair<const int, RoomData const&>)> fn);
 
 	//accessors and mutators
 	RoomData* Get(int uid);
