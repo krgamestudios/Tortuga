@@ -152,7 +152,7 @@ void ServerApplication::FullCharacterUnload(int index) {
 
 		//pop from the rooms
 		std::cout << "popping index " << index << std::endl;
-		roomMgr.PopEntity(static_cast<Entity*>(&(character.second)));
+		roomMgr.PopEntity(reinterpret_cast<Entity const*>(&character.second));
 
 		//pump character unload
 		CharacterPacket newPacket;

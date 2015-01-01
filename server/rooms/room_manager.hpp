@@ -40,8 +40,8 @@ public:
 	//common public methods
 	int Create(std::string name, std::string tileset);
 
-	void PushEntity(Entity* entity);
-	void PopEntity(Entity* entity);
+	void PushEntity(Entity const* entity);
+	void PopEntity(Entity const* entity);
 
 	void UnloadAll();
 	void UnloadIf(std::function<bool(std::pair<const int, RoomData const&>)> fn);

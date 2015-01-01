@@ -45,7 +45,7 @@ int RoomManager::Create(std::string roomName, std::string tileset) {
 	return counter++;
 }
 
-void RoomManager::PushEntity(Entity* entity) {
+void RoomManager::PushEntity(Entity const* entity) {
 	if (!entity) {
 		throw(std::runtime_error("Failed to push null entity"));
 	}
@@ -54,17 +54,17 @@ void RoomManager::PushEntity(Entity* entity) {
 
 	if (it == elementMap.end()) {
 		std::ostringstream msg;
-		msg << "Failed to push entity; Room index not found: " << entity->GetRoomIndex() << std::endl;
+//		msg << "Failed to push entity; Room index not found: " << entity->GetRoomIndex() << std::endl;
 		throw(std::runtime_error(msg.str()));
 	}
 
-	it->second.entityList.push_back(entity);
+	it->second.entityList.push_back(const_cast<Entity*>(entity));
 
 	std::cout << "\troom[" << it->first << "].entityList.size(): " << it->second.entityList.size() << std::endl;
 	std::cout << "\tEntity: " << int(entity) << "," << int(it->second.entityList.front()) << std::endl;
 }
 
-void RoomManager::PopEntity(Entity* entity) {
+void RoomManager::PopEntity(Entity const* entity) {
 	if (!entity) {
 		throw(std::runtime_error("Failed to pop null entity"));
 	}
