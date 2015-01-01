@@ -58,9 +58,10 @@ void RoomManager::PushEntity(Entity* entity) {
 		throw(std::runtime_error(msg.str()));
 	}
 
-	it->second.entityList.push_back(&(*entity));
+	it->second.entityList.push_back(entity);
 
 	std::cout << "\troom[" << it->first << "].entityList.size(): " << it->second.entityList.size() << std::endl;
+	std::cout << "\tEntity: " << int(entity) << "," << int(it->second.entityList.front()) << std::endl;
 }
 
 void RoomManager::PopEntity(Entity* entity) {
@@ -76,9 +77,9 @@ void RoomManager::PopEntity(Entity* entity) {
 		throw(std::runtime_error(msg.str()));
 	}
 
-	it->second.entityList.remove_if([&](Entity* ptr) -> bool {
-		bool b = &(*ptr) == &(*entity);
-		std::cout << "\tmatch(" << int(&(*ptr)) << "," << int(&(*entity)) << "): " << b << std::endl;
+	it->second.entityList.remove_if([entity](Entity* ptr) -> bool {
+		bool b = (entity == ptr);
+		std::cout << "\tmatch(" << int(ptr) << "," << int(entity) << "): " << b << std::endl;
 		return b;
 	});
 

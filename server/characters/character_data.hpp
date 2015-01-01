@@ -30,9 +30,33 @@
 #include <string>
 #include <cmath>
 
+#include <iostream>
+
 class CharacterData: public Entity {
 public:
 	CharacterData() = default;
+	CharacterData(CharacterData const& rhs) {
+		std::cerr << "Character copy detected" << std::endl;
+		owner = rhs.owner;
+		handle = rhs.handle;
+		avatar = rhs.avatar;
+
+		//entity stuff
+		roomIndex = rhs.roomIndex;
+		origin = rhs.origin;
+		motion = rhs.motion;
+	}
+	CharacterData(CharacterData&& rhs) {
+		std::cerr << "Character move detected" << std::endl;
+		owner = rhs.owner;
+		handle = rhs.handle;
+		avatar = rhs.avatar;
+
+		//entity stuff
+		roomIndex = rhs.roomIndex;
+		origin = rhs.origin;
+		motion = rhs.motion;
+	}
 	~CharacterData() = default;
 
 	//accessors and mutators

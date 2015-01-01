@@ -143,6 +143,7 @@ void ServerApplication::FullAccountUnload(int index) {
 }
 
 void ServerApplication::FullCharacterUnload(int index) {
+	//BUG: #38 UnloadIf() lambas are taking COPIES of data structures, rather than the structures themselves
 	characterMgr.UnloadIf([&](std::pair<const int, CharacterData> character) -> bool {
 		//skip the wrong characters
 		if (character.first != index) {
@@ -150,7 +151,8 @@ void ServerApplication::FullCharacterUnload(int index) {
 		}
 
 		//pop from the rooms
-		roomMgr.PopEntity(static_cast<Entity*>(&character.second));
+		std::cout << "popping index " << index << std::endl;
+		roomMgr.PopEntity(static_cast<Entity*>(&(character.second)));
 
 		//pump character unload
 		CharacterPacket newPacket;

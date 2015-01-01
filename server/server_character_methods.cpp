@@ -46,7 +46,7 @@ void ServerApplication::HandleCharacterCreate(CharacterPacket* const argPacket) 
 	}
 
 	//push this character to the rooms
-	roomMgr.PushEntity(static_cast<Entity*>(characterMgr.Get(characterIndex)));
+//	roomMgr.PushEntity(static_cast<Entity*>(characterMgr.Get(characterIndex)));
 
 	//pump this character to all clients
 	CharacterPacket newPacket;
@@ -90,7 +90,7 @@ void ServerApplication::HandleCharacterDelete(CharacterPacket* const argPacket) 
 	}
 
 	//delete the character
-	roomMgr.PopEntity(static_cast<Entity*>(characterMgr.Get(characterIndex)));
+//	roomMgr.PopEntity(static_cast<Entity*>(characterMgr.Get(characterIndex)));
 	characterMgr.Delete(characterIndex);
 
 	//pump character delete
@@ -124,6 +124,7 @@ void ServerApplication::HandleCharacterLoad(CharacterPacket* const argPacket) {
 	}
 
 	//push this character to the rooms
+	std::cout << "pushing index " << characterIndex << std::endl;
 	roomMgr.PushEntity(static_cast<Entity*>(characterMgr.Get(characterIndex)));
 
 	//pump this character to all clients
@@ -157,6 +158,7 @@ void ServerApplication::HandleCharacterUnload(CharacterPacket* const argPacket) 
 	}
 
 	//unload the character
+	std::cout << "poping index " << argPacket->characterIndex << std::endl;
 	roomMgr.PopEntity(static_cast<Entity*>(characterData));
 	characterMgr.Unload(argPacket->characterIndex);
 
