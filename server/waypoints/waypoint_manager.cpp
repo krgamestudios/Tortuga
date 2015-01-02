@@ -25,19 +25,7 @@ int WaypointManager::Create() {
 	//TODO
 }
 
-int WaypointManager::Load() {
-	//TODO
-}
-
-int WaypointManager::Save(int uid) {
-	//TODO
-}
-
 void WaypointManager::Unload(int uid) {
-	//TODO
-}
-
-void WaypointManager::Delete(int uid) {
 	//TODO
 }
 

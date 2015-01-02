@@ -22,7 +22,8 @@
 #ifndef WAYPOINTDATA_HPP_
 #define WAYPOINTDATA_HPP_
 
-#include "entity.hpp"
+#include "bounding_box.hpp"
+#include "vector2.hpp"
 
 #if defined(__MINGW32__)
  #include "lua/lua.hpp"
@@ -32,7 +33,7 @@
 
 #include <string>
 
-class WaypointData: public Entity {
+class WaypointData {
 public:
 	WaypointData() = default;
 	~WaypointData() = default;
@@ -40,10 +41,18 @@ public:
 	int SetTriggerReference(int i);
 	int GetTriggerReference();
 
+	BoundingBox SetBoundingBox(BoundingBox b);
+	BoundingBox GetBoundingBox();
+
+	Vector2 SetOrigin(Vector2 v);
+	Vector2 GetOrigin();
+
 private:
 	friend class WaypointManager;
 
 	int triggerRef = LUA_NOREF;
+	BoundingBox bounds;
+	Vector2 origin;
 };
 
 #endif
