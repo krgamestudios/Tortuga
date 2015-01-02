@@ -25,13 +25,8 @@
 #include "monster_data.hpp"
 #include "singleton.hpp"
 
-#ifdef __unix__
- #include "lua.hpp"
- #include "sqlite3.h"
-#else
- #include "lua/lua.hpp"
- #include "sqlite3/sqlite3.h"
-#endif
+#include "lua.hpp"
+#include "sqlite3.h"
 
 #include <functional>
 #include <map>

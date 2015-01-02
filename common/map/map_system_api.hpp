@@ -22,11 +22,7 @@
 #ifndef MAPSYSTEMAPI_HPP_
 #define MAPSYSTEMAPI_APP_
 
-#if defined(__MINGW32__)
- #include "lua/lua.hpp"
-#else
- #include "lua.hpp"
-#endif
+#include "lua.hpp"
 
 #define TORTUGA_MAP_SYSTEM_API "map_system"
 LUAMOD_API int openMapSystemAPI(lua_State* L);

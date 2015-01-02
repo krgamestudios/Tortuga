@@ -84,6 +84,12 @@ void MainMenu::Render(SDL_Surface* const screen) {
 	startButton.DrawTo(screen);
 	optionsButton.DrawTo(screen);
 	quitButton.DrawTo(screen);
+
+	//text
+	font.DrawStringTo("Thanks for playing!", screen, 50, screen->h - 50 - image.GetClipH() * 2);
+	font.DrawStringTo("You can get the latest version at: ", screen, 50, screen->h - 50 - image.GetClipH() * 1);
+	font.DrawStringTo("https://github.com/Ratstail91/Tortuga", screen, 50, screen->h - 50 - image.GetClipH() * 0);
+	//TODO: replace this with a website address
 }
 
 //-------------------------

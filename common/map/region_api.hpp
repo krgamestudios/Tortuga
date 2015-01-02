@@ -22,11 +22,7 @@
 #ifndef REGIONAPI_HPP_
 #define REGIONAPI_HPP_
 
-#if defined(__MINGW32__)
- #include "lua/lua.hpp"
-#else
- #include "lua.hpp"
-#endif
+#include "lua.hpp"
 
 #define TORTUGA_REGION_NAME "region"
 LUAMOD_API int openRegionAPI(lua_State* L);

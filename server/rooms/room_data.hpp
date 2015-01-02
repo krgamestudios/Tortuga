@@ -25,11 +25,7 @@
 #include "entity.hpp"
 #include "region_pager_lua.hpp"
 
-#if defined(__MINGW32__)
- #include "lua/lua.hpp"
-#else
- #include "lua.hpp"
-#endif
+#include "lua.hpp"
 
 #include <list>
 #include <string>

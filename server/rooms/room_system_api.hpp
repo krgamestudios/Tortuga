@@ -22,11 +22,7 @@
 #ifndef ROOMSYSTEMAPI_HPP_
 #define ROOMSYSTEMAPI_HPP_
 
-#if defined(__MINGW32__)
- #include "lua/lua.hpp"
-#else
- #include "lua.hpp"
-#endif
+#include "lua.hpp"
 
 #define TORTUGA_ROOM_SYSTEM_API "room_system"
 LUAMOD_API int openRoomSystemAPI(lua_State* L);
