@@ -57,6 +57,37 @@ void RoomManager::UnloadIf(std::function<bool(std::pair<const int, RoomData cons
 	}
 }
 
+void RoomManager::PushEntity(Entity* entity) {
+	if (!entity) {
+		throw(std::runtime_error("Failed to push a null entity to a room"));
+	}
+
+	RoomData* room = Get(entity->GetRoomIndex());
+
+	if (!room) {
+		throw(std::runtime_error("Failed to push an entity to a non-existant room"));
+	}
+
+	room->entityList.push_back(entity);
+}
+
+void RoomManager::PopEntity(Entity const* entity) {
+	//NOTE: to pop an entity from a room, the entity must first exist
+	if (!entity) {
+		throw(std::runtime_error("Failed to pop a null entity to a room"));
+	}
+
+	RoomData* room = Get(entity->GetRoomIndex());
+
+	if (!room) {
+		throw(std::runtime_error("Failed to pop an entity to a non-existant room"));
+	}
+
+	room->entityList.remove_if([entity](Entity* ptr) {
+		return entity == ptr;
+	});
+}
+
 RoomData* RoomManager::Get(int uid) {
 	std::map<int, RoomData>::iterator it = elementMap.find(uid);
 

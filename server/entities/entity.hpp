@@ -32,9 +32,9 @@ public:
 	Vector2 SetOrigin(Vector2 v);
 	Vector2 SetMotion(Vector2 v);
 
-	int GetRoomIndex();
-	Vector2 GetOrigin();
-	Vector2 GetMotion();
+	int GetRoomIndex() const;
+	Vector2 GetOrigin() const;
+	Vector2 GetMotion() const;
 
 protected:
 	Entity() = default;

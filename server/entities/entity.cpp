@@ -33,14 +33,14 @@ Vector2 Entity::SetMotion(Vector2 v) {
 	return motion = v;
 }
 
-int Entity::GetRoomIndex() {
+int Entity::GetRoomIndex() const {
 	return roomIndex;
 }
 
-Vector2 Entity::GetOrigin() {
+Vector2 Entity::GetOrigin() const {
 	return origin;
 }
 
-Vector2 Entity::GetMotion() {
+Vector2 Entity::GetMotion() const {
 	return motion;
 }
