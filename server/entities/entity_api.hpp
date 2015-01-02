@@ -22,11 +22,7 @@
 #ifndef ENTITYAPI_HPP_
 #define ENTITYAPI_HPP_
 
-#if defined(__MINGW32__)
- #include "lua/lua.hpp"
-#else
- #include "lua.hpp"
-#endif
+#include "lua.hpp"
 
 #define TORTUGA_ENTITY_API "entity"
 LUAMOD_API int openEntityAPI(lua_State* L);

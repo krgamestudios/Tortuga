@@ -26,11 +26,7 @@
 #include "singleton.hpp"
 #include "vector2.hpp"
 
-#if defined(__MINGW32__)
- #include "lua/lua.hpp"
-#else
- #include "lua.hpp"
-#endif
+#include "lua.hpp"
 
 #include <functional>
 #include <map>

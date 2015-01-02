@@ -22,11 +22,7 @@
 #ifndef WAYPOINTAPI_HPP_
 #define WAYPOINTAPI_HPP_
 
-#if defined(__MINGW32__)
- #include "lua/lua.hpp"
-#else
- #include "lua.hpp"
-#endif
+#include "lua.hpp"
 
 #define TORTUGA_WAYPOINT_API "waypoint"
 LUAMOD_API int openWaypointAPI(lua_State* L);

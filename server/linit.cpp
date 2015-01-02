@@ -34,11 +34,7 @@
 #define linit_c
 #define LUA_LIB
 
-#if defined(__MINGW32__)
- #include "lua/lua.hpp"
-#else
- #include "lua.hpp"
-#endif
+#include "lua.hpp"
 
 #include "map_system_api.hpp"
 #include "room_system_api.hpp"

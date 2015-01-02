@@ -22,11 +22,7 @@
 #ifndef CHARACTERMANAGERAPI_HPP_
 #define CHARACTERMANAGERAPI_HPP_
 
-#if defined(__MINGW32__)
- #include "lua/lua.hpp"
-#else
- #include "lua.hpp"
-#endif
+#include "lua.hpp"
 
 #define TORTUGA_CHARACTER_MANAGER_API "character_manager"
 LUAMOD_API int openCharacterManagerAPI(lua_State* L);

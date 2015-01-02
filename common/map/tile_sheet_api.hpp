@@ -22,11 +22,7 @@
 #ifndef TILESHEETAPI_HPP_
 #define TILESHEETAPI_HPP_
 
-#if defined(__MINGW32__)
- #include "lua/lua.hpp"
-#else
- #include "lua.hpp"
-#endif
+#include "lua.hpp"
 
 #define TORTUGA_TILE_SHEET_NAME "tile_sheet"
 LUAMOD_API int openTileSheetAPI(lua_State* L);

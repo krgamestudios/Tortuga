@@ -22,11 +22,7 @@
 #ifndef MONSTERMANAGERAPI_HPP_
 #define MONSTERMANAGERAPI_HPP_
 
-#if defined(__MINGW32__)
- #include "lua/lua.hpp"
-#else
- #include "lua.hpp"
-#endif
+#include "lua.hpp"
 
 #define TORTUGA_MONSTER_MANAGER_API "monster_manager"
 LUAMOD_API int openMonsterManagerAPI(lua_State* L);
