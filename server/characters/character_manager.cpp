@@ -21,11 +21,7 @@
 */
 #include "character_manager.hpp"
 
-#if defined(__MINGW32__)
- #include "sqlite3/sqlite3.h"
-#else
- #include "sqlite3.h"
-#endif
+#include "sqlite3.h"
 
 #include <algorithm>
 #include <stdexcept>

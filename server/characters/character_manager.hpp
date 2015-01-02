@@ -25,11 +25,7 @@
 #include "character_data.hpp"
 #include "singleton.hpp"
 
-#if defined(__MINGW32__)
- #include "sqlite3/sqlite3.h"
-#else
- #include "sqlite3.h"
-#endif
+#include "sqlite3.h"
 
 #include <functional>
 #include <map>
