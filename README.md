@@ -20,6 +20,10 @@ The most recent stable build for Windows can be found [here](https://dl.dropboxu
 * [lua 5.2](http://www.lua.org/) - The lua programming language
 * [SQLite3](http://www.sqlite.org/) - A lightweight SQL database engine
 
+## Tools
+
+* [WinRAR](http://www.rarlab.com/) - The best compression tool available IMO; only needed for distribution
+
 ## Copyright
 
 (Future versions (to be determined) may be released under a modified version of the [Uplink Developer's License](http://www.introversion.co.uk/uplink/developer/license.html).)
