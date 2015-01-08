@@ -1,7 +1,8 @@
-#for use on Windows:
-
-#MKDIR=mkdir
+#Windows 7:
 #RM=del /y
+
+#Windows 8.1:
+#RM=del /S
 
 OUTDIR=out
 
