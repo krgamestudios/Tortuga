@@ -46,7 +46,6 @@ int main(int argc, char* argv[]) {
 		MonsterManager::CreateSingleton();
 		RoomManager::CreateSingleton();
 		UDPNetworkUtility::CreateSingleton();
-		WaypointManager::CreateSingleton();
 
 		//call the server's routines
 		ServerApplication::CreateSingleton();
@@ -66,7 +65,6 @@ int main(int argc, char* argv[]) {
 		MonsterManager::DeleteSingleton();
 		RoomManager::DeleteSingleton();
 		UDPNetworkUtility::DeleteSingleton();
-		WaypointManager::DeleteSingleton();
 	}
 	catch(exception& e) {
 		cerr << "Fatal exception thrown: " << e.what() << endl;

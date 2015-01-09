@@ -23,8 +23,100 @@
 
 #include "waypoint_data.hpp"
 
-//TODO: Can I alias the entity API for this?
+//origin
+static int setOriginX(lua_State* L) {
+	//TODO
+	return 0;
+}
+
+static int setOriginY(lua_State* L) {
+	//TODO
+	return 0;
+}
+
+static int getOriginX(lua_State* L) {
+	//TODO
+	return 0;
+}
+
+static int getOriginY(lua_State* L) {
+	//TODO
+	return 0;
+}
+
+//bounds
+static int setBoundingBoxX(lua_State* L) {
+	//TODO
+	return 0;
+}
+
+static int setBoundingBoxY(lua_State* L) {
+	//TODO
+	return 0;
+}
+
+static int setBoundingBoxW(lua_State* L) {
+	//TODO
+	return 0;
+}
+
+static int setBoundingBoxH(lua_State* L) {
+	//TODO
+	return 0;
+}
+
+static int getBoundingBoxX(lua_State* L) {
+	//TODO
+	return 0;
+}
+
+static int getBoundingBoxY(lua_State* L) {
+	//TODO
+	return 0;
+}
+
+static int getBoundingBoxW(lua_State* L) {
+	//TODO
+	return 0;
+}
+
+static int getBoundingBoxH(lua_State* L) {
+	//TODO
+	return 0;
+}
+
+//triggers
+static int setTriggerReference(lua_State* L) {
+	//TODO
+	return 0;
+}
+
+static int getTriggerReference(lua_State* L) {
+	//TODO
+	return 0;
+}
+
 static const luaL_Reg waypointLib[] = {
+	//origin
+	{"SetOriginX",setOriginX},
+	{"SetOriginY",setOriginY},
+	{"GetOriginX",getOriginX},
+	{"GetOriginY",getOriginY},
+
+	//bounds
+	{"SetBoundsX",setBoundingBoxX},
+	{"SetBoundsY",setBoundingBoxY},
+	{"SetBoundsW",setBoundingBoxW},
+	{"SetBoundsH",setBoundingBoxH},
+
+	{"GetBoundsX",getBoundingBoxX},
+	{"GetBoundsY",getBoundingBoxY},
+	{"GetBoundsW",getBoundingBoxW},
+	{"GetBoundsH",getBoundingBoxH},
+
+	//triggers
+	{"SetTrigger",setTriggerReference},
+	{"GetTrigger",getTriggerReference},
 	{nullptr, nullptr}
 };
 

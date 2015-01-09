@@ -34,21 +34,21 @@ public:
 	WaypointData() = default;
 	~WaypointData() = default;
 
-	int SetTriggerReference(int i);
-	int GetTriggerReference();
+	Vector2 SetOrigin(Vector2 v);
+	Vector2 GetOrigin();
 
 	BoundingBox SetBoundingBox(BoundingBox b);
 	BoundingBox GetBoundingBox();
 
-	Vector2 SetOrigin(Vector2 v);
-	Vector2 GetOrigin();
+	int SetTriggerReference(int i);
+	int GetTriggerReference();
 
 private:
 	friend class WaypointManager;
 
-	int triggerRef = LUA_NOREF;
-	BoundingBox bounds;
 	Vector2 origin;
+	BoundingBox bounds;
+	int triggerRef = LUA_NOREF;
 };
 
 #endif
