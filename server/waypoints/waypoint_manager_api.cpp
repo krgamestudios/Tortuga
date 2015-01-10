@@ -23,7 +23,27 @@
 
 #include "waypoint_manager.hpp"
 
+static int create(lua_State* L) {
+	//TODO
+}
+
+static int unload(lua_State* L) {
+	//TODO
+}
+
+static int getWaypoint(lua_State* L) {
+	//TODO
+}
+
+static int getLoadedCount(lua_State* L) {
+	//TODO
+}
+
 static const luaL_Reg waypointManagerLib[] = {
+	{"Create",create},
+	{"Unload",unload},
+	{"GetWaypoint",getWaypoint},
+	{"GetCount",getLoadedCount},
 	{nullptr, nullptr}
 };
 

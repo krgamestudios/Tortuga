@@ -34,10 +34,11 @@
 
 class WaypointManager {
 public:
-	WaypointManager() = default;
-	~WaypointManager() = default;
+	WaypointManager();
+	~WaypointManager();
 
 	//common public methods
+	int Create();
 	int Create(Vector2 origin, BoundingBox bounds);
 	void Unload(int uid);
 

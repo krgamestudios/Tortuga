@@ -21,6 +21,25 @@
 */
 #include "waypoint_manager.hpp"
 
+WaypointManager::WaypointManager() {
+	//EMPTY
+}
+
+WaypointManager::~WaypointManager() {
+	UnloadAll();
+}
+
+int WaypointManager::Create() {
+	//implicitly creates the element
+	WaypointData& waypointData = elementMap[counter];
+
+	//no real values set
+	waypointData.origin = {0, 0};
+	waypointData.bounds = {0, 0, 0, 0};
+
+	return counter++;
+}
+
 int WaypointManager::Create(Vector2 origin, BoundingBox bounds) {
 	//implicitly creates the element
 	WaypointData& waypointData = elementMap[counter];
