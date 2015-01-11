@@ -22,10 +22,12 @@
 #ifndef ROOMMANAGER_HPP_
 #define ROOMMANAGER_HPP_
 
+#include "entity.hpp"
 #include "room_data.hpp"
 #include "singleton.hpp"
 
 #include "lua.hpp"
+#include "sqlite3.h"
 
 #include <functional>
 #include <map>
@@ -38,6 +40,9 @@ public:
 	void UnloadAll();
 	void UnloadIf(std::function<bool(std::pair<const int, RoomData const&>)> fn);
 
+	void PushEntity(Entity* entity);
+	void PopEntity(Entity const* entity);
+
 	//accessors and mutators
 	RoomData* Get(int uid);
 	RoomData* Get(std::string name);
@@ -47,6 +52,8 @@ public:
 	//hooks
 	lua_State* SetLuaState(lua_State* L);
 	lua_State* GetLuaState();
+	sqlite3* SetDatabase(sqlite3* db);
+	sqlite3* GetDatabase();
 
 private:
 	friend Singleton<RoomManager>;
@@ -57,6 +64,7 @@ private:
 	//members
 	std::map<int, RoomData> elementMap;
 	lua_State* lua = nullptr;
+	sqlite3* database = nullptr;
 	int counter = 0;
 };
 

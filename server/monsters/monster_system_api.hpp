@@ -19,20 +19,12 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#include "monster_data.hpp"
+#ifndef MONSTERSYSTEMAPI_HPP_
+#define MONSTERSYSTEMAPI_HPP_
 
-std::string MonsterData::SetAvatar(std::string s) {
-	return avatar = s;
-}
+#include "lua.hpp"
 
-std::string MonsterData::GetAvatar() {
-	return avatar;
-}
+#define TORTUGA_MONSTER_SYSTEM_API "monster_system"
+LUAMOD_API int openMonsterSystemAPI(lua_State* L);
 
-int MonsterData::SetScriptReference(int i) {
-	return scriptRef = i;
-}
-
-int MonsterData::GetScriptReference() {
-	return scriptRef;
-}
+#endif

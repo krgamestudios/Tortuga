@@ -28,7 +28,6 @@
 #include "client_manager.hpp"
 #include "monster_manager.hpp"
 #include "room_manager.hpp"
-#include "waypoint_manager.hpp"
 
 //utilities
 #include "config_utility.hpp"
@@ -115,12 +114,10 @@ private:
 	lua_State* luaState = nullptr;
 
 	//ugly references; I hate this
+	ClientManager& clientMgr = ClientManager::GetSingleton();
 	AccountManager& accountMgr = AccountManager::GetSingleton();
 	CharacterManager& characterMgr = CharacterManager::GetSingleton();
-	ClientManager& clientMgr = ClientManager::GetSingleton();
-	MonsterManager& monsterMgr = MonsterManager::GetSingleton();
 	RoomManager& roomMgr = RoomManager::GetSingleton();
-	WaypointManager& waypointMgr = WaypointManager::GetSingleton();
 
 	ConfigUtility& config = ConfigUtility::GetSingleton();
 	UDPNetworkUtility& network = UDPNetworkUtility::GetSingleton();

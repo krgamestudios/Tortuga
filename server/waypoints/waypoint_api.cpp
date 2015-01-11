@@ -23,8 +23,50 @@
 
 #include "waypoint_data.hpp"
 
-//TODO: Can I alias the entity API for this?
+//TODO: return multiple values, dummy
+
+//origin
+static int setOrigin(lua_State* L) {
+	//TODO
+	return 0;
+}
+
+static int getOrigin(lua_State* L) {
+	//TODO
+	return 0;
+}
+
+//bounds
+static int setBoundingBox(lua_State* L) {
+	//TODO
+	return 0;
+}
+
+static int getBoundingBox(lua_State* L) {
+	//TODO
+	return 0;
+}
+
+//triggers
+static int setTriggerReference(lua_State* L) {
+	//TODO
+	return 0;
+}
+
+static int getTriggerReference(lua_State* L) {
+	//TODO
+	return 0;
+}
+
 static const luaL_Reg waypointLib[] = {
+	{"SetOrigin",setOrigin},
+	{"GetOrigin",getOrigin},
+
+	{"SetBounds",setBoundingBox},
+	{"GetBounds",getBoundingBox},
+
+	{"SetTrigger",setTriggerReference},
+	{"GetTrigger",getTriggerReference},
 	{nullptr, nullptr}
 };
 

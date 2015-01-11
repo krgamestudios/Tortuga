@@ -22,16 +22,23 @@
 #ifndef WAYPOINTDATA_HPP_
 #define WAYPOINTDATA_HPP_
 
-#include "entity.hpp"
+#include "bounding_box.hpp"
+#include "vector2.hpp"
 
 #include "lua.hpp"
 
 #include <string>
 
-class WaypointData: public Entity {
+class WaypointData {
 public:
 	WaypointData() = default;
 	~WaypointData() = default;
+
+	Vector2 SetOrigin(Vector2 v);
+	Vector2 GetOrigin();
+
+	BoundingBox SetBoundingBox(BoundingBox b);
+	BoundingBox GetBoundingBox();
 
 	int SetTriggerReference(int i);
 	int GetTriggerReference();
@@ -39,6 +46,8 @@ public:
 private:
 	friend class WaypointManager;
 
+	Vector2 origin;
+	BoundingBox bounds;
 	int triggerRef = LUA_NOREF;
 };
 

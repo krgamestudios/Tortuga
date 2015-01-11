@@ -19,12 +19,37 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef TILESHEETAPI_HPP_
-#define TILESHEETAPI_HPP_
+#include "monster_system_api.hpp"
 
-#include "lua.hpp"
+//all monster API headers
+#include "monster_api.hpp"
+#include "monster_manager_api.hpp"
 
-#define TORTUGA_TILE_SHEET_NAME "tile_sheet"
-LUAMOD_API int openTileSheetAPI(lua_State* L);
+//useful "globals"
+//...
 
-#endif
+//This mimics linit.c to create a nested collection of all monster modules.
+static const luaL_Reg funcs[] = {
+	{nullptr, nullptr}
+};
+
+static const luaL_Reg libs[] = {
+	{"Monster", openMonsterAPI},
+	{"MonsterManager", openMonsterManagerAPI},
+	{nullptr, nullptr}
+};
+
+int openMonsterSystemAPI(lua_State* L) {
+	//create the table
+	luaL_newlibtable(L, libs);
+
+	//push the "global" functions
+	luaL_setfuncs(L, funcs, 0);
+
+	//push the substable
+	for (const luaL_Reg* lib = libs; lib->func; lib++) {
+		lib->func(L);
+		lua_setfield(L, -2, lib->name);
+	}
+	return 1;
+}

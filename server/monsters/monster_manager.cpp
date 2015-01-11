@@ -21,23 +21,19 @@
 */
 #include "monster_manager.hpp"
 
+MonsterManager::MonsterManager() {
+	//EMPTY
+}
+
+MonsterManager::~MonsterManager() {
+	UnloadAll();
+}
+
 int MonsterManager::Create(std::string) {
 	//TODO
 }
 
-int MonsterManager::Load(std::string) {
-	//TODO
-}
-
-int MonsterManager::Save(int uid) {
-	//TODO
-}
-
 void MonsterManager::Unload(int uid) {
-	//TODO
-}
-
-void MonsterManager::Delete(int uid) {
 	//TODO
 }
 
@@ -57,19 +53,7 @@ int MonsterManager::GetLoadedCount() {
 	//TODO
 }
 
-int MonsterManager::GetTotalCount() {
-	//TODO
-}
-
 std::map<int, MonsterData>* MonsterManager::GetContainer() {
-	//TODO
-}
-
-sqlite3* MonsterManager::SetDatabase(sqlite3* db) {
-	//TODO
-}
-
-sqlite3* MonsterManager::GetDatabase() {
 	//TODO
 }
 
@@ -78,5 +62,13 @@ lua_State* MonsterManager::SetLuaState(lua_State* L) {
 }
 
 lua_State* MonsterManager::GetLuaState() {
+	//TODO
+}
+
+sqlite3* MonsterManager::SetDatabase(sqlite3* db) {
+	//TODO
+}
+
+sqlite3* MonsterManager::GetDatabase() {
 	//TODO
 }

@@ -22,9 +22,9 @@
 #ifndef WAYPOINTMANAGER_HPP_
 #define WAYPOINTMANAGER_HPP_
 
-#include "waypoint_data.hpp"
-#include "singleton.hpp"
+#include "bounding_box.hpp"
 #include "vector2.hpp"
+#include "waypoint_data.hpp"
 
 #include "lua.hpp"
 
@@ -32,15 +32,15 @@
 #include <map>
 #include <string>
 
-//TODO: should waypoints be managed on a per-room basis?
-class WaypointManager: public Singleton<WaypointManager> {
+class WaypointManager {
 public:
+	WaypointManager();
+	~WaypointManager();
+
 	//common public methods
 	int Create();
-	int Load();
-	int Save(int uid);
+	int Create(Vector2 origin, BoundingBox bounds);
 	void Unload(int uid);
-	void Delete(int uid);
 
 	void UnloadAll();
 	void UnloadIf(std::function<bool(std::pair<const int, WaypointData const&>)> fn);
@@ -48,19 +48,13 @@ public:
 	//accessors & mutators
 	WaypointData* Get(int uid);
 	int GetLoadedCount();
-	int GetTotalCount();
 	std::map<int, WaypointData>* GetContainer();
 
 	//hooks
-	lua_State* SetLuaState(lua_State* L) { return lua = L; }
-	lua_State* GetLuaState() { return lua; }
+	lua_State* SetLuaState(lua_State* L);
+	lua_State* GetLuaState();
 
 private:
-	friend Singleton<WaypointManager>;
-
-	WaypointManager() = default;
-	~WaypointManager() = default;
-
 	//members
 	std::map<int, WaypointData> elementMap;
 	lua_State* lua = nullptr;

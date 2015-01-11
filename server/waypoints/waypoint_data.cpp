@@ -28,3 +28,19 @@ int WaypointData::SetTriggerReference(int i) {
 int WaypointData::GetTriggerReference() {
 	return triggerRef;
 }
+
+BoundingBox WaypointData::SetBoundingBox(BoundingBox b) {
+	return bounds = b;
+}
+
+BoundingBox WaypointData::GetBoundingBox() {
+	return bounds;
+}
+
+Vector2 WaypointData::SetOrigin(Vector2 v) {
+	return origin = v;
+}
+
+Vector2 WaypointData::GetOrigin() {
+	return origin;
+}

@@ -21,46 +21,78 @@
 */
 #include "waypoint_manager.hpp"
 
+WaypointManager::WaypointManager() {
+	//EMPTY
+}
+
+WaypointManager::~WaypointManager() {
+	UnloadAll();
+}
+
 int WaypointManager::Create() {
-	//TODO
+	//implicitly creates the element
+	WaypointData& waypointData = elementMap[counter];
+
+	//no real values set
+	waypointData.origin = {0, 0};
+	waypointData.bounds = {0, 0, 0, 0};
+
+	return counter++;
 }
 
-int WaypointManager::Load() {
-	//TODO
-}
+int WaypointManager::Create(Vector2 origin, BoundingBox bounds) {
+	//implicitly creates the element
+	WaypointData& waypointData = elementMap[counter];
 
-int WaypointManager::Save(int uid) {
-	//TODO
+	waypointData.origin = origin;
+	waypointData.bounds = bounds;
+
+	return counter++;
 }
 
 void WaypointManager::Unload(int uid) {
-	//TODO
-}
-
-void WaypointManager::Delete(int uid) {
-	//TODO
+	elementMap.erase(uid);
 }
 
 void WaypointManager::UnloadAll() {
-	//TODO
+	elementMap.clear();
 }
 
 void WaypointManager::UnloadIf(std::function<bool(std::pair<const int, WaypointData const&>)> fn) {
-	//TODO
+	std::map<int, WaypointData>::iterator it = elementMap.begin();
+	while (it != elementMap.end()) {
+		if (fn(*it)) {
+			it = elementMap.erase(it);
+		}
+		else {
+			++it;
+		}
+	}
 }
 
 WaypointData* WaypointManager::Get(int uid) {
-	//TODO
+	std::map<int, WaypointData>::iterator it = elementMap.find(uid);
+
+	if (it == elementMap.end()) {
+		return nullptr;
+	}
+
+	return &it->second;
 }
 
 int WaypointManager::GetLoadedCount() {
-	//TODO
-}
-
-int WaypointManager::GetTotalCount() {
-	//TODO
+	return elementMap.size();
 }
 
 std::map<int, WaypointData>* WaypointManager::GetContainer() {
-	//TODO
+	return &elementMap;
+}
+
+//hooks
+lua_State* WaypointManager::SetLuaState(lua_State* L) {
+	return lua = L;
+}
+
+lua_State* WaypointManager::GetLuaState() {
+	return lua;
 }

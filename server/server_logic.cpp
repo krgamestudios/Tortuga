@@ -105,7 +105,7 @@ void ServerApplication::Init(int argc, char* argv[]) {
 	characterMgr.SetDatabase(database);
 
 	roomMgr.SetLuaState(luaState);
-	waypointMgr.SetLuaState(luaState);
+	roomMgr.SetDatabase(database);
 
 	std::cout << "Internal managers initialized" << std::endl;
 
@@ -202,9 +202,7 @@ void ServerApplication::Quit() {
 	accountMgr.UnloadAll();
 	characterMgr.UnloadAll();
 	clientMgr.UnloadAll();
-	monsterMgr.UnloadAll();
 	roomMgr.UnloadAll();
-	waypointMgr.UnloadAll();
 
 	//APIs
 	lua_close(luaState);
