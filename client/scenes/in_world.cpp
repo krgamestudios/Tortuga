@@ -589,8 +589,6 @@ void InWorld::HandleCharacterDelete(CharacterPacket* const argPacket) {
 	//ignore if this character doesn't exist
 	std::map<int, BaseCharacter>::iterator characterIt = characterMap.find(argPacket->characterIndex);
 	if (characterIt == characterMap.end()) {
-		//debug
-		std::cout << "Ignoring character deletion" << std::endl;
 		return;
 	}
 
