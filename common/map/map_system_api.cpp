@@ -24,7 +24,6 @@
 //all map API headers
 #include "region_api.hpp"
 #include "region_pager_api.hpp"
-#include "tile_sheet_api.hpp"
 
 //useful "globals"
 //...
@@ -37,7 +36,6 @@ static const luaL_Reg funcs[] = {
 static const luaL_Reg libs[] = {
 	{"Region", openRegionAPI},
 	{"RegionPager", openRegionPagerAPI},
-//	{"TileSheet", openTileSheetAPI},
 	{nullptr, nullptr}
 };
 

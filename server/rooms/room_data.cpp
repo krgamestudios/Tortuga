@@ -41,6 +41,14 @@ RegionPagerLua* RoomData::GetPager() {
 	return &pager;
 }
 
+MonsterManager* RoomData::GetMonsterMgr() {
+	return &monsterMgr;
+}
+
+WaypointManager* RoomData::GetWaypointMgr() {
+	return &waypointMgr;
+}
+
 std::list<Entity*>* RoomData::GetEntityList() {
 	return &entityList;
 }

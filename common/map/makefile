@@ -1,5 +1,5 @@
 #config
-INCLUDES+=. ../graphics ../utilities
+INCLUDES+=. ../utilities
 LIBS+=
 CXXFLAGS+=-std=c++11 $(addprefix -I,$(INCLUDES))
 

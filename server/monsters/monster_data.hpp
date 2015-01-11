@@ -32,9 +32,9 @@ public:
 	~MonsterData() = default;
 
 	std::string SetAvatar(std::string);
-	int SetScriptReference(int);
-
 	std::string GetAvatar();
+
+	int SetScriptReference(int);
 	int GetScriptReference();
 
 private:

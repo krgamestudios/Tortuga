@@ -149,6 +149,9 @@ void ServerApplication::FullCharacterUnload(int index) {
 			return false;
 		}
 
+		//pop from the rooms
+		roomMgr.PopEntity(&character.second);
+
 		//pump character unload
 		CharacterPacket newPacket;
 		newPacket.type = SerialPacketType::CHARACTER_DELETE;

@@ -42,18 +42,30 @@ Region::Region(Region const& rhs): x(rhs.x), y(rhs.y) {
 }
 
 Region::type_t Region::SetTile(int x, int y, int z, type_t v) {
+	if (x < 0 || y < 0 || z < 0 || x >= REGION_WIDTH || y >= REGION_HEIGHT || z >= REGION_DEPTH) {
+		throw(std::out_of_range("Region::SetTile() argument out of range"));
+	}
 	return tiles[x][y][z] = v;
 }
 
 Region::type_t Region::GetTile(int x, int y, int z) {
+	if (x < 0 || y < 0 || z < 0 || x >= REGION_WIDTH || y >= REGION_HEIGHT || z >= REGION_DEPTH) {
+		throw(std::out_of_range("Region::GetTile() argument out of range"));
+	}
 	return tiles[x][y][z];
 }
 
 bool Region::SetSolid(int x, int y, bool b) {
+	if (x < 0 || y < 0 || x >= REGION_WIDTH || y >= REGION_HEIGHT) {
+		throw(std::out_of_range("Region::SetSolid() argument out of range"));
+	}
 	return solid[x * REGION_WIDTH + y] = b;
 }
 
 bool Region::GetSolid(int x, int y) {
+	if (x < 0 || y < 0 || x >= REGION_WIDTH || y >= REGION_HEIGHT) {
+		throw(std::out_of_range("Region::GetSolid() argument out of range"));
+	}
 	return solid[x * REGION_WIDTH + y];
 }
 
