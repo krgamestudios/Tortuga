@@ -26,19 +26,30 @@
 #include "entity_api.hpp"
 
 static int setAvatar(lua_State* L) {
-	//TODO
+	MonsterData* monster = static_cast<MonsterData*>(lua_touserdata(L, 1));
+	monster->SetAvatar(lua_tostring(L, 2));
+	//TODO: send an update to the clients?
+	return 0;
 }
 
 static int getAvatar(lua_State* L) {
-	//TODO
+	MonsterData* monster = static_cast<MonsterData*>(lua_touserdata(L, 1));
+	lua_pushstring(L, monster->GetAvatar().c_str());
+	return 1;
 }
 
 static int setScript(lua_State* L) {
-	//TODO
+	MonsterData* monster = static_cast<MonsterData*>(lua_touserdata(L, 1));
+	luaL_unref(L, LUA_REGISTRYINDEX, monster->GetScriptReference());
+	monster->SetScriptReference(luaL_ref(L, LUA_REGISTRYINDEX));
+	return 0;
 }
 
 static int getScript(lua_State* L) {
-	//TODO
+	MonsterData* monster = static_cast<MonsterData*>(lua_touserdata(L, 1));
+	lua_pushinteger(L, monster->GetScriptReference());
+	lua_gettable(L, LUA_REGISTRYINDEX);
+	return 1;
 }
 
 static const luaL_Reg monsterLib[] = {
