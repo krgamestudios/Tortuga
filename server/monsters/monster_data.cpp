@@ -25,12 +25,12 @@ std::string MonsterData::SetAvatar(std::string s) {
 	return avatar = s;
 }
 
-int MonsterData::SetScriptReference(int i) {
-	return scriptRef = i;
-}
-
 std::string MonsterData::GetAvatar() {
 	return avatar;
+}
+
+int MonsterData::SetScriptReference(int i) {
+	return scriptRef = i;
 }
 
 int MonsterData::GetScriptReference() {

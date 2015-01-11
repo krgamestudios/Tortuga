@@ -19,48 +19,37 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#include "monster_manager.hpp"
+#include "monster_system_api.hpp"
 
-int MonsterManager::Create(std::string) {
-	//TODO
-}
+//all monster API headers
+#include "monster_api.hpp"
+#include "monster_manager_api.hpp"
 
-void MonsterManager::Unload(int uid) {
-	//TODO
-}
+//useful "globals"
+//...
 
-void MonsterManager::UnloadAll() {
-	//TODO
-}
+//This mimics linit.c to create a nested collection of all monster modules.
+static const luaL_Reg funcs[] = {
+	{nullptr, nullptr}
+};
 
-void MonsterManager::UnloadIf(std::function<bool(std::pair<const int, MonsterData const&>)> fn) {
-	//TODO
-}
+static const luaL_Reg libs[] = {
+	{"Monster", openMonsterAPI},
+	{"MonsterManager", openMonsterManagerAPI},
+	{nullptr, nullptr}
+};
 
-MonsterData* MonsterManager::Get(int uid) {
-	//TODO
-}
+int openMonsterSystemAPI(lua_State* L) {
+	//create the table
+	luaL_newlibtable(L, libs);
 
-int MonsterManager::GetLoadedCount() {
-	//TODO
-}
+	//push the "global" functions
+	luaL_setfuncs(L, funcs, 0);
 
-std::map<int, MonsterData>* MonsterManager::GetContainer() {
-	//TODO
-}
-
-sqlite3* MonsterManager::SetDatabase(sqlite3* db) {
-	//TODO
-}
-
-sqlite3* MonsterManager::GetDatabase() {
-	//TODO
-}
-
-lua_State* MonsterManager::SetLuaState(lua_State* L) {
-	//TODO
-}
-
-lua_State* MonsterManager::GetLuaState() {
-	//TODO
+	//push the substable
+	for (const luaL_Reg* lib = libs; lib->func; lib++) {
+		lib->func(L);
+		lua_setfield(L, -2, lib->name);
+	}
+	return 1;
 }

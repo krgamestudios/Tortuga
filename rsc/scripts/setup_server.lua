@@ -22,6 +22,21 @@ mapSystem.RegionPager.SetOnSave(roomSystem.Room.GetPager(overworld), mapSaver.Sa
 mapSystem.RegionPager.SetOnCreate(roomSystem.Room.GetPager(overworld), mapMaker.debugIsland)
 mapSystem.RegionPager.SetOnUnload(roomSystem.Room.GetPager(overworld), mapSaver.Save)
 
+--check the entity-monster cloning...
+print("Checking monster-entity stuff")
+
+monsterSystem = require "monster_system"
+entities = require "entity"
+
+dumpTable(entities)
+dumpTable(monsterSystem)
+dumpTable(monsterSystem.Monster)
+
+monsterSystem.Monster.GetRoomIndex = -1
+
+dumpTable(entities)
+dumpTable(monsterSystem.Monster)
+
 print("Finished the lua script")
 
 --[[

@@ -23,64 +23,26 @@
 
 #include "waypoint_data.hpp"
 
+//TODO: return multiple values, dummy
+
 //origin
-static int setOriginX(lua_State* L) {
+static int setOrigin(lua_State* L) {
 	//TODO
 	return 0;
 }
 
-static int setOriginY(lua_State* L) {
-	//TODO
-	return 0;
-}
-
-static int getOriginX(lua_State* L) {
-	//TODO
-	return 0;
-}
-
-static int getOriginY(lua_State* L) {
+static int getOrigin(lua_State* L) {
 	//TODO
 	return 0;
 }
 
 //bounds
-static int setBoundingBoxX(lua_State* L) {
+static int setBoundingBox(lua_State* L) {
 	//TODO
 	return 0;
 }
 
-static int setBoundingBoxY(lua_State* L) {
-	//TODO
-	return 0;
-}
-
-static int setBoundingBoxW(lua_State* L) {
-	//TODO
-	return 0;
-}
-
-static int setBoundingBoxH(lua_State* L) {
-	//TODO
-	return 0;
-}
-
-static int getBoundingBoxX(lua_State* L) {
-	//TODO
-	return 0;
-}
-
-static int getBoundingBoxY(lua_State* L) {
-	//TODO
-	return 0;
-}
-
-static int getBoundingBoxW(lua_State* L) {
-	//TODO
-	return 0;
-}
-
-static int getBoundingBoxH(lua_State* L) {
+static int getBoundingBox(lua_State* L) {
 	//TODO
 	return 0;
 }
@@ -97,24 +59,12 @@ static int getTriggerReference(lua_State* L) {
 }
 
 static const luaL_Reg waypointLib[] = {
-	//origin
-	{"SetOriginX",setOriginX},
-	{"SetOriginY",setOriginY},
-	{"GetOriginX",getOriginX},
-	{"GetOriginY",getOriginY},
+	{"SetOrigin",setOrigin},
+	{"GetOrigin",getOrigin},
 
-	//bounds
-	{"SetBoundsX",setBoundingBoxX},
-	{"SetBoundsY",setBoundingBoxY},
-	{"SetBoundsW",setBoundingBoxW},
-	{"SetBoundsH",setBoundingBoxH},
+	{"SetBounds",setBoundingBox},
+	{"GetBounds",getBoundingBox},
 
-	{"GetBoundsX",getBoundingBoxX},
-	{"GetBoundsY",getBoundingBoxY},
-	{"GetBoundsW",getBoundingBoxW},
-	{"GetBoundsH",getBoundingBoxH},
-
-	//triggers
 	{"SetTrigger",setTriggerReference},
 	{"GetTrigger",getTriggerReference},
 	{nullptr, nullptr}
