@@ -1,39 +1,95 @@
-local mapSystem = require "map_system"
+local Region = require("map_system").Region
 
 local mapMaker = {}
 
 --utility functions
-function mapMaker.sqr(x) return x*x end
-function mapMaker.dist(x, y, i, j) return math.sqrt(mapMaker.sqr(x - i) + mapMaker.sqr(y - j)) end
+function mapMaker.Sqr(x) return x*x end
+function mapMaker.Dist(x, y, i, j) return math.sqrt(mapMaker.Sqr(x - i) + mapMaker.Sqr(y - j)) end
 
 --tile macros, mapped to the tilesheet "overworld.bmp"
-mapMaker.edges = {}
-mapMaker.edges.north = -16
-mapMaker.edges.south = 16
-mapMaker.edges.east = 1
-mapMaker.edges.west = -1
-
 mapMaker.water	= 18 + 3 * 0
 mapMaker.sand	= 18 + 3 * 1
 mapMaker.plains	= 18 + 3 * 2
 mapMaker.grass	= 18 + 3 * 3
 mapMaker.dirt	= 18 + 3 * 4
 
---custom generation systems here
-function mapMaker.debugIsland(region)
-	for i = 1, mapSystem.Region.GetWidth(region) do
-		for j = 1, mapSystem.Region.GetHeight(region) do
-			local dist = mapMaker.dist(0, 0, i + mapSystem.Region.GetX(region) -1, j + mapSystem.Region.GetY(region) -1)
-			if dist < 10 then
-				mapSystem.Region.SetTile(region, i, j, 1, mapMaker.plains)
-			elseif dist < 12 then
-				mapSystem.Region.SetTile(region, i, j, 1, mapMaker.sand)
-			else
-				mapSystem.Region.SetTile(region, i, j, 1, mapMaker.water)
-				mapSystem.Region.SetSolid(region, i, j, true)
+--"edge" macros
+mapMaker.edges = {}
+mapMaker.edges.north = -16
+mapMaker.edges.south = 16
+mapMaker.edges.east = 1
+mapMaker.edges.west = -1
+
+--use these macros (mapped to "overworld.bmp" for now) to smooth the region's edges
+function mapMaker.SmoothEdgesSimple(r)
+	--make and pad an array to use
+	local shiftArray = {}
+	for i = 1, Region.GetWidth(r) do
+		shiftArray[i] = {}
+		for j = 1, Region.GetHeight(r) do
+			shiftArray[i][j] = 0
+		end
+	end
+
+	--build the array
+	for i = 1, Region.GetWidth(r) do
+		for j = 1, Region.GetHeight(r) do
+			--if (not region edge) and (west tile < this tile), etc.
+			if i > 1 and Region.GetTile(r, i - 1, j, 1) < Region.GetTile(r, i, j, 1) then
+				shiftArray[i][j] = shiftArray[i][j] + mapMaker.edges.west
+			end
+			if j > 1 and Region.GetTile(r, i, j - 1, 1) < Region.GetTile(r, i, j, 1) then
+				shiftArray[i][j] = shiftArray[i][j] + mapMaker.edges.north
+			end
+			if i < Region.GetWidth(r) and Region.GetTile(r, i + 1, j, 1) < Region.GetTile(r, i, j, 1) then
+				shiftArray[i][j] = shiftArray[i][j] + mapMaker.edges.east
+			end
+			if j < Region.GetHeight(r) and Region.GetTile(r, i, j + 1, 1) < Region.GetTile(r, i, j, 1) then
+				shiftArray[i][j] = shiftArray[i][j] + mapMaker.edges.south
 			end
 		end
 	end
+
+	--finally apply this
+	for i = 1, Region.GetWidth(r) do
+		for j = 1, Region.GetHeight(r) do
+			if shiftArray[i][j] ~= 0 then
+				Region.SetTile(r, i, j, 2, Region.GetTile(r, i, j, 1) + shiftArray[i][j])
+				Region.SetTile(r, i, j, 1, Region.GetTile(r, i, j, 1) - 3)
+			end
+		end
+	end
+end
+
+--custom generation systems here
+function mapMaker.DebugIsland(r)
+	--basic distance check for each tile, placing an island around the world origin
+	for i = 1, Region.GetWidth(r) do
+		for j = 1, Region.GetHeight(r) do
+			local dist = mapMaker.Dist(0, 0, i + Region.GetX(r) -1, j + Region.GetY(r) -1)
+			if dist < 10 then
+				Region.SetTile(r, i, j, 1, mapMaker.plains)
+			elseif dist < 12 then
+				Region.SetTile(r, i, j, 1, mapMaker.sand)
+			else
+				Region.SetTile(r, i, j, 1, mapMaker.water)
+				Region.SetSolid(r, i, j, true)
+			end
+		end
+	end
+
+	--examples of the smoothing function NOT working correctly
+	--[[
+	for j = 1, Region.GetHeight(r) do
+		Region.SetTile(r, 3, j, 1, mapMaker.dirt)
+		Region.SetTile(r, 4, j, 1, mapMaker.dirt)
+
+		Region.SetTile(r, 10, j, 1, mapMaker.dirt)
+	end
+	--]]
+
+	--A generic edge system
+	mapMaker.SmoothEdgesSimple(r)
 end
 
 return mapMaker
