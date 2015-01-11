@@ -26,7 +26,6 @@
 #include "character_manager.hpp"
 #include "client_manager.hpp"
 #include "config_utility.hpp"
-#include "monster_manager.hpp"
 #include "room_manager.hpp"
 #include "udp_network_utility.hpp"
 #include "waypoint_manager.hpp"
@@ -43,7 +42,6 @@ int main(int argc, char* argv[]) {
 		CharacterManager::CreateSingleton();
 		ClientManager::CreateSingleton();
 		ConfigUtility::CreateSingleton();
-		MonsterManager::CreateSingleton();
 		RoomManager::CreateSingleton();
 		UDPNetworkUtility::CreateSingleton();
 
@@ -62,7 +60,6 @@ int main(int argc, char* argv[]) {
 		CharacterManager::DeleteSingleton();
 		ClientManager::DeleteSingleton();
 		ConfigUtility::DeleteSingleton();
-		MonsterManager::DeleteSingleton();
 		RoomManager::DeleteSingleton();
 		UDPNetworkUtility::DeleteSingleton();
 	}

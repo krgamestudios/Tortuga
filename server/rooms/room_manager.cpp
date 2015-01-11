@@ -36,6 +36,9 @@ int RoomManager::Create(std::string roomName, std::string tileset) {
 	newRoom->SetTileset(tileset);
 
 	newRoom->pager.SetLuaState(lua);
+	newRoom->monsterMgr.SetLuaState(lua);
+	newRoom->monsterMgr.SetDatabase(database);
+	newRoom->waypointMgr.SetLuaState(lua);
 
 	//finish the routine
 	return counter++;
@@ -121,4 +124,12 @@ lua_State* RoomManager::SetLuaState(lua_State* L) {
 
 lua_State* RoomManager::GetLuaState() {
 	return lua;
+}
+
+sqlite3* RoomManager::SetDatabase(sqlite3* db) {
+	return database = db;
+}
+
+sqlite3* RoomManager::GetDatabase() {
+	return database;
 }

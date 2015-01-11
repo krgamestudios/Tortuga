@@ -53,6 +53,18 @@ static int getPager(lua_State* L) {
 	return 1;
 }
 
+static int getMonsterMgr(lua_State* L) {
+	RoomData* room = reinterpret_cast<RoomData*>(lua_touserdata(L, 1));
+	lua_pushlightuserdata(L, reinterpret_cast<void*>(room->GetMonsterMgr()) );
+	return 1;
+}
+
+static int getWaypointMgr(lua_State* L) {
+	RoomData* room = reinterpret_cast<RoomData*>(lua_touserdata(L, 1));
+	lua_pushlightuserdata(L, reinterpret_cast<void*>(room->GetWaypointMgr()) );
+	return 1;
+}
+
 static int initialize(lua_State* L) {
 	//set the members of the given room
 	RoomData* room = static_cast<RoomData*>(lua_touserdata(L, 1));
@@ -70,11 +82,15 @@ static int initialize(lua_State* L) {
 }
 
 static const luaL_Reg roomLib[] = {
-	{"GetPager",getPager},
 	{"SetName", setRoomName},
 	{"GetName", getRoomName},
 	{"SetTileset", setTilesetName},
 	{"GetTileset", getTilesetName},
+
+	{"GetPager",getPager},
+	{"GetMonsterMgr",getMonsterMgr},
+	{"GetWaypointMgr",getWaypointMgr},
+
 	{"Initialize", initialize},
 	{nullptr, nullptr}
 };

@@ -27,6 +27,7 @@
 #include "singleton.hpp"
 
 #include "lua.hpp"
+#include "sqlite3.h"
 
 #include <functional>
 #include <map>
@@ -51,6 +52,8 @@ public:
 	//hooks
 	lua_State* SetLuaState(lua_State* L);
 	lua_State* GetLuaState();
+	sqlite3* SetDatabase(sqlite3* db);
+	sqlite3* GetDatabase();
 
 private:
 	friend Singleton<RoomManager>;
@@ -61,6 +64,7 @@ private:
 	//members
 	std::map<int, RoomData> elementMap;
 	lua_State* lua = nullptr;
+	sqlite3* database = nullptr;
 	int counter = 0;
 };
 
