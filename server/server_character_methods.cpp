@@ -46,7 +46,7 @@ void ServerApplication::HandleCharacterCreate(CharacterPacket* const argPacket) 
 	}
 
 	//push to the rooms
-	roomMgr.PushEntity(characterMgr.Get(characterIndex));
+	roomMgr.PushCharacter(characterMgr.Get(characterIndex));
 
 	//pump this character to all clients
 	CharacterPacket newPacket;
@@ -90,7 +90,7 @@ void ServerApplication::HandleCharacterDelete(CharacterPacket* const argPacket) 
 	}
 
 	//pop from the rooms
-	roomMgr.PopEntity(characterMgr.Get(characterIndex));
+	roomMgr.PopCharacter(characterMgr.Get(characterIndex));
 
 	//delete the character
 	characterMgr.Delete(characterIndex);
@@ -126,7 +126,7 @@ void ServerApplication::HandleCharacterLoad(CharacterPacket* const argPacket) {
 	}
 
 	//push to the rooms
-	roomMgr.PushEntity(characterMgr.Get(characterIndex));
+	roomMgr.PushCharacter(characterMgr.Get(characterIndex));
 
 	//pump this character to all clients
 	CharacterPacket newPacket;
@@ -159,7 +159,7 @@ void ServerApplication::HandleCharacterUnload(CharacterPacket* const argPacket) 
 	}
 
 	//pop from the rooms
-	roomMgr.PopEntity(characterData);
+	roomMgr.PopCharacter(characterData);
 
 	//unload the character
 	characterMgr.Unload(argPacket->characterIndex);
@@ -203,7 +203,7 @@ void ServerApplication::HandleCharacterSetRoom(CharacterPacket* const argPacket)
 	}
 
 	//pop from the old room
-	roomMgr.PopEntity(characterData);
+	roomMgr.PopCharacter(characterData);
 
 	//set the character's room, zero it's origin, zero it's motion
 	characterData->SetRoomIndex(argPacket->roomIndex);
@@ -211,7 +211,7 @@ void ServerApplication::HandleCharacterSetRoom(CharacterPacket* const argPacket)
 	characterData->SetMotion({0, 0});
 
 	//push to the new room
-	roomMgr.PushEntity(characterData);
+	roomMgr.PushCharacter(characterData);
 
 	//update the clients
 	CharacterPacket newPacket;

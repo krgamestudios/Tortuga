@@ -22,7 +22,7 @@
 #ifndef ROOMMANAGER_HPP_
 #define ROOMMANAGER_HPP_
 
-#include "entity.hpp"
+#include "character_data.hpp"
 #include "room_data.hpp"
 #include "singleton.hpp"
 
@@ -40,8 +40,8 @@ public:
 	void UnloadAll();
 	void UnloadIf(std::function<bool(std::pair<const int, RoomData const&>)> fn);
 
-	void PushEntity(Entity* entity);
-	void PopEntity(Entity const* entity);
+	void PushCharacter(CharacterData* character);
+	void PopCharacter(CharacterData const* character);
 
 	//accessors and mutators
 	RoomData* Get(int uid);
