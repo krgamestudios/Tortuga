@@ -300,5 +300,5 @@ void ServerApplication::HandleCharacterSetMotion(CharacterPacket* const argPacke
 	CharacterPacket newPacket;
 	CopyCharacterToPacket(&newPacket, argPacket->characterIndex);
 	newPacket.type = SerialPacketType::CHARACTER_SET_MOTION;
-	PumpPacket(&newPacket);
+	PumpPacketProximity(&newPacket, characterData->GetRoomIndex(), characterData->GetOrigin(), -1);
 }

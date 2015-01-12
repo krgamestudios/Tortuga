@@ -175,6 +175,22 @@ void ServerApplication::PumpPacket(SerialPacket* const argPacket) {
 	}
 }
 
+void ServerApplication::PumpPacketProximity(SerialPacket* const argPacket, int roomIndex, Vector2 position, int distance) {
+	RoomData* room = roomMgr.Get(roomIndex);
+
+	if (!room) {
+		throw(std::runtime_error("Failed to pump to a non-existant room"));
+	}
+
+	for (auto& character : *room->GetCharacterList()) {
+		if (distance == -1 || (character->GetOrigin() - position).Length() <= distance) {
+			AccountData* account = accountMgr.Get(character->GetOwner());
+			ClientData* client = clientMgr.Get(account->GetClientIndex());
+			network.SendTo(client->GetAddress(), argPacket);
+		}
+	}
+}
+
 void ServerApplication::CopyCharacterToPacket(CharacterPacket* const packet, int characterIndex) {
 	CharacterData* character = characterMgr.Get(characterIndex);
 	if (!character) {
