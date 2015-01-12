@@ -49,6 +49,6 @@ WaypointManager* RoomData::GetWaypointMgr() {
 	return &waypointMgr;
 }
 
-std::list<Entity*>* RoomData::GetEntityList() {
-	return &entityList;
+std::list<CharacterData*>* RoomData::GetCharacterList() {
+	return &characterList;
 }

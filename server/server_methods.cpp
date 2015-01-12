@@ -150,7 +150,7 @@ void ServerApplication::FullCharacterUnload(int index) {
 		}
 
 		//pop from the rooms
-		roomMgr.PopEntity(&character.second);
+		roomMgr.PopCharacter(&character.second);
 
 		//pump character unload
 		CharacterPacket newPacket;
@@ -172,6 +172,22 @@ void ServerApplication::FullCharacterUnload(int index) {
 void ServerApplication::PumpPacket(SerialPacket* const argPacket) {
 	for (auto& it : *clientMgr.GetContainer()) {
 		network.SendTo(it.second.GetAddress(), argPacket);
+	}
+}
+
+void ServerApplication::PumpPacketProximity(SerialPacket* const argPacket, int roomIndex, Vector2 position, int distance) {
+	RoomData* room = roomMgr.Get(roomIndex);
+
+	if (!room) {
+		throw(std::runtime_error("Failed to pump to a non-existant room"));
+	}
+
+	for (auto& character : *room->GetCharacterList()) {
+		if (distance == -1 || (character->GetOrigin() - position).Length() <= distance) {
+			AccountData* account = accountMgr.Get(character->GetOwner());
+			ClientData* client = clientMgr.Get(account->GetClientIndex());
+			network.SendTo(client->GetAddress(), argPacket);
+		}
 	}
 }
 
