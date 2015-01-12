@@ -187,7 +187,7 @@ void ServerApplication::Proc() {
 			std::cerr << "Client dropped: " << disconnected << std::endl;
 		}
 
-		//give the computer a break
+		//give the machine a break
 		SDL_Delay(10);
 	}
 	delete reinterpret_cast<char*>(packetBuffer);

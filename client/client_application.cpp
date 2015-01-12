@@ -137,11 +137,17 @@ void ClientApplication::Proc() {
 		realTime = Clock::now();
 
 		//simulate game time
-		while (simTime < realTime) {
-			//call each user defined function
-			activeScene->RunFrame();
-			//~60 FPS
-			simTime += std::chrono::duration<int, std::milli>(16);
+		if (simTime < realTime) {
+			while (simTime < realTime) {
+				//call each user defined function
+				activeScene->RunFrame();
+				//~60 FPS
+				simTime += std::chrono::duration<int, std::milli>(16);
+			}
+		}
+		else {
+			//give the machine a break
+			SDL_Delay(10);
 		}
 
 		//draw the game to the screen
