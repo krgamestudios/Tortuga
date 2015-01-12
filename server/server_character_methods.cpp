@@ -175,105 +175,15 @@ void ServerApplication::HandleCharacterUnload(CharacterPacket* const argPacket) 
 //character movement
 //-------------------------
 
-//TODO: ? Could replace this verbosity with a "verify" method, taking a client, account and character ptr as arguments
+//TODO: Could replace this verbosity with a "verify" method, taking a client, account and character ptr as arguments
 
-void ServerApplication::HandleCharacterSetRoom(CharacterPacket* const argPacket) {
+void ServerApplication::HandleCharacterMovement(CharacterPacket* const argPacket) {
 	//get the specified objects
 	AccountData* accountData = accountMgr.Get(argPacket->accountIndex);
 	CharacterData* characterData = characterMgr.Get(argPacket->characterIndex);
 
 	if (!accountData || !characterData) {
-		throw(std::runtime_error("Failed to set character room, missing data"));
-	}
-
-	//get this account's client
-	ClientData* clientData = clientMgr.Get(accountData->GetClientIndex());
-
-	//check for fraud
-	if (clientData->GetAddress() != argPacket->srcAddress) {
-		std::cerr << "Falsified set character origin targeting uid(" << argPacket->characterIndex << ")" << std::endl;
-		return;
-	}
-
-	//check if allowed
-	if (characterData->GetOwner() != argPacket->accountIndex && !accountData->GetModerator() && !accountData->GetAdministrator()) {
-		//TODO: send to the client?
-		std::cerr << "Failed to set character room due to lack of permissions targeting uid(" << argPacket->characterIndex << ")" << std::endl;
-		return;
-	}
-
-	//pop from the old room
-	roomMgr.PopCharacter(characterData);
-
-	//set the character's room, zero it's origin, zero it's motion
-	characterData->SetRoomIndex(argPacket->roomIndex);
-	characterData->SetOrigin({0, 0});
-	characterData->SetMotion({0, 0});
-
-	//push to the new room
-	roomMgr.PushCharacter(characterData);
-
-	//update the clients
-	CharacterPacket newPacket;
-	CopyCharacterToPacket(&newPacket, argPacket->characterIndex);
-	newPacket.type = SerialPacketType::CHARACTER_SET_ROOM;
-	PumpPacket(&newPacket);
-}
-
-void ServerApplication::HandleCharacterSetOrigin(CharacterPacket* const argPacket) {
-	//get the specified objects
-	AccountData* accountData = accountMgr.Get(argPacket->accountIndex);
-	CharacterData* characterData = characterMgr.Get(argPacket->characterIndex);
-
-	if (!accountData || !characterData) {
-		throw(std::runtime_error("Failed to set character origin, missing data"));
-	}
-
-	//get this account's client
-	ClientData* clientData = clientMgr.Get(accountData->GetClientIndex());
-
-	//check for fraud
-	if (clientData->GetAddress() != argPacket->srcAddress) {
-		std::cerr << "Falsified set character origin targeting uid(" << argPacket->characterIndex << ")" << std::endl;
-		return;
-	}
-
-	//check if allowed
-	if (characterData->GetOwner() != argPacket->accountIndex && !accountData->GetModerator() && !accountData->GetAdministrator()) {
-		//TODO: send to the client?
-		std::cerr << "Failed to set character origin due to lack of permissions targeting uid(" << argPacket->characterIndex << ")" << std::endl;
-		return;
-	}
-
-	//set the character's origin, zero it's motion
-	characterData->SetOrigin(argPacket->origin);
-	characterData->SetMotion({0, 0});
-
-	//update the clients
-	CharacterPacket newPacket;
-	CopyCharacterToPacket(&newPacket, argPacket->characterIndex);
-	newPacket.type = SerialPacketType::CHARACTER_SET_ORIGIN;
-	PumpPacket(&newPacket);
-}
-
-void ServerApplication::HandleCharacterSetMotion(CharacterPacket* const argPacket) {
-	//get the specified objects
-	AccountData* accountData = accountMgr.Get(argPacket->accountIndex);
-
-	if (!accountData) {
-		std::ostringstream msg;
-		msg << "Failed to set character motion, missing account: Index " << argPacket->accountIndex << "; ";
-		msg << "Number of accounts loaded: " << accountMgr.GetContainer()->size();
-		throw(std::runtime_error(msg.str()));
-	}
-
-	CharacterData* characterData = characterMgr.Get(argPacket->characterIndex);
-
-	if (!characterData) {
-		std::ostringstream msg;
-		msg << "Failed to set character motion, missing character: Index " << argPacket->characterIndex << "; ";
-		msg << "Number of characters loaded: " << characterMgr.GetContainer()->size();
-		throw(std::runtime_error(msg.str()));
+		throw(std::runtime_error("Failed to move a character, missing data"));
 	}
 
 	//get this account's client
@@ -292,13 +202,38 @@ void ServerApplication::HandleCharacterSetMotion(CharacterPacket* const argPacke
 		return;
 	}
 
-	//set the character's origin and motion
-	characterData->SetOrigin(argPacket->origin);
-	characterData->SetMotion(argPacket->motion);
+	//check if moving rooms
+	if (characterData->GetRoomIndex() != argPacket->roomIndex) {
+		//delete from the old room
+		CharacterPacket newPacket;
+		CopyCharacterToPacket(&newPacket, argPacket->characterIndex);
+		newPacket.type = SerialPacketType::CHARACTER_DELETE;
+		PumpPacketProximity(&newPacket, characterData->GetRoomIndex(), characterData->GetOrigin(), -1);
 
-	//update the clients
-	CharacterPacket newPacket;
-	CopyCharacterToPacket(&newPacket, argPacket->characterIndex);
-	newPacket.type = SerialPacketType::CHARACTER_SET_MOTION;
-	PumpPacketProximity(&newPacket, characterData->GetRoomIndex(), characterData->GetOrigin(), -1);
+		//move the character between rooms
+		roomMgr.PopCharacter(characterData);
+		characterData->SetRoomIndex(argPacket->roomIndex);
+		roomMgr.PushCharacter(characterData);
+
+		//create in the new room
+		CopyCharacterToPacket(&newPacket, argPacket->characterIndex);
+		newPacket.type = SerialPacketType::CHARACTER_CREATE;
+		PumpPacketProximity(&newPacket, characterData->GetRoomIndex(), characterData->GetOrigin(), -1);
+	}
+	//if not moving between rooms
+	else {
+		//set the character's origin and motion
+		characterData->SetOrigin(argPacket->origin);
+		characterData->SetMotion(argPacket->motion);
+
+		//update the clients
+		CharacterPacket newPacket;
+		CopyCharacterToPacket(&newPacket, argPacket->characterIndex);
+		newPacket.type = SerialPacketType::CHARACTER_MOVEMENT;
+		PumpPacketProximity(&newPacket, characterData->GetRoomIndex(), characterData->GetOrigin(), -1);
+	}
+}
+
+void ServerApplication::HandleCharacterAttack(CharacterPacket* const) {
+	//TODO: bounce graphical attack data
 }

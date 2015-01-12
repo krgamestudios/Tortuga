@@ -277,27 +277,24 @@ void ServerApplication::HandlePacket(SerialPacket* const argPacket) {
 			HandleCharacterUnload(static_cast<CharacterPacket*>(argPacket));
 		break;
 
-		//character movement
-		case SerialPacketType::CHARACTER_SET_ROOM:
-			HandleCharacterSetRoom(static_cast<CharacterPacket*>(argPacket));
+/*		case SerialPacketType::QUERY_CHARACTER_EXISTS:
+			//
 		break;
-		case SerialPacketType::CHARACTER_SET_ORIGIN:
-			HandleCharacterSetOrigin(static_cast<CharacterPacket*>(argPacket));
-		break;
-		case SerialPacketType::CHARACTER_SET_MOTION:
-			HandleCharacterSetMotion(static_cast<CharacterPacket*>(argPacket));
-		break;
-/*
 		case SerialPacketType::QUERY_CHARACTER_STATS:
-//			HandleCharacterStatsRequest(static_cast<RegionPacket*>(argPacket));
+			//
 		break;
 		case SerialPacketType::QUERY_CHARACTER_LOCATION:
-//			HandleCharacterStatsRequest(static_cast<RegionPacket*>(argPacket));
+			//
 		break;
-		case SerialPacketType::TEXT_BROADCAST:
-//			HandleCharacterStatsRequest(static_cast<RegionPacket*>(argPacket));
+*/
+		//character movement
+		case SerialPacketType::CHARACTER_MOVEMENT:
+			HandleCharacterMovement(static_cast<CharacterPacket*>(argPacket));
 		break;
-
+		case SerialPacketType::CHARACTER_ATTACK:
+			HandleCharacterAttack(static_cast<CharacterPacket*>(argPacket));
+		break;
+/*
 		//enemy management
 		//TODO: enemy management
 
