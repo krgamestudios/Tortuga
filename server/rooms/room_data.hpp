@@ -22,7 +22,7 @@
 #ifndef ROOMDATA_HPP_
 #define ROOMDATA_HPP_
 
-#include "entity.hpp"
+#include "character_data.hpp"
 #include "monster_manager.hpp"
 #include "region_pager_lua.hpp"
 #include "waypoint_manager.hpp"
@@ -47,7 +47,7 @@ public:
 	RegionPagerLua* GetPager();
 	MonsterManager* GetMonsterMgr();
 	WaypointManager* GetWaypointMgr();
-	std::list<Entity*>* GetEntityList();
+	std::list<CharacterData*>* GetCharacterList();
 
 	//TODO: triggers for unload, save, per-second, player enter, player exit, etc.
 
@@ -61,7 +61,7 @@ private:
 	RegionPagerLua pager;
 	MonsterManager monsterMgr;
 	WaypointManager waypointMgr;
-	std::list<Entity*> entityList;
+	std::list<CharacterData*> characterList;
 };
 
 #endif

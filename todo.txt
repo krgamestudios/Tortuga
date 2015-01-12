@@ -18,3 +18,4 @@ TODO: The TileSheet class should implement the surface itself
 TODO: Time delay for requesting region packets
 TODO: A proper logging system
 TODO: Fix the const-ness of accessors
+TODO: Add a screenshot of the game to README.md

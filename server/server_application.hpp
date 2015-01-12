@@ -107,6 +107,7 @@ private:
 
 	//utility methods
 	void PumpPacket(SerialPacket* const);
+	void PumpPacketProximity(SerialPacket* const argPacket, int roomIndex, Vector2 position, int distance);
 	void CopyCharacterToPacket(CharacterPacket* const packet, int characterIndex);
 
 	//APIs and utilities
