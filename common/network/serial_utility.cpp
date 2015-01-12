@@ -24,6 +24,7 @@
 //packet types
 #include "character_packet.hpp"
 #include "client_packet.hpp"
+#include "monster_packet.hpp"
 #include "region_packet.hpp"
 #include "server_packet.hpp"
 #include "text_packet.hpp"
@@ -75,16 +76,25 @@ void serializePacket(void* buffer, SerialPacketBase* packet) {
 		case SerialPacketType::QUERY_CHARACTER_EXISTS:
 		case SerialPacketType::QUERY_CHARACTER_STATS:
 		case SerialPacketType::QUERY_CHARACTER_LOCATION:
-		case SerialPacketType::CHARACTER_SET_ROOM:
-		case SerialPacketType::CHARACTER_SET_ORIGIN:
-		case SerialPacketType::CHARACTER_SET_MOTION:
+		case SerialPacketType::CHARACTER_MOVEMENT:
+		case SerialPacketType::CHARACTER_ATTACK:
 			serializeCharacter(buffer, static_cast<CharacterPacket*>(packet));
+		break;
+		case SerialPacketType::MONSTER_CREATE:
+		case SerialPacketType::MONSTER_DELETE:
+		case SerialPacketType::QUERY_MONSTER_EXISTS:
+		case SerialPacketType::QUERY_MONSTER_STATS:
+		case SerialPacketType::QUERY_MONSTER_LOCATION:
+		case SerialPacketType::MONSTER_MOVEMENT:
+		case SerialPacketType::MONSTER_ATTACK:
+			serializeMonster(buffer, static_cast<MonsterPacket*>(packet));
 		break;
 		case SerialPacketType::TEXT_BROADCAST:
 		case SerialPacketType::JOIN_REJECTION:
 		case SerialPacketType::LOGIN_REJECTION:
 		case SerialPacketType::REGION_REJECTION:
 		case SerialPacketType::CHARACTER_REJECTION:
+		case SerialPacketType::MONSTER_REJECTION:
 		case SerialPacketType::SHUTDOWN_REJECTION:
 			serializeText(buffer, static_cast<TextPacket*>(packet));
 		break;
@@ -126,16 +136,25 @@ void deserializePacket(void* buffer, SerialPacketBase* packet) {
 		case SerialPacketType::QUERY_CHARACTER_EXISTS:
 		case SerialPacketType::QUERY_CHARACTER_STATS:
 		case SerialPacketType::QUERY_CHARACTER_LOCATION:
-		case SerialPacketType::CHARACTER_SET_ROOM:
-		case SerialPacketType::CHARACTER_SET_ORIGIN:
-		case SerialPacketType::CHARACTER_SET_MOTION:
+		case SerialPacketType::CHARACTER_MOVEMENT:
+		case SerialPacketType::CHARACTER_ATTACK:
 			deserializeCharacter(buffer, static_cast<CharacterPacket*>(packet));
+		break;
+		case SerialPacketType::MONSTER_CREATE:
+		case SerialPacketType::MONSTER_DELETE:
+		case SerialPacketType::QUERY_MONSTER_EXISTS:
+		case SerialPacketType::QUERY_MONSTER_STATS:
+		case SerialPacketType::QUERY_MONSTER_LOCATION:
+		case SerialPacketType::MONSTER_MOVEMENT:
+		case SerialPacketType::MONSTER_ATTACK:
+			deserializeMonster(buffer, static_cast<MonsterPacket*>(packet));
 		break;
 		case SerialPacketType::TEXT_BROADCAST:
 		case SerialPacketType::JOIN_REJECTION:
 		case SerialPacketType::LOGIN_REJECTION:
 		case SerialPacketType::REGION_REJECTION:
 		case SerialPacketType::CHARACTER_REJECTION:
+		case SerialPacketType::MONSTER_REJECTION:
 		case SerialPacketType::SHUTDOWN_REJECTION:
 			deserializeText(buffer, static_cast<TextPacket*>(packet));
 		break;

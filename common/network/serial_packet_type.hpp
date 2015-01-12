@@ -109,7 +109,7 @@ enum class SerialPacketType {
 	//-------------------------
 	//MonsterPacket
 	//  monster index,
-	//  handle, avatar, hitbox?
+	//  handle, avatar, hitbox
 	//  room index, origin, motion
 	//  TODO: attack data
 	//-------------------------
