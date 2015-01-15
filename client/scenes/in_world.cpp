@@ -159,7 +159,7 @@ void InWorld::Update() {
 	//process the collisions
 	if (localCharacter->ProcessCollisionGrid(boxList)) {
 		localCharacter->CorrectSprite();
-		SendLocalCharacterMotion();
+		SendLocalCharacterMovement();
 	}
 
 	//update the camera
@@ -267,7 +267,7 @@ void InWorld::KeyDown(SDL_KeyboardEvent const& key) {
 	//set the info
 	localCharacter->SetMotion(motion);
 	localCharacter->CorrectSprite();
-	SendLocalCharacterMotion();
+	SendLocalCharacterMovement();
 }
 
 void InWorld::KeyUp(SDL_KeyboardEvent const& key) {
@@ -313,7 +313,7 @@ void InWorld::KeyUp(SDL_KeyboardEvent const& key) {
 	//set the info
 	localCharacter->SetMotion(motion);
 	localCharacter->CorrectSprite();
-	SendLocalCharacterMotion();
+	SendLocalCharacterMovement();
 }
 
 //-------------------------
@@ -358,14 +358,11 @@ void InWorld::HandlePacket(SerialPacket* const argPacket) {
 		break;
 
 		//character movement
-		case SerialPacketType::CHARACTER_SET_ROOM:
-			HandleCharacterSetRoom(static_cast<CharacterPacket*>(argPacket));
+		case SerialPacketType::CHARACTER_MOVEMENT:
+			HandleCharacterMovement(static_cast<CharacterPacket*>(argPacket));
 		break;
-		case SerialPacketType::CHARACTER_SET_ORIGIN:
-			HandleCharacterSetOrigin(static_cast<CharacterPacket*>(argPacket));
-		break;
-		case SerialPacketType::CHARACTER_SET_MOTION:
-			HandleCharacterSetMotion(static_cast<CharacterPacket*>(argPacket));
+		case SerialPacketType::CHARACTER_ATTACK:
+			HandleCharacterAttack(static_cast<CharacterPacket*>(argPacket));
 		break;
 
 		//rejection messages
@@ -638,43 +635,7 @@ void InWorld::HandleCharacterQueryExists(CharacterPacket* const argPacket) {
 	std::cout << "Query, total: " << characterMap.size() << std::endl;
 }
 
-void InWorld::HandleCharacterSetRoom(CharacterPacket* const argPacket) {
-	//someone else's character
-	if (argPacket->characterIndex != characterIndex) {
-		characterMap.erase(argPacket->characterIndex);
-		return;
-	}
-
-	//this character is moving between rooms
-	roomIndex = argPacket->roomIndex;
-
-	//set the character's info
-	localCharacter->SetOrigin(argPacket->origin);
-	localCharacter->SetMotion(argPacket->motion);
-	localCharacter->CorrectSprite();
-
-	//clear the old room's data
-	regionPager.UnloadAll();
-	monsterMap.clear();
-
-	//use the jenky pattern for std::map to skip this player's character
-	for (std::map<int, BaseCharacter>::iterator it = characterMap.begin(); it != characterMap.end(); /* EMPTY */ ) {
-		if (it->first != characterIndex) {
-			it = characterMap.erase(it);
-		}
-		else {
-			++it;
-		}
-	}
-
-	//request the info on characters in this room
-	CharacterPacket newPacket;
-	newPacket.type = SerialPacketType::QUERY_CHARACTER_EXISTS;
-	newPacket.roomIndex = roomIndex;
-	network.SendTo(Channels::SERVER, &newPacket);
-}
-
-void InWorld::HandleCharacterSetOrigin(CharacterPacket* const argPacket) {
+void InWorld::HandleCharacterMovement(CharacterPacket* const argPacket) {
 	//TODO: Authentication
 	if (argPacket->characterIndex == characterIndex) {
 		return;
@@ -690,20 +651,8 @@ void InWorld::HandleCharacterSetOrigin(CharacterPacket* const argPacket) {
 	}
 }
 
-void InWorld::HandleCharacterSetMotion(CharacterPacket* const argPacket) {
-	//TODO: Authentication
-	if (argPacket->characterIndex == characterIndex) {
-		return;
-	}
-
-	//check that this character exists
-	std::map<int, BaseCharacter>::iterator characterIt = characterMap.find(argPacket->characterIndex);
-	if (characterIt != characterMap.end()) {
-		//set the origin and motion
-		characterIt->second.SetOrigin(argPacket->origin);
-		characterIt->second.SetMotion(argPacket->motion);
-		characterIt->second.CorrectSprite();
-	}
+void InWorld::HandleCharacterAttack(CharacterPacket* const argPacket) {
+	//TODO: attack animation
 }
 
 //-------------------------
@@ -711,9 +660,9 @@ void InWorld::HandleCharacterSetMotion(CharacterPacket* const argPacket) {
 //-------------------------
 
 //TODO: add a "movement" packet type
-void InWorld::SendLocalCharacterMotion() {
+void InWorld::SendLocalCharacterMovement() {
 	CharacterPacket newPacket;
-	newPacket.type = SerialPacketType::CHARACTER_SET_MOTION;
+	newPacket.type = SerialPacketType::CHARACTER_MOVEMENT;
 
 	newPacket.accountIndex = accountIndex;
 	newPacket.characterIndex = characterIndex;

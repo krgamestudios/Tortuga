@@ -96,12 +96,11 @@ protected:
 	void HandleCharacterCreate(CharacterPacket* const);
 	void HandleCharacterDelete(CharacterPacket* const);
 	void HandleCharacterQueryExists(CharacterPacket* const);
-	void HandleCharacterSetRoom(CharacterPacket* const);
-	void HandleCharacterSetOrigin(CharacterPacket* const);
-	void HandleCharacterSetMotion(CharacterPacket* const);
+	void HandleCharacterMovement(CharacterPacket* const);
+	void HandleCharacterAttack(CharacterPacket* const);
 
 	//player movement
-	void SendLocalCharacterMotion();
+	void SendLocalCharacterMovement();
 	std::list<BoundingBox> GenerateCollisionGrid(Entity*, int tileWidth, int tileHeight);
 
 	//indexes
