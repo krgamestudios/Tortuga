@@ -22,9 +22,9 @@
 #include "lobby_menu.hpp"
 
 #include "channels.hpp"
-#include "utility.hpp"
 
 #include <stdexcept>
+#include <sstream>
 
 //-------------------------
 //Public access members
@@ -123,7 +123,9 @@ void LobbyMenu::Render(SDL_Surface* const screen) {
 		font.DrawStringTo(serverInfo[i].name, screen, listBox.x, listBox.y + i*listBox.h);
 
 		//draw the player count
-		font.DrawStringTo(to_string_custom(serverInfo[i].playerCount), screen, listBox.x + listBox.w, listBox.y + i*listBox.h);
+		std::ostringstream msg;
+		msg << serverInfo[i].playerCount;
+		font.DrawStringTo(msg.str(), screen, listBox.x + listBox.w, listBox.y + i*listBox.h);
 
 		//compatible?
 		if (!serverInfo[i].compatible) {
@@ -210,8 +212,11 @@ void LobbyMenu::HandlePacket(SerialPacket* const argPacket) {
 		break;
 
 		//handle errors
-		default:
-			throw(std::runtime_error(std::string() + "Unknown SerialPacketType encountered in LobbyMenu: " + to_string_custom(static_cast<int>(argPacket->type)) ));
+		default: {
+			std::ostringstream msg;
+			msg << "Unknown SerialPacketType encountered in LobbyMenu: " << static_cast<int>(argPacket->type);
+			throw(std::runtime_error( msg.str() ));
+		}
 		break;
 	}
 }

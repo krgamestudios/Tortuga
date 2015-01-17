@@ -23,7 +23,6 @@
 
 //utility functions
 #include "sql_tools.hpp"
-#include "utility.hpp"
 
 //std & STL
 #include <stdexcept>
@@ -307,7 +306,7 @@ void ServerApplication::HandlePacket(SerialPacket* const argPacket) {
 		default: {
 			std::ostringstream msg;
 			msg << "Unknown SerialPacketType encountered in the server: ";
-			msg << to_string_custom(static_cast<int>(argPacket->type));
+			msg << static_cast<int>(argPacket->type);
 			throw(std::runtime_error(msg.str()));
 		}
 		break;
