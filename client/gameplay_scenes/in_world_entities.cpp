@@ -28,7 +28,7 @@
 #include <stdexcept>
 
 //-------------------------
-//entity management
+//character management
 //-------------------------
 
 //DOCS: preexisting characters will result in query responses
@@ -145,6 +145,30 @@ void InWorld::HandleCharacterMovement(CharacterPacket* const argPacket) {
 
 void InWorld::HandleCharacterAttack(CharacterPacket* const argPacket) {
 	//TODO: attack animation
+}
+
+//-------------------------
+//monster management
+//-------------------------
+
+void InWorld::HandleMonsterCreate(MonsterPacket* const argPacket) {
+	//TODO
+}
+
+void InWorld::HandleMonsterDelete(MonsterPacket* const argPacket) {
+	//TODO
+}
+
+void InWorld::HandleMonsterQueryExists(MonsterPacket* const argPacket) {
+	//TODO
+}
+
+void InWorld::HandleMonsterMovement(MonsterPacket* const argPacket) {
+	//TODO
+}
+
+void InWorld::HandleMonsterAttack(MonsterPacket* const argPacket) {
+	//TODO
 }
 
 //-------------------------

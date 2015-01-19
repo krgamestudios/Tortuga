@@ -99,6 +99,13 @@ protected:
 	void HandleCharacterMovement(CharacterPacket* const);
 	void HandleCharacterAttack(CharacterPacket* const);
 
+	//monster management
+	void HandleMonsterCreate(MonsterPacket* const);
+	void HandleMonsterDelete(MonsterPacket* const);
+	void HandleMonsterQueryExists(MonsterPacket* const);
+	void HandleMonsterMovement(MonsterPacket* const);
+	void HandleMonsterAttack(MonsterPacket* const);
+
 	//player movement
 	void SendLocalCharacterMovement();
 	std::list<BoundingBox> GenerateCollisionGrid(Entity*, int tileWidth, int tileHeight);

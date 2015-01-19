@@ -22,6 +22,7 @@
 #include "in_world.hpp"
 
 #include "channels.hpp"
+#include "ip_operators.hpp"
 #include "terminal_error.hpp"
 
 #include <chrono>
@@ -68,13 +69,28 @@ void InWorld::HandlePacket(SerialPacket* const argPacket) {
 		case SerialPacketType::QUERY_CHARACTER_EXISTS:
 			HandleCharacterQueryExists(static_cast<CharacterPacket*>(argPacket));
 		break;
-
-		//character movement
 		case SerialPacketType::CHARACTER_MOVEMENT:
 			HandleCharacterMovement(static_cast<CharacterPacket*>(argPacket));
 		break;
 		case SerialPacketType::CHARACTER_ATTACK:
 			HandleCharacterAttack(static_cast<CharacterPacket*>(argPacket));
+		break;
+
+		//monster management
+		case SerialPacketType::MONSTER_CREATE:
+			HandleMonsterCreate(static_cast<MonsterPacket*>(argPacket));
+		break;
+		case SerialPacketType::MONSTER_DELETE:
+			HandleMonsterDelete(static_cast<MonsterPacket*>(argPacket));
+		break;
+		case SerialPacketType::QUERY_MONSTER_EXISTS:
+			HandleMonsterQueryExists(static_cast<MonsterPacket*>(argPacket));
+		break;
+		case SerialPacketType::MONSTER_MOVEMENT:
+			HandleMonsterMovement(static_cast<MonsterPacket*>(argPacket));
+		break;
+		case SerialPacketType::MONSTER_ATTACK:
+			HandleMonsterAttack(static_cast<MonsterPacket*>(argPacket));
 		break;
 
 		//rejection messages
