@@ -14,9 +14,10 @@ Both a game server and game client are included in this package.
 Instructions For Setup
 -------------------------
 
-1. To create a server, simply run server.exe.
-2. To join that server, run client.exe with config settings not already in use.
-    (Note: This process will be streamlined later).
+1. To create a server, simply run server.exe
+	(a public server is provided by default)
+2. To join a server, your player information must be input into rsc/config.cfg
+	(NOTE: This process will be streamlined later)
 3. To change the config settings, open rsc/config.cfg
 4. These settings must be unique for each player:
 
@@ -28,7 +29,7 @@ Instructions For Setup
 * client.avatar = elliot2.bmp #male
 * client.avatar = coa2.bmp    #female
 
-6. When you've correctly set these values (good luck), select 'Start' from the
-    main menu; this displays the list of available servers.
-7. Select the name of your server (default is 'local') and select 'Join'.
+6. When you've correctly set these values, run client.exe, and select 'Start'
+	from the main menu; this displays the list of available servers.
+7. Select the name of a server (default is 'Public') and select 'Join'.
 8. Welcome to Tortuga, enjoy your stay.
