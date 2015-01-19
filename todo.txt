@@ -1,7 +1,5 @@
 TODO: In need of script APIs (list)
 	* Characters
-	* Monsters
-	* Waypoints
 
 TODO: Account passwords (list)
 	* backbone account server OR
@@ -9,7 +7,6 @@ TODO: Account passwords (list)
 	* ...
 	* salts & hashes
 
-TODO: Waypoints, with positions and trigger zones (collision areas) for doors, monster spawns, etc.
 TODO: Fix shoddy movement
 TODO: Periodic mass server saves
 TODO: Remove the big "Shut Down" button (currently broken...)

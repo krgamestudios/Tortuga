@@ -101,9 +101,8 @@ private:
 	void HandleCharacterUnload(CharacterPacket* const);
 
 	//character movement
-	void HandleCharacterSetRoom(CharacterPacket* const);
-	void HandleCharacterSetOrigin(CharacterPacket* const);
-	void HandleCharacterSetMotion(CharacterPacket* const);
+	void HandleCharacterMovement(CharacterPacket* const);
+	void HandleCharacterAttack(CharacterPacket* const);
 
 	//utility methods
 	void PumpPacket(SerialPacket* const);

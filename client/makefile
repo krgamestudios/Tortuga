@@ -1,5 +1,5 @@
 #include directories
-INCLUDES+=. client_utilities entities scenes ../common/debugging ../common/gameplay ../common/graphics ../common/map ../common/network ../common/network/packet_types ../common/ui ../common/utilities
+INCLUDES+=. client_utilities entities gameplay_scenes menu_scenes ../common/debugging ../common/gameplay ../common/graphics ../common/map ../common/network ../common/network/packet_types ../common/ui ../common/utilities
 
 #libraries
 #the order of the $(LIBS) is important, at least for MinGW
@@ -27,7 +27,8 @@ OUT=$(addprefix $(OUTDIR)/,client)
 all: $(OBJ) $(OUT)
 	$(MAKE) -C client_utilities
 	$(MAKE) -C entities
-	$(MAKE) -C scenes
+	$(MAKE) -C gameplay_scenes
+	$(MAKE) -C menu_scenes
 	$(CXX) $(CXXFLAGS) -o $(OUT) $(OBJ) $(LIBS)
 
 $(OBJ): | $(OBJDIR)
