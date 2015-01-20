@@ -22,7 +22,6 @@
 #include "in_world.hpp"
 
 #include "channels.hpp"
-#include "utility.hpp"
 
 #include "terminal_error.hpp"
 #include <stdexcept>
@@ -185,7 +184,9 @@ void InWorld::Render(SDL_Surface* const screen) {
 	//draw UI
 	disconnectButton.DrawTo(screen);
 	shutDownButton.DrawTo(screen);
-	font.DrawStringTo(to_string_custom(fps.GetFrameRate()), screen, 0, 0);
+	std::ostringstream msg;
+	msg << fps.GetFrameRate();
+	font.DrawStringTo(msg.str(), screen, 0, 0);
 }
 
 //-------------------------
