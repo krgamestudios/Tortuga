@@ -51,7 +51,7 @@ void InWorld::HandleCharacterCreate(CharacterPacket* const argPacket) {
 	//fill the character's info
 	character->SetOrigin(argPacket->origin);
 	character->SetMotion(argPacket->motion);
-	character->SetBounds({CHARACTER_BOUNDS_X, CHARACTER_BOUNDS_Y, CHARACTER_BOUNDS_WIDTH, CHARACTER_BOUNDS_HEIGHT});
+	character->SetBounds({CHARACTER_BOUNDS_X, CHARACTER_BOUNDS_Y, CHARACTER_BOUNDS_WIDTH, CHARACTER_BOUNDS_HEIGHT}); //TODO: send the bounds from the server
 	character->SetHandle(argPacket->handle);
 	character->SetAvatar(argPacket->avatar);
 	character->SetOwner(argPacket->accountIndex);
@@ -71,7 +71,7 @@ void InWorld::HandleCharacterCreate(CharacterPacket* const argPacket) {
 	}
 
 	//debug
-	std::cout << "Create, total: " << characterMap.size() << std::endl;
+	std::cout << "Character Create, total: " << characterMap.size() << std::endl;
 }
 
 void InWorld::HandleCharacterDelete(CharacterPacket* const argPacket) {
@@ -97,7 +97,7 @@ void InWorld::HandleCharacterDelete(CharacterPacket* const argPacket) {
 	characterMap.erase(characterIt);
 
 	//debug
-	std::cout << "Delete, total: " << characterMap.size() << std::endl;
+	std::cout << "Character Delete, total: " << characterMap.size() << std::endl;
 }
 
 void InWorld::HandleCharacterQueryExists(CharacterPacket* const argPacket) {
@@ -124,7 +124,7 @@ void InWorld::HandleCharacterQueryExists(CharacterPacket* const argPacket) {
 	character->CorrectSprite();
 
 	//debug
-	std::cout << "Query, total: " << characterMap.size() << std::endl;
+	std::cout << "Character Query, total: " << characterMap.size() << std::endl;
 }
 
 void InWorld::HandleCharacterMovement(CharacterPacket* const argPacket) {
@@ -152,15 +152,71 @@ void InWorld::HandleCharacterAttack(CharacterPacket* const argPacket) {
 //-------------------------
 
 void InWorld::HandleMonsterCreate(MonsterPacket* const argPacket) {
-	//TODO
+	//check for logic errors
+	if (monsterMap.find(argPacket->monsterIndex) != monsterMap.end()) {
+		std::ostringstream msg;
+		msg << "Double monster creation event; ";
+		msg << "Index: " << argPacket->monsterIndex << "; ";
+		msg << "Handle: " << argPacket->handle;
+		throw(std::runtime_error(msg.str()));
+	}
+
+	//ignore monsters from other rooms
+	if (roomIndex != argPacket->roomIndex) {
+		//temporary error checking
+		std::ostringstream msg;
+		msg << "Monster from the wrong room received: ";
+		msg << "monsterIndex: " << argPacket->monsterIndex << ", roomIndex: " << argPacket->roomIndex;
+		throw(std::runtime_error(msg.str()));
+	}
+
+	//implicitly create the element
+	BaseMonster* monster = &monsterMap[argPacket->monsterIndex];
+
+	//fill the monster's info
+	monster->SetHandle(argPacket->handle);
+	monster->SetAvatar(argPacket->avatar);
+	monster->SetBounds(argPacket->bounds);
+	monster->SetOrigin(argPacket->origin);
+	monster->SetMotion(argPacket->motion);
+
+	//debug
+	std::cout << "Monster Create, total: " << monsterMap.size() << std::endl;
 }
 
 void InWorld::HandleMonsterDelete(MonsterPacket* const argPacket) {
-	//TODO
+	//ignore if this monster doesn't exist
+	std::map<int, BaseMonster>::iterator monsterIt = monsterMap.find(argPacket->monsterIndex);
+	if (monsterIt == monsterMap.end()) {
+		return;
+	}
+
+
+	//remove this monster
+	monsterMap.erase(monsterIt);
+
+	//debug
+	std::cout << "Monster Delete, total: " << monsterMap.size() << std::endl;
 }
 
 void InWorld::HandleMonsterQueryExists(MonsterPacket* const argPacket) {
-	//TODO
+	//ignore monsters in a different room (sub-optimal)
+	if (argPacket->roomIndex != roomIndex) {
+		return;
+	}
+
+	//implicitly create the element
+	BaseMonster* monster = &monsterMap[argPacket->monsterIndex];
+
+	//fill the monster's info
+	monster->SetHandle(argPacket->handle);
+	monster->SetAvatar(argPacket->avatar);
+	monster->SetBounds(argPacket->bounds);
+	monster->SetOrigin(argPacket->origin);
+	monster->SetMotion(argPacket->motion);
+
+	//debug
+	std::cout << "Monster Query, total: " << monsterMap.size() << std::endl;
 }
 
 void InWorld::HandleMonsterMovement(MonsterPacket* const argPacket) {
@@ -175,7 +231,6 @@ void InWorld::HandleMonsterAttack(MonsterPacket* const argPacket) {
 //player movement
 //-------------------------
 
-//TODO: add a "movement" packet type
 void InWorld::SendLocalCharacterMovement() {
 	CharacterPacket newPacket;
 	newPacket.type = SerialPacketType::CHARACTER_MOVEMENT;

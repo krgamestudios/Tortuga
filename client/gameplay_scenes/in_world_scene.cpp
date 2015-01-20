@@ -77,6 +77,8 @@ InWorld::InWorld(int* const argClientIndex,	int* const argAccountIndex):
 	memset(&newPacket, 0, MAX_PACKET_SIZE);
 	newPacket.type = SerialPacketType::QUERY_CHARACTER_EXISTS;
 	network.SendTo(Channels::SERVER, &newPacket);
+//	newPacket.type = SerialPacketType::QUERY_MONSTER_EXISTS;
+//	network.SendTo(Channels::SERVER, &newPacket);
 
 	//set the camera's values
 	camera.width = GetScreen()->w;
