@@ -175,7 +175,39 @@ void InWorld::HandleMonsterAttack(MonsterPacket* const argPacket) {
 //player movement
 //-------------------------
 
-//TODO: add a "movement" packet type
+void InWorld::ProcessLocalCharacterMovement() {
+	//character movement
+	if (!localCharacter) {
+		return;
+	}
+
+	Vector2 newMotion = {0, 0};
+	if (keyState[SDLK_w]) {
+		newMotion.y -= CHARACTER_WALKING_SPEED;
+	}
+	if (keyState[SDLK_a]) {
+		newMotion.x -= CHARACTER_WALKING_SPEED;
+	}
+	if (keyState[SDLK_s]) {
+		newMotion.y += CHARACTER_WALKING_SPEED;
+	}
+	if (keyState[SDLK_d]) {
+		newMotion.x += CHARACTER_WALKING_SPEED;
+	}
+
+	//handle diagonals
+	if (newMotion.x != 0 && newMotion.y != 0) {
+		newMotion *= CHARACTER_WALKING_MOD;
+	}
+
+	//set the info
+	if (localCharacter->GetMotion() != newMotion) {
+		localCharacter->SetMotion(newMotion);
+		localCharacter->CorrectSprite();
+		SendLocalCharacterMovement();
+	}
+}
+
 void InWorld::SendLocalCharacterMovement() {
 	CharacterPacket newPacket;
 	newPacket.type = SerialPacketType::CHARACTER_MOVEMENT;

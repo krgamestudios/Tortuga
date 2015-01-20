@@ -107,6 +107,7 @@ protected:
 	void HandleMonsterAttack(MonsterPacket* const);
 
 	//player movement
+	void ProcessLocalCharacterMovement();
 	void SendLocalCharacterMovement();
 	std::list<BoundingBox> GenerateCollisionGrid(Entity*, int tileWidth, int tileHeight);
 
@@ -150,6 +151,7 @@ protected:
 	//ugly references; I hate this
 	ConfigUtility& config = ConfigUtility::GetSingleton();
 	UDPNetworkUtility& network = UDPNetworkUtility::GetSingleton();
+	Uint8* keyState = nullptr;
 };
 
 #endif

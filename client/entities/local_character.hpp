@@ -33,7 +33,7 @@ public:
 	LocalCharacter() = default;
 	virtual ~LocalCharacter() = default;
 
-	bool ProcessCollisionGrid(std::list<BoundingBox>);
+	bool ProcessCollisionGrid(std::list<BoundingBox>, Uint8* keyState);
 
 private:
 	//NOTE: NO MEMBERS

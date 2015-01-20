@@ -23,13 +23,48 @@
 
 #include <iostream>
 
-bool LocalCharacter::ProcessCollisionGrid(std::list<BoundingBox> boxList) {
+bool LocalCharacter::ProcessCollisionGrid(std::list<BoundingBox> boxList, Uint8* keyState) {
+	//skip this if there's no movement
+	if (motion == 0) {
+		return false;
+	}
+
+	//determine the simple movement based on input
+	Vector2 newMotion = {0, 0};
+	if (keyState[SDLK_w]) {
+		newMotion.y -= CHARACTER_WALKING_SPEED;
+	}
+	if (keyState[SDLK_a]) {
+		newMotion.x -= CHARACTER_WALKING_SPEED;
+	}
+	if (keyState[SDLK_s]) {
+		newMotion.y += CHARACTER_WALKING_SPEED;
+	}
+	if (keyState[SDLK_d]) {
+		newMotion.x += CHARACTER_WALKING_SPEED;
+	}
+
+	bool ret = false;
+
 	for(auto& box : boxList) {
 		if (box.CheckOverlap(origin + bounds)) {
-			origin -= motion;
-			motion = {0, 0};
-			return true;
+			//push the character to the closest non-contact position
+			//TODO
+
+			//set any motion in that direction to zero
+			//TODO
+			ret = true;
 		}
 	}
-	return false;
+
+	//handle diagonals
+	if (newMotion.x != 0 && newMotion.y != 0) {
+		newMotion *= CHARACTER_WALKING_MOD;
+	}
+
+	//set the new motion
+	motion = newMotion;
+
+	//signal for updates
+	return ret;
 }

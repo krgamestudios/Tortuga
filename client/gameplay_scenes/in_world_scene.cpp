@@ -36,7 +36,8 @@
 
 InWorld::InWorld(int* const argClientIndex,	int* const argAccountIndex):
 	clientIndex(*argClientIndex),
-	accountIndex(*argAccountIndex)
+	accountIndex(*argAccountIndex),
+	keyState(SDL_GetKeyState(nullptr))
 {
 	//setup the utility objects
 	buttonImage.LoadSurface(config["dir.interface"] + "button_menu.bmp");
@@ -144,7 +145,7 @@ void InWorld::Update() {
 	std::list<BoundingBox> boxList = GenerateCollisionGrid(localCharacter, tileSheet.GetTileW(), tileSheet.GetTileH());
 
 	//process the collisions
-	if (localCharacter->ProcessCollisionGrid(boxList)) {
+	if (localCharacter->ProcessCollisionGrid(boxList, keyState)) {
 		localCharacter->CorrectSprite();
 		SendLocalCharacterMovement();
 	}
@@ -219,88 +220,34 @@ void InWorld::MouseButtonUp(SDL_MouseButtonEvent const& button) {
 }
 
 void InWorld::KeyDown(SDL_KeyboardEvent const& key) {
-	//hotkeys
+	//hotkeys & player input
 	switch(key.keysym.sym) {
 		case SDLK_ESCAPE:
 			//TODO: the escape key should actually control menus and stuff
 			SendLogoutRequest();
 		return;
-	}
-
-	//character movement
-	if (!localCharacter) {
-		return;
-	}
-	Vector2 motion = localCharacter->GetMotion();
-	switch(key.keysym.sym) {
 		case SDLK_w:
-			motion.y -= CHARACTER_WALKING_SPEED;
-		break;
 		case SDLK_a:
-			motion.x -= CHARACTER_WALKING_SPEED;
-		break;
 		case SDLK_s:
-			motion.y += CHARACTER_WALKING_SPEED;
-		break;
 		case SDLK_d:
-			motion.x += CHARACTER_WALKING_SPEED;
+			ProcessLocalCharacterMovement();
 		break;
 		default:
 			//DOCS: prevents wrong keys screwing with character movement
 			return;
 	}
-	//handle diagonals
-	if (motion.x != 0 && motion.y != 0) {
-		motion *= CHARACTER_WALKING_MOD;
-	}
-	//set the info
-	localCharacter->SetMotion(motion);
-	localCharacter->CorrectSprite();
-	SendLocalCharacterMovement();
 }
 
 void InWorld::KeyUp(SDL_KeyboardEvent const& key) {
-	//character movement
-	if (!localCharacter) {
-		return;
-	}
-	Vector2 motion = localCharacter->GetMotion();
 	switch(key.keysym.sym) {
 		case SDLK_w:
-			motion.y = std::min(0.0, motion.y += CHARACTER_WALKING_SPEED);
-		break;
 		case SDLK_a:
-			motion.x = std::min(0.0, motion.x += CHARACTER_WALKING_SPEED);
-		break;
 		case SDLK_s:
-			motion.y = std::max(0.0, motion.y -= CHARACTER_WALKING_SPEED);
-		break;
 		case SDLK_d:
-			motion.x = std::max(0.0, motion.x -= CHARACTER_WALKING_SPEED);
+			ProcessLocalCharacterMovement();
 		break;
 		default:
 			//DOCS: prevents wrong keys screwing with character movement
 			return;
 	}
-	//BUGFIX: reset cardinal direction speed on key release
-	if (motion.x > 0) {
-		motion.x = CHARACTER_WALKING_SPEED;
-	}
-	else if (motion.x < 0) {
-		motion.x = -CHARACTER_WALKING_SPEED;
-	}
-	if (motion.y > 0) {
-		motion.y = CHARACTER_WALKING_SPEED;
-	}
-	else if (motion.y < 0) {
-		motion.y = -CHARACTER_WALKING_SPEED;
-	}
-	//handle diagonals
-	if (motion.x != 0 && motion.y != 0) {
-		motion *= CHARACTER_WALKING_MOD;
-	}
-	//set the info
-	localCharacter->SetMotion(motion);
-	localCharacter->CorrectSprite();
-	SendLocalCharacterMovement();
 }
