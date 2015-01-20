@@ -166,7 +166,7 @@ void LobbyMenu::MouseButtonUp(SDL_MouseButtonEvent const& button) {
 	//has the user selected a server on the list?
 	BoundingBox tmpBox = listBox;
 	tmpBox.h *= serverInfo.size();
-	if (tmpBox.CheckOverlap({button.x, button.y})) {
+	if (tmpBox.CheckCollision({button.x, button.y, 0, 0})) {
 		selection = &serverInfo[(button.y - listBox.y)/listBox.h];
 	}
 	else {

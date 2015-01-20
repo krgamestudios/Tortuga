@@ -22,6 +22,8 @@
 #ifndef BOUNDINGBOX_HPP_
 #define BOUNDINGBOX_HPP_
 
+#include "vector2.hpp"
+
 #include <type_traits>
 #include <algorithm>
 
@@ -32,16 +34,15 @@ public:
 	int w, h;
 
 	BoundingBox() = default;
-	BoundingBox(int i, int j): x(i), y(j), w(0), h(0) {};
 	BoundingBox(int i, int j, int k, int l): x(i), y(j), w(k), h(l) {};
 	~BoundingBox() = default;
 	BoundingBox& operator=(BoundingBox const&) = default;
 
 	int Size() {
-		return std::max(w*h,0);
+		return (w-x) * (h-y);
 	}
 
-	bool CheckOverlap(BoundingBox rhs) {
+	bool CheckCollision(BoundingBox rhs) {
 		return !(
 			x >= rhs.x + rhs.w ||
 			y >= rhs.y + rhs.h ||
@@ -49,23 +50,24 @@ public:
 			rhs.y >= y + h);
 	}
 
-	BoundingBox CalcOverlap(BoundingBox rhs) {
-		if (!CheckOverlap(rhs)) {
-			return {0, 0, 0, 0};
+	Vector2 CalcShift(BoundingBox rhs) {
+		if (!CheckCollision(rhs)) {
+			return {0, 0};
 		}
-		BoundingBox ret;
-		ret.x = std::max(x, rhs.x);
-		ret.y = std::max(y, rhs.y);
-		ret.w = std::min(x+w, rhs.x+rhs.w) - ret.x;
-		ret.h = std::min(y+h, rhs.y+rhs.h) - ret.y;
-		return ret;
+
+		//DOCS: Given two BoundingBox objects, how does the other have to move so that they are no longer colliding?
+		Vector2 horizontal = {0, 0};
+		Vector2 vertical = {0, 0};
+
+		horizontal.x = std::abs(x + w - rhs.x) < std::abs(rhs.x + rhs.w - x) ? x + w - rhs.x -1 : -(rhs.x + rhs.w - x -1);
+		vertical.y = std::abs(y + h - rhs.x) < std::abs(rhs.y + rhs.h - y) ? y + h - rhs.y -1 : -(rhs.y + rhs.h - y -1);
+
+		return std::abs(vertical.y) < std::abs(horizontal.x) ? vertical : horizontal;
 	}
 };
 
 //This is explicitly a POD
 static_assert(std::is_pod<BoundingBox>::value, "BoundingBox is not a POD");
-
-#include "vector2.hpp"
 
 //operators
 inline BoundingBox operator+(BoundingBox b, Vector2 v) {

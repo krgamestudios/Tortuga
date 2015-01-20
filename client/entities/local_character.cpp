@@ -47,12 +47,18 @@ bool LocalCharacter::ProcessCollisionGrid(std::list<BoundingBox> boxList, Uint8*
 	bool ret = false;
 
 	for(auto& box : boxList) {
-		if (box.CheckOverlap(origin + bounds)) {
+		if (box.CheckCollision(origin + bounds)) {
 			//push the character to the closest non-contact position
-			//TODO
+			Vector2 shift = box.CalcShift(origin + bounds);
+			origin += shift;
 
 			//set any motion in that direction to zero
-			//TODO
+			if (shift.x != 0) {
+				newMotion.x = 0;
+			}
+			if (shift.y != 0) {
+				newMotion.y = 0;
+			}
 			ret = true;
 		}
 	}
