@@ -100,9 +100,9 @@ void InWorld::HandleMonsterQueryExists(MonsterPacket* const argPacket) {
 }
 
 void InWorld::HandleMonsterMovement(MonsterPacket* const argPacket) {
-	//TODO
+	//TODO: HandleMonsterMovement
 }
 
 void InWorld::HandleMonsterAttack(MonsterPacket* const argPacket) {
-	//TODO
+	//TODO: HandleMonsterAttack
 }

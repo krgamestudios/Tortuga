@@ -27,12 +27,12 @@
 
 static int create(lua_State* L) {
 	WaypointManager* mgr = static_cast<WaypointManager*>(lua_touserdata(L, 1));
-	//TODO
+	//TODO: create
 }
 
 static int unload(lua_State* L) {
 	WaypointManager* mgr = static_cast<WaypointManager*>(lua_touserdata(L, 1));
-	//TODO
+	//TODO: create
 }
 
 static int getWaypoint(lua_State* L) {

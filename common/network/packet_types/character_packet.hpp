@@ -41,7 +41,7 @@ struct CharacterPacket : SerialPacketBase {
 	Vector2 origin;
 	Vector2 motion;
 
-	//gameplay components: equipment, items, buffs, debuffs...
+	//TODO: gameplay components: equipment, items, buffs, debuffs...
 };
 
 void serializeCharacter(void* buffer, CharacterPacket* packet);

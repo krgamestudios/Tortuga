@@ -45,8 +45,7 @@ void serializeMonster(void* buffer, MonsterPacket* packet) {
 	serialCopy(&buffer, &packet->motion.x, sizeof(double));
 	serialCopy(&buffer, &packet->motion.y, sizeof(double));
 
-	//attack data
-	//TODO
+	//TODO: attack data
 }
 
 void deserializeMonster(void* buffer, MonsterPacket* packet) {
@@ -71,6 +70,5 @@ void deserializeMonster(void* buffer, MonsterPacket* packet) {
 	deserialCopy(&buffer, &packet->motion.x, sizeof(double));
 	deserialCopy(&buffer, &packet->motion.y, sizeof(double));
 
-	//attack data
-	//TODO
+	//TODO: attack data
 }

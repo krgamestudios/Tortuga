@@ -24,7 +24,7 @@
 #include "config_utility.hpp"
 
 void BaseMonster::CorrectSprite() {
-	//TODO
+	//TODO: CorrectSprite
 }
 
 std::string BaseMonster::SetHandle(std::string s) {
