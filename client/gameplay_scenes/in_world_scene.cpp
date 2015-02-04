@@ -161,7 +161,7 @@ void InWorld::FrameEnd() {
 }
 
 void InWorld::RenderFrame() {
-	SDL_FillRect(GetScreen(), 0, 0);
+//	SDL_FillRect(GetScreen(), 0, 0);
 	Render(GetScreen());
 	SDL_Flip(GetScreen());
 	fps.Calculate();

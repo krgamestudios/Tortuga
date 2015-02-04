@@ -7,6 +7,7 @@ TODO: Account passwords (list)
 	* ...
 	* salts & hashes
 
+TODO: Make sure login errors are sent to the client
 TODO: Split config.cfg in two, one for the server and the client
 TODO: Add the "home" parameter to the server's config file
 TODO: Waypoints, with positions and trigger zones (collision areas) for doors, monster spawns, etc.

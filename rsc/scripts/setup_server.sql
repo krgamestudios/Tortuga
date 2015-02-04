@@ -2,7 +2,7 @@
 
 CREATE TABLE IF NOT EXISTS Accounts (
 	uid			INTEGER PRIMARY KEY AUTOINCREMENT,
-	username	varchar(100) UNIQUE,
+	username	varchar(100) UNIQUE, --TODO: Swap username for email address
 
 	--TODO: server-client security
 --	passhash	varchar(100),
