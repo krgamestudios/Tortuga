@@ -34,6 +34,7 @@
 #include "udp_network_utility.hpp"
 
 //common utilities
+#include "ip_operators.hpp"
 #include "serial_packet.hpp"
 #include "singleton.hpp"
 
@@ -46,10 +47,6 @@
 //STL
 #include <map>
 #include <string>
-
-//global utility functions
-bool operator==(IPaddress lhs, IPaddress rhs);
-bool operator!=(IPaddress lhs, IPaddress rhs);
 
 //The main application class
 class ServerApplication: public Singleton<ServerApplication> {

@@ -105,8 +105,8 @@ void InWorld::HandleMonsterMovement(MonsterPacket* const argPacket) {
 		return;
 	}
 
-	monsterIt.SetOrigin(argPacket->origin);
-	monsterIt.SetOrigin(argPacket->motion);
+	monsterIt->second.SetOrigin(argPacket->origin);
+	monsterIt->second.SetOrigin(argPacket->motion);
 }
 
 void InWorld::HandleMonsterAttack(MonsterPacket* const argPacket) {

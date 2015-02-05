@@ -26,18 +26,6 @@
 #include <sstream>
 
 //-------------------------
-//these should've come standard
-//-------------------------
-
-bool operator==(IPaddress lhs, IPaddress rhs) {
-	return lhs.host == rhs.host && lhs.port == rhs.port;
-}
-
-bool operator!=(IPaddress lhs, IPaddress rhs) {
-	return !(lhs == rhs);
-}
-
-//-------------------------
 //server commands
 //-------------------------
 
