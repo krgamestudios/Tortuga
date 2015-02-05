@@ -30,7 +30,7 @@
 //TODO: This needs to be smoothed out
 enum class SerialPacketType {
 	//default: there is something wrong
-	NONE,
+	NONE = 0,
 
 	//-------------------------
 	//ServerPacket
@@ -38,12 +38,12 @@ enum class SerialPacketType {
 	//-------------------------
 
 	//heartbeat
-	PING,
-	PONG,
+	PING = 1,
+	PONG = 2,
 
 	//Used for finding available servers
-	BROADCAST_REQUEST,
-	BROADCAST_RESPONSE,
+	BROADCAST_REQUEST = 3,
+	BROADCAST_RESPONSE = 4,
 
 	//-------------------------
 	//ClientPacket
@@ -51,24 +51,24 @@ enum class SerialPacketType {
 	//-------------------------
 
 	//Connecting to a server as a client
-	JOIN_REQUEST,
-	JOIN_RESPONSE,
+	JOIN_REQUEST = 5,
+	JOIN_RESPONSE = 6,
 
 	//disconnect from the server
-	DISCONNECT_REQUEST,
-	DISCONNECT_RESPONSE,
-	DISCONNECT_FORCED,
+	DISCONNECT_REQUEST = 7,
+	DISCONNECT_RESPONSE = 8,
+	DISCONNECT_FORCED = 9,
 
 	//load the account
-	LOGIN_REQUEST,
-	LOGIN_RESPONSE,
+	LOGIN_REQUEST = 10,
+	LOGIN_RESPONSE = 11,
 
 	//unload the account
-	LOGOUT_REQUEST,
-	LOGOUT_RESPONSE,
+	LOGOUT_REQUEST = 12,
+	LOGOUT_RESPONSE = 13,
 
 	//shut down the server
-	SHUTDOWN_REQUEST,
+	SHUTDOWN_REQUEST = 14,
 
 	//-------------------------
 	//RegionPacket
@@ -76,8 +76,8 @@ enum class SerialPacketType {
 	//-------------------------
 
 	//map data
-	REGION_REQUEST, //NOTE: technically a query
-	REGION_CONTENT,
+	REGION_REQUEST = 15, //NOTE: technically a query
+	REGION_CONTENT = 16,
 
 	//-------------------------
 	//CharacterPacket
@@ -89,19 +89,19 @@ enum class SerialPacketType {
 	//-------------------------
 
 	//character management
-	CHARACTER_CREATE,
-	CHARACTER_DELETE,
-	CHARACTER_LOAD,
-	CHARACTER_UNLOAD,
+	CHARACTER_CREATE = 17,
+	CHARACTER_DELETE = 18,
+	CHARACTER_LOAD = 19,
+	CHARACTER_UNLOAD = 20,
 
 	//find out info from the server
-	QUERY_CHARACTER_EXISTS,
-	QUERY_CHARACTER_STATS,
-	QUERY_CHARACTER_LOCATION,
+	QUERY_CHARACTER_EXISTS = 21,
+	QUERY_CHARACTER_STATS = 22,
+	QUERY_CHARACTER_LOCATION = 23,
 
 	//set the info in the server
-	CHARACTER_MOVEMENT,
-	CHARACTER_ATTACK,
+	CHARACTER_MOVEMENT = 24,
+	CHARACTER_ATTACK = 25,
 
 	//admin control
 //	ADMIN_SET_CHARACTER_ORIGIN,
@@ -114,15 +114,15 @@ enum class SerialPacketType {
 	//  TODO: attack data
 	//-------------------------
 
-	MONSTER_CREATE,
-	MONSTER_DELETE,
+	MONSTER_CREATE = 26,
+	MONSTER_DELETE = 27,
 
-	QUERY_MONSTER_EXISTS, //a list of monsters in a room
-	QUERY_MONSTER_STATS, //statistics of a specific monster type or instance
-	QUERY_MONSTER_LOCATION, //umm...
+	QUERY_MONSTER_EXISTS = 28, //a list of monsters in a room
+	QUERY_MONSTER_STATS = 29, //statistics of a specific monster type or instance
+	QUERY_MONSTER_LOCATION = 30, //umm...
 
-	MONSTER_MOVEMENT, //monster movement
-	MONSTER_ATTACK,
+	MONSTER_MOVEMENT = 31, //monster movement
+	MONSTER_ATTACK = 32,
 
 	//-------------------------
 	//TextPacket
@@ -130,21 +130,21 @@ enum class SerialPacketType {
 	//-------------------------
 
 	//general speech
-	TEXT_BROADCAST,
+	TEXT_BROADCAST = 33,
 
 	//rejection/error messages
-	JOIN_REJECTION,
-	LOGIN_REJECTION,
-	REGION_REJECTION,
-	CHARACTER_REJECTION,
-	MONSTER_REJECTION,
-	SHUTDOWN_REJECTION,
+	JOIN_REJECTION = 34,
+	LOGIN_REJECTION = 35,
+	REGION_REJECTION = 36,
+	CHARACTER_REJECTION = 37,
+	MONSTER_REJECTION = 38,
+	SHUTDOWN_REJECTION = 39,
 
 	//-------------------------
 	//not used
 	//-------------------------
 
-	LAST
+	LAST = 40
 };
 
 #endif

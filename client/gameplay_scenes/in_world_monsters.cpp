@@ -71,7 +71,6 @@ void InWorld::HandleMonsterDelete(MonsterPacket* const argPacket) {
 		return;
 	}
 
-
 	//remove this monster
 	monsterMap.erase(monsterIt);
 
@@ -100,7 +99,14 @@ void InWorld::HandleMonsterQueryExists(MonsterPacket* const argPacket) {
 }
 
 void InWorld::HandleMonsterMovement(MonsterPacket* const argPacket) {
-	//TODO: HandleMonsterMovement
+	//ignore if this monster doesn't exist
+	std::map<int, BaseMonster>::iterator monsterIt = monsterMap.find(argPacket->monsterIndex);
+	if (monsterIt == monsterMap.end()) {
+		return;
+	}
+
+	monsterIt.SetOrigin(argPacket->origin);
+	monsterIt.SetOrigin(argPacket->motion);
 }
 
 void InWorld::HandleMonsterAttack(MonsterPacket* const argPacket) {
