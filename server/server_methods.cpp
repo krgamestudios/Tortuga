@@ -29,6 +29,10 @@
 //server commands
 //-------------------------
 
+void ServerApplication::hAdminDisconnectForced(ClientPacket* const argPacket) {
+	//TODO: (9) boot players
+}
+
 void ServerApplication::HandleShutdownRequest(ClientPacket* const argPacket) {
 	//get the account and client data
 	AccountData* accountData = accountMgr.Get(argPacket->accountIndex);
