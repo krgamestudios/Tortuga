@@ -110,5 +110,5 @@ void InWorld::HandleMonsterMovement(MonsterPacket* const argPacket) {
 }
 
 void InWorld::HandleMonsterAttack(MonsterPacket* const argPacket) {
-	//TODO: HandleMonsterAttack
+	//TODO: (1) HandleMonsterAttack
 }

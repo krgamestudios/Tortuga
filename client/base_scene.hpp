@@ -59,7 +59,7 @@ protected:
 	virtual void KeyUp(SDL_KeyboardEvent const&) {}
 
 #ifdef USE_EVENT_JOYSTICK
-	//TODO: joystick/gamepad support
+	//EMPTY
 #endif
 
 #ifdef USE_EVENT_UNKNOWN

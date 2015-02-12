@@ -172,5 +172,5 @@ void ServerApplication::HandleDisconnectRequest(ClientPacket* const argPacket) {
 }
 
 void ServerApplication::HandleDisconnectForced(ClientPacket* const argPacket) {
-	//TODO: HandleDisconnectForced
+	//HandleDisconnectForced
 }

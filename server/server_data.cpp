@@ -28,10 +28,10 @@
 //General data management
 //-------------------------
 
-//TODO: Queries
+//NOTE: Queries go here
 
 void ServerApplication::SaveServerState() {
-	//TODO: SaveServerState
+	//SaveServerState
 }
 
 //-------------------------

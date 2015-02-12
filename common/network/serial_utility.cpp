@@ -57,12 +57,12 @@ void serializePacket(void* buffer, SerialPacketBase* packet) {
 		case SerialPacketType::JOIN_RESPONSE:
 		case SerialPacketType::DISCONNECT_REQUEST:
 		case SerialPacketType::DISCONNECT_RESPONSE:
-		case SerialPacketType::DISCONNECT_FORCED:
+		case SerialPacketType::ADMIN_DISCONNECT_FORCED:
 		case SerialPacketType::LOGIN_REQUEST:
 		case SerialPacketType::LOGIN_RESPONSE:
 		case SerialPacketType::LOGOUT_REQUEST:
 		case SerialPacketType::LOGOUT_RESPONSE:
-		case SerialPacketType::SHUTDOWN_REQUEST:
+		case SerialPacketType::ADMIN_SHUTDOWN_REQUEST:
 			serializeClient(buffer, static_cast<ClientPacket*>(packet));
 		break;
 		case SerialPacketType::REGION_REQUEST:
@@ -78,6 +78,7 @@ void serializePacket(void* buffer, SerialPacketBase* packet) {
 		case SerialPacketType::QUERY_CHARACTER_LOCATION:
 		case SerialPacketType::CHARACTER_MOVEMENT:
 		case SerialPacketType::CHARACTER_ATTACK:
+		case SerialPacketType::CHARACTER_DAMAGE:
 			serializeCharacter(buffer, static_cast<CharacterPacket*>(packet));
 		break;
 		case SerialPacketType::MONSTER_CREATE:
@@ -87,6 +88,7 @@ void serializePacket(void* buffer, SerialPacketBase* packet) {
 		case SerialPacketType::QUERY_MONSTER_LOCATION:
 		case SerialPacketType::MONSTER_MOVEMENT:
 		case SerialPacketType::MONSTER_ATTACK:
+		case SerialPacketType::MONSTER_DAMAGE:
 			serializeMonster(buffer, static_cast<MonsterPacket*>(packet));
 		break;
 		case SerialPacketType::TEXT_BROADCAST:
@@ -117,12 +119,12 @@ void deserializePacket(void* buffer, SerialPacketBase* packet) {
 		case SerialPacketType::JOIN_RESPONSE:
 		case SerialPacketType::DISCONNECT_REQUEST:
 		case SerialPacketType::DISCONNECT_RESPONSE:
-		case SerialPacketType::DISCONNECT_FORCED:
+		case SerialPacketType::ADMIN_DISCONNECT_FORCED:
 		case SerialPacketType::LOGIN_REQUEST:
 		case SerialPacketType::LOGIN_RESPONSE:
 		case SerialPacketType::LOGOUT_REQUEST:
 		case SerialPacketType::LOGOUT_RESPONSE:
-		case SerialPacketType::SHUTDOWN_REQUEST:
+		case SerialPacketType::ADMIN_SHUTDOWN_REQUEST:
 			deserializeClient(buffer, static_cast<ClientPacket*>(packet));
 		break;
 		case SerialPacketType::REGION_REQUEST:
@@ -138,6 +140,7 @@ void deserializePacket(void* buffer, SerialPacketBase* packet) {
 		case SerialPacketType::QUERY_CHARACTER_LOCATION:
 		case SerialPacketType::CHARACTER_MOVEMENT:
 		case SerialPacketType::CHARACTER_ATTACK:
+		case SerialPacketType::CHARACTER_DAMAGE:
 			deserializeCharacter(buffer, static_cast<CharacterPacket*>(packet));
 		break;
 		case SerialPacketType::MONSTER_CREATE:
@@ -147,6 +150,7 @@ void deserializePacket(void* buffer, SerialPacketBase* packet) {
 		case SerialPacketType::QUERY_MONSTER_LOCATION:
 		case SerialPacketType::MONSTER_MOVEMENT:
 		case SerialPacketType::MONSTER_ATTACK:
+		case SerialPacketType::MONSTER_DAMAGE:
 			deserializeMonster(buffer, static_cast<MonsterPacket*>(packet));
 		break;
 		case SerialPacketType::TEXT_BROADCAST:

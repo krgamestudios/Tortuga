@@ -100,14 +100,14 @@ void LobbyMenu::FrameEnd() {
 }
 
 void LobbyMenu::Render(SDL_Surface* const screen) {
-	//TODO: I need a proper UI system for the entire client and the editor
+	//TODO: (9) I need a proper UI system for the entire client and the editor
 
 	//UI
 	search.DrawTo(screen);
 	join.DrawTo(screen);
 	back.DrawTo(screen);
 
-	//TODO: draw headers for the server list
+	//TODO: (9) draw headers for the server list
 	for (int i = 0; i < serverInfo.size(); i++) {
 		//draw the selected server's highlight
 		if (selection == &serverInfo[i]) {
@@ -131,8 +131,6 @@ void LobbyMenu::Render(SDL_Surface* const screen) {
 		if (!serverInfo[i].compatible) {
 			font.DrawStringTo("?", screen, listBox.x - font.GetCharW(), listBox.y + i*listBox.h);
 		}
-
-		//TODO: ping/delay?
 	}
 }
 
@@ -254,11 +252,11 @@ void LobbyMenu::HandleLoginResponse(ClientPacket* const argPacket) {
 }
 
 void LobbyMenu::HandleJoinRejection(TextPacket* const argPacket) {
-	//TODO: Better output for join rejection
+	//TODO: (9) Better output for join rejection
 }
 
 void LobbyMenu::HandleLoginRejection(TextPacket* const argPacket) {
-	//TODO: Better output for login rejection
+	//TODO: (9) Better output for login rejection
 }
 
 //-------------------------

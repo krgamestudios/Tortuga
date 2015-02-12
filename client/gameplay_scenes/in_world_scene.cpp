@@ -60,12 +60,10 @@ InWorld::InWorld(int* const argClientIndex,	int* const argAccountIndex):
 	shutDownButton.SetText("Shut Down");
 
 	//load the tilesheet
-	//TODO: add the tilesheet to the map system
-	//TODO: Tile size and tile sheet should be loaded elsewhere
+	//TODO: (9) Tile size and tile sheet should be loaded elsewhere
 	tileSheet.Load(config["dir.tilesets"] + "overworld.bmp", 32, 32);
 
 	//Send the character data
-	//TODO: login scene, prompt, etc.
 	CharacterPacket newPacket;
 	newPacket.type = SerialPacketType::CHARACTER_LOAD;
 	strncpy(newPacket.handle, config["client.handle"].c_str(), PACKET_STRING_SIZE);
@@ -175,11 +173,10 @@ void InWorld::Render(SDL_Surface* const screen) {
 
 	//draw the entities
 	for (auto& it : characterMap) {
-		//TODO: depth ordering
+		//TODO: (1) depth ordering
 		it.second.DrawTo(screen, camera.x, camera.y);
 	}
 	for (auto& it : monsterMap) {
-		//TODO: depth ordering
 		it.second.DrawTo(screen, camera.x, camera.y);
 	}
 
@@ -224,7 +221,7 @@ void InWorld::KeyDown(SDL_KeyboardEvent const& key) {
 	//hotkeys
 	switch(key.keysym.sym) {
 		case SDLK_ESCAPE:
-			//TODO: the escape key should actually control menus and stuff
+			//TODO: (9) the escape key should actually control menus and stuff
 			SendLogoutRequest();
 		return;
 	}

@@ -128,7 +128,6 @@ void ServerApplication::Init(int argc, char* argv[]) {
 	//debug output
 	//-------------------------
 
-	//TODO: enable/disable these with a switch
 #define DEBUG_OUTPUT_VAR(x) std::cout << "\t" << #x << ": " << x << std::endl;
 
 	std::cout << "Internal sizes:" << std::endl;
@@ -195,7 +194,7 @@ void ServerApplication::Proc() {
 void ServerApplication::Quit() {
 	std::cout << "Shutting down" << std::endl;
 
-	//TODO: save the server state
+	//TODO: (9) save the server state
 
 	//close the managers
 	accountMgr.UnloadAll();
@@ -221,84 +220,96 @@ void ServerApplication::HandlePacket(SerialPacket* const argPacket) {
 	switch(argPacket->type) {
 		//heartbeat system
 		case SerialPacketType::PING:
-			HandlePing(static_cast<ServerPacket*>(argPacket));
+			hPing(static_cast<ServerPacket*>(argPacket));
 		break;
 		case SerialPacketType::PONG:
-			HandlePong(static_cast<ServerPacket*>(argPacket));
+			hPong(static_cast<ServerPacket*>(argPacket));
 		break;
 
 		//client connections
 		case SerialPacketType::BROADCAST_REQUEST:
-			HandleBroadcastRequest(static_cast<ServerPacket*>(argPacket));
+			hBroadcastRequest(static_cast<ServerPacket*>(argPacket));
 		break;
 		case SerialPacketType::JOIN_REQUEST:
-			HandleJoinRequest(static_cast<ClientPacket*>(argPacket));
+			hJoinRequest(static_cast<ClientPacket*>(argPacket));
 		break;
 		case SerialPacketType::LOGIN_REQUEST:
-			HandleLoginRequest(static_cast<ClientPacket*>(argPacket));
+			hLoginRequest(static_cast<ClientPacket*>(argPacket));
 		break;
 
 		//client disconnections
 		case SerialPacketType::LOGOUT_REQUEST:
-			HandleLogoutRequest(static_cast<ClientPacket*>(argPacket));
+			hLogoutRequest(static_cast<ClientPacket*>(argPacket));
 		break;
 		case SerialPacketType::DISCONNECT_REQUEST:
-			HandleDisconnectRequest(static_cast<ClientPacket*>(argPacket));
+			hDisconnectRequest(static_cast<ClientPacket*>(argPacket));
 		break;
 
 		//server commands
-//		case SerialPacketType::DISCONNECT_FORCED:
-//			HandleDisconnectForced(static_cast<ClientPacket*>(argPacket));
-//		break;
-		case SerialPacketType::SHUTDOWN_REQUEST:
-			HandleShutdownRequest(static_cast<ClientPacket*>(argPacket));
+		case SerialPacketType::ADMIN_DISCONNECT_FORCED:
+			hAdminDisconnectForced(static_cast<ClientPacket*>(argPacket));
+		break;
+		case SerialPacketType::ADMIN_SHUTDOWN_REQUEST:
+			hAdminShutdownRequest(static_cast<ClientPacket*>(argPacket));
 		break;
 
 		//data management & queries
 		case SerialPacketType::REGION_REQUEST:
-			HandleRegionRequest(static_cast<RegionPacket*>(argPacket));
+			hRegionRequest(static_cast<RegionPacket*>(argPacket));
 		break;
 		case SerialPacketType::QUERY_CHARACTER_EXISTS:
-			HandleCharacterExists(static_cast<CharacterPacket*>(argPacket));
+			hQueryCharacterExists(static_cast<CharacterPacket*>(argPacket));
 		break;
+		case SerialPacketType::QUERY_CHARACTER_STATS:
+			hQueryCharacterStats(static_cast<CharacterPacket*>(argPacket));
+		break;
+		case SerialPacketType::QUERY_CHARACTER_LOCATION:
+			hQueryCharacterLocation(static_cast<CharacterPacket*>(argPacket));
+		break;
+
 		case SerialPacketType::QUERY_MONSTER_EXISTS:
-//			HandleMonsterExists(static_cast<MonsterPacket*>(argPacket));
+			hQueryMonsterExists(static_cast<MonsterPacket*>(argPacket));
+		break;
+		case SerialPacketType::QUERY_MONSTER_STATS:
+			hQueryMonsterStats(static_cast<MonsterPacket*>(argPacket));
+		break;
+		case SerialPacketType::QUERY_MONSTER_LOCATION:
+			hQueryMonsterLocation(static_cast<MonsterPacket*>(argPacket));
 		break;
 
 		//character management
 		case SerialPacketType::CHARACTER_CREATE:
-			HandleCharacterCreate(static_cast<CharacterPacket*>(argPacket));
+			hCharacterCreate(static_cast<CharacterPacket*>(argPacket));
 		break;
 		case SerialPacketType::CHARACTER_DELETE:
-			HandleCharacterDelete(static_cast<CharacterPacket*>(argPacket));
+			hCharacterDelete(static_cast<CharacterPacket*>(argPacket));
 		break;
 		case SerialPacketType::CHARACTER_LOAD:
-			HandleCharacterLoad(static_cast<CharacterPacket*>(argPacket));
+			hCharacterLoad(static_cast<CharacterPacket*>(argPacket));
 		break;
 		case SerialPacketType::CHARACTER_UNLOAD:
-			HandleCharacterUnload(static_cast<CharacterPacket*>(argPacket));
+			hCharacterUnload(static_cast<CharacterPacket*>(argPacket));
 		break;
 
 		//character movement
 		case SerialPacketType::CHARACTER_MOVEMENT:
-			HandleCharacterMovement(static_cast<CharacterPacket*>(argPacket));
+			hCharacterMovement(static_cast<CharacterPacket*>(argPacket));
 		break;
 		case SerialPacketType::CHARACTER_ATTACK:
-			HandleCharacterAttack(static_cast<CharacterPacket*>(argPacket));
+			hCharacterAttack(static_cast<CharacterPacket*>(argPacket));
+		break;
+		case SerialPacketType::CHARACTER_DAMAGE:
+			hCharacterDamage(static_cast<CharacterPacket*>(argPacket));
 		break;
 
 		//monster management
-		case SerialPacketType::MONSTER_CREATE:
-//			HandleMonsterCreate(static_cast<MonsterPacket*>(argPacket));
+		case SerialPacketType::MONSTER_DAMAGE:
+			hMonsterDamage(static_cast<MonsterPacket*>(argPacket));
 		break;
-		case SerialPacketType::MONSTER_DELETE:
-//			HandleMonsterDelete(static_cast<MonsterPacket*>(argPacket));
-		break;
-		case SerialPacketType::MONSTER_MOVEMENT:
-//			HandleMonsterMovement(static_cast<MonsterPacket*>(argPacket));
-		break;
-		case SerialPacketType::MONSTER_ATTACK:
-//			HandleMonsterAttack(static_cast<MonsterPacket*>(argPacket));
+
+		//chat
+		case SerialPacketType::TEXT_BROADCAST:
+			hTextBroadcast(static_cast<TextPacket*>(argPacket));
 		break;
 
 		//handle errors

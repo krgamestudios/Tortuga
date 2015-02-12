@@ -144,12 +144,12 @@ void ServerApplication::HandleCharacterUnload(CharacterPacket* const argPacket) 
 
 	AccountData* accountData = accountMgr.Get(characterData->GetOwner());
 	if (!accountData) {
-		return; //TODO: logic_error
+		return;
 	}
 
 	ClientData* clientData = clientMgr.Get(accountData->GetClientIndex());
 	if (!clientData) {
-		return; //TODO: logic_error
+		return;
 	}
 
 	//check for fraud
@@ -175,7 +175,7 @@ void ServerApplication::HandleCharacterUnload(CharacterPacket* const argPacket) 
 //character movement
 //-------------------------
 
-//TODO: Could replace this verbosity with a "verify" method, taking a client, account and character ptr as arguments
+//TODO: (9) Could replace this verbosity with a "verify" method, taking a client, account and character ptr as arguments
 
 void ServerApplication::HandleCharacterMovement(CharacterPacket* const argPacket) {
 	//get the specified objects
@@ -197,7 +197,7 @@ void ServerApplication::HandleCharacterMovement(CharacterPacket* const argPacket
 
 	//check if allowed
 	if (characterData->GetOwner() != argPacket->accountIndex && !accountData->GetModerator() && !accountData->GetAdministrator()) {
-		//TODO: send to the client?
+		//TODO: (9) send to the client?
 		std::cerr << "Failed to set character motion due to lack of permissions targeting uid(" << argPacket->characterIndex << ")" << std::endl;
 		return;
 	}
@@ -235,5 +235,5 @@ void ServerApplication::HandleCharacterMovement(CharacterPacket* const argPacket
 }
 
 void ServerApplication::HandleCharacterAttack(CharacterPacket* const) {
-	//TODO: bounce graphical attack data
+	//TODO: (9) bounce graphical attack data
 }

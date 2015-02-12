@@ -142,7 +142,7 @@ protected:
 	LocalCharacter* localCharacter = nullptr;
 
 	//heartbeat
-	//TODO: Heartbeat needs it's own utility
+	//TODO: (9) Heartbeat needs it's own utility
 	typedef std::chrono::steady_clock Clock;
 	Clock::time_point lastBeat = Clock::now();
 	int attemptedBeats = 0;

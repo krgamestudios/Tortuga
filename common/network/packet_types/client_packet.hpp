@@ -28,6 +28,7 @@ struct ClientPacket : SerialPacketBase {
 	int clientIndex;
 	int accountIndex;
 	char username[PACKET_STRING_SIZE];
+	//TODO: (9) password, auth token
 };
 
 void serializeClient(void* buffer, ClientPacket* packet);

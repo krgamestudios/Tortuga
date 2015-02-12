@@ -140,7 +140,6 @@ int UDPNetworkUtility::SendToAllChannels(void* data, int len) {
 	return sent;
 }
 
-//TODO: put a void* and int* parameter list here
 int UDPNetworkUtility::Receive() {
 	memset(packet->data, 0, packet->maxlen);
 	int ret = SDLNet_UDP_Recv(socket, packet);

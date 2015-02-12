@@ -65,46 +65,57 @@ private:
 	//handle incoming traffic
 	void HandlePacket(SerialPacket* const);
 
-	//heartbeat sustem
-	void HandlePing(ServerPacket* const);
-	void HandlePong(ServerPacket* const);
+	//heartbeat system
+	void hPing(ServerPacket* const);
+	void hPong(ServerPacket* const);
 
 	//basic connections
-	void HandleBroadcastRequest(ServerPacket* const);
-	void HandleJoinRequest(ClientPacket* const);
-	void HandleLoginRequest(ClientPacket* const);
+	void hBroadcastRequest(ServerPacket* const);
+	void hJoinRequest(ClientPacket* const);
+	void hLoginRequest(ClientPacket* const);
 
 	//client disconnections
-	void HandleLogoutRequest(ClientPacket* const);
-	void HandleDisconnectRequest(ClientPacket* const);
+	void hLogoutRequest(ClientPacket* const);
+	void hDisconnectRequest(ClientPacket* const);
 
 	//server commands
-	void HandleDisconnectForced(ClientPacket* const);
-	void HandleShutdownRequest(ClientPacket* const);
+	void hAdminDisconnectForced(ClientPacket* const);
+	void hAdminShutdownRequest(ClientPacket* const);
 
 	//data management
-	void HandleRegionRequest(RegionPacket* const);
-	void HandleCharacterExists(CharacterPacket* const);
-
-	void SaveServerState();
-	void FullClientUnload(int index);
-	void FullAccountUnload(int index);
-	void FullCharacterUnload(int index);
+	void hRegionRequest(RegionPacket* const);
+	void hQueryCharacterExists(CharacterPacket* const);
+	void hQueryCharacterStats(CharacterPacket* const);
+	void hQueryCharacterLocation(CharacterPacket* const);
+	void hQueryMonsterExists(MonsterPacket* const);
+	void hQueryMonsterStats(MonsterPacket* const);
+	void hQueryMonsterLocation(MonsterPacket* const);
 
 	//character management
-	void HandleCharacterCreate(CharacterPacket* const);
-	void HandleCharacterDelete(CharacterPacket* const);
-	void HandleCharacterLoad(CharacterPacket* const);
-	void HandleCharacterUnload(CharacterPacket* const);
+	void hCharacterCreate(CharacterPacket* const);
+	void hCharacterDelete(CharacterPacket* const);
+	void hCharacterLoad(CharacterPacket* const);
+	void hCharacterUnload(CharacterPacket* const);
 
 	//character movement
-	void HandleCharacterMovement(CharacterPacket* const);
-	void HandleCharacterAttack(CharacterPacket* const);
+	void hCharacterMovement(CharacterPacket* const);
+	void hCharacterAttack(CharacterPacket* const);
+	void hCharacterDamage(CharacterPacket* const);
+
+	//character management
+	void hMonsterDamage(MonsterPacket* const);
+
+	//chat
+	void hTextBroadcast(TextPacket* const);
 
 	//utility methods
 	void PumpPacket(SerialPacket* const);
 	void PumpPacketProximity(SerialPacket* const argPacket, int roomIndex, Vector2 position, int distance);
 	void CopyCharacterToPacket(CharacterPacket* const packet, int characterIndex);
+	void SaveServerState();
+	void FullClientUnload(int index);
+	void FullAccountUnload(int index);
+	void FullCharacterUnload(int index);
 
 	//APIs and utilities
 	sqlite3* database = nullptr;

@@ -38,8 +38,6 @@ struct MonsterPacket : SerialPacketBase {
 	int roomIndex;
 	Vector2 origin;
 	Vector2 motion;
-
-	//TODO: attack data
 };
 
 void serializeMonster(void* buffer, MonsterPacket* packet);

@@ -47,7 +47,7 @@ private:
 
 	int clientIndex;
 	std::string username;
-	//TODO: password
+	//password/auth token
 
 	//bit fields?
 	bool blackListed = false;

@@ -83,7 +83,6 @@ void ClientApplication::Init(int argc, char* argv[]) {
 	//debug output
 	//-------------------------
 
-	//TODO: enable/disable these with a switch
 #define DEBUG_OUTPUT_VAR(x) std::cout << "\t" << #x << ": " << x << std::endl;
 
 	std::cout << "Internal sizes:" << std::endl;
