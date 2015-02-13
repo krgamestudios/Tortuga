@@ -131,6 +131,8 @@ enum class SerialPacketType {
 
 	//general speech
 	TEXT_BROADCAST,
+	TEXT_SPEECH,
+	TEXT_WHISPER,
 
 	//rejection/error messages
 	JOIN_REJECTION,

@@ -311,6 +311,12 @@ void ServerApplication::HandlePacket(SerialPacket* const argPacket) {
 		case SerialPacketType::TEXT_BROADCAST:
 			hTextBroadcast(static_cast<TextPacket*>(argPacket));
 		break;
+		case SerialPacketType::TEXT_SPEECH:
+			hTextSpeech(static_cast<TextPacket*>(argPacket));
+		break;
+		case SerialPacketType::TEXT_WHISPER:
+			hTextWhisper(static_cast<TextPacket*>(argPacket));
+		break;
 
 		//handle errors
 		default: {

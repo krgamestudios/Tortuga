@@ -33,7 +33,7 @@ void ServerApplication::hAdminDisconnectForced(ClientPacket* const argPacket) {
 	//TODO: (9) boot players
 }
 
-void ServerApplication::HandleShutdownRequest(ClientPacket* const argPacket) {
+void ServerApplication::hAdminShutdownRequest(ClientPacket* const argPacket) {
 	//get the account and client data
 	AccountData* accountData = accountMgr.Get(argPacket->accountIndex);
 	if (!accountData) {
@@ -76,7 +76,7 @@ void ServerApplication::HandleShutdownRequest(ClientPacket* const argPacket) {
 
 	//disconnect all clients
 	TextPacket newPacket;
-	newPacket.type = SerialPacketType::DISCONNECT_FORCED;
+	newPacket.type = SerialPacketType::ADMIN_DISCONNECT_FORCED;
 	strncpy(newPacket.text, "Server shutdown", PACKET_STRING_SIZE);
 	PumpPacket(&newPacket);
 

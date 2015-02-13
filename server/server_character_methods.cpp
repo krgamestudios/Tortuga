@@ -28,7 +28,7 @@
 //Character Management
 //-------------------------
 
-void ServerApplication::HandleCharacterCreate(CharacterPacket* const argPacket) {
+void ServerApplication::hCharacterCreate(CharacterPacket* const argPacket) {
 	int characterIndex = characterMgr.Create(argPacket->accountIndex, argPacket->handle, argPacket->avatar);
 
 	if (characterIndex < 0) {
@@ -55,7 +55,7 @@ void ServerApplication::HandleCharacterCreate(CharacterPacket* const argPacket) 
 	PumpPacket(&newPacket);
 }
 
-void ServerApplication::HandleCharacterDelete(CharacterPacket* const argPacket) {
+void ServerApplication::hCharacterDelete(CharacterPacket* const argPacket) {
 	//get the user's data
 	AccountData* accountData = accountMgr.Get(argPacket->accountIndex);
 	if (!accountData) {
@@ -102,7 +102,7 @@ void ServerApplication::HandleCharacterDelete(CharacterPacket* const argPacket) 
 	PumpPacket(static_cast<SerialPacket*>(&newPacket));
 }
 
-void ServerApplication::HandleCharacterLoad(CharacterPacket* const argPacket) {
+void ServerApplication::hCharacterLoad(CharacterPacket* const argPacket) {
 	int characterIndex = characterMgr.Load(argPacket->accountIndex, argPacket->handle, argPacket->avatar);
 
 	if (characterIndex < 0) {
@@ -135,7 +135,7 @@ void ServerApplication::HandleCharacterLoad(CharacterPacket* const argPacket) {
 	PumpPacket(&newPacket);
 }
 
-void ServerApplication::HandleCharacterUnload(CharacterPacket* const argPacket) {
+void ServerApplication::hCharacterUnload(CharacterPacket* const argPacket) {
 	//get the entries
 	CharacterData* characterData = characterMgr.Get(argPacket->characterIndex);
 	if (!characterData) {
@@ -177,7 +177,7 @@ void ServerApplication::HandleCharacterUnload(CharacterPacket* const argPacket) 
 
 //TODO: (9) Could replace this verbosity with a "verify" method, taking a client, account and character ptr as arguments
 
-void ServerApplication::HandleCharacterMovement(CharacterPacket* const argPacket) {
+void ServerApplication::hCharacterMovement(CharacterPacket* const argPacket) {
 	//get the specified objects
 	AccountData* accountData = accountMgr.Get(argPacket->accountIndex);
 	CharacterData* characterData = characterMgr.Get(argPacket->characterIndex);
@@ -234,6 +234,10 @@ void ServerApplication::HandleCharacterMovement(CharacterPacket* const argPacket
 	}
 }
 
-void ServerApplication::HandleCharacterAttack(CharacterPacket* const) {
+void ServerApplication::hCharacterAttack(CharacterPacket* const argPacket) {
 	//TODO: (9) bounce graphical attack data
+}
+
+void ServerApplication::hCharacterDamage(CharacterPacket* const argPacket) {
+	//TODO: (9) empty
 }

@@ -107,6 +107,8 @@ private:
 
 	//chat
 	void hTextBroadcast(TextPacket* const);
+	void hTextSpeech(TextPacket* const);
+	void hTextWhisper(TextPacket* const);
 
 	//utility methods
 	void PumpPacket(SerialPacket* const);

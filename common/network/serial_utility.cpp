@@ -92,6 +92,8 @@ void serializePacket(void* buffer, SerialPacketBase* packet) {
 			serializeMonster(buffer, static_cast<MonsterPacket*>(packet));
 		break;
 		case SerialPacketType::TEXT_BROADCAST:
+		case SerialPacketType::TEXT_SPEECH:
+		case SerialPacketType::TEXT_WHISPER:
 		case SerialPacketType::JOIN_REJECTION:
 		case SerialPacketType::LOGIN_REJECTION:
 		case SerialPacketType::REGION_REJECTION:
@@ -154,6 +156,8 @@ void deserializePacket(void* buffer, SerialPacketBase* packet) {
 			deserializeMonster(buffer, static_cast<MonsterPacket*>(packet));
 		break;
 		case SerialPacketType::TEXT_BROADCAST:
+		case SerialPacketType::TEXT_SPEECH:
+		case SerialPacketType::TEXT_WHISPER:
 		case SerialPacketType::JOIN_REJECTION:
 		case SerialPacketType::LOGIN_REJECTION:
 		case SerialPacketType::REGION_REJECTION:

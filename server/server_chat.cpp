@@ -19,22 +19,16 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef TEXTPACKET_HPP_
-#define TEXTPACKET_HPP_
+#include "server_application.hpp"
 
-#include "serial_packet_base.hpp"
+void ServerApplication::hTextBroadcast(TextPacket* const argPacket) {
+	//TODO: (9) empty
+}
 
-#include "vector2.hpp"
+void ServerApplication::hTextSpeech(TextPacket* const argPacket) {
+	//TODO: (9) empty
+}
 
-struct TextPacket : SerialPacketBase {
-	char name[PACKET_STRING_SIZE];
-	char text[PACKET_STRING_SIZE];
-	int roomIndex;
-	Vector2 origin;
-	int range;
-};
-
-void serializeText(void* buffer, TextPacket* packet);
-void deserializeText(void* buffer, TextPacket* packet);
-
-#endif
+void ServerApplication::hTextWhisper(TextPacket* const argPacket) {
+	//TODO: (9) empty
+}

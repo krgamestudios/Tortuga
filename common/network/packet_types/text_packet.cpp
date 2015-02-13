@@ -29,6 +29,12 @@ void serializeText(void* buffer, TextPacket* packet) {
 	//content
 	serialCopy(&buffer, packet->name, PACKET_STRING_SIZE);
 	serialCopy(&buffer, packet->text, PACKET_STRING_SIZE);
+
+	//location
+	serialCopy(&buffer, &packet->roomIndex, sizeof(int));
+	serialCopy(&buffer, &packet->origin.x, sizeof(double));
+	serialCopy(&buffer, &packet->origin.y, sizeof(double));
+	serialCopy(&buffer, &packet->range, sizeof(int));
 }
 
 void deserializeText(void* buffer, TextPacket* packet) {
@@ -37,4 +43,10 @@ void deserializeText(void* buffer, TextPacket* packet) {
 	//content
 	deserialCopy(&buffer, packet->name, PACKET_STRING_SIZE);
 	deserialCopy(&buffer, packet->text, PACKET_STRING_SIZE);
+
+	//location
+	deserialCopy(&buffer, &packet->roomIndex, sizeof(int));
+	deserialCopy(&buffer, &packet->origin.x, sizeof(double));
+	deserialCopy(&buffer, &packet->origin.y, sizeof(double));
+	deserialCopy(&buffer, &packet->range, sizeof(int));
 }

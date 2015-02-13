@@ -21,3 +21,6 @@
 */
 #include "server_application.hpp"
 
+void ServerApplication::hMonsterDamage(MonsterPacket* const argPacket) {
+	//TODO: (9) empty
+}
