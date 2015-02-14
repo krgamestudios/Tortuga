@@ -22,9 +22,9 @@
 #include "lobby_menu.hpp"
 
 #include "channels.hpp"
-#include "utility.hpp"
 
 #include <stdexcept>
+#include <sstream>
 
 //-------------------------
 //Public access members
@@ -100,14 +100,14 @@ void LobbyMenu::FrameEnd() {
 }
 
 void LobbyMenu::Render(SDL_Surface* const screen) {
-	//TODO: I need a proper UI system for the entire client and the editor
+	//TODO: (2) I need a proper UI system for the entire client and the editor
 
 	//UI
 	search.DrawTo(screen);
 	join.DrawTo(screen);
 	back.DrawTo(screen);
 
-	//TODO: draw headers for the server list
+	//TODO: (1) draw headers for the server list
 	for (int i = 0; i < serverInfo.size(); i++) {
 		//draw the selected server's highlight
 		if (selection == &serverInfo[i]) {
@@ -123,14 +123,14 @@ void LobbyMenu::Render(SDL_Surface* const screen) {
 		font.DrawStringTo(serverInfo[i].name, screen, listBox.x, listBox.y + i*listBox.h);
 
 		//draw the player count
-		font.DrawStringTo(to_string_custom(serverInfo[i].playerCount), screen, listBox.x + listBox.w, listBox.y + i*listBox.h);
+		std::ostringstream msg;
+		msg << serverInfo[i].playerCount;
+		font.DrawStringTo(msg.str(), screen, listBox.x + listBox.w, listBox.y + i*listBox.h);
 
 		//compatible?
 		if (!serverInfo[i].compatible) {
 			font.DrawStringTo("?", screen, listBox.x - font.GetCharW(), listBox.y + i*listBox.h);
 		}
-
-		//TODO: ping/delay?
 	}
 }
 
@@ -210,8 +210,11 @@ void LobbyMenu::HandlePacket(SerialPacket* const argPacket) {
 		break;
 
 		//handle errors
-		default:
-			throw(std::runtime_error(std::string() + "Unknown SerialPacketType encountered in LobbyMenu: " + to_string_custom(static_cast<int>(argPacket->type)) ));
+		default: {
+			std::ostringstream msg;
+			msg << "Unknown SerialPacketType encountered in LobbyMenu: " << static_cast<int>(argPacket->type);
+			throw(std::runtime_error( msg.str() ));
+		}
 		break;
 	}
 }
@@ -245,15 +248,15 @@ void LobbyMenu::HandleLoginResponse(ClientPacket* const argPacket) {
 		throw(std::runtime_error("Client index invalid during login"));
 	}
 	accountIndex = argPacket->accountIndex;
-	SetNextScene(SceneList::INWORLD);
+	SetNextScene(SceneList::WORLD);
 }
 
 void LobbyMenu::HandleJoinRejection(TextPacket* const argPacket) {
-	//TODO: Better output for join rejection
+	//TODO: (9) empty
 }
 
 void LobbyMenu::HandleLoginRejection(TextPacket* const argPacket) {
-	//TODO: Better output for login rejection
+	//TODO: (9) empty
 }
 
 //-------------------------

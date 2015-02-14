@@ -19,16 +19,28 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef UTILITY_HPP_
-#define UTILITY_HPP_
+#ifndef MONSTERPACKET_HPP_
+#define MONSTERPACKET_HPP_
 
-#include <string>
+#include "serial_packet_base.hpp"
 
-std::string truncatePath(std::string pathname);
+#include "bounding_box.hpp"
+#include "vector2.hpp"
 
-//fixing known bugs in g++
-std::string to_string_custom(int i);
+struct MonsterPacket : SerialPacketBase {
+	//identify the monster
+	int monsterIndex;
+	char handle[PACKET_STRING_SIZE];
+	char avatar[PACKET_STRING_SIZE];
+	BoundingBox bounds;
 
-int to_integer_custom(std::string);
+	//location
+	int roomIndex;
+	Vector2 origin;
+	Vector2 motion;
+};
+
+void serializeMonster(void* buffer, MonsterPacket* packet);
+void deserializeMonster(void* buffer, MonsterPacket* packet);
 
 #endif

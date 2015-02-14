@@ -19,19 +19,16 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef CLIENTPACKET_HPP_
-#define CLIENTPACKET_HPP_
+#include "server_application.hpp"
 
-#include "serial_packet_base.hpp"
+void ServerApplication::hTextBroadcast(TextPacket* const argPacket) {
+	//TODO: (9) empty
+}
 
-struct ClientPacket : SerialPacketBase {
-	int clientIndex;
-	int accountIndex;
-	char username[PACKET_STRING_SIZE];
-	//TODO: (9) password, auth token
-};
+void ServerApplication::hTextSpeech(TextPacket* const argPacket) {
+	//TODO: (9) empty
+}
 
-void serializeClient(void* buffer, ClientPacket* packet);
-void deserializeClient(void* buffer, ClientPacket* packet);
-
-#endif
+void ServerApplication::hTextWhisper(TextPacket* const argPacket) {
+	//TODO: (9) empty
+}

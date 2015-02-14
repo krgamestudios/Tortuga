@@ -19,19 +19,12 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef CLIENTPACKET_HPP_
-#define CLIENTPACKET_HPP_
+#include "ip_operators.hpp"
 
-#include "serial_packet_base.hpp"
+bool operator==(IPaddress lhs, IPaddress rhs) {
+	return lhs.host == rhs.host && lhs.port == rhs.port;
+}
 
-struct ClientPacket : SerialPacketBase {
-	int clientIndex;
-	int accountIndex;
-	char username[PACKET_STRING_SIZE];
-	//TODO: (9) password, auth token
-};
-
-void serializeClient(void* buffer, ClientPacket* packet);
-void deserializeClient(void* buffer, ClientPacket* packet);
-
-#endif
+bool operator!=(IPaddress lhs, IPaddress rhs) {
+	return !(lhs == rhs);
+}

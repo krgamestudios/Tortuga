@@ -24,9 +24,14 @@
 
 #include "serial_packet_base.hpp"
 
+#include "vector2.hpp"
+
 struct TextPacket : SerialPacketBase {
 	char name[PACKET_STRING_SIZE];
 	char text[PACKET_STRING_SIZE];
+	int roomIndex;
+	Vector2 origin;
+	int range;
 };
 
 void serializeText(void* buffer, TextPacket* packet);

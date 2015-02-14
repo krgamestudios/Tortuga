@@ -88,8 +88,7 @@ void MainMenu::Render(SDL_Surface* const screen) {
 	//text
 	font.DrawStringTo("Thanks for playing!", screen, 50, screen->h - 50 - image.GetClipH() * 2);
 	font.DrawStringTo("You can get the latest version at: ", screen, 50, screen->h - 50 - image.GetClipH() * 1);
-	font.DrawStringTo("https://github.com/Ratstail91/Tortuga", screen, 50, screen->h - 50 - image.GetClipH() * 0);
-	//TODO: replace this with a website address
+	font.DrawStringTo("krgamestudios.com", screen, 50, screen->h - 50 - image.GetClipH() * 0);
 }
 
 //-------------------------
@@ -109,7 +108,7 @@ void MainMenu::MouseButtonDown(SDL_MouseButtonEvent const& button) {
 }
 
 void MainMenu::MouseButtonUp(SDL_MouseButtonEvent const& button) {
-	//TODO: Buttons should only register as "selected" when the left button is used
+	//TODO: (2) Buttons should only register as "selected" when the left button is used
 	if (startButton.MouseButtonUp(button) == Button::State::HOVER) {
 		SetNextScene(SceneList::LOBBYMENU);
 	}
@@ -126,5 +125,9 @@ void MainMenu::KeyDown(SDL_KeyboardEvent const& key) {
 }
 
 void MainMenu::KeyUp(SDL_KeyboardEvent const& key) {
-	//
+	switch(key.keysym.sym) {
+		case SDLK_ESCAPE:
+			QuitEvent();
+		break;
+	}
 }

@@ -66,7 +66,6 @@ static int getWaypointMgr(lua_State* L) {
 }
 
 static int initialize(lua_State* L) {
-	//TODO: This could fit into the room system's globals
 	RoomData* room = static_cast<RoomData*>(lua_touserdata(L, 1));
 
 	//set the refs of these parameters (backwards, since it pops from the top of the stack)

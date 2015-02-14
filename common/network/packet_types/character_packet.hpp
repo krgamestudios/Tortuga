@@ -34,14 +34,11 @@ struct CharacterPacket : SerialPacketBase {
 
 	//the owner
 	int accountIndex;
-	//TODO: Authentication token?
 
 	//location
 	int roomIndex;
 	Vector2 origin;
 	Vector2 motion;
-
-	//gameplay components: equipment, items, buffs, debuffs...
 };
 
 void serializeCharacter(void* buffer, CharacterPacket* packet);

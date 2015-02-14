@@ -25,20 +25,10 @@
 #include <sstream>
 
 //-------------------------
-//General data management
+//Queries
 //-------------------------
 
-//TODO: Queries
-
-void ServerApplication::SaveServerState() {
-	//TODO: SaveServerState
-}
-
-//-------------------------
-//Map management
-//-------------------------
-
-void ServerApplication::HandleRegionRequest(RegionPacket* const argPacket) {
+void ServerApplication::hRegionRequest(RegionPacket* const argPacket) {
 	//get the region object, send a rejection on error
 	RoomData* room = roomMgr.Get(argPacket->roomIndex);
 	if (!room) {
@@ -71,7 +61,7 @@ void ServerApplication::HandleRegionRequest(RegionPacket* const argPacket) {
 	network.SendTo(argPacket->srcAddress, static_cast<SerialPacket*>(&newPacket));
 }
 
-void ServerApplication::HandleCharacterExists(CharacterPacket* const argPacket) {
+void ServerApplication::hQueryCharacterExists(CharacterPacket* const argPacket) {
 	//respond with all character data
 	CharacterPacket newPacket;
 
@@ -83,4 +73,24 @@ void ServerApplication::HandleCharacterExists(CharacterPacket* const argPacket) 
 		newPacket.type = SerialPacketType::QUERY_CHARACTER_EXISTS;
 		network.SendTo(argPacket->srcAddress, static_cast<SerialPacket*>(&newPacket));
 	}
+}
+
+void ServerApplication::hQueryCharacterStats(CharacterPacket* const argPacket) {
+	//TODO: (9) empty
+}
+
+void ServerApplication::hQueryCharacterLocation(CharacterPacket* const argPacket) {
+	//TODO: (9) empty
+}
+
+void ServerApplication::hQueryMonsterExists(MonsterPacket* const argPacket) {
+	//TODO: (9) empty
+}
+
+void ServerApplication::hQueryMonsterStats(MonsterPacket* const argPacket) {
+	//TODO: (9) empty
+}
+
+void ServerApplication::hQueryMonsterLocation(MonsterPacket* const argPacket) {
+	//TODO: (9) empty
 }

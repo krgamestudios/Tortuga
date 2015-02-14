@@ -19,30 +19,21 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#include "utility.hpp"
+#include "world.hpp"
 
-#include <algorithm>
+//-------------------------
+//chat
+//-------------------------
 
-std::string truncatePath(std::string pathname) {
-	return std::string(
-		std::find_if(
-			pathname.rbegin(),
-			pathname.rend(),
-			[](char ch) -> bool {
-				//windows & unix tested
-				return ch == '/' || ch == '\\';
-			}).base(),
-		pathname.end());
+void World::hTextBroadcast(TextPacket* const argPacket) {
+	//TODO: (9) empty
 }
 
-std::string to_string_custom(int i) {
-	char buffer[20];
-	snprintf(buffer, 20, "%d", i);
-	return std::string(buffer);
+void World::hTextSpeech(TextPacket* const argPacket) {
+	//TODO: (9) empty
 }
 
-int to_integer_custom(std::string s) {
-	int ret = 0;
-	sscanf(s.c_str(), "%d", &ret);
-	return ret;
+void World::hTextWhisper(TextPacket* const argPacket) {
+	//TODO: (9) empty
 }
+

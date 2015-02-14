@@ -1,10 +1,10 @@
---TODO: An archive table of all dead characters
+--TODO: (9) An archive table of all dead characters
 
 CREATE TABLE IF NOT EXISTS Accounts (
 	uid			INTEGER PRIMARY KEY AUTOINCREMENT,
-	username	varchar(100) UNIQUE,
+	username	varchar(100) UNIQUE, --TODO: (9) Swap username for email address
 
-	--TODO: server-client security
+	--server-client security
 --	passhash	varchar(100),
 --	passsalt	varchar(100),
 
@@ -101,5 +101,5 @@ CREATE TABLE IF NOT EXISTS WornEquipment (
 	--unique information
 	durability	INTEGER DEFAULT 0,
 	stats		INTEGER REFERENCES StatisticSets(uid)
-	--TODO: attached script?
+	--attached script?
 );

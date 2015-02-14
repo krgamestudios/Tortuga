@@ -28,13 +28,13 @@
 //heartbeat system
 //-------------------------
 
-void ServerApplication::HandlePing(ServerPacket* const argPacket) {
+void ServerApplication::hPing(ServerPacket* const argPacket) {
 	ServerPacket newPacket;
 	newPacket.type = SerialPacketType::PONG;
 	network.SendTo(argPacket->srcAddress, &newPacket);
 }
 
-void ServerApplication::HandlePong(ServerPacket* const argPacket) {
+void ServerApplication::hPong(ServerPacket* const argPacket) {
 	clientMgr.HandlePong(argPacket);
 }
 
@@ -42,7 +42,7 @@ void ServerApplication::HandlePong(ServerPacket* const argPacket) {
 //basic connections
 //-------------------------
 
-void ServerApplication::HandleBroadcastRequest(ServerPacket* const argPacket) {
+void ServerApplication::hBroadcastRequest(ServerPacket* const argPacket) {
 	//send the server's data
 	ServerPacket newPacket;
 
@@ -54,7 +54,7 @@ void ServerApplication::HandleBroadcastRequest(ServerPacket* const argPacket) {
 	network.SendTo(argPacket->srcAddress, static_cast<SerialPacket*>(&newPacket));
 }
 
-void ServerApplication::HandleJoinRequest(ClientPacket* const argPacket) {
+void ServerApplication::hJoinRequest(ClientPacket* const argPacket) {
 	//register the client
 	int clientIndex = clientMgr.Create(argPacket->srcAddress);
 
@@ -69,7 +69,7 @@ void ServerApplication::HandleJoinRequest(ClientPacket* const argPacket) {
 	std::cout << "New join, " << clientMgr.GetLoadedCount() << " clients and " << accountMgr.GetLoadedCount() << " accounts total" << std::endl;
 }
 
-void ServerApplication::HandleLoginRequest(ClientPacket* const argPacket) {
+void ServerApplication::hLoginRequest(ClientPacket* const argPacket) {
 	//get the client data
 	ClientData* clientData = clientMgr.Get(argPacket->clientIndex);
 
@@ -110,7 +110,7 @@ void ServerApplication::HandleLoginRequest(ClientPacket* const argPacket) {
 	std::cout << "New login, " << clientMgr.GetLoadedCount() << " clients and " << accountMgr.GetLoadedCount() << " accounts total" << std::endl;
 }
 
-void ServerApplication::HandleLogoutRequest(ClientPacket* const argPacket) {
+void ServerApplication::hLogoutRequest(ClientPacket* const argPacket) {
 	//get the account and client data
 	AccountData* accountData = accountMgr.Get(argPacket->accountIndex);
 	if (!accountData) {
@@ -144,7 +144,7 @@ void ServerApplication::HandleLogoutRequest(ClientPacket* const argPacket) {
 	std::cout << "New logout, " << clientMgr.GetLoadedCount() << " clients and " << accountMgr.GetLoadedCount() << " accounts total" << std::endl;
 }
 
-void ServerApplication::HandleDisconnectRequest(ClientPacket* const argPacket) {
+void ServerApplication::hDisconnectRequest(ClientPacket* const argPacket) {
 	//get the client data
 	ClientData* clientData = clientMgr.Get(argPacket->clientIndex);
 	if (!clientData) {
@@ -169,8 +169,4 @@ void ServerApplication::HandleDisconnectRequest(ClientPacket* const argPacket) {
 
 	//finished this routine
 	std::cout << "New disconnection, " << clientMgr.GetLoadedCount() << " clients and " << accountMgr.GetLoadedCount() << " accounts total" << std::endl;	
-}
-
-void ServerApplication::HandleDisconnectForced(ClientPacket* const argPacket) {
-	//TODO: HandleDisconnectForced
 }

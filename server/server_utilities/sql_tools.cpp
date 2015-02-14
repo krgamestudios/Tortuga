@@ -21,10 +21,9 @@
 */
 #include "sql_tools.hpp"
 
-#include "utility.hpp"
-
 #include <stdexcept>
 #include <fstream>
+#include <sstream>
 #include <cstdlib>
 
 int runSQLScript(sqlite3* db, std::string fname, int (*callback)(void*,int,char**,char**), void* argPtr) {
@@ -42,9 +41,10 @@ int runSQLScript(sqlite3* db, std::string fname, int (*callback)(void*,int,char*
 	int ret = sqlite3_exec(db, script.c_str(), callback, argPtr, &errmsg);
 	if (ret != SQLITE_OK) {
 		//handle any errors received from the SQL
-		std::runtime_error e(std::string() + "SQL Script Error " + to_string_custom(ret) + ": " + errmsg);
+		std::ostringstream msg;
+		msg << "SQL Script Error " << ret << ": " << errmsg;
 		free(errmsg);
-		throw(e);
+		throw(std::runtime_error( msg.str() ));
 	}
 	return ret;
 }

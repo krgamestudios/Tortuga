@@ -29,8 +29,17 @@ public:
 	BaseMonster() = default;
 	virtual ~BaseMonster() = default;
 
+	void CorrectSprite();
+
+	std::string SetHandle(std::string s);
+	std::string GetHandle() const;
+	std::string SetAvatar(std::string s);
+	std::string GetAvatar() const;
+
 protected:
-	//
+	//metadata
+	std::string handle;
+	std::string avatar;
 };
 
 #endif

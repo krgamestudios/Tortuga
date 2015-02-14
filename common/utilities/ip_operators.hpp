@@ -19,19 +19,13 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef CLIENTPACKET_HPP_
-#define CLIENTPACKET_HPP_
+#ifndef IPOPERATORS_HPP_
+#define IPOPERATORS_HPP_
 
-#include "serial_packet_base.hpp"
+#include "SDL/SDL_net.h"
 
-struct ClientPacket : SerialPacketBase {
-	int clientIndex;
-	int accountIndex;
-	char username[PACKET_STRING_SIZE];
-	//TODO: (9) password, auth token
-};
-
-void serializeClient(void* buffer, ClientPacket* packet);
-void deserializeClient(void* buffer, ClientPacket* packet);
+//these should've come standard
+bool operator==(IPaddress lhs, IPaddress rhs);
+bool operator!=(IPaddress lhs, IPaddress rhs);
 
 #endif

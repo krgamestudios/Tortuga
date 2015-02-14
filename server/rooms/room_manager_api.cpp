@@ -71,7 +71,7 @@ int unloadRoom(lua_State* L) {
 }
 
 int getRoom(lua_State* L) {
-	//TODO: integer vs name for getRoom()
+	//integer vs name for getRoom()
 	RoomManager& roomMgr = RoomManager::GetSingleton();
 	RoomData* room = nullptr;
 

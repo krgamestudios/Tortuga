@@ -127,7 +127,7 @@ void BaseScene::HandleEvents() {
 			break;
 
 #ifdef USE_EVENT_JOYSTICK
-			//TODO: joystick/gamepad support
+			//EMPTY
 #endif
 
 #ifdef USE_EVENT_UNKNOWN

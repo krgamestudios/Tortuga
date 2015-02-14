@@ -37,7 +37,7 @@
 #include "main_menu.hpp"
 #include "options_menu.hpp"
 #include "lobby_menu.hpp"
-#include "in_world.hpp"
+#include "world.hpp"
 #include "disconnected_screen.hpp"
 
 //-------------------------
@@ -83,7 +83,6 @@ void ClientApplication::Init(int argc, char* argv[]) {
 	//debug output
 	//-------------------------
 
-	//TODO: enable/disable these with a switch
 #define DEBUG_OUTPUT_VAR(x) std::cout << "\t" << #x << ": " << x << std::endl;
 
 	std::cout << "Internal sizes:" << std::endl;
@@ -186,8 +185,8 @@ void ClientApplication::LoadScene(SceneList sceneIndex) {
 		case SceneList::LOBBYMENU:
 			activeScene = new LobbyMenu(&clientIndex, &accountIndex);
 		break;
-		case SceneList::INWORLD:
-			activeScene = new InWorld(&clientIndex, &accountIndex);
+		case SceneList::WORLD:
+			activeScene = new World(&clientIndex, &accountIndex);
 		break;
 		case SceneList::DISCONNECTEDSCREEN:
 			activeScene = new DisconnectedScreen();

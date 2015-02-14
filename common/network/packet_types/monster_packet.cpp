@@ -19,34 +19,52 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#include "text_packet.hpp"
+#include "monster_packet.hpp"
 
 #include "serial_utility.hpp"
 
-void serializeText(void* buffer, TextPacket* packet) {
+void serializeMonster(void* buffer, MonsterPacket* packet) {
 	serialCopy(&buffer, &packet->type, sizeof(SerialPacketType));
 
-	//content
-	serialCopy(&buffer, packet->name, PACKET_STRING_SIZE);
-	serialCopy(&buffer, packet->text, PACKET_STRING_SIZE);
+	//identify the monster
+	serialCopy(&buffer, &packet->monsterIndex, sizeof(int));
+	serialCopy(&buffer, packet->handle, PACKET_STRING_SIZE);
+	serialCopy(&buffer, packet->avatar, PACKET_STRING_SIZE);
+
+	//bounds
+	serialCopy(&buffer, &packet->bounds.x, sizeof(int));
+	serialCopy(&buffer, &packet->bounds.y, sizeof(int));
+	serialCopy(&buffer, &packet->bounds.w, sizeof(int));
+	serialCopy(&buffer, &packet->bounds.h, sizeof(int));
+
 
 	//location
 	serialCopy(&buffer, &packet->roomIndex, sizeof(int));
 	serialCopy(&buffer, &packet->origin.x, sizeof(double));
 	serialCopy(&buffer, &packet->origin.y, sizeof(double));
-	serialCopy(&buffer, &packet->range, sizeof(int));
+	serialCopy(&buffer, &packet->motion.x, sizeof(double));
+	serialCopy(&buffer, &packet->motion.y, sizeof(double));
 }
 
-void deserializeText(void* buffer, TextPacket* packet) {
+void deserializeMonster(void* buffer, MonsterPacket* packet) {
 	deserialCopy(&buffer, &packet->type, sizeof(SerialPacketType));
 
-	//content
-	deserialCopy(&buffer, packet->name, PACKET_STRING_SIZE);
-	deserialCopy(&buffer, packet->text, PACKET_STRING_SIZE);
+	//identify the monster
+	deserialCopy(&buffer, &packet->monsterIndex, sizeof(int));
+	deserialCopy(&buffer, packet->handle, PACKET_STRING_SIZE);
+	deserialCopy(&buffer, packet->avatar, PACKET_STRING_SIZE);
+
+	//bounds
+	deserialCopy(&buffer, &packet->bounds.x, sizeof(int));
+	deserialCopy(&buffer, &packet->bounds.y, sizeof(int));
+	deserialCopy(&buffer, &packet->bounds.w, sizeof(int));
+	deserialCopy(&buffer, &packet->bounds.h, sizeof(int));
+
 
 	//location
 	deserialCopy(&buffer, &packet->roomIndex, sizeof(int));
 	deserialCopy(&buffer, &packet->origin.x, sizeof(double));
 	deserialCopy(&buffer, &packet->origin.y, sizeof(double));
-	deserialCopy(&buffer, &packet->range, sizeof(int));
+	deserialCopy(&buffer, &packet->motion.x, sizeof(double));
+	deserialCopy(&buffer, &packet->motion.y, sizeof(double));
 }

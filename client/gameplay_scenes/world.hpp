@@ -49,11 +49,11 @@
 
 #include <chrono>
 
-class InWorld : public BaseScene {
+class World: public BaseScene {
 public:
 	//Public access members
-	InWorld(int* const argClientIndex, int* const argAccountIndex);
-	~InWorld();
+	World(int* const argClientIndex, int* const argAccountIndex);
+	~World();
 
 protected:
 	//Frame loop
@@ -71,37 +71,57 @@ protected:
 	void KeyDown(SDL_KeyboardEvent const&);
 	void KeyUp(SDL_KeyboardEvent const&);
 
-	//Basic connections
+	//handle incoming traffic
 	void HandlePacket(SerialPacket* const);
-	void HandlePing(ServerPacket* const);
-	void HandlePong(ServerPacket* const);
 
-	//Connection control
-	void SendLogoutRequest();
-	void SendDisconnectRequest();
-	void SendShutdownRequest();
-
-	void HandleLogoutResponse(ClientPacket* const);
-	void HandleDisconnectResponse(ClientPacket* const);
-	void HandleDisconnectForced(ClientPacket* const);
+	//heartbeat system
+	void hPing(ServerPacket* const);
+	void hPong(ServerPacket* const);
 
 	void CheckHeartBeat();
 
+	//basic connections
+	void SendLogoutRequest();
+	void SendDisconnectRequest();
+	void SendAdminDisconnectForced();
+	void SendAdminShutdownRequest();
+
+	void hLogoutResponse(ClientPacket* const);
+	void hDisconnectResponse(ClientPacket* const);
+	void hAdminDisconnectForced(ClientPacket* const);
+
 	//map management
 	void SendRegionRequest(int roomIndex, int x, int y);
-	void HandleRegionContent(RegionPacket* const);
+	void hRegionContent(RegionPacket* const);
 	void UpdateMap();
 
 	//character management
-	void HandleCharacterCreate(CharacterPacket* const);
-	void HandleCharacterDelete(CharacterPacket* const);
-	void HandleCharacterQueryExists(CharacterPacket* const);
-	void HandleCharacterSetRoom(CharacterPacket* const);
-	void HandleCharacterSetOrigin(CharacterPacket* const);
-	void HandleCharacterSetMotion(CharacterPacket* const);
+	void hCharacterCreate(CharacterPacket* const);
+	void hCharacterDelete(CharacterPacket* const);
+	void hQueryCharacterExists(CharacterPacket* const);
+	void hQueryCharacterStats(CharacterPacket* const);
+	void hQueryCharacterLocation(CharacterPacket* const);
+	void hCharacterMovement(CharacterPacket* const);
+	void hCharacterAttack(CharacterPacket* const);
+	void hCharacterDamage(CharacterPacket* const);
 
-	//player movement
-	void SendLocalCharacterMotion();
+	//monster management
+	void hMonsterCreate(MonsterPacket* const);
+	void hMonsterDelete(MonsterPacket* const);
+	void hQueryMonsterExists(MonsterPacket* const);
+	void hQueryMonsterStats(MonsterPacket* const);
+	void hQueryMonsterLocation(MonsterPacket* const);
+	void hMonsterMovement(MonsterPacket* const);
+	void hMonsterAttack(MonsterPacket* const);
+	void hMonsterDamage(MonsterPacket* const);
+
+	//chat
+	void hTextBroadcast(TextPacket* const);
+	void hTextSpeech(TextPacket* const);
+	void hTextWhisper(TextPacket* const);
+
+	//general gameplay
+	void SendLocalCharacterMovement();
 	std::list<BoundingBox> GenerateCollisionGrid(Entity*, int tileWidth, int tileHeight);
 
 	//indexes
@@ -136,7 +156,7 @@ protected:
 	LocalCharacter* localCharacter = nullptr;
 
 	//heartbeat
-	//TODO: Heartbeat needs it's own utility
+	//TODO: (2) Heartbeat needs it's own utility
 	typedef std::chrono::steady_clock Clock;
 	Clock::time_point lastBeat = Clock::now();
 	int attemptedBeats = 0;
