@@ -19,7 +19,7 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#include "in_world.hpp"
+#include "world.hpp"
 
 #include "channels.hpp"
 
@@ -34,7 +34,7 @@
 //Public access members
 //-------------------------
 
-InWorld::InWorld(int* const argClientIndex,	int* const argAccountIndex):
+World::World(int* const argClientIndex,	int* const argAccountIndex):
 	clientIndex(*argClientIndex),
 	accountIndex(*argAccountIndex)
 {
@@ -75,8 +75,8 @@ InWorld::InWorld(int* const argClientIndex,	int* const argAccountIndex):
 	memset(&newPacket, 0, MAX_PACKET_SIZE);
 	newPacket.type = SerialPacketType::QUERY_CHARACTER_EXISTS;
 	network.SendTo(Channels::SERVER, &newPacket);
-//	newPacket.type = SerialPacketType::QUERY_MONSTER_EXISTS;
-//	network.SendTo(Channels::SERVER, &newPacket);
+	newPacket.type = SerialPacketType::QUERY_MONSTER_EXISTS;
+	network.SendTo(Channels::SERVER, &newPacket);
 
 	//set the camera's values
 	camera.width = GetScreen()->w;
@@ -86,7 +86,7 @@ InWorld::InWorld(int* const argClientIndex,	int* const argAccountIndex):
 	//
 }
 
-InWorld::~InWorld() {
+World::~World() {
 	//unload the local data
 	characterMap.clear();
 	monsterMap.clear();
@@ -96,11 +96,11 @@ InWorld::~InWorld() {
 //Frame loop
 //-------------------------
 
-void InWorld::FrameStart() {
+void World::FrameStart() {
 	//
 }
 
-void InWorld::Update() {
+void World::Update() {
 	//create and zero the buffer
 	SerialPacket* packetBuffer = reinterpret_cast<SerialPacket*>(new char[MAX_PACKET_SIZE]);
 	memset(packetBuffer, 0, MAX_PACKET_SIZE);
@@ -154,18 +154,18 @@ void InWorld::Update() {
 	camera.y = localCharacter->GetOrigin().y - camera.marginY;
 }
 
-void InWorld::FrameEnd() {
+void World::FrameEnd() {
 	//
 }
 
-void InWorld::RenderFrame() {
+void World::RenderFrame() {
 //	SDL_FillRect(GetScreen(), 0, 0);
 	Render(GetScreen());
 	SDL_Flip(GetScreen());
 	fps.Calculate();
 }
 
-void InWorld::Render(SDL_Surface* const screen) {
+void World::Render(SDL_Surface* const screen) {
 	//draw the map
 	for (std::list<Region>::iterator it = regionPager.GetContainer()->begin(); it != regionPager.GetContainer()->end(); it++) {
 		tileSheet.DrawRegionTo(screen, &(*it), camera.x, camera.y);
@@ -192,32 +192,32 @@ void InWorld::Render(SDL_Surface* const screen) {
 //Event handlers
 //-------------------------
 
-void InWorld::QuitEvent() {
+void World::QuitEvent() {
 	//two-step logout
 	SendDisconnectRequest();
 	SetNextScene(SceneList::QUIT);
 }
 
-void InWorld::MouseMotion(SDL_MouseMotionEvent const& motion) {
+void World::MouseMotion(SDL_MouseMotionEvent const& motion) {
 	disconnectButton.MouseMotion(motion);
 	shutDownButton.MouseMotion(motion);
 }
 
-void InWorld::MouseButtonDown(SDL_MouseButtonEvent const& button) {
+void World::MouseButtonDown(SDL_MouseButtonEvent const& button) {
 	disconnectButton.MouseButtonDown(button);
 	shutDownButton.MouseButtonDown(button);
 }
 
-void InWorld::MouseButtonUp(SDL_MouseButtonEvent const& button) {
+void World::MouseButtonUp(SDL_MouseButtonEvent const& button) {
 	if (disconnectButton.MouseButtonUp(button) == Button::State::HOVER && button.button == SDL_BUTTON_LEFT) {
 		SendLogoutRequest();
 	}
 	if (shutDownButton.MouseButtonUp(button) == Button::State::HOVER && button.button == SDL_BUTTON_LEFT) {
-		SendShutdownRequest();
+		SendAdminShutdownRequest();
 	}
 }
 
-void InWorld::KeyDown(SDL_KeyboardEvent const& key) {
+void World::KeyDown(SDL_KeyboardEvent const& key) {
 	//hotkeys
 	switch(key.keysym.sym) {
 		case SDLK_ESCAPE:
@@ -258,7 +258,7 @@ void InWorld::KeyDown(SDL_KeyboardEvent const& key) {
 	SendLocalCharacterMovement();
 }
 
-void InWorld::KeyUp(SDL_KeyboardEvent const& key) {
+void World::KeyUp(SDL_KeyboardEvent const& key) {
 	//character movement
 	if (!localCharacter) {
 		return;
@@ -302,4 +302,117 @@ void InWorld::KeyUp(SDL_KeyboardEvent const& key) {
 	localCharacter->SetMotion(motion);
 	localCharacter->CorrectSprite();
 	SendLocalCharacterMovement();
+}
+
+//-------------------------
+//Direct incoming traffic
+//-------------------------
+
+void World::HandlePacket(SerialPacket* const argPacket) {
+	switch(argPacket->type) {
+		//heartbeat system
+		case SerialPacketType::PING:
+			hPing(static_cast<ServerPacket*>(argPacket));
+		break;
+		case SerialPacketType::PONG:
+			hPong(static_cast<ServerPacket*>(argPacket));
+		break;
+
+		//game server connections
+		case SerialPacketType::LOGOUT_RESPONSE:
+			hLogoutResponse(static_cast<ClientPacket*>(argPacket));
+		break;
+		case SerialPacketType::DISCONNECT_RESPONSE:
+			hDisconnectResponse(static_cast<ClientPacket*>(argPacket));
+		break;
+		case SerialPacketType::ADMIN_DISCONNECT_FORCED:
+			hAdminDisconnectForced(static_cast<ClientPacket*>(argPacket));
+		break;
+
+		//map management
+		case SerialPacketType::REGION_CONTENT:
+			hRegionContent(static_cast<RegionPacket*>(argPacket));
+		break;
+
+		//character management
+		case SerialPacketType::CHARACTER_CREATE:
+			hCharacterCreate(static_cast<CharacterPacket*>(argPacket));
+		break;
+		case SerialPacketType::CHARACTER_DELETE:
+			hCharacterDelete(static_cast<CharacterPacket*>(argPacket));
+		break;
+		case SerialPacketType::QUERY_CHARACTER_EXISTS:
+			hQueryCharacterExists(static_cast<CharacterPacket*>(argPacket));
+		break;
+		case SerialPacketType::QUERY_CHARACTER_STATS:
+			hQueryCharacterStats(static_cast<CharacterPacket*>(argPacket));
+		break;
+		case SerialPacketType::QUERY_CHARACTER_LOCATION:
+			hQueryCharacterLocation(static_cast<CharacterPacket*>(argPacket));
+		break;
+		case SerialPacketType::CHARACTER_MOVEMENT:
+			hCharacterMovement(static_cast<CharacterPacket*>(argPacket));
+		break;
+		case SerialPacketType::CHARACTER_ATTACK:
+			hCharacterAttack(static_cast<CharacterPacket*>(argPacket));
+		break;
+		case SerialPacketType::CHARACTER_DAMAGE:
+			hCharacterDamage(static_cast<CharacterPacket*>(argPacket));
+		break;
+
+		//monster management
+		case SerialPacketType::MONSTER_CREATE:
+			hMonsterCreate(static_cast<MonsterPacket*>(argPacket));
+		break;
+		case SerialPacketType::MONSTER_DELETE:
+			hMonsterDelete(static_cast<MonsterPacket*>(argPacket));
+		break;
+		case SerialPacketType::QUERY_MONSTER_EXISTS:
+			hQueryMonsterExists(static_cast<MonsterPacket*>(argPacket));
+		break;
+		case SerialPacketType::QUERY_MONSTER_STATS:
+			hQueryMonsterStats(static_cast<MonsterPacket*>(argPacket));
+		break;
+		case SerialPacketType::QUERY_MONSTER_LOCATION:
+			hQueryMonsterLocation(static_cast<MonsterPacket*>(argPacket));
+		break;
+		case SerialPacketType::MONSTER_MOVEMENT:
+			hMonsterMovement(static_cast<MonsterPacket*>(argPacket));
+		break;
+		case SerialPacketType::MONSTER_ATTACK:
+			hMonsterAttack(static_cast<MonsterPacket*>(argPacket));
+		break;
+		case SerialPacketType::MONSTER_DAMAGE:
+			hMonsterDamage(static_cast<MonsterPacket*>(argPacket));
+		break;
+
+		//chat
+		case SerialPacketType::TEXT_BROADCAST:
+			hTextBroadcast(static_cast<TextPacket*>(argPacket));
+		break;
+		case SerialPacketType::TEXT_SPEECH:
+			hTextSpeech(static_cast<TextPacket*>(argPacket));
+		break;
+		case SerialPacketType::TEXT_WHISPER:
+			hTextWhisper(static_cast<TextPacket*>(argPacket));
+		break;
+
+		//general rejection messages
+		case SerialPacketType::REGION_REJECTION:
+		case SerialPacketType::CHARACTER_REJECTION:
+		case SerialPacketType::QUERY_REJECTION:
+			throw(terminal_error(static_cast<TextPacket*>(argPacket)->text));
+		break;
+		case SerialPacketType::SHUTDOWN_REJECTION:
+			throw(std::runtime_error(static_cast<TextPacket*>(argPacket)->text));
+		break;
+
+		//errors
+		default: {
+			std::ostringstream msg;
+			msg << "Unknown SerialPacketType encountered in World: " << static_cast<int>(argPacket->type);
+			throw(std::runtime_error(msg.str()));
+		}
+		break;
+	}
 }

@@ -19,22 +19,21 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef SCENELIST_HPP_
-#define SCENELIST_HPP_
+#include "world.hpp"
 
-enum class SceneList {
-	//these are reserved
-	QUIT,
-	CONTINUE,
-	FIRST,
+//-------------------------
+//chat
+//-------------------------
 
-	//custom indexes
-	SPLASHSCREEN,
-	MAINMENU,
-	OPTIONSMENU,
-	LOBBYMENU,
-	WORLD,
-	DISCONNECTEDSCREEN,
-};
+void World::hTextBroadcast(TextPacket* const argPacket) {
+	//TODO: (1) empty
+}
 
-#endif
+void World::hTextSpeech(TextPacket* const argPacket) {
+	//TODO: (1) empty
+}
+
+void World::hTextWhisper(TextPacket* const argPacket) {
+	//TODO: (1) empty
+}
+

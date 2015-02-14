@@ -141,6 +141,7 @@ enum class SerialPacketType {
 	CHARACTER_REJECTION,
 	MONSTER_REJECTION,
 	SHUTDOWN_REJECTION,
+	QUERY_REJECTION,
 
 	//-------------------------
 	//not used

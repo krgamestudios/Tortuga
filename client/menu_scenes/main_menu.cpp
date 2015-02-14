@@ -125,5 +125,9 @@ void MainMenu::KeyDown(SDL_KeyboardEvent const& key) {
 }
 
 void MainMenu::KeyUp(SDL_KeyboardEvent const& key) {
-	//
+	switch(key.keysym.sym) {
+		case SDLK_ESCAPE:
+			QuitEvent();
+		break;
+	}
 }

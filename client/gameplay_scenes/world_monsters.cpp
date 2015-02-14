@@ -19,7 +19,7 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#include "in_world.hpp"
+#include "world.hpp"
 
 #include "channels.hpp"
 
@@ -31,7 +31,7 @@
 //monster management
 //-------------------------
 
-void InWorld::HandleMonsterCreate(MonsterPacket* const argPacket) {
+void World::hMonsterCreate(MonsterPacket* const argPacket) {
 	//check for logic errors
 	if (monsterMap.find(argPacket->monsterIndex) != monsterMap.end()) {
 		std::ostringstream msg;
@@ -64,7 +64,7 @@ void InWorld::HandleMonsterCreate(MonsterPacket* const argPacket) {
 	std::cout << "Monster Create, total: " << monsterMap.size() << std::endl;
 }
 
-void InWorld::HandleMonsterDelete(MonsterPacket* const argPacket) {
+void World::hMonsterDelete(MonsterPacket* const argPacket) {
 	//ignore if this monster doesn't exist
 	std::map<int, BaseMonster>::iterator monsterIt = monsterMap.find(argPacket->monsterIndex);
 	if (monsterIt == monsterMap.end()) {
@@ -78,7 +78,7 @@ void InWorld::HandleMonsterDelete(MonsterPacket* const argPacket) {
 	std::cout << "Monster Delete, total: " << monsterMap.size() << std::endl;
 }
 
-void InWorld::HandleMonsterQueryExists(MonsterPacket* const argPacket) {
+void World::hQueryMonsterExists(MonsterPacket* const argPacket) {
 	//ignore monsters in a different room (sub-optimal)
 	if (argPacket->roomIndex != roomIndex) {
 		return;
@@ -98,7 +98,15 @@ void InWorld::HandleMonsterQueryExists(MonsterPacket* const argPacket) {
 	std::cout << "Monster Query, total: " << monsterMap.size() << std::endl;
 }
 
-void InWorld::HandleMonsterMovement(MonsterPacket* const argPacket) {
+void World::hQueryMonsterStats(MonsterPacket* const argPacket) {
+	//TODO: empty
+}
+
+void World::hQueryMonsterLocation(MonsterPacket* const argPacket) {
+	//TODO: empty
+}
+
+void World::hMonsterMovement(MonsterPacket* const argPacket) {
 	//ignore if this monster doesn't exist
 	std::map<int, BaseMonster>::iterator monsterIt = monsterMap.find(argPacket->monsterIndex);
 	if (monsterIt == monsterMap.end()) {
@@ -109,6 +117,10 @@ void InWorld::HandleMonsterMovement(MonsterPacket* const argPacket) {
 	monsterIt->second.SetOrigin(argPacket->motion);
 }
 
-void InWorld::HandleMonsterAttack(MonsterPacket* const argPacket) {
+void World::hMonsterAttack(MonsterPacket* const argPacket) {
 	//TODO: (1) HandleMonsterAttack
+}
+
+void World::hMonsterDamage(MonsterPacket* const argPacket) {
+	//TODO: (1) empty
 }

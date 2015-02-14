@@ -213,7 +213,7 @@ void ServerApplication::Quit() {
 }
 
 //-------------------------
-//direct incoming traffic
+//handle incoming traffic
 //-------------------------
 
 void ServerApplication::HandlePacket(SerialPacket* const argPacket) {

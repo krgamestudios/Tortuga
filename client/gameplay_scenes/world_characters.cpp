@@ -19,7 +19,7 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#include "in_world.hpp"
+#include "world.hpp"
 
 #include "channels.hpp"
 
@@ -35,7 +35,7 @@
 //DOCS: new characters will result in create messages
 //DOCS: this client's character will exist in both (skipped)
 
-void InWorld::HandleCharacterCreate(CharacterPacket* const argPacket) {
+void World::hCharacterCreate(CharacterPacket* const argPacket) {
 	//prevent double message
 	if (characterMap.find(argPacket->characterIndex) != characterMap.end()) {
 		std::ostringstream msg;
@@ -74,7 +74,7 @@ void InWorld::HandleCharacterCreate(CharacterPacket* const argPacket) {
 	std::cout << "Character Create, total: " << characterMap.size() << std::endl;
 }
 
-void InWorld::HandleCharacterDelete(CharacterPacket* const argPacket) {
+void World::hCharacterDelete(CharacterPacket* const argPacket) {
 	//ignore if this character doesn't exist
 	std::map<int, BaseCharacter>::iterator characterIt = characterMap.find(argPacket->characterIndex);
 	if (characterIt == characterMap.end()) {
@@ -100,7 +100,7 @@ void InWorld::HandleCharacterDelete(CharacterPacket* const argPacket) {
 	std::cout << "Character Delete, total: " << characterMap.size() << std::endl;
 }
 
-void InWorld::HandleCharacterQueryExists(CharacterPacket* const argPacket) {
+void World::hQueryCharacterExists(CharacterPacket* const argPacket) {
 	//prevent a double message about this player's character
 	if (argPacket->accountIndex == accountIndex) {
 		return;
@@ -127,7 +127,15 @@ void InWorld::HandleCharacterQueryExists(CharacterPacket* const argPacket) {
 	std::cout << "Character Query, total: " << characterMap.size() << std::endl;
 }
 
-void InWorld::HandleCharacterMovement(CharacterPacket* const argPacket) {
+void World::hQueryCharacterStats(CharacterPacket* const argPacket) {
+	//TODO: empty
+}
+
+void World::hQueryCharacterLocation(CharacterPacket* const argPacket) {
+	//TODO: empty
+}
+
+void World::hCharacterMovement(CharacterPacket* const argPacket) {
 	//TODO: (1) Authentication
 	if (argPacket->characterIndex == characterIndex) {
 		return;
@@ -143,15 +151,19 @@ void InWorld::HandleCharacterMovement(CharacterPacket* const argPacket) {
 	}
 }
 
-void InWorld::HandleCharacterAttack(CharacterPacket* const argPacket) {
+void World::hCharacterAttack(CharacterPacket* const argPacket) {
+	//TODO: (1) attack animation
+}
+
+void World::hCharacterDamage(CharacterPacket* const argPacket) {
 	//TODO: (1) attack animation
 }
 
 //-------------------------
-//player movement
+//player movement & collision
 //-------------------------
 
-void InWorld::SendLocalCharacterMovement() {
+void World::SendLocalCharacterMovement() {
 	CharacterPacket newPacket;
 	newPacket.type = SerialPacketType::CHARACTER_MOVEMENT;
 
@@ -164,7 +176,7 @@ void InWorld::SendLocalCharacterMovement() {
 	network.SendTo(Channels::SERVER, &newPacket);
 }
 
-std::list<BoundingBox> InWorld::GenerateCollisionGrid(Entity* ptr, int tileWidth, int tileHeight) {
+std::list<BoundingBox> World::GenerateCollisionGrid(Entity* ptr, int tileWidth, int tileHeight) {
 	//prepare for collisions
 	BoundingBox wallBounds = {0, 0, tileWidth, tileHeight};
 	std::list<BoundingBox> boxList;

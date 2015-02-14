@@ -248,7 +248,7 @@ void LobbyMenu::HandleLoginResponse(ClientPacket* const argPacket) {
 		throw(std::runtime_error("Client index invalid during login"));
 	}
 	accountIndex = argPacket->accountIndex;
-	SetNextScene(SceneList::INWORLD);
+	SetNextScene(SceneList::WORLD);
 }
 
 void LobbyMenu::HandleJoinRejection(TextPacket* const argPacket) {
