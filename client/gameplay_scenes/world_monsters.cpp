@@ -99,11 +99,11 @@ void World::hQueryMonsterExists(MonsterPacket* const argPacket) {
 }
 
 void World::hQueryMonsterStats(MonsterPacket* const argPacket) {
-	//TODO: empty
+	//TODO: (9) empty
 }
 
 void World::hQueryMonsterLocation(MonsterPacket* const argPacket) {
-	//TODO: empty
+	//TODO: (9) empty
 }
 
 void World::hMonsterMovement(MonsterPacket* const argPacket) {
@@ -118,9 +118,9 @@ void World::hMonsterMovement(MonsterPacket* const argPacket) {
 }
 
 void World::hMonsterAttack(MonsterPacket* const argPacket) {
-	//TODO: (1) HandleMonsterAttack
+	//TODO: (9) empty
 }
 
 void World::hMonsterDamage(MonsterPacket* const argPacket) {
-	//TODO: (1) empty
+	//TODO: (9) empty
 }

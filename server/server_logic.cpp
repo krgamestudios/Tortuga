@@ -194,7 +194,8 @@ void ServerApplication::Proc() {
 void ServerApplication::Quit() {
 	std::cout << "Shutting down" << std::endl;
 
-	//TODO: (9) save the server state
+	//save the server state
+	SaveServerState();
 
 	//close the managers
 	accountMgr.UnloadAll();

@@ -60,7 +60,7 @@ World::World(int* const argClientIndex,	int* const argAccountIndex):
 	shutDownButton.SetText("Shut Down");
 
 	//load the tilesheet
-	//TODO: (9) Tile size and tile sheet should be loaded elsewhere
+	//TODO: (1) Tile size and tile sheet should be loaded elsewhere
 	tileSheet.Load(config["dir.tilesets"] + "overworld.bmp", 32, 32);
 
 	//Send the character data
@@ -221,7 +221,7 @@ void World::KeyDown(SDL_KeyboardEvent const& key) {
 	//hotkeys
 	switch(key.keysym.sym) {
 		case SDLK_ESCAPE:
-			//TODO: (9) the escape key should actually control menus and stuff
+			//TODO: (1) the escape key should actually control menus and stuff
 			SendLogoutRequest();
 		return;
 	}

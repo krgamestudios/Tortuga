@@ -175,7 +175,7 @@ void ServerApplication::hCharacterUnload(CharacterPacket* const argPacket) {
 //character movement
 //-------------------------
 
-//TODO: (9) Could replace this verbosity with a "verify" method, taking a client, account and character ptr as arguments
+//TODO: (2) Could replace this verbosity with a "verify" method, taking a client, account and character ptr as arguments
 
 void ServerApplication::hCharacterMovement(CharacterPacket* const argPacket) {
 	//get the specified objects
@@ -197,7 +197,7 @@ void ServerApplication::hCharacterMovement(CharacterPacket* const argPacket) {
 
 	//check if allowed
 	if (characterData->GetOwner() != argPacket->accountIndex && !accountData->GetModerator() && !accountData->GetAdministrator()) {
-		//TODO: (9) send to the client?
+		//TODO: (2) send to the client?
 		std::cerr << "Failed to set character motion due to lack of permissions targeting uid(" << argPacket->characterIndex << ")" << std::endl;
 		return;
 	}
@@ -235,7 +235,7 @@ void ServerApplication::hCharacterMovement(CharacterPacket* const argPacket) {
 }
 
 void ServerApplication::hCharacterAttack(CharacterPacket* const argPacket) {
-	//TODO: (9) bounce graphical attack data
+	//TODO: (9) empty
 }
 
 void ServerApplication::hCharacterDamage(CharacterPacket* const argPacket) {

@@ -91,7 +91,7 @@ void World::SendDisconnectRequest() {
 }
 
 void World::SendAdminDisconnectForced() {
-	//TODO: empty
+	//TODO: (9) empty
 }
 
 

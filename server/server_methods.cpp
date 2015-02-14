@@ -30,7 +30,7 @@
 //-------------------------
 
 void ServerApplication::hAdminDisconnectForced(ClientPacket* const argPacket) {
-	//TODO: (9) boot players
+	//TODO: (9) empty
 }
 
 void ServerApplication::hAdminShutdownRequest(ClientPacket* const argPacket) {
@@ -82,6 +82,10 @@ void ServerApplication::hAdminShutdownRequest(ClientPacket* const argPacket) {
 
 	//finished this routine
 	std::cout << "Shutdown signal accepted" << std::endl;
+}
+
+void ServerApplication::SaveServerState() {
+	//TODO: (9) empty
 }
 
 //-------------------------
