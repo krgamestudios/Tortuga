@@ -52,3 +52,7 @@ WaypointManager* RoomData::GetWaypointMgr() {
 std::list<CharacterData*>* RoomData::GetCharacterList() {
 	return &characterList;
 }
+
+void RoomData::RunFrame() {
+	//TODO: (1) EMPTY
+}
