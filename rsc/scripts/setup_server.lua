@@ -11,18 +11,26 @@ local function dumpTable(t)
 	end
 end
 
+--debugging (only works correctly with one room)
+globalTickTest = {
+	ticks = 0,
+	start = 0
+}
+
 --test the room hooks
 roomSystem.RoomManager.SetOnCreate(function(room, index)
 	print("", "Creating room: ", roomSystem.Room.GetName(room), index)
 
+	globalTickTest.start = os.clock()
+
 	--called ~60 times per second
-	--TODO: test this
---	roomSystem.Room.SetOnTick(room, function(room)
---		print("", "","tick")
---	end)
+	roomSystem.Room.SetOnTick(room, function(room)
+		globalTickTest.ticks = globalTickTest.ticks + 1
+	end)
 end)
 roomSystem.RoomManager.SetOnUnload(function(room, index)
 	print("", "Unloading room: ", roomSystem.Room.GetName(room), index)
+	print("Time: ", (os.clock() - globalTickTest.start), "Ticks: ", globalTickTest.ticks)
 end)
 
 --NOTE: room 0 is the first that the client asks for, therefore it must exist
