@@ -193,10 +193,21 @@ void ServerApplication::Proc() {
 		}
 
 		//"tick" the internals
-		//...
+		realTime = Clock::now();
 
-		//give the machine a break
-		SDL_Delay(10);
+		if (simTime < realTime) {
+			while(simTime < realTime) {
+				for (auto& it : *roomMgr.GetContainer()) {
+					it.second.RunFrame();
+				}
+				//~60 FPS
+				simTime += std::chrono::duration<int, std::milli>(16);
+			}
+		}
+		else {
+			//give the machine a break
+			SDL_Delay(10);
+		}
 	}
 	delete reinterpret_cast<char*>(packetBuffer);
 }

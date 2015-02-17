@@ -49,6 +49,8 @@ public:
 	WaypointManager* GetWaypointMgr();
 	std::list<CharacterData*>* GetCharacterList();
 
+	void RunFrame();
+
 	//TODO: triggers for unload, save, per-second, player enter, player exit, etc.
 
 private:
