@@ -110,7 +110,6 @@ static int setOnUnload(lua_State* L) {
 	return 0;
 }
 
-
 static const luaL_Reg roomManagerLib[] = {
 	{"CreateRoom", createRoom},
 	{"UnloadRoom", unloadRoom},

@@ -35,10 +35,13 @@ int RoomManager::Create(std::string roomName, std::string tileset) {
 	newRoom->SetName(roomName);
 	newRoom->SetTileset(tileset);
 
-	newRoom->pager.SetLuaState(lua);
-	newRoom->monsterMgr.SetLuaState(lua);
-	newRoom->monsterMgr.SetDatabase(database);
-	newRoom->waypointMgr.SetLuaState(lua);
+	newRoom->GetPager()->SetLuaState(lua);
+	newRoom->GetMonsterMgr()->SetLuaState(lua);
+	newRoom->GetMonsterMgr()->SetDatabase(database);
+	newRoom->GetWaypointMgr()->SetLuaState(lua);
+
+	newRoom->SetLuaState(lua);
+	newRoom->SetDatabase(database);
 
 	//get the hook
 	lua_rawgeti(lua, LUA_REGISTRYINDEX, createRef);
@@ -123,7 +126,7 @@ void RoomManager::PushCharacter(CharacterData* character) {
 		throw(std::runtime_error("Failed to push an character to a non-existant room"));
 	}
 
-	room->characterList.push_back(character);
+	room->GetCharacterList()->push_back(character);
 }
 
 void RoomManager::PopCharacter(CharacterData const* character) {
@@ -138,7 +141,7 @@ void RoomManager::PopCharacter(CharacterData const* character) {
 		throw(std::runtime_error("Failed to pop an character to a non-existant room"));
 	}
 
-	room->characterList.remove_if([character](CharacterData* ptr) {
+	room->GetCharacterList()->remove_if([character](CharacterData* ptr) {
 		return character == ptr;
 	});
 }

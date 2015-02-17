@@ -14,6 +14,12 @@ end
 --test the room hooks
 roomSystem.RoomManager.SetOnCreate(function(room, index)
 	print("", "Creating room: ", roomSystem.Room.GetName(room), index)
+
+	--called ~60 times per second
+	--TODO: test this
+--	roomSystem.Room.SetOnTick(room, function(room)
+--		print("", "","tick")
+--	end)
 end)
 roomSystem.RoomManager.SetOnUnload(function(room, index)
 	print("", "Unloading room: ", roomSystem.Room.GetName(room), index)

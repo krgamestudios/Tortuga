@@ -65,6 +65,15 @@ static int getWaypointMgr(lua_State* L) {
 	return 1;
 }
 
+//TODO: character list
+
+static int setOnTick(lua_State* L) {
+	RoomData* room = reinterpret_cast<RoomData*>(lua_touserdata(L, 1));
+	luaL_unref(L, LUA_REGISTRYINDEX, room->GetTickReference());
+	room->SetTickReference(luaL_ref(L, LUA_REGISTRYINDEX));
+	return 0;
+}
+
 static int initialize(lua_State* L) {
 	RoomData* room = static_cast<RoomData*>(lua_touserdata(L, 1));
 
@@ -87,6 +96,8 @@ static const luaL_Reg roomLib[] = {
 	{"GetPager",getPager},
 	{"GetMonsterMgr",getMonsterMgr},
 	{"GetWaypointMgr",getWaypointMgr},
+
+	{"SetOnTick", setOnTick},
 
 	{"Initialize", initialize},
 	{nullptr, nullptr}
