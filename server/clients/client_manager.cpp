@@ -21,11 +21,15 @@
 */
 #include "client_manager.hpp"
 
+#include "ip_operators.hpp"
 #include "udp_network_utility.hpp"
 
 #include <chrono>
 
-int ClientManager::CheckConnections() {
+std::list<int> ClientManager::CheckConnections() {
+	//list of clients to disconnect
+	std::list<int> returnList;
+
 	for (auto& it : elementMap) {
 		//3 seconds between beats
 		if (ClientData::Clock::now() - it.second.GetLastBeat() > std::chrono::seconds(3)) {
@@ -38,21 +42,17 @@ int ClientManager::CheckConnections() {
 
 	for (auto& it : elementMap) {
 		if (it.second.GetAttempts() > 2) {
-			int ret = it.first;
-//			elementMap.erase(it.first);
-			return ret;
+			returnList.push_back(it.first);
 		}
 	}
 
-	return -1;
+	return returnList;
 }
 
 void ClientManager::HandlePong(ServerPacket* const argPacket) {
 	//find and update the specified client
 	for (auto& it : elementMap) {
-		if (it.second.GetAddress().host == argPacket->srcAddress.host &&
-			it.second.GetAddress().port == argPacket->srcAddress.port
-			) {
+		if (it.second.GetAddress() == argPacket->srcAddress) {
 			it.second.ResetAttempts();
 			return;
 		}

@@ -29,12 +29,13 @@
 #include "SDL/SDL_net.h"
 
 #include <functional>
+#include <list>
 #include <map>
 
 class ClientManager: public Singleton<ClientManager> {
 public:
 	//methods
-	int CheckConnections();
+	std::list<int> CheckConnections();
 	void HandlePong(ServerPacket* const argPacket);
 
 	//common public methods
