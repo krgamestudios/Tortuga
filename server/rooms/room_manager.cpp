@@ -40,24 +40,76 @@ int RoomManager::Create(std::string roomName, std::string tileset) {
 	newRoom->monsterMgr.SetDatabase(database);
 	newRoom->waypointMgr.SetLuaState(lua);
 
+	//get the hook
+	lua_rawgeti(lua, LUA_REGISTRYINDEX, createRef);
+
+	if(!lua_isnil(lua, -1)) {
+		lua_pushlightuserdata(lua, newRoom);
+		lua_pushinteger(lua, counter);
+		//call the function, 2 arg, 0 return
+		if (lua_pcall(lua, 2, 0, 0) != LUA_OK) {
+			throw(std::runtime_error(std::string() + "Lua error: " + lua_tostring(lua, -1) ));
+		}
+	}
+
 	//finish the routine
 	return counter++;
 }
 
 void RoomManager::UnloadAll() {
+	//get the hook
+	lua_rawgeti(lua, LUA_REGISTRYINDEX, unloadRef);
+
+	if(!lua_isnil(lua, -1)) {
+		//pass each room to the hook
+		for (auto& it : elementMap) {
+			lua_pushvalue(lua, -1); //copy the hook
+			lua_pushlightuserdata(lua, &it.second);
+			lua_pushinteger(lua, it.first);
+			//call the function, 2 arg, 0 return
+			if (lua_pcall(lua, 2, 0, 0) != LUA_OK) {
+				throw(std::runtime_error(std::string() + "Lua error: " + lua_tostring(lua, -1) ));
+			}
+		}
+	}
+
+	//pop the hook or nil
+	lua_pop(lua, 1);
+
 	elementMap.clear();
 }
 
 void RoomManager::UnloadIf(std::function<bool(std::pair<const int, RoomData const&>)> fn) {
+	//get the hook
+	lua_rawgeti(lua, LUA_REGISTRYINDEX, unloadRef);
+
+	//get the element
 	std::map<int, RoomData>::iterator it = elementMap.begin();
+
+	//jenky pattern
 	while (it != elementMap.end()) {
 		if (fn(*it)) {
+
+			if(!lua_isnil(lua, -1)) {
+				lua_pushvalue(lua, -1); //copy the hook
+				lua_pushlightuserdata(lua, &it->second);
+				lua_pushinteger(lua, it->first);
+
+				//call the function, 2 arg, 0 return
+				if (lua_pcall(lua, 2, 0, 0) != LUA_OK) {
+					throw(std::runtime_error(std::string() + "Lua error: " + lua_tostring(lua, -1) ));
+				}
+			}
+
 			it = elementMap.erase(it);
 		}
 		else {
 			++it;
 		}
 	}
+
+	//pop the hook or nil
+	lua_pop(lua, 1);
 }
 
 void RoomManager::PushCharacter(CharacterData* character) {
@@ -132,4 +184,20 @@ sqlite3* RoomManager::SetDatabase(sqlite3* db) {
 
 sqlite3* RoomManager::GetDatabase() {
 	return database;
+}
+
+int RoomManager::SetCreateReference(int i) {
+	return createRef = i;
+}
+
+int RoomManager::SetUnloadReference(int i) {
+	return unloadRef = i;
+}
+
+int RoomManager::GetCreateReference() {
+	return createRef;
+}
+
+int RoomManager::GetUnloadReference() {
+	return unloadRef;
 }

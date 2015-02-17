@@ -11,6 +11,14 @@ local function dumpTable(t)
 	end
 end
 
+--test the room hooks
+roomSystem.RoomManager.SetOnCreate(function(room, index)
+	print("", "Creating room: ", roomSystem.Room.GetName(room), index)
+end)
+roomSystem.RoomManager.SetOnUnload(function(room, index)
+	print("", "Unloading room: ", roomSystem.Room.GetName(room), index)
+end)
+
 --NOTE: room 0 is the first that the client asks for, therefore it must exist
 local overworld, uid = roomSystem.RoomManager.CreateRoom("overworld", "overworld.bmp")
 roomSystem.Room.Initialize(overworld, mapSaver.Load, mapSaver.Save, mapMaker.DebugIsland, mapSaver.Save)
