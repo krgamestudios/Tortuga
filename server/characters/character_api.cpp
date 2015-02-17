@@ -23,11 +23,56 @@
 
 #include "character_data.hpp"
 
+#include "entity_api.hpp"
+
+static int getOwner(lua_State* L) {
+	CharacterData* character = static_cast<CharacterData*>(lua_touserdata(L, 1));
+	lua_pushinteger(L, character->GetOwner());
+	return 1;
+}
+
+static int getHandle(lua_State* L) {
+	CharacterData* character = static_cast<CharacterData*>(lua_touserdata(L, 1));
+	lua_pushstring(L, character->GetHandle().c_str());
+	return 1;
+}
+
+static int getAvatar(lua_State* L) {
+	CharacterData* character = static_cast<CharacterData*>(lua_touserdata(L, 1));
+	lua_pushstring(L, character->GetAvatar().c_str());
+	return 1;
+}
+
 static const luaL_Reg characterLib[] = {
+//	{"GetOwner", getOwner}, //unusable without account API
+	{"GetHandle", getHandle},
+	{"GetAvatar", getAvatar},
 	{nullptr, nullptr}
 };
 
 LUAMOD_API int openCharacterAPI(lua_State* L) {
+	//the local table
 	luaL_newlib(L, characterLib);
+
+	//get the parent table
+	luaL_requiref(L, TORTUGA_ENTITY_API, openEntityAPI, false);
+
+	//clone the parent table into the local table
+	lua_pushnil(L);	//first key
+	while(lua_next(L, -2)) {
+		//copy the key-value pair
+		lua_pushvalue(L, -2);
+		lua_pushvalue(L, -2);
+
+		//push the copy to the local table
+		lua_settable(L, -6);
+
+		//pop the original value before continuing
+		lua_pop(L, 1);
+	}
+
+	//remove the parent table, leaving the expanded child table
+	lua_pop(L, 1);
+
 	return 1;
 }
