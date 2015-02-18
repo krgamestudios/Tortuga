@@ -35,11 +35,6 @@ int RoomManager::Create(std::string roomName, std::string tileset) {
 	newRoom->SetName(roomName);
 	newRoom->SetTileset(tileset);
 
-	newRoom->GetPager()->SetLuaState(lua);
-	newRoom->GetMonsterMgr()->SetLuaState(lua);
-	newRoom->GetMonsterMgr()->SetDatabase(database);
-	newRoom->GetWaypointMgr()->SetLuaState(lua);
-
 	newRoom->SetLuaState(lua);
 	newRoom->SetDatabase(database);
 
@@ -174,7 +169,11 @@ std::map<int, RoomData>* RoomManager::GetContainer() {
 }
 
 lua_State* RoomManager::SetLuaState(lua_State* L) {
-	return lua = L;
+	lua = L;
+	for (auto& it : elementMap) {
+		it.second.SetLuaState(lua);
+	}
+	return lua;
 }
 
 lua_State* RoomManager::GetLuaState() {
@@ -182,7 +181,11 @@ lua_State* RoomManager::GetLuaState() {
 }
 
 sqlite3* RoomManager::SetDatabase(sqlite3* db) {
-	return database = db;
+	database = db;
+	for (auto& it : elementMap) {
+		it.second.SetDatabase(database);
+	}
+	return database;
 }
 
 sqlite3* RoomManager::GetDatabase() {

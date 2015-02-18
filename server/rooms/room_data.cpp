@@ -70,7 +70,11 @@ std::list<CharacterData*>* RoomData::GetCharacterList() {
 }
 
 lua_State* RoomData::SetLuaState(lua_State* L) {
-	return lua = L;
+	lua = L;
+	pager.SetLuaState(lua);
+	monsterMgr.SetLuaState(lua);
+	waypointMgr.SetLuaState(lua);
+	return lua;
 }
 
 lua_State* RoomData::GetLuaState() {
@@ -78,7 +82,9 @@ lua_State* RoomData::GetLuaState() {
 }
 
 sqlite3* RoomData::SetDatabase(sqlite3* db) {
-	return database = db;
+	database = db;
+	monsterMgr.SetDatabase(database);
+	return database;
 }
 
 sqlite3* RoomData::GetDatabase() {

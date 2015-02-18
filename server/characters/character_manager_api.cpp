@@ -23,6 +23,8 @@
 
 #include "character_manager.hpp"
 
+//TODO: triggers, accessors
+
 static const luaL_Reg characterManagerLib[] = {
 	{nullptr, nullptr}
 };
