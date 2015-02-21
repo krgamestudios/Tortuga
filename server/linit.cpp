@@ -40,6 +40,7 @@
 #include "character_system_api.hpp"
 #include "map_system_api.hpp"
 #include "monster_system_api.hpp"
+#include "network_api.hpp"
 #include "room_system_api.hpp"
 #include "waypoint_system_api.hpp"
 
@@ -65,6 +66,7 @@ static const luaL_Reg preloadedlibs[] = {
 	{TORTUGA_CHARACTER_SYSTEM_API, openCharacterSystemAPI},
 	{TORTUGA_MAP_SYSTEM_API, openMapSystemAPI},
 	{TORTUGA_MONSTER_SYSTEM_API, openMonsterSystemAPI},
+	{TORTUGA_NETWORK_API, openNetworkAPI},
 	{TORTUGA_ROOM_SYSTEM_API, openRoomSystemAPI},
 	{TORTUGA_WAYPOINT_SYSTEM_API, openWaypointSystemAPI},
 	{NULL, NULL}

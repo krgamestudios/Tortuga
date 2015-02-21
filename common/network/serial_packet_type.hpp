@@ -25,6 +25,7 @@
 /* DOCS: The headers indicate what packet type is used for each message
  * different messages under the same header will carry different amounts of
  * valid data, but it will still be carried in that packet's format.
+ * FORMAT_* is for internal use, deviding the different format bounds.
 */
 
 enum class SerialPacketType {
@@ -36,6 +37,8 @@ enum class SerialPacketType {
 	//  name, player count, version
 	//-------------------------
 
+	FORMAT_SERVER,
+
 	//heartbeat
 	PING,
 	PONG,
@@ -44,10 +47,14 @@ enum class SerialPacketType {
 	BROADCAST_REQUEST,
 	BROADCAST_RESPONSE,
 
+	FORMAT_END_SERVER,
+
 	//-------------------------
 	//ClientPacket
 	//  client index, account index, username
 	//-------------------------
+
+	FORMAT_CLIENT,
 
 	//Connecting to a server as a client
 	JOIN_REQUEST,
@@ -69,14 +76,20 @@ enum class SerialPacketType {
 	//shut down the server
 	ADMIN_SHUTDOWN_REQUEST,
 
+	FORMAT_END_CLIENT,
+
 	//-------------------------
 	//RegionPacket
 	//  room index, x, y, raw data
 	//-------------------------
 
+	FORMAT_REGION,
+
 	//map data
 	REGION_REQUEST,
 	REGION_CONTENT,
+
+	FORMAT_END_REGION,
 
 	//-------------------------
 	//CharacterPacket
@@ -85,6 +98,11 @@ enum class SerialPacketType {
 	//  account index (owner),
 	//  room index, origin, motion
 	//-------------------------
+
+	FORMAT_CHARACTER,
+
+	//full data update
+	CHARACTER_UPDATE,
 
 	//character management
 	CHARACTER_CREATE,
@@ -97,13 +115,15 @@ enum class SerialPacketType {
 	QUERY_CHARACTER_STATS,
 	QUERY_CHARACTER_LOCATION,
 
-	//set the info in the server
+	//actions taken
 	CHARACTER_MOVEMENT,
 	CHARACTER_ATTACK,
 	CHARACTER_DAMAGE,
 
 	//admin control
 //	ADMIN_SET_CHARACTER_ORIGIN,
+
+	FORMAT_END_CHARACTER,
 
 	//-------------------------
 	//MonsterPacket
@@ -113,21 +133,33 @@ enum class SerialPacketType {
 	//  room index, origin, motion
 	//-------------------------
 
+	FORMAT_MONSTER,
+
+	//full data update
+	MONSTER_UPDATE,
+
+	//character management
 	MONSTER_CREATE,
 	MONSTER_DELETE,
 
+	//find out info from the server
 	QUERY_MONSTER_EXISTS,
 	QUERY_MONSTER_STATS,
 	QUERY_MONSTER_LOCATION,
 
+	//actions taken
 	MONSTER_MOVEMENT,
 	MONSTER_ATTACK,
 	MONSTER_DAMAGE,
+
+	FORMAT_END_MONSTER,
 
 	//-------------------------
 	//TextPacket
 	//  name, text
 	//-------------------------
+
+	FORMAT_TEXT,
 
 	//general speech
 	TEXT_BROADCAST,
@@ -142,6 +174,8 @@ enum class SerialPacketType {
 	MONSTER_REJECTION,
 	SHUTDOWN_REJECTION,
 	QUERY_REJECTION,
+
+	FORMAT_END_TEXT,
 
 	//-------------------------
 	//not used

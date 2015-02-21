@@ -31,6 +31,9 @@
 
 #include <cstring>
 
+//macros
+#define BOUNDS(type, lower, upper) ((type) > (lower) && (type) < (upper))
+
 //raw memory copy
 void serialCopy(void** buffer, void* data, int size) {
 	memcpy(*buffer, data, size);
@@ -46,63 +49,28 @@ void deserialCopy(void** buffer, void* data, int size) {
 
 //main switch functions
 void serializePacket(void* buffer, SerialPacketBase* packet) {
-	switch(packet->type) {
-		case SerialPacketType::PING:
-		case SerialPacketType::PONG:
-		case SerialPacketType::BROADCAST_REQUEST:
-		case SerialPacketType::BROADCAST_RESPONSE:
-			serializeServer(buffer, static_cast<ServerPacket*>(packet));
-		break;
-		case SerialPacketType::JOIN_REQUEST:
-		case SerialPacketType::JOIN_RESPONSE:
-		case SerialPacketType::DISCONNECT_REQUEST:
-		case SerialPacketType::DISCONNECT_RESPONSE:
-		case SerialPacketType::ADMIN_DISCONNECT_FORCED:
-		case SerialPacketType::LOGIN_REQUEST:
-		case SerialPacketType::LOGIN_RESPONSE:
-		case SerialPacketType::LOGOUT_REQUEST:
-		case SerialPacketType::LOGOUT_RESPONSE:
-		case SerialPacketType::ADMIN_SHUTDOWN_REQUEST:
-			serializeClient(buffer, static_cast<ClientPacket*>(packet));
-		break;
-		case SerialPacketType::REGION_REQUEST:
-		case SerialPacketType::REGION_CONTENT:
-			serializeRegion(buffer, static_cast<RegionPacket*>(packet));
-		break;
-		case SerialPacketType::CHARACTER_CREATE:
-		case SerialPacketType::CHARACTER_DELETE:
-		case SerialPacketType::CHARACTER_LOAD:
-		case SerialPacketType::CHARACTER_UNLOAD:
-		case SerialPacketType::QUERY_CHARACTER_EXISTS:
-		case SerialPacketType::QUERY_CHARACTER_STATS:
-		case SerialPacketType::QUERY_CHARACTER_LOCATION:
-		case SerialPacketType::CHARACTER_MOVEMENT:
-		case SerialPacketType::CHARACTER_ATTACK:
-		case SerialPacketType::CHARACTER_DAMAGE:
-			serializeCharacter(buffer, static_cast<CharacterPacket*>(packet));
-		break;
-		case SerialPacketType::MONSTER_CREATE:
-		case SerialPacketType::MONSTER_DELETE:
-		case SerialPacketType::QUERY_MONSTER_EXISTS:
-		case SerialPacketType::QUERY_MONSTER_STATS:
-		case SerialPacketType::QUERY_MONSTER_LOCATION:
-		case SerialPacketType::MONSTER_MOVEMENT:
-		case SerialPacketType::MONSTER_ATTACK:
-		case SerialPacketType::MONSTER_DAMAGE:
-			serializeMonster(buffer, static_cast<MonsterPacket*>(packet));
-		break;
-		case SerialPacketType::TEXT_BROADCAST:
-		case SerialPacketType::TEXT_SPEECH:
-		case SerialPacketType::TEXT_WHISPER:
-		case SerialPacketType::JOIN_REJECTION:
-		case SerialPacketType::LOGIN_REJECTION:
-		case SerialPacketType::REGION_REJECTION:
-		case SerialPacketType::CHARACTER_REJECTION:
-		case SerialPacketType::MONSTER_REJECTION:
-		case SerialPacketType::SHUTDOWN_REJECTION:
-		case SerialPacketType::QUERY_REJECTION:
-			serializeText(buffer, static_cast<TextPacket*>(packet));
-		break;
+	if (BOUNDS(packet->type, SerialPacketType::FORMAT_SERVER, SerialPacketType::FORMAT_END_SERVER)) {
+		serializeServer(buffer, static_cast<ServerPacket*>(packet));
+	}
+
+	if (BOUNDS(packet->type, SerialPacketType::FORMAT_CLIENT, SerialPacketType::FORMAT_END_CLIENT)) {
+		serializeClient(buffer, static_cast<ClientPacket*>(packet));
+	}
+
+	if (BOUNDS(packet->type, SerialPacketType::FORMAT_REGION, SerialPacketType::FORMAT_END_REGION)) {
+		serializeRegion(buffer, static_cast<RegionPacket*>(packet));
+	}
+
+	if (BOUNDS(packet->type, SerialPacketType::FORMAT_CHARACTER, SerialPacketType::FORMAT_END_CHARACTER)) {
+		serializeCharacter(buffer, static_cast<CharacterPacket*>(packet));
+	}
+
+	if (BOUNDS(packet->type, SerialPacketType::FORMAT_MONSTER, SerialPacketType::FORMAT_END_MONSTER)) {
+		serializeMonster(buffer, static_cast<MonsterPacket*>(packet));
+	}
+
+	if (BOUNDS(packet->type, SerialPacketType::FORMAT_TEXT, SerialPacketType::FORMAT_END_TEXT)) {
+		serializeText(buffer, static_cast<TextPacket*>(packet));
 	}
 }
 
@@ -111,62 +79,27 @@ void deserializePacket(void* buffer, SerialPacketBase* packet) {
 	SerialPacketType type;
 	memcpy(&type, buffer, sizeof(SerialPacketType));
 
-	switch(type) {
-		case SerialPacketType::PING:
-		case SerialPacketType::PONG:
-		case SerialPacketType::BROADCAST_REQUEST:
-		case SerialPacketType::BROADCAST_RESPONSE:
-			deserializeServer(buffer, static_cast<ServerPacket*>(packet));
-		break;
-		case SerialPacketType::JOIN_REQUEST:
-		case SerialPacketType::JOIN_RESPONSE:
-		case SerialPacketType::DISCONNECT_REQUEST:
-		case SerialPacketType::DISCONNECT_RESPONSE:
-		case SerialPacketType::ADMIN_DISCONNECT_FORCED:
-		case SerialPacketType::LOGIN_REQUEST:
-		case SerialPacketType::LOGIN_RESPONSE:
-		case SerialPacketType::LOGOUT_REQUEST:
-		case SerialPacketType::LOGOUT_RESPONSE:
-		case SerialPacketType::ADMIN_SHUTDOWN_REQUEST:
-			deserializeClient(buffer, static_cast<ClientPacket*>(packet));
-		break;
-		case SerialPacketType::REGION_REQUEST:
-		case SerialPacketType::REGION_CONTENT:
-			deserializeRegion(buffer, static_cast<RegionPacket*>(packet));
-		break;
-		case SerialPacketType::CHARACTER_CREATE:
-		case SerialPacketType::CHARACTER_DELETE:
-		case SerialPacketType::CHARACTER_LOAD:
-		case SerialPacketType::CHARACTER_UNLOAD:
-		case SerialPacketType::QUERY_CHARACTER_EXISTS:
-		case SerialPacketType::QUERY_CHARACTER_STATS:
-		case SerialPacketType::QUERY_CHARACTER_LOCATION:
-		case SerialPacketType::CHARACTER_MOVEMENT:
-		case SerialPacketType::CHARACTER_ATTACK:
-		case SerialPacketType::CHARACTER_DAMAGE:
-			deserializeCharacter(buffer, static_cast<CharacterPacket*>(packet));
-		break;
-		case SerialPacketType::MONSTER_CREATE:
-		case SerialPacketType::MONSTER_DELETE:
-		case SerialPacketType::QUERY_MONSTER_EXISTS:
-		case SerialPacketType::QUERY_MONSTER_STATS:
-		case SerialPacketType::QUERY_MONSTER_LOCATION:
-		case SerialPacketType::MONSTER_MOVEMENT:
-		case SerialPacketType::MONSTER_ATTACK:
-		case SerialPacketType::MONSTER_DAMAGE:
-			deserializeMonster(buffer, static_cast<MonsterPacket*>(packet));
-		break;
-		case SerialPacketType::TEXT_BROADCAST:
-		case SerialPacketType::TEXT_SPEECH:
-		case SerialPacketType::TEXT_WHISPER:
-		case SerialPacketType::JOIN_REJECTION:
-		case SerialPacketType::LOGIN_REJECTION:
-		case SerialPacketType::REGION_REJECTION:
-		case SerialPacketType::CHARACTER_REJECTION:
-		case SerialPacketType::MONSTER_REJECTION:
-		case SerialPacketType::SHUTDOWN_REJECTION:
-		case SerialPacketType::QUERY_REJECTION:
-			deserializeText(buffer, static_cast<TextPacket*>(packet));
-		break;
+	if (BOUNDS(type, SerialPacketType::FORMAT_SERVER, SerialPacketType::FORMAT_END_SERVER)) {
+		deserializeServer(buffer, static_cast<ServerPacket*>(packet));
+	}
+
+	if (BOUNDS(type, SerialPacketType::FORMAT_CLIENT, SerialPacketType::FORMAT_END_CLIENT)) {
+		deserializeClient(buffer, static_cast<ClientPacket*>(packet));
+	}
+
+	if (BOUNDS(type, SerialPacketType::FORMAT_REGION, SerialPacketType::FORMAT_END_REGION)) {
+		deserializeRegion(buffer, static_cast<RegionPacket*>(packet));
+	}
+
+	if (BOUNDS(type, SerialPacketType::FORMAT_CHARACTER, SerialPacketType::FORMAT_END_CHARACTER)) {
+		deserializeCharacter(buffer, static_cast<CharacterPacket*>(packet));
+	}
+
+	if (BOUNDS(type, SerialPacketType::FORMAT_MONSTER, SerialPacketType::FORMAT_END_MONSTER)) {
+		deserializeMonster(buffer, static_cast<MonsterPacket*>(packet));
+	}
+
+	if (BOUNDS(type, SerialPacketType::FORMAT_TEXT, SerialPacketType::FORMAT_END_TEXT)) {
+		deserializeText(buffer, static_cast<TextPacket*>(packet));
 	}
 }
