@@ -193,6 +193,7 @@ void CharacterManager::Unload(int uid) {
 }
 
 void CharacterManager::Delete(int uid) {
+	//TODO: when deleting a character, move it to an archive table
 	//delete this character from the database, then remove it from memory
 	sqlite3_stmt* statement = nullptr;
 
@@ -250,6 +251,15 @@ CharacterData* CharacterManager::Get(int uid) {
 	}
 
 	return &it->second;
+}
+
+CharacterData* CharacterManager::Get(std::string handle) {
+	for (std::map<int, CharacterData>::iterator it = elementMap.begin(); it != elementMap.end(); ++it) {
+		if (it->second.GetHandle() == handle) {
+			return &it->second;
+		}
+	}
+	return nullptr;
 }
 
 int CharacterManager::GetLoadedCount() {

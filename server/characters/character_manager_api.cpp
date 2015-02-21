@@ -23,9 +23,70 @@
 
 #include "character_manager.hpp"
 
-//TODO: triggers, accessors
+static int setOnCreate(lua_State* L) {
+	//TODO: (9) empty
+}
+
+static int setOnLoad(lua_State* L) {
+	//TODO: (9) empty
+}
+
+static int setOnSave(lua_State* L) {
+	//TODO: (9) empty
+}
+
+static int setOnUnload(lua_State* L) {
+	//TODO: (9) empty
+}
+
+static int setOnDelete(lua_State* L) {
+	//TODO: (9) empty
+}
+
+static int getCharacter(lua_State* L) {
+	//integer vs name
+	CharacterManager& characterMgr = CharacterManager::GetSingleton();
+	CharacterData* characterData = nullptr;
+
+	switch(lua_type(L, 1)) {
+		case LUA_TNUMBER:
+			characterData = characterMgr.Get(lua_tointeger(L, 1));
+		break;
+		case LUA_TSTRING:
+			//access characters via their handles
+			characterData = characterMgr.Get(lua_tostring(L, 1));
+		break;
+	}
+
+	if (characterData) {
+		lua_pushlightuserdata(L, static_cast<void*>(characterData));
+	}
+	else {
+		lua_pushnil(L);
+	}
+
+	return 1;
+}
+
+static int getLoadedCount(lua_State* L) {
+	CharacterManager& characterMgr = CharacterManager::GetSingleton();
+	lua_pushinteger(L, characterMgr.GetLoadedCount());
+	return 1;
+}
+
+static int forEach(lua_State* L) {
+	//TODO: (1) find a way to update the clients when a script alters a character's data
+}
 
 static const luaL_Reg characterManagerLib[] = {
+//	{"SetOnCreate", setOnCreate},
+//	{"SetOnLoad", setOnLoad},
+//	{"SetOnSave", setOnSave},
+//	{"SetOnUnload", setOnUnload},
+//	{"SetOnDelete", setOnDelete},
+	{"GetCharacter", getCharacter},
+	{"GetLoadedCount", getLoadedCount},
+//	{"ForEach", forEach},
 	{nullptr, nullptr}
 };
 
