@@ -21,6 +21,22 @@
 */
 #include "room_data.hpp"
 
+void RoomData::RunFrame() {
+	//get the hook
+	lua_rawgeti(lua, LUA_REGISTRYINDEX, tickRef);
+
+	if (lua_isnil(lua, -1)) {
+		lua_pop(lua, 1);
+		return;
+	}
+
+	//call the tick function, with this as a parameter
+	lua_pushlightuserdata(lua, this);
+	if (lua_pcall(lua, 1, 0, 0) != LUA_OK) {
+		throw(std::runtime_error(std::string() + "Lua error: " + lua_tostring(lua, -1) ));
+	}
+}
+
 std::string RoomData::SetName(std::string s) {
 	return roomName = s;
 }
@@ -51,4 +67,34 @@ WaypointManager* RoomData::GetWaypointMgr() {
 
 std::list<CharacterData*>* RoomData::GetCharacterList() {
 	return &characterList;
+}
+
+lua_State* RoomData::SetLuaState(lua_State* L) {
+	lua = L;
+	pager.SetLuaState(lua);
+	monsterMgr.SetLuaState(lua);
+	waypointMgr.SetLuaState(lua);
+	return lua;
+}
+
+lua_State* RoomData::GetLuaState() {
+	return lua;
+}
+
+sqlite3* RoomData::SetDatabase(sqlite3* db) {
+	database = db;
+	monsterMgr.SetDatabase(database);
+	return database;
+}
+
+sqlite3* RoomData::GetDatabase() {
+	return database;
+}
+
+int RoomData::SetTickReference(int i) {
+	return tickRef = i;
+}
+
+int RoomData::GetTickReference() {
+	return tickRef;
 }

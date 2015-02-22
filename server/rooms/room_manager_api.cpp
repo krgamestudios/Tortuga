@@ -96,10 +96,26 @@ int getRoom(lua_State* L) {
 	return 1;
 }
 
+static int setOnCreate(lua_State* L) {
+	RoomManager& roomMgr = RoomManager::GetSingleton();
+	luaL_unref(L, LUA_REGISTRYINDEX, roomMgr.GetCreateReference());
+	roomMgr.SetCreateReference(luaL_ref(L, LUA_REGISTRYINDEX));
+	return 0;
+}
+
+static int setOnUnload(lua_State* L) {
+	RoomManager& roomMgr = RoomManager::GetSingleton();
+	luaL_unref(L, LUA_REGISTRYINDEX, roomMgr.GetUnloadReference());
+	roomMgr.SetUnloadReference(luaL_ref(L, LUA_REGISTRYINDEX));
+	return 0;
+}
+
 static const luaL_Reg roomManagerLib[] = {
 	{"CreateRoom", createRoom},
 	{"UnloadRoom", unloadRoom},
 	{"GetRoom", getRoom},
+	{"SetOnCreate", setOnCreate},
+	{"SetOnUnload", setOnUnload},
 	{nullptr, nullptr}
 };
 

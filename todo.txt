@@ -1,3 +1,6 @@
+TODO: upgrade to lua 5.3
+TODO: Split config.cfg in two, one for the server and the client
+
 TODO: In need of script APIs (list)
 	* Characters
 
@@ -9,7 +12,6 @@ TODO: Account passwords (list)
 
 TODO: Features
 	* Make sure login errors are sent to the client
-	* Split config.cfg in two, one for the server and the client
 	* Add the "home" parameter to the server's config file
 	* Waypoints, with positions and trigger zones (collision areas) for doors, monster spawns, etc.
 	* Fix shoddy movement

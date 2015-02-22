@@ -44,12 +44,17 @@ public:
 
 	//accessors and mutators
 	CharacterData* Get(int uid);
+	CharacterData* Get(std::string handle);
 	int GetLoadedCount();
 	int GetTotalCount();
 	std::map<int, CharacterData>* GetContainer();
 
+	//API interface
 	sqlite3* SetDatabase(sqlite3* db);
 	sqlite3* GetDatabase();
+
+	//hooks
+	//TODO: character hooks
 
 private:
 	friend Singleton<CharacterManager>;

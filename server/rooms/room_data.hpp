@@ -37,6 +37,8 @@ public:
 	RoomData() = default;
 	~RoomData() = default;
 
+	void RunFrame();
+
 	//accessors and mutators
 	std::string SetName(std::string);
 	std::string GetName();
@@ -49,19 +51,34 @@ public:
 	WaypointManager* GetWaypointMgr();
 	std::list<CharacterData*>* GetCharacterList();
 
-	//TODO: triggers for unload, save, per-second, player enter, player exit, etc.
+	//API interfaces
+	lua_State* SetLuaState(lua_State* L);
+	lua_State* GetLuaState();
+	sqlite3* SetDatabase(sqlite3* db);
+	sqlite3* GetDatabase();
+
+	//hooks
+	int SetTickReference(int i);
+	int GetTickReference();
+	//TODO: other triggers like player entry & exit, etc.
 
 private:
-	friend class RoomManager;
-
-	//members
+	//metadata
 	std::string roomName;
 	std::string tilesetName;
 
+	//members
 	RegionPagerLua pager;
 	MonsterManager monsterMgr;
 	WaypointManager waypointMgr;
 	std::list<CharacterData*> characterList;
+
+	//API
+	lua_State* lua = nullptr;
+	sqlite3* database = nullptr;
+
+	//hooks
+	int tickRef = LUA_NOREF;
 };
 
 #endif

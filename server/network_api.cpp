@@ -19,33 +19,19 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef CHARACTERDATA_HPP_
-#define CHARACTERDATA_HPP_
+#include "network_api.hpp"
 
-//components
-#include "character_defines.hpp"
-#include "entity.hpp"
+static int pumpCharacterUpdate(lua_State* L) {
+	return 0;
+}
 
-//std namespace
-#include <string>
-#include <cmath>
-
-class CharacterData: public Entity {
-public:
-	CharacterData() = default;
-	~CharacterData() = default;
-
-	//database stuff
-	int GetOwner();
-	std::string GetHandle();
-	std::string GetAvatar();
-
-private:
-	friend class CharacterManager;
-
-	int owner;
-	std::string handle;
-	std::string avatar;
+static const luaL_Reg networkLib[] = {
+	{"PumpCharacterUpdate", pumpCharacterUpdate},
+	{nullptr, nullptr}
 };
 
-#endif
+LUAMOD_API int openNetworkAPI(lua_State* L) {
+	luaL_newlib(L, networkLib);
+	return 1;
+
+}

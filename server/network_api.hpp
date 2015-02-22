@@ -19,33 +19,12 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef CHARACTERDATA_HPP_
-#define CHARACTERDATA_HPP_
+#ifndef NETWORKAPI_HPP_
+#define NETWORKAPI_HPP_
 
-//components
-#include "character_defines.hpp"
-#include "entity.hpp"
+#include "lua.hpp"
 
-//std namespace
-#include <string>
-#include <cmath>
-
-class CharacterData: public Entity {
-public:
-	CharacterData() = default;
-	~CharacterData() = default;
-
-	//database stuff
-	int GetOwner();
-	std::string GetHandle();
-	std::string GetAvatar();
-
-private:
-	friend class CharacterManager;
-
-	int owner;
-	std::string handle;
-	std::string avatar;
-};
+#define TORTUGA_NETWORK_API "network"
+LUAMOD_API int openNetworkAPI(lua_State* L);
 
 #endif

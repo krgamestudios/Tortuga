@@ -3,6 +3,7 @@ print("Lua script check")
 mapMaker = require("map_maker")
 mapSaver = require("map_saver")
 roomSystem = require("room_system")
+characterSystem = require("character_system")
 
 local function dumpTable(t)
 	print(t)
@@ -10,6 +11,25 @@ local function dumpTable(t)
 		print("",k,v)
 	end
 end
+
+--test the room hooks
+roomSystem.RoomManager.SetOnCreate(function(room, index)
+	print("", "Creating room: ", roomSystem.Room.GetName(room), index)
+
+	--called ~60 times per second
+	roomSystem.Room.SetOnTick(room, function(room)
+		local character = characterSystem.CharacterManager.GetCharacter("handle")
+		if character ~= nil then
+			--debugging
+			local x, y = characterSystem.Character.GetOrigin(character)
+			print("character.Origin(x, y): ", x, y)
+		end
+	end)
+end)
+
+roomSystem.RoomManager.SetOnUnload(function(room, index)
+	print("", "Unloading room: ", roomSystem.Room.GetName(room), index)
+end)
 
 --NOTE: room 0 is the first that the client asks for, therefore it must exist
 local overworld, uid = roomSystem.RoomManager.CreateRoom("overworld", "overworld.bmp")

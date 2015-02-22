@@ -28,6 +28,7 @@
 #include <stdexcept>
 #include <chrono>
 #include <iostream>
+#include <list>
 #include <sstream>
 #include <string>
 
@@ -161,8 +162,15 @@ void ServerApplication::Init(int argc, char* argv[]) {
 }
 
 void ServerApplication::Proc() {
+	//network buffer
 	SerialPacket* packetBuffer = reinterpret_cast<SerialPacket*>(new char[MAX_PACKET_SIZE]);
 	memset(packetBuffer, 0, MAX_PACKET_SIZE); //zero the buffer
+
+	//time system
+	typedef std::chrono::steady_clock Clock;
+
+	Clock::time_point simTime = Clock::now();
+	Clock::time_point realTime;
 
 	while(running) {
 		//suck in the waiting packets & process them
@@ -173,20 +181,33 @@ void ServerApplication::Proc() {
 			catch(std::exception& e) {
 				std::cerr << "HandlePacket Error: " << e.what() << std::endl;
 			}
-			memset(packetBuffer, 0, MAX_PACKET_SIZE); //reset the buffer
-		}
-		//update the internals
-		//...
-
-		//Check connections
-		int disconnected = clientMgr.CheckConnections();
-		if (disconnected != -1) {
-			FullClientUnload(disconnected);
-			std::cerr << "Client dropped: " << disconnected << std::endl;
+			//reset the buffer
+			memset(packetBuffer, 0, MAX_PACKET_SIZE);
 		}
 
-		//give the machine a break
-		SDL_Delay(10);
+		//Check client connections
+		std::list<int> disconnections = clientMgr.CheckConnections();
+		for(auto const& it : disconnections) {
+			FullClientUnload(it);
+			std::cerr << "Client dropped: " << it << std::endl;
+		}
+
+		//"tick" the internals
+		realTime = Clock::now();
+
+		if (simTime < realTime) {
+			while(simTime < realTime) {
+				for (auto& it : *roomMgr.GetContainer()) {
+					it.second.RunFrame();
+				}
+				//~60 FPS
+				simTime += std::chrono::duration<int, std::milli>(16);
+			}
+		}
+		else {
+			//give the machine a break
+			SDL_Delay(10);
+		}
 	}
 	delete reinterpret_cast<char*>(packetBuffer);
 }

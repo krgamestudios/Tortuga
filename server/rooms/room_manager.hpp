@@ -49,11 +49,18 @@ public:
 	int GetLoadedCount();
 	std::map<int, RoomData>* GetContainer();
 
-	//hooks
+	//API interfaces
 	lua_State* SetLuaState(lua_State* L);
 	lua_State* GetLuaState();
 	sqlite3* SetDatabase(sqlite3* db);
 	sqlite3* GetDatabase();
+
+	//hooks
+	int SetCreateReference(int i);
+	int SetUnloadReference(int i);
+
+	int GetCreateReference();
+	int GetUnloadReference();
 
 private:
 	friend Singleton<RoomManager>;
@@ -63,9 +70,15 @@ private:
 
 	//members
 	std::map<int, RoomData> elementMap;
+	int counter = 0;
+
+	//API
 	lua_State* lua = nullptr;
 	sqlite3* database = nullptr;
-	int counter = 0;
+
+	//hooks
+	int createRef = LUA_NOREF;
+	int unloadRef = LUA_NOREF;
 };
 
 #endif
