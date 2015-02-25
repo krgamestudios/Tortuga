@@ -169,6 +169,7 @@ void ClientApplication::Quit() {
 //-------------------------
 
 void ClientApplication::LoadScene(SceneList sceneIndex) {
+	//BUG: #16 Resources are being reloaded between scenes
 	UnloadScene();
 	switch(sceneIndex) {
 		//add scene creation calls here
