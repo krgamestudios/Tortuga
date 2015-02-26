@@ -19,36 +19,28 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef WAYPOINTDATA_HPP_
-#define WAYPOINTDATA_HPP_
+#include "trigger_data.hpp"
 
-#include "bounding_box.hpp"
-#include "vector2.hpp"
+int TriggerData::SetScriptReference(int i) {
+	return scriptRef = i;
+}
 
-#include "lua.hpp"
+int TriggerData::GetScriptReference() {
+	return scriptRef;
+}
 
-#include <string>
+BoundingBox TriggerData::SetBoundingBox(BoundingBox b) {
+	return bounds = b;
+}
 
-class WaypointData {
-public:
-	WaypointData() = default;
-	~WaypointData() = default;
+BoundingBox TriggerData::GetBoundingBox() {
+	return bounds;
+}
 
-	Vector2 SetOrigin(Vector2 v);
-	Vector2 GetOrigin();
+Vector2 TriggerData::SetOrigin(Vector2 v) {
+	return origin = v;
+}
 
-	BoundingBox SetBoundingBox(BoundingBox b);
-	BoundingBox GetBoundingBox();
-
-	int SetTriggerReference(int i);
-	int GetTriggerReference();
-
-private:
-	friend class WaypointManager;
-
-	Vector2 origin;
-	BoundingBox bounds;
-	int triggerRef = LUA_NOREF;
-};
-
-#endif
+Vector2 TriggerData::GetOrigin() {
+	return origin;
+}

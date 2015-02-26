@@ -19,28 +19,12 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#include "waypoint_data.hpp"
+#ifndef TRIGGERAPI_HPP_
+#define TRIGGERAPI_HPP_
 
-int WaypointData::SetTriggerReference(int i) {
-	return triggerRef = i;
-}
+#include "lua.hpp"
 
-int WaypointData::GetTriggerReference() {
-	return triggerRef;
-}
+#define TORTUGA_TRIGGER_API "trigger"
+LUAMOD_API int openTriggerAPI(lua_State* L);
 
-BoundingBox WaypointData::SetBoundingBox(BoundingBox b) {
-	return bounds = b;
-}
-
-BoundingBox WaypointData::GetBoundingBox() {
-	return bounds;
-}
-
-Vector2 WaypointData::SetOrigin(Vector2 v) {
-	return origin = v;
-}
-
-Vector2 WaypointData::GetOrigin() {
-	return origin;
-}
+#endif

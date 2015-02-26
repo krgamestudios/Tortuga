@@ -19,37 +19,36 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#include "waypoint_system_api.hpp"
+#ifndef TRIGGERDATA_HPP_
+#define TRIGGERDATA_HPP_
 
-//all waypoint API headers
-#include "waypoint_api.hpp"
-#include "waypoint_manager_api.hpp"
+#include "bounding_box.hpp"
+#include "vector2.hpp"
 
-//useful "globals"
-//...
+#include "lua.hpp"
 
-//This mimics linit.c to create a nested collection of all waypoint modules.
-static const luaL_Reg funcs[] = {
-	{nullptr, nullptr}
+#include <string>
+
+class TriggerData {
+public:
+	TriggerData() = default;
+	~TriggerData() = default;
+
+	Vector2 SetOrigin(Vector2 v);
+	Vector2 GetOrigin();
+
+	BoundingBox SetBoundingBox(BoundingBox b);
+	BoundingBox GetBoundingBox();
+
+	int SetScriptReference(int i);
+	int GetScriptReference();
+
+private:
+	friend class TriggerManager;
+
+	Vector2 origin;
+	BoundingBox bounds;
+	int scriptRef = LUA_NOREF;
 };
 
-static const luaL_Reg libs[] = {
-	{"Waypoint", openWaypointAPI},
-	{"WaypointManager", openWaypointManagerAPI},
-	{nullptr, nullptr}
-};
-
-int openWaypointSystemAPI(lua_State* L) {
-	//create the table
-	luaL_newlibtable(L, libs);
-
-	//push the "global" functions
-	luaL_setfuncs(L, funcs, 0);
-
-	//push the substable
-	for (const luaL_Reg* lib = libs; lib->func; lib++) {
-		lib->func(L);
-		lua_setfield(L, -2, lib->name);
-	}
-	return 1;
-}
+#endif

@@ -19,28 +19,28 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#include "waypoint_api.hpp"
+#include "trigger_api.hpp"
 
-#include "waypoint_data.hpp"
+#include "trigger_data.hpp"
 
 //origin
 static int setOrigin(lua_State* L) {
-	WaypointData* waypoint = static_cast<WaypointData*>(lua_touserdata(L, 1));
-	waypoint->SetOrigin(Vector2(lua_tonumber(L, 2), lua_tonumber(L, 3)));
+	TriggerData* trigger = static_cast<TriggerData*>(lua_touserdata(L, 1));
+	trigger->SetOrigin(Vector2(lua_tonumber(L, 2), lua_tonumber(L, 3)));
 	return 0;
 }
 
 static int getOrigin(lua_State* L) {
-	WaypointData* waypoint = static_cast<WaypointData*>(lua_touserdata(L, 1));
-	lua_pushnumber(L, waypoint->GetOrigin().x);
-	lua_pushnumber(L, waypoint->GetOrigin().y);
+	TriggerData* trigger = static_cast<TriggerData*>(lua_touserdata(L, 1));
+	lua_pushnumber(L, trigger->GetOrigin().x);
+	lua_pushnumber(L, trigger->GetOrigin().y);
 	return 2;
 }
 
 //bounds
 static int setBoundingBox(lua_State* L) {
-	WaypointData* waypoint = static_cast<WaypointData*>(lua_touserdata(L, 1));
-	waypoint->SetBoundingBox(BoundingBox(
+	TriggerData* trigger = static_cast<TriggerData*>(lua_touserdata(L, 1));
+	trigger->SetBoundingBox(BoundingBox(
 		lua_tonumber(L, 2),
 		lua_tonumber(L, 3),
 		lua_tonumber(L, 4),
@@ -50,42 +50,42 @@ static int setBoundingBox(lua_State* L) {
 }
 
 static int getBoundingBox(lua_State* L) {
-	WaypointData* waypoint = static_cast<WaypointData*>(lua_touserdata(L, 1));
-	lua_pushnumber(L, waypoint->GetBoundingBox().x);
-	lua_pushnumber(L, waypoint->GetBoundingBox().y);
-	lua_pushnumber(L, waypoint->GetBoundingBox().w);
-	lua_pushnumber(L, waypoint->GetBoundingBox().h);
+	TriggerData* trigger = static_cast<TriggerData*>(lua_touserdata(L, 1));
+	lua_pushnumber(L, trigger->GetBoundingBox().x);
+	lua_pushnumber(L, trigger->GetBoundingBox().y);
+	lua_pushnumber(L, trigger->GetBoundingBox().w);
+	lua_pushnumber(L, trigger->GetBoundingBox().h);
 	return 4;
 }
 
 //triggers
-static int setTriggerReference(lua_State* L) {
-	WaypointData* waypoint = static_cast<WaypointData*>(lua_touserdata(L, 1));
-	luaL_unref(L, LUA_REGISTRYINDEX, waypoint->GetTriggerReference());
-	waypoint->SetTriggerReference(luaL_ref(L, LUA_REGISTRYINDEX));
+static int setReference(lua_State* L) {
+	TriggerData* trigger = static_cast<TriggerData*>(lua_touserdata(L, 1));
+	luaL_unref(L, LUA_REGISTRYINDEX, trigger->GetScriptReference());
+	trigger->SetScriptReference(luaL_ref(L, LUA_REGISTRYINDEX));
 	return 0;
 }
 
-static int getTriggerReference(lua_State* L) {
-	WaypointData* waypoint = static_cast<WaypointData*>(lua_touserdata(L, 1));
-	lua_pushinteger(L, waypoint->GetTriggerReference());
+static int getReference(lua_State* L) {
+	TriggerData* trigger = static_cast<TriggerData*>(lua_touserdata(L, 1));
+	lua_pushinteger(L, trigger->GetScriptReference());
 	lua_gettable(L, LUA_REGISTRYINDEX);
 	return 1;
 }
 
-static const luaL_Reg waypointLib[] = {
+static const luaL_Reg triggerLib[] = {
 	{"SetOrigin",setOrigin},
 	{"GetOrigin",getOrigin},
 
 	{"SetBounds",setBoundingBox},
 	{"GetBounds",getBoundingBox},
 
-	{"SetTrigger",setTriggerReference},
-	{"GetTrigger",getTriggerReference},
+	{"SetScript",setReference},
+	{"GetScript",getReference},
 	{nullptr, nullptr}
 };
 
-LUAMOD_API int openWaypointAPI(lua_State* L) {
-	luaL_newlib(L, waypointLib);
+LUAMOD_API int openTriggerAPI(lua_State* L) {
+	luaL_newlib(L, triggerLib);
 	return 1;
 }

@@ -19,41 +19,41 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#include "waypoint_manager_api.hpp"
+#include "trigger_manager_api.hpp"
 
-#include "waypoint_manager.hpp"
+#include "trigger_manager.hpp"
 
 //TODO: figure out a way to iterate through elements of managers from lua
 
 static int create(lua_State* L) {
-	WaypointManager* mgr = static_cast<WaypointManager*>(lua_touserdata(L, 1));
+	TriggerManager* mgr = static_cast<TriggerManager*>(lua_touserdata(L, 1));
 }
 
 static int unload(lua_State* L) {
-	WaypointManager* mgr = static_cast<WaypointManager*>(lua_touserdata(L, 1));
+	TriggerManager* mgr = static_cast<TriggerManager*>(lua_touserdata(L, 1));
 }
 
-static int getWaypoint(lua_State* L) {
-	WaypointManager* mgr = static_cast<WaypointManager*>(lua_touserdata(L, 1));
+static int getTrigger(lua_State* L) { //TODO: (1) named triggers
+	TriggerManager* mgr = static_cast<TriggerManager*>(lua_touserdata(L, 1));
 	lua_pushlightuserdata(L, mgr->Get(lua_tointeger(L, 2)));
 	return 1;
 }
 
 static int getLoadedCount(lua_State* L) {
-	WaypointManager* mgr = static_cast<WaypointManager*>(lua_touserdata(L, 1));
+	TriggerManager* mgr = static_cast<TriggerManager*>(lua_touserdata(L, 1));
 	lua_pushinteger(L, mgr->GetLoadedCount());
 	return 1;
 }
 
-static const luaL_Reg waypointManagerLib[] = {
+static const luaL_Reg triggerManagerLib[] = {
 	{"Create",create},
 	{"Unload",unload},
-	{"GetWaypoint",getWaypoint},
+	{"GetTrigger",getTrigger},
 	{"GetCount",getLoadedCount},
 	{nullptr, nullptr}
 };
 
-LUAMOD_API int openWaypointManagerAPI(lua_State* L) {
-	luaL_newlib(L, waypointManagerLib);
+LUAMOD_API int openTriggerManagerAPI(lua_State* L) {
+	luaL_newlib(L, triggerManagerLib);
 	return 1;
 }

@@ -19,12 +19,37 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef WAYPOINTAPI_HPP_
-#define WAYPOINTAPI_HPP_
+#include "trigger_system_api.hpp"
 
-#include "lua.hpp"
+//all trigger API headers
+#include "trigger_api.hpp"
+#include "trigger_manager_api.hpp"
 
-#define TORTUGA_WAYPOINT_API "waypoint"
-LUAMOD_API int openWaypointAPI(lua_State* L);
+//useful "globals"
+//...
 
-#endif
+//This mimics linit.c to create a nested collection of all trigger modules.
+static const luaL_Reg funcs[] = {
+	{nullptr, nullptr}
+};
+
+static const luaL_Reg libs[] = {
+	{"Trigger", openTriggerAPI},
+	{"TriggerManager", openTriggerManagerAPI},
+	{nullptr, nullptr}
+};
+
+int openTriggerSystemAPI(lua_State* L) {
+	//create the table
+	luaL_newlibtable(L, libs);
+
+	//push the "global" functions
+	luaL_setfuncs(L, funcs, 0);
+
+	//push the substable
+	for (const luaL_Reg* lib = libs; lib->func; lib++) {
+		lib->func(L);
+		lua_setfield(L, -2, lib->name);
+	}
+	return 1;
+}

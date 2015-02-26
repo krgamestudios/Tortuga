@@ -19,12 +19,47 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef WAYPOINTMANAGERAPI_HPP_
-#define WAYPOINTMANAGERAPI_HPP_
+#ifndef TRIGGERMANAGER_HPP_
+#define TRIGGERMANAGER_HPP_
+
+#include "bounding_box.hpp"
+#include "vector2.hpp"
+#include "trigger_data.hpp"
 
 #include "lua.hpp"
 
-#define TORTUGA_WAYPOINT_MANAGER_API "waypoint_manager"
-LUAMOD_API int openWaypointManagerAPI(lua_State* L);
+#include <functional>
+#include <map>
+#include <string>
+
+//TODO: (1) rename this system to the "trigger" system
+class TriggerManager {
+public:
+	TriggerManager();
+	~TriggerManager();
+
+	//common public methods
+	int Create();
+	int Create(Vector2 origin, BoundingBox bounds);
+	void Unload(int uid);
+
+	void UnloadAll();
+	void UnloadIf(std::function<bool(std::pair<const int, TriggerData const&>)> fn);
+
+	//accessors & mutators
+	TriggerData* Get(int uid);
+	int GetLoadedCount();
+	std::map<int, TriggerData>* GetContainer();
+
+	//hooks
+	lua_State* SetLuaState(lua_State* L);
+	lua_State* GetLuaState();
+
+private:
+	//members
+	std::map<int, TriggerData> elementMap;
+	lua_State* lua = nullptr;
+	int counter = 0;
+};
 
 #endif
