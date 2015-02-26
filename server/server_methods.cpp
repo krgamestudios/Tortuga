@@ -85,5 +85,5 @@ void ServerApplication::hAdminShutdownRequest(ClientPacket* const argPacket) {
 }
 
 void ServerApplication::SaveServerState() {
-	//TODO: (9) ServerApplication::SaveServerState()
+	//TODO: (2) Periodic mass server saves
 }

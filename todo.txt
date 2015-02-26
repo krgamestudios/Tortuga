@@ -1,21 +1,18 @@
 TODO: upgrade to lua 5.3
 TODO: Split config.cfg in two, one for the server and the client
 
-TODO: In need of script APIs (list)
-	* Characters
-
 TODO: Account passwords (list)
 	* backbone account server OR
 	* social network login OR
 	* ...
 	* salts & hashes
+	* login screen prompting for username & password
 
 TODO: Features
 	* Make sure login errors are sent to the client
 	* Add the "home" parameter to the server's config file
-	* Waypoints, with positions and trigger zones (collision areas) for doors, monster spawns, etc.
+	* Waypoints, with positions and trigger zones (collision areas) for doors, monster spawns, etc. (trigger system)
 	* Fix shoddy movement
-	* Periodic mass server saves
 	* Remove the big "Shut Down" button (currently broken...)
 	* Make a way for the server owner to control the server directly
 	* The TileSheet class should implement the surface itself
@@ -25,5 +22,3 @@ TODO: Features
 	* Add a screenshot of the game to README.md
 	* joystick/gamepad support
 	* add the tilesheet to the map system
-	* ping/delay displayed in the lobby
-	* login screen prompting for username & password

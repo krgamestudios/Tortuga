@@ -32,6 +32,7 @@
 #include <map>
 #include <string>
 
+//TODO: (1) rename this system to the "trigger" system
 class WaypointManager {
 public:
 	WaypointManager();

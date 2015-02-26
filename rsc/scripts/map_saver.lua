@@ -11,5 +11,5 @@ function mapSaver.Save(r)
 	io.write("map_saver:Save(", Region.GetX(r), ", ", Region.GetY(r), ")\n")
 end
 
---TODO: (9) create a flexible saving & loading system
+--TODO: (3) create a flexible saving & loading system
 return mapSaver

@@ -1,8 +1,8 @@
---TODO: (9) An archive table of all dead characters
+--TODO: (3) An archive table of all dead characters
 
 CREATE TABLE IF NOT EXISTS Accounts (
 	uid			INTEGER PRIMARY KEY AUTOINCREMENT,
-	username	varchar(100) UNIQUE, --TODO: (9) Swap username for email address
+	username	varchar(100) UNIQUE, --TODO: (3) Swap username for email address
 
 	--server-client security
 --	passhash	varchar(100),
