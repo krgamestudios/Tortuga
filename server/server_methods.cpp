@@ -30,7 +30,7 @@
 //-------------------------
 
 void ServerApplication::hAdminDisconnectForced(ClientPacket* const argPacket) {
-	//TODO: (9) empty
+	//TODO: (9) ServerApplication::hAdminDisconnectForced()
 }
 
 void ServerApplication::hAdminShutdownRequest(ClientPacket* const argPacket) {
@@ -85,5 +85,5 @@ void ServerApplication::hAdminShutdownRequest(ClientPacket* const argPacket) {
 }
 
 void ServerApplication::SaveServerState() {
-	//TODO: (9) empty
+	//TODO: (9) ServerApplication::SaveServerState()
 }

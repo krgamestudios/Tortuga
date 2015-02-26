@@ -243,9 +243,9 @@ void ServerApplication::hCharacterMovement(CharacterPacket* const argPacket) {
 }
 
 void ServerApplication::hCharacterAttack(CharacterPacket* const argPacket) {
-	//TODO: (9) empty
+	//TODO: (9) ServerApplication::hCharacterAttack()
 }
 
 void ServerApplication::hCharacterDamage(CharacterPacket* const argPacket) {
-	//TODO: (9) empty
+	//TODO: (9) ServerApplication::hCharacterDamage()
 }

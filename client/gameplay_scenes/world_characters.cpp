@@ -146,11 +146,11 @@ void World::hQueryCharacterExists(CharacterPacket* const argPacket) {
 }
 
 void World::hQueryCharacterStats(CharacterPacket* const argPacket) {
-	//TODO: (9) empty
+	//TODO: (9) World::hQueryCharacterStats()
 }
 
 void World::hQueryCharacterLocation(CharacterPacket* const argPacket) {
-	//TODO: (9) empty
+	//TODO: (9) World::hQueryCharacterLocation()
 }
 
 void World::hCharacterMovement(CharacterPacket* const argPacket) {
@@ -170,11 +170,11 @@ void World::hCharacterMovement(CharacterPacket* const argPacket) {
 }
 
 void World::hCharacterAttack(CharacterPacket* const argPacket) {
-	//TODO: (9) empty
+	//TODO: (9) World::hCharacterAttack()
 }
 
 void World::hCharacterDamage(CharacterPacket* const argPacket) {
-	//TODO: (9) empty
+	//TODO: (9) World::hCharacterDamage()
 }
 
 //-------------------------

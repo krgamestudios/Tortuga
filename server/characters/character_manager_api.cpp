@@ -24,23 +24,23 @@
 #include "character_manager.hpp"
 
 static int setOnCreate(lua_State* L) {
-	//TODO: (9) empty
+	//TODO: (9) setOnCreate()
 }
 
 static int setOnLoad(lua_State* L) {
-	//TODO: (9) empty
+	//TODO: (9) setOnLoad()
 }
 
 static int setOnSave(lua_State* L) {
-	//TODO: (9) empty
+	//TODO: (9) setOnSave()
 }
 
 static int setOnUnload(lua_State* L) {
-	//TODO: (9) empty
+	//TODO: (9) setOnUnload()
 }
 
 static int setOnDelete(lua_State* L) {
-	//TODO: (9) empty
+	//TODO: (9) setOnDelete()
 }
 
 static int getCharacter(lua_State* L) {

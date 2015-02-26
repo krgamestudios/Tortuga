@@ -26,14 +26,14 @@
 //-------------------------
 
 void World::hTextBroadcast(TextPacket* const argPacket) {
-	//TODO: (9) empty
+	//TODO: (9) World::hTextBroadcast()
 }
 
 void World::hTextSpeech(TextPacket* const argPacket) {
-	//TODO: (9) empty
+	//TODO: (9) World::hTextSpeech()
 }
 
 void World::hTextWhisper(TextPacket* const argPacket) {
-	//TODO: (9) empty
+	//TODO: (9) World::hTextWhisper()
 }
 

@@ -252,11 +252,11 @@ void LobbyMenu::HandleLoginResponse(ClientPacket* const argPacket) {
 }
 
 void LobbyMenu::HandleJoinRejection(TextPacket* const argPacket) {
-	//TODO: (9) empty
+	//TODO: (9) LobbyMenu::HandleJoinRejection()
 }
 
 void LobbyMenu::HandleLoginRejection(TextPacket* const argPacket) {
-	//TODO: (9) empty
+	//TODO: (9) LobbyMenu::HandleLoginRejection
 }
 
 //-------------------------

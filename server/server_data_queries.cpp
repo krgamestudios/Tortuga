@@ -76,21 +76,21 @@ void ServerApplication::hQueryCharacterExists(CharacterPacket* const argPacket) 
 }
 
 void ServerApplication::hQueryCharacterStats(CharacterPacket* const argPacket) {
-	//TODO: (9) empty
+	//TODO: (9) ServerApplication::hQueryCharacterStats()
 }
 
 void ServerApplication::hQueryCharacterLocation(CharacterPacket* const argPacket) {
-	//TODO: (9) empty
+	//TODO: (9) ServerApplication::hQueryCharacterLocation()
 }
 
 void ServerApplication::hQueryMonsterExists(MonsterPacket* const argPacket) {
-	//TODO: (9) empty
+	//TODO: (9) ServerApplication::hQueryMonsterExists()
 }
 
 void ServerApplication::hQueryMonsterStats(MonsterPacket* const argPacket) {
-	//TODO: (9) empty
+	//TODO: (9) ServerApplication::hQueryMonsterStats()
 }
 
 void ServerApplication::hQueryMonsterLocation(MonsterPacket* const argPacket) {
-	//TODO: (9) empty
+	//TODO: (9) ServerApplication::hQueryMonsterLocation()
 }
