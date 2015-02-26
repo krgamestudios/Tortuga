@@ -23,7 +23,7 @@
 
 #include "trigger_manager.hpp"
 
-//TODO: figure out a way to iterate through elements of managers from lua
+//TODO: (1) figure out a way to iterate through elements of managers from lua
 
 static int create(lua_State* L) {
 	TriggerManager* mgr = static_cast<TriggerManager*>(lua_touserdata(L, 1));

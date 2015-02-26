@@ -107,8 +107,8 @@ void LobbyMenu::Render(SDL_Surface* const screen) {
 	join.DrawTo(screen);
 	back.DrawTo(screen);
 
-	//TODO: (1) draw headers for the server list
-	//TODO: (1) ping/delay displayed in the server list
+	//TODO: (3) draw headers for the server list
+	//TODO: (3) ping/delay displayed in the server list
 	for (int i = 0; i < serverInfo.size(); i++) {
 		//draw the selected server's highlight
 		if (selection == &serverInfo[i]) {

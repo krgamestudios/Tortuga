@@ -69,7 +69,7 @@ void World::hCharacterCreate(CharacterPacket* const argPacket) {
 	//fill the character's info
 	character->SetOrigin(argPacket->origin);
 	character->SetMotion(argPacket->motion);
-	character->SetBounds({CHARACTER_BOUNDS_X, CHARACTER_BOUNDS_Y, CHARACTER_BOUNDS_WIDTH, CHARACTER_BOUNDS_HEIGHT}); //TODO: (1) send the bounds from the server
+	character->SetBounds({CHARACTER_BOUNDS_X, CHARACTER_BOUNDS_Y, CHARACTER_BOUNDS_WIDTH, CHARACTER_BOUNDS_HEIGHT}); //TODO: (2) send the bounds from the server
 	character->SetHandle(argPacket->handle);
 	character->SetAvatar(argPacket->avatar);
 	character->SetOwner(argPacket->accountIndex);

@@ -75,7 +75,7 @@ static int getLoadedCount(lua_State* L) {
 }
 
 static int forEach(lua_State* L) {
-	//TODO: (1) find a way to update the clients when a script alters a character's data
+	//TODO: (9) forEach()
 }
 
 static const luaL_Reg characterManagerLib[] = {

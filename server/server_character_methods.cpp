@@ -205,7 +205,7 @@ void ServerApplication::hCharacterMovement(CharacterPacket* const argPacket) {
 
 	//check if allowed
 	if (characterData->GetOwner() != argPacket->accountIndex && !accountData->GetModerator() && !accountData->GetAdministrator()) {
-		//TODO: (2) send to the client?
+		//TODO: (3) send to the client?
 		std::cerr << "Failed to set character motion due to lack of permissions targeting uid(" << argPacket->characterIndex << ")" << std::endl;
 		return;
 	}
