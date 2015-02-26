@@ -335,6 +335,9 @@ void World::HandlePacket(SerialPacket* const argPacket) {
 		break;
 
 		//character management
+		case SerialPacketType::CHARACTER_UPDATE:
+			hCharacterUpdate(static_cast<CharacterPacket*>(argPacket));
+		break;
 		case SerialPacketType::CHARACTER_CREATE:
 			hCharacterCreate(static_cast<CharacterPacket*>(argPacket));
 		break;

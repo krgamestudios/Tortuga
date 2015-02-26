@@ -183,10 +183,15 @@ void ServerApplication::hCharacterUnload(CharacterPacket* const argPacket) {
 void ServerApplication::hCharacterMovement(CharacterPacket* const argPacket) {
 	//get the specified objects
 	AccountData* accountData = accountMgr.Get(argPacket->accountIndex);
+
+	if (!accountData) {
+		throw(std::runtime_error("Failed to move a character, missing account"));
+	}
+
 	CharacterData* characterData = characterMgr.Get(argPacket->characterIndex);
 
-	if (!accountData || !characterData) {
-		throw(std::runtime_error("Failed to move a character, missing data"));
+	if (!characterData) {
+		throw(std::runtime_error("Failed to move a character, missing character"));
 	}
 
 	//get this account's client

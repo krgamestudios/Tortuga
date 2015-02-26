@@ -56,8 +56,8 @@ static int getOrigin(lua_State* L) {
 
 static int getMotion(lua_State* L) {
 	Entity* entity = static_cast<Entity*>(lua_touserdata(L, 1));
-	lua_pushnumber(L, entity->GetOrigin().x);
-	lua_pushnumber(L, entity->GetOrigin().y);
+	lua_pushnumber(L, entity->GetMotion().x);
+	lua_pushnumber(L, entity->GetMotion().y);
 	return 2;
 }
 

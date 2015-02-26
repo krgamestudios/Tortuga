@@ -21,8 +21,45 @@
 */
 #include "network_api.hpp"
 
+#include "character_data.hpp"
+#include "character_manager.hpp"
+#include "server_utilities.hpp"
+
 static int pumpCharacterUpdate(lua_State* L) {
-	return 0;
+	CharacterData* characterData = static_cast<CharacterData*>(lua_touserdata(L, 1));
+
+	//determine the character's index
+	int index = -1;
+	for (auto const& it : *CharacterManager::GetSingleton().GetContainer()) {
+		if(characterData == &it.second) {
+			index = it.first;
+			break;
+		}
+	}
+
+	//signal an error
+	if (index == -1) {
+		lua_pushboolean(L, false);
+		return 1;
+	}
+
+	//fill the packet with all of this character's data
+	CharacterPacket newPacket;
+	newPacket.type = SerialPacketType::CHARACTER_UPDATE;
+	newPacket.characterIndex = index;
+	strncpy(newPacket.handle, characterData->GetHandle().c_str(), PACKET_STRING_SIZE);
+	strncpy(newPacket.avatar, characterData->GetAvatar().c_str(), PACKET_STRING_SIZE);
+	newPacket.accountIndex = characterData->GetOwner();
+	newPacket.roomIndex = characterData->GetRoomIndex();
+	newPacket.origin = characterData->GetOrigin();
+	newPacket.motion = characterData->GetMotion();
+
+	//pump to the room
+	pumpPacketProximity(&newPacket, characterData->GetRoomIndex());
+
+	//signal success
+	lua_pushboolean(L, true);
+	return 1;
 }
 
 static const luaL_Reg networkLib[] = {
