@@ -1,5 +1,5 @@
 #include directories
-INCLUDES+=. accounts characters clients entities monsters rooms server_utilities waypoints ../common/debugging ../common/gameplay ../common/map ../common/network ../common/network/packet_types ../common/utilities
+INCLUDES+=. accounts characters clients entities monsters rooms server_utilities triggers ../common/debugging ../common/gameplay ../common/map ../common/network ../common/network/packet_types ../common/utilities
 
 #libraries
 #the order of the $(LIBS) is important, at least for MinGW
@@ -32,7 +32,7 @@ all: $(OBJ) $(OUT)
 	$(MAKE) -C monsters
 	$(MAKE) -C rooms
 	$(MAKE) -C server_utilities
-	$(MAKE) -C waypoints
+	$(MAKE) -C triggers
 	$(CXX) $(CXXFLAGS) -o $(OUT) $(OBJ) $(LIBS)
 
 $(OBJ): | $(OBJDIR)

@@ -42,7 +42,7 @@
 #include "monster_system_api.hpp"
 #include "network_api.hpp"
 #include "room_system_api.hpp"
-#include "waypoint_system_api.hpp"
+#include "trigger_system_api.hpp"
 
 //these libs are loaded by lua.c and are readily available to any Lua program
 static const luaL_Reg loadedlibs[] = {
@@ -68,7 +68,7 @@ static const luaL_Reg preloadedlibs[] = {
 	{TORTUGA_MONSTER_SYSTEM_API, openMonsterSystemAPI},
 	{TORTUGA_NETWORK_API, openNetworkAPI},
 	{TORTUGA_ROOM_SYSTEM_API, openRoomSystemAPI},
-	{TORTUGA_WAYPOINT_SYSTEM_API, openWaypointSystemAPI},
+	{TORTUGA_TRIGGER_SYSTEM_API, openTriggerSystemAPI},
 	{NULL, NULL}
 };
 

@@ -59,9 +59,9 @@ static int getMonsterMgr(lua_State* L) {
 	return 1;
 }
 
-static int getWaypointMgr(lua_State* L) {
+static int getTriggerMgr(lua_State* L) {
 	RoomData* room = reinterpret_cast<RoomData*>(lua_touserdata(L, 1));
-	lua_pushlightuserdata(L, reinterpret_cast<void*>(room->GetWaypointMgr()) );
+	lua_pushlightuserdata(L, reinterpret_cast<void*>(room->GetTriggerMgr()) );
 	return 1;
 }
 
@@ -95,7 +95,7 @@ static const luaL_Reg roomLib[] = {
 
 	{"GetPager",getPager},
 	{"GetMonsterMgr",getMonsterMgr},
-	{"GetWaypointMgr",getWaypointMgr},
+	{"GetTriggerMgr",getTriggerMgr},
 
 	{"SetOnTick", setOnTick},
 

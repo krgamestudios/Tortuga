@@ -28,7 +28,6 @@
 #include "config_utility.hpp"
 #include "room_manager.hpp"
 #include "udp_network_utility.hpp"
-#include "waypoint_manager.hpp"
 
 #include <stdexcept>
 #include <iostream>

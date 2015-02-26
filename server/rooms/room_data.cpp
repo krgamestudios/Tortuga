@@ -61,8 +61,8 @@ MonsterManager* RoomData::GetMonsterMgr() {
 	return &monsterMgr;
 }
 
-WaypointManager* RoomData::GetWaypointMgr() {
-	return &waypointMgr;
+TriggerManager* RoomData::GetTriggerMgr() {
+	return &triggerMgr;
 }
 
 std::list<CharacterData*>* RoomData::GetCharacterList() {
@@ -73,7 +73,7 @@ lua_State* RoomData::SetLuaState(lua_State* L) {
 	lua = L;
 	pager.SetLuaState(lua);
 	monsterMgr.SetLuaState(lua);
-	waypointMgr.SetLuaState(lua);
+	triggerMgr.SetLuaState(lua);
 	return lua;
 }
 

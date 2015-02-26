@@ -25,7 +25,7 @@
 #include "character_data.hpp"
 #include "monster_manager.hpp"
 #include "region_pager_lua.hpp"
-#include "waypoint_manager.hpp"
+#include "trigger_manager.hpp"
 
 #include "lua.hpp"
 
@@ -48,7 +48,7 @@ public:
 
 	RegionPagerLua* GetPager();
 	MonsterManager* GetMonsterMgr();
-	WaypointManager* GetWaypointMgr();
+	TriggerManager* GetTriggerMgr();
 	std::list<CharacterData*>* GetCharacterList();
 
 	//API interfaces
@@ -70,7 +70,7 @@ private:
 	//members
 	RegionPagerLua pager;
 	MonsterManager monsterMgr;
-	WaypointManager waypointMgr;
+	TriggerManager triggerMgr;
 	std::list<CharacterData*> characterList;
 
 	//API
