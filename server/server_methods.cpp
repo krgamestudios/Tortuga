@@ -78,7 +78,7 @@ void ServerApplication::hAdminShutdownRequest(ClientPacket* const argPacket) {
 	TextPacket newPacket;
 	newPacket.type = SerialPacketType::ADMIN_DISCONNECT_FORCED;
 	strncpy(newPacket.text, "Server shutdown", PACKET_STRING_SIZE);
-	PumpPacket(&newPacket);
+	pumpPacket(&newPacket);
 
 	//finished this routine
 	std::cout << "Shutdown signal accepted" << std::endl;
@@ -86,119 +86,4 @@ void ServerApplication::hAdminShutdownRequest(ClientPacket* const argPacket) {
 
 void ServerApplication::SaveServerState() {
 	//TODO: (9) empty
-}
-
-//-------------------------
-//full unload methods
-//-------------------------
-
-void ServerApplication::FullClientUnload(int index) {
-	clientMgr.UnloadIf([&](std::pair<const int, ClientData const&> client) -> bool {
-		//skip the wrong clients
-		if (client.first != index) {
-			return false;
-		}
-
-		//unload associated accounts
-		for (std::map<int, AccountData>::iterator it = accountMgr.GetContainer()->begin(); it != accountMgr.GetContainer()->end(); /* EMPTY */) {
-			if (it->second.GetClientIndex() == index) {
-				FullAccountUnload(it->first);
-				it = accountMgr.GetContainer()->begin();
-			}
-			else {
-				++it;
-			}
-		}
-
-		//unload this client
-		return true;
-	});
-}
-
-void ServerApplication::FullAccountUnload(int index) {
-	accountMgr.UnloadIf([&](std::pair<const int, AccountData const&> account) -> bool {
-		//skip the wrong accounts
-		if (account.first != index) {
-			return false;
-		}
-
-		//unload associated characters
-		for (std::map<int, CharacterData>::iterator it = characterMgr.GetContainer()->begin(); it != characterMgr.GetContainer()->end(); /* EMPTY */) {
-			if (it->second.GetOwner() == index) {
-				FullCharacterUnload(it->first);
-				it = characterMgr.GetContainer()->begin();
-			}
-			else {
-				++it;
-			}
-		}
-
-		//unload this account
-		return true;
-	});
-}
-
-void ServerApplication::FullCharacterUnload(int index) {
-	characterMgr.UnloadIf([&](std::pair<const int, CharacterData const&> character) -> bool {
-		//skip the wrong characters
-		if (character.first != index) {
-			return false;
-		}
-
-		//pop from the rooms
-		roomMgr.PopCharacter(&character.second);
-
-		//pump character unload
-		CharacterPacket newPacket;
-		newPacket.type = SerialPacketType::CHARACTER_DELETE;
-		newPacket.characterIndex = character.first;
-		//NOTE: more character info as needed
-
-		PumpPacket(&newPacket);
-
-		//unload this character
-		return true;
-	});
-}
-
-//-------------------------
-//utility methods
-//-------------------------
-
-void ServerApplication::PumpPacket(SerialPacket* const argPacket) {
-	for (auto& it : *clientMgr.GetContainer()) {
-		network.SendTo(it.second.GetAddress(), argPacket);
-	}
-}
-
-void ServerApplication::PumpPacketProximity(SerialPacket* const argPacket, int roomIndex, Vector2 position, int distance) {
-	RoomData* room = roomMgr.Get(roomIndex);
-
-	if (!room) {
-		throw(std::runtime_error("Failed to pump to a non-existant room"));
-	}
-
-	for (auto& character : *room->GetCharacterList()) {
-		if (distance == -1 || (character->GetOrigin() - position).Length() <= distance) {
-			AccountData* account = accountMgr.Get(character->GetOwner());
-			ClientData* client = clientMgr.Get(account->GetClientIndex());
-			network.SendTo(client->GetAddress(), argPacket);
-		}
-	}
-}
-
-void ServerApplication::CopyCharacterToPacket(CharacterPacket* const packet, int characterIndex) {
-	CharacterData* character = characterMgr.Get(characterIndex);
-	if (!character) {
-		throw(std::runtime_error("Failed to copy a character to a packet"));
-	}
-
-	//NOTE: keep this up to date when the character changes
-	packet->characterIndex = characterIndex;
-	strncpy(packet->handle, character->GetHandle().c_str(), PACKET_STRING_SIZE);
-	strncpy(packet->avatar, character->GetAvatar().c_str(), PACKET_STRING_SIZE);
-	packet->accountIndex = character->GetOwner();
-	packet->roomIndex = character->GetRoomIndex();
-	packet->origin = character->GetOrigin();
-	packet->motion = character->GetMotion();
 }

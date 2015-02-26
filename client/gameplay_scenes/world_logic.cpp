@@ -173,7 +173,7 @@ void World::Render(SDL_Surface* const screen) {
 
 	//draw the entities
 	for (auto& it : characterMap) {
-		//TODO: (1) depth ordering
+		//BUG: #29 Characters (and other entities) are drawn out of order
 		it.second.DrawTo(screen, camera.x, camera.y);
 	}
 	for (auto& it : monsterMap) {
@@ -335,6 +335,9 @@ void World::HandlePacket(SerialPacket* const argPacket) {
 		break;
 
 		//character management
+		case SerialPacketType::CHARACTER_UPDATE:
+			hCharacterUpdate(static_cast<CharacterPacket*>(argPacket));
+		break;
 		case SerialPacketType::CHARACTER_CREATE:
 			hCharacterCreate(static_cast<CharacterPacket*>(argPacket));
 		break;

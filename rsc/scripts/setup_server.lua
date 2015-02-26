@@ -4,6 +4,7 @@ mapMaker = require("map_maker")
 mapSaver = require("map_saver")
 roomSystem = require("room_system")
 characterSystem = require("character_system")
+networkSystem = require("network")
 
 local function dumpTable(t)
 	print(t)
@@ -18,12 +19,19 @@ roomSystem.RoomManager.SetOnCreate(function(room, index)
 
 	--called ~60 times per second
 	roomSystem.Room.SetOnTick(room, function(room)
+		--[[
 		local character = characterSystem.CharacterManager.GetCharacter("handle")
 		if character ~= nil then
 			--debugging
-			local x, y = characterSystem.Character.GetOrigin(character)
-			print("character.Origin(x, y): ", x, y)
+			local originX, originY = characterSystem.Character.GetOrigin(character)
+			local motionX, motionY = characterSystem.Character.GetMotion(character)
+			if motionY < 0 then
+				characterSystem.Character.SetMotion(character, motionX, 0)
+				networkSystem.PumpCharacterUpdate(character)
+				print("Sending: ", motionX, motionY)
+			end
 		end
+		--]]
 	end)
 end)
 

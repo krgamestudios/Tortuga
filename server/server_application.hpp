@@ -38,6 +38,9 @@
 #include "serial_packet.hpp"
 #include "singleton.hpp"
 
+//server utilities
+#include "server_utilities.hpp"
+
 //APIs
 #include "lua.hpp"
 #include "sqlite3.h"
@@ -111,13 +114,7 @@ private:
 	void hTextWhisper(TextPacket* const);
 
 	//utility methods
-	void PumpPacket(SerialPacket* const);
-	void PumpPacketProximity(SerialPacket* const argPacket, int roomIndex, Vector2 position, int distance);
-	void CopyCharacterToPacket(CharacterPacket* const packet, int characterIndex);
 	void SaveServerState();
-	void FullClientUnload(int index);
-	void FullAccountUnload(int index);
-	void FullCharacterUnload(int index);
 
 	//APIs and utilities
 	sqlite3* database = nullptr;

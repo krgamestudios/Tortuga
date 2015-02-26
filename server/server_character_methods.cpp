@@ -46,13 +46,14 @@ void ServerApplication::hCharacterCreate(CharacterPacket* const argPacket) {
 	}
 
 	//push to the rooms
-	roomMgr.PushCharacter(characterMgr.Get(characterIndex));
+	CharacterData* characterData = characterMgr.Get(characterIndex);
+	roomMgr.PushCharacter(characterData);
 
 	//pump this character to all clients
 	CharacterPacket newPacket;
-	CopyCharacterToPacket(&newPacket, characterIndex);
+	copyCharacterToPacket(&newPacket, characterIndex);
 	newPacket.type = SerialPacketType::CHARACTER_CREATE;
-	PumpPacket(&newPacket);
+	pumpPacketProximity(&newPacket, characterData->GetRoomIndex());
 }
 
 void ServerApplication::hCharacterDelete(CharacterPacket* const argPacket) {
@@ -90,16 +91,17 @@ void ServerApplication::hCharacterDelete(CharacterPacket* const argPacket) {
 	}
 
 	//pop from the rooms
-	roomMgr.PopCharacter(characterMgr.Get(characterIndex));
-
-	//delete the character
-	characterMgr.Delete(characterIndex);
+	CharacterData* characterData = characterMgr.Get(characterIndex);
+	roomMgr.PopCharacter(characterData);
 
 	//pump character delete
 	CharacterPacket newPacket;
 	newPacket.type = SerialPacketType::CHARACTER_DELETE;
 	newPacket.characterIndex = characterIndex;
-	PumpPacket(static_cast<SerialPacket*>(&newPacket));
+	pumpPacketProximity(static_cast<SerialPacket*>(&newPacket), characterData->GetRoomIndex());
+
+	//delete the character
+	characterMgr.Delete(characterIndex);
 }
 
 void ServerApplication::hCharacterLoad(CharacterPacket* const argPacket) {
@@ -126,13 +128,14 @@ void ServerApplication::hCharacterLoad(CharacterPacket* const argPacket) {
 	}
 
 	//push to the rooms
-	roomMgr.PushCharacter(characterMgr.Get(characterIndex));
+	CharacterData* characterData = characterMgr.Get(characterIndex);
+	roomMgr.PushCharacter(characterData);
 
 	//pump this character to all clients
 	CharacterPacket newPacket;
-	CopyCharacterToPacket(&newPacket, characterIndex);
+	copyCharacterToPacket(&newPacket, characterIndex);
 	newPacket.type = SerialPacketType::CHARACTER_CREATE;
-	PumpPacket(&newPacket);
+	pumpPacketProximity(&newPacket, characterData->GetRoomIndex());
 }
 
 void ServerApplication::hCharacterUnload(CharacterPacket* const argPacket) {
@@ -161,14 +164,14 @@ void ServerApplication::hCharacterUnload(CharacterPacket* const argPacket) {
 	//pop from the rooms
 	roomMgr.PopCharacter(characterData);
 
-	//unload the character
-	characterMgr.Unload(argPacket->characterIndex);
-
 	//pump character delete
 	CharacterPacket newPacket;
 	newPacket.type = SerialPacketType::CHARACTER_DELETE;
 	newPacket.characterIndex = argPacket->characterIndex;
-	PumpPacket(static_cast<SerialPacket*>(&newPacket));
+	pumpPacketProximity(static_cast<SerialPacket*>(&newPacket), characterData->GetRoomIndex());
+
+	//unload the character
+	characterMgr.Unload(argPacket->characterIndex);
 }
 
 //-------------------------
@@ -180,10 +183,15 @@ void ServerApplication::hCharacterUnload(CharacterPacket* const argPacket) {
 void ServerApplication::hCharacterMovement(CharacterPacket* const argPacket) {
 	//get the specified objects
 	AccountData* accountData = accountMgr.Get(argPacket->accountIndex);
+
+	if (!accountData) {
+		throw(std::runtime_error("Failed to move a character, missing account"));
+	}
+
 	CharacterData* characterData = characterMgr.Get(argPacket->characterIndex);
 
-	if (!accountData || !characterData) {
-		throw(std::runtime_error("Failed to move a character, missing data"));
+	if (!characterData) {
+		throw(std::runtime_error("Failed to move a character, missing character"));
 	}
 
 	//get this account's client
@@ -206,9 +214,9 @@ void ServerApplication::hCharacterMovement(CharacterPacket* const argPacket) {
 	if (characterData->GetRoomIndex() != argPacket->roomIndex) {
 		//delete from the old room
 		CharacterPacket newPacket;
-		CopyCharacterToPacket(&newPacket, argPacket->characterIndex);
+		copyCharacterToPacket(&newPacket, argPacket->characterIndex);
 		newPacket.type = SerialPacketType::CHARACTER_DELETE;
-		PumpPacketProximity(&newPacket, characterData->GetRoomIndex(), characterData->GetOrigin(), -1);
+		pumpPacketProximity(&newPacket, characterData->GetRoomIndex());
 
 		//move the character between rooms
 		roomMgr.PopCharacter(characterData);
@@ -216,9 +224,9 @@ void ServerApplication::hCharacterMovement(CharacterPacket* const argPacket) {
 		roomMgr.PushCharacter(characterData);
 
 		//create in the new room
-		CopyCharacterToPacket(&newPacket, argPacket->characterIndex);
+		copyCharacterToPacket(&newPacket, argPacket->characterIndex);
 		newPacket.type = SerialPacketType::CHARACTER_CREATE;
-		PumpPacketProximity(&newPacket, characterData->GetRoomIndex(), characterData->GetOrigin(), -1);
+		pumpPacketProximity(&newPacket, characterData->GetRoomIndex());
 	}
 	//if not moving between rooms
 	else {
@@ -228,9 +236,9 @@ void ServerApplication::hCharacterMovement(CharacterPacket* const argPacket) {
 
 		//update the clients
 		CharacterPacket newPacket;
-		CopyCharacterToPacket(&newPacket, argPacket->characterIndex);
+		copyCharacterToPacket(&newPacket, argPacket->characterIndex);
 		newPacket.type = SerialPacketType::CHARACTER_MOVEMENT;
-		PumpPacketProximity(&newPacket, characterData->GetRoomIndex(), characterData->GetOrigin(), -1);
+		pumpPacketProximity(&newPacket, characterData->GetRoomIndex());
 	}
 }
 

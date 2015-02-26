@@ -35,6 +35,24 @@
 //DOCS: new characters will result in create messages
 //DOCS: this client's character will exist in both (skipped)
 
+void World::hCharacterUpdate(CharacterPacket* const argPacket) {
+	//TODO: (1) Authentication
+	//NOTE: applies to the local character too
+
+	//check that this character exists
+	std::map<int, BaseCharacter>::iterator characterIt = characterMap.find(argPacket->characterIndex);
+	if (characterIt != characterMap.end()) {
+		//update the origin and motion, if there's a difference
+		if (characterIt->second.GetOrigin() != argPacket->origin) {
+			characterIt->second.SetOrigin(argPacket->origin);
+		}
+		if (characterIt->second.GetMotion() != argPacket->motion) {
+			characterIt->second.SetMotion(argPacket->motion);
+			characterIt->second.CorrectSprite(); //only correct the sprite if the motion changes
+		}
+	}
+}
+
 void World::hCharacterCreate(CharacterPacket* const argPacket) {
 	//prevent double message
 	if (characterMap.find(argPacket->characterIndex) != characterMap.end()) {

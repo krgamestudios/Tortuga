@@ -96,6 +96,7 @@ protected:
 	void UpdateMap();
 
 	//character management
+	void hCharacterUpdate(CharacterPacket* const);
 	void hCharacterCreate(CharacterPacket* const);
 	void hCharacterDelete(CharacterPacket* const);
 	void hQueryCharacterExists(CharacterPacket* const);
