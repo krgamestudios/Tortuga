@@ -19,18 +19,17 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#include "network_api.hpp"
+#ifndef SERVERUTILITIES_HPP_
+#define SERVERUTILITIES_HPP_
 
-static int pumpCharacterUpdate(lua_State* L) {
-	return 0;
-}
+#include "serial_packet.hpp"
+#include "vector2.hpp"
 
-static const luaL_Reg networkLib[] = {
-	{"PumpCharacterUpdate", pumpCharacterUpdate},
-	{nullptr, nullptr}
-};
+void fullClientUnload(int index);
+void fullAccountUnload(int index);
+void fullCharacterUnload(int index);
+void pumpPacket(SerialPacket* const argPacket);
+void pumpPacketProximity(SerialPacket* const argPacket, int roomIndex, Vector2 position = {0, 0}, int distance = -1);
+void copyCharacterToPacket(CharacterPacket* const packet, int characterIndex);
 
-LUAMOD_API int openNetworkAPI(lua_State* L) {
-	luaL_newlib(L, networkLib);
-	return 1;
-}
+#endif

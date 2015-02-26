@@ -188,7 +188,7 @@ void ServerApplication::Proc() {
 		//Check client connections
 		std::list<int> disconnections = clientMgr.CheckConnections();
 		for(auto const& it : disconnections) {
-			FullClientUnload(it);
+			fullClientUnload(it);
 			std::cerr << "Client dropped: " << it << std::endl;
 		}
 

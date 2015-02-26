@@ -138,7 +138,7 @@ void ServerApplication::hLogoutRequest(ClientPacket* const argPacket) {
 	network.SendTo(clientData->GetAddress(), static_cast<SerialPacket*>(&newPacket));
 
 	//save and unload this account and it's characters
-	FullAccountUnload(argPacket->accountIndex);
+	fullAccountUnload(argPacket->accountIndex);
 
 	//finished this routine
 	std::cout << "New logout, " << clientMgr.GetLoadedCount() << " clients and " << accountMgr.GetLoadedCount() << " accounts total" << std::endl;
@@ -165,7 +165,7 @@ void ServerApplication::hDisconnectRequest(ClientPacket* const argPacket) {
 	network.SendTo(clientData->GetAddress(), static_cast<SerialPacket*>(&newPacket));
 
 	//unload the client, it's accounts, and their characters
-	FullClientUnload(argPacket->clientIndex);
+	fullClientUnload(argPacket->clientIndex);
 
 	//finished this routine
 	std::cout << "New disconnection, " << clientMgr.GetLoadedCount() << " clients and " << accountMgr.GetLoadedCount() << " accounts total" << std::endl;	

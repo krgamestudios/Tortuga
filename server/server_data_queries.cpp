@@ -69,7 +69,7 @@ void ServerApplication::hQueryCharacterExists(CharacterPacket* const argPacket) 
 		if (argPacket->roomIndex != -1 && it.second.GetRoomIndex() != argPacket->roomIndex) {
 			continue;
 		}
-		CopyCharacterToPacket(&newPacket, it.first);
+		copyCharacterToPacket(&newPacket, it.first);
 		newPacket.type = SerialPacketType::QUERY_CHARACTER_EXISTS;
 		network.SendTo(argPacket->srcAddress, static_cast<SerialPacket*>(&newPacket));
 	}
