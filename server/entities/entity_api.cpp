@@ -24,6 +24,7 @@
 #include "entity.hpp"
 
 static int setRoomIndex(lua_State* L) {
+	//TODO: (1) if this is a character, push/pop from the room system
 	Entity* entity = static_cast<Entity*>(lua_touserdata(L, 1));
 	entity->SetRoomIndex(lua_tointeger(L, 2));
 	return 0;
