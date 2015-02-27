@@ -29,23 +29,13 @@ TriggerManager::~TriggerManager() {
 	UnloadAll();
 }
 
-int TriggerManager::Create() {
+int TriggerManager::Create(std::string handle, Vector2 origin, BoundingBox bounds) {
 	//implicitly creates the element
 	TriggerData& triggerData = elementMap[counter];
 
-	//no real values set
-	triggerData.origin = {0, 0};
-	triggerData.bounds = {0, 0, 0, 0};
-
-	return counter++;
-}
-
-int TriggerManager::Create(Vector2 origin, BoundingBox bounds) {
-	//implicitly creates the element
-	TriggerData& triggerData = elementMap[counter];
-
-	triggerData.origin = origin;
-	triggerData.bounds = bounds;
+	triggerData.SetHandle(handle);
+	triggerData.SetOrigin(origin);
+	triggerData.SetBoundingBox(bounds);
 
 	return counter++;
 }
@@ -78,6 +68,15 @@ TriggerData* TriggerManager::Get(int uid) {
 	}
 
 	return &it->second;
+}
+
+TriggerData* TriggerManager::Get(std::string handle) {
+	for (std::map<int, TriggerData>::iterator it = elementMap.begin(); it != elementMap.end(); ++it) {
+		if (it->second.GetHandle() == handle) {
+			return &it->second;
+		}
+	}
+	return nullptr;
 }
 
 int TriggerManager::GetLoadedCount() {

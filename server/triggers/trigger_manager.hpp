@@ -38,8 +38,7 @@ public:
 	~TriggerManager();
 
 	//common public methods
-	int Create();
-	int Create(Vector2 origin, BoundingBox bounds);
+	int Create(std::string handle, Vector2 origin, BoundingBox bounds);
 	void Unload(int uid);
 
 	void UnloadAll();
@@ -47,6 +46,7 @@ public:
 
 	//accessors & mutators
 	TriggerData* Get(int uid);
+	TriggerData* Get(std::string handle);
 	int GetLoadedCount();
 	std::map<int, TriggerData>* GetContainer();
 

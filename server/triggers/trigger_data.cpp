@@ -21,6 +21,14 @@
 */
 #include "trigger_data.hpp"
 
+std::string TriggerData::SetHandle(std::string s) {
+	return handle = s;
+}
+
+std::string TriggerData::GetHandle() const {
+	return handle;
+}
+
 int TriggerData::SetScriptReference(int i) {
 	return scriptRef = i;
 }

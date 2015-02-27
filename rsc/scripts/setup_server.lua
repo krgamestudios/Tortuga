@@ -5,6 +5,7 @@ mapSaver = require("map_saver")
 roomSystem = require("room_system")
 characterSystem = require("character_system")
 networkSystem = require("network")
+triggerSystem = require("trigger_system")
 
 local function dumpTable(t)
 	print(t)
@@ -42,5 +43,18 @@ end)
 --NOTE: room 0 is the first that the client asks for, therefore it must exist
 local overworld, uid = roomSystem.RoomManager.CreateRoom("overworld", "overworld.bmp")
 roomSystem.Room.Initialize(overworld, mapSaver.Load, mapSaver.Save, mapMaker.DebugIsland, mapSaver.Save)
+
+--debugging
+triggerMgr = roomSystem.Room.GetTriggerMgr(overworld)
+trigger1, uid1 = triggerSystem.TriggerManager.Create(triggerMgr, "handle1")
+trigger2, uid2 = triggerSystem.TriggerManager.Create(triggerMgr, "handle1")
+
+print("triggers:", triggerSystem.TriggerManager.GetCount(triggerMgr))
+
+local deleted = triggerSystem.TriggerManager.Unload(triggerMgr, triggerSystem.Trigger.GetHandle(trigger1))
+
+print("triggers:", triggerSystem.TriggerManager.GetCount(triggerMgr))
+
+print("deleted: ", deleted)
 
 print("Finished the lua script")

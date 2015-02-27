@@ -34,6 +34,9 @@ public:
 	TriggerData() = default;
 	~TriggerData() = default;
 
+	std::string SetHandle(std::string);
+	std::string GetHandle() const;
+
 	Vector2 SetOrigin(Vector2 v);
 	Vector2 GetOrigin();
 
@@ -44,8 +47,7 @@ public:
 	int GetScriptReference();
 
 private:
-	friend class TriggerManager;
-
+	std::string handle;
 	Vector2 origin;
 	BoundingBox bounds;
 	int scriptRef = LUA_NOREF;

@@ -23,6 +23,19 @@
 
 #include "trigger_data.hpp"
 
+//hamdle
+static int setHandle(lua_State* L) {
+	TriggerData* trigger = static_cast<TriggerData*>(lua_touserdata(L, 1));
+	trigger->SetHandle(lua_tostring(L, 2));
+	return 0;
+}
+
+static int getHandle(lua_State* L) {
+	TriggerData* trigger = static_cast<TriggerData*>(lua_touserdata(L, 1));
+	lua_pushstring(L, trigger->GetHandle().c_str());
+	return 1;
+}
+
 //origin
 static int setOrigin(lua_State* L) {
 	TriggerData* trigger = static_cast<TriggerData*>(lua_touserdata(L, 1));
@@ -74,6 +87,9 @@ static int getReference(lua_State* L) {
 }
 
 static const luaL_Reg triggerLib[] = {
+	{"SetHandle", setHandle},
+	{"GetHandle", getHandle},
+
 	{"SetOrigin",setOrigin},
 	{"GetOrigin",getOrigin},
 
@@ -82,6 +98,7 @@ static const luaL_Reg triggerLib[] = {
 
 	{"SetScript",setReference},
 	{"GetScript",getReference},
+
 	{nullptr, nullptr}
 };
 
