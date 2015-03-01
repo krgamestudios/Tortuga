@@ -20,6 +20,9 @@ roomSystem.RoomManager.SetOnCreate(function(room, index)
 
 	--called ~60 times per second
 	roomSystem.Room.SetOnTick(room, function(room)
+		characterSystem.CharacterManager.ForEach(function(character)
+			print(characterSystem.Character.GetHandle(character))
+		end)
 		--[[
 		local character = characterSystem.CharacterManager.GetCharacter("handle")
 		if character ~= nil then
@@ -44,6 +47,7 @@ end)
 local overworld, uid = roomSystem.RoomManager.CreateRoom("overworld", "overworld.bmp")
 roomSystem.Room.Initialize(overworld, mapSaver.Load, mapSaver.Save, mapMaker.DebugIsland, mapSaver.Save)
 
+--[[
 --debugging
 triggerMgr = roomSystem.Room.GetTriggerMgr(overworld)
 trigger1, uid1 = triggerSystem.TriggerManager.Create(triggerMgr, "handle1")
@@ -56,5 +60,7 @@ local deleted = triggerSystem.TriggerManager.Unload(triggerMgr, triggerSystem.Tr
 print("triggers:", triggerSystem.TriggerManager.GetCount(triggerMgr))
 
 print("deleted: ", deleted)
+--]]
+
 
 print("Finished the lua script")

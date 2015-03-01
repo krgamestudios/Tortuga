@@ -67,6 +67,8 @@ static int getTriggerMgr(lua_State* L) {
 
 //TODO: character list
 
+//TODO: (1) forEachCharacter
+
 static int setOnTick(lua_State* L) {
 	RoomData* room = reinterpret_cast<RoomData*>(lua_touserdata(L, 1));
 	luaL_unref(L, LUA_REGISTRYINDEX, room->GetTickReference());

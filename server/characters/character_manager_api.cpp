@@ -23,6 +23,11 @@
 
 #include "character_manager.hpp"
 
+#include <sstream>
+#include <stdexcept>
+
+//TODO: (1) character hooks?
+
 static int setOnCreate(lua_State* L) {
 	//TODO: (9) setOnCreate()
 }
@@ -75,7 +80,20 @@ static int getLoadedCount(lua_State* L) {
 }
 
 static int forEach(lua_State* L) {
-	//TODO: (9) forEach()
+	CharacterManager& characterMgr = CharacterManager::GetSingleton();
+	//pass each character to the given function
+	for (auto& it : *characterMgr.GetContainer()) {
+		lua_pushvalue(L, -1);
+		lua_pushlightuserdata(L, static_cast<void*>(&it.second));
+		//call each iteration, throwing an exception if something happened
+		if (lua_pcall(L, 1, 0, 0) != LUA_OK) {
+			std::ostringstream os;
+			os << "Lua error: ";
+			os << lua_tostring(L, -1);
+			throw(std::runtime_error(os.str()));
+		}
+	}
+	return 0;
 }
 
 static const luaL_Reg characterManagerLib[] = {
@@ -86,7 +104,7 @@ static const luaL_Reg characterManagerLib[] = {
 //	{"SetOnDelete", setOnDelete},
 	{"GetCharacter", getCharacter},
 	{"GetLoadedCount", getLoadedCount},
-//	{"ForEach", forEach},
+	{"ForEach", forEach},
 	{nullptr, nullptr}
 };
 
