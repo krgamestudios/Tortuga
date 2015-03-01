@@ -20,7 +20,7 @@ roomSystem.RoomManager.SetOnCreate(function(room, index)
 
 	--called ~60 times per second
 	roomSystem.Room.SetOnTick(room, function(room)
-		characterSystem.CharacterManager.ForEach(function(character)
+		roomSystem.Room.ForEachCharacter(room, function(character)
 			print(characterSystem.Character.GetHandle(character))
 		end)
 		--[[
