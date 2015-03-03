@@ -22,6 +22,7 @@
 #ifndef ENTITY_HPP_
 #define ENTITY_HPP_
 
+#include "bounding_box.hpp"
 #include "vector2.hpp"
 
 //The base class for all objects in the world
@@ -31,10 +32,12 @@ public:
 	int SetRoomIndex(int i);
 	Vector2 SetOrigin(Vector2 v);
 	Vector2 SetMotion(Vector2 v);
+	BoundingBox SetBounds(BoundingBox b);
 
 	int GetRoomIndex() const;
 	Vector2 GetOrigin() const;
 	Vector2 GetMotion() const;
+	BoundingBox GetBounds() const;
 
 protected:
 	Entity() = default;
@@ -43,6 +46,7 @@ protected:
 	int roomIndex = -1;
 	Vector2 origin;
 	Vector2 motion;
+	BoundingBox bounds;
 };
 
 #endif

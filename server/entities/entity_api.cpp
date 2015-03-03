@@ -42,6 +42,17 @@ static int setMotion(lua_State* L) {
 	return 0;
 }
 
+static int setBounds(lua_State* L) {
+	Entity* entity = static_cast<Entity*>(lua_touserdata(L, 1));
+	entity->SetBounds({
+		lua_tointeger(L, 2),
+		lua_tointeger(L, 3),
+		lua_tointeger(L, 4),
+		lua_tointeger(L, 5)
+	});
+	return 0;
+}
+
 static int getRoomIndex(lua_State* L) {
 	Entity* entity = static_cast<Entity*>(lua_touserdata(L, 1));
 	lua_pushinteger(L, entity->GetRoomIndex());
@@ -62,13 +73,24 @@ static int getMotion(lua_State* L) {
 	return 2;
 }
 
+static int getBounds(lua_State* L) {
+	Entity* entity = static_cast<Entity*>(lua_touserdata(L, 1));
+	lua_pushinteger(L, entity->GetBounds().x);
+	lua_pushinteger(L, entity->GetBounds().y);
+	lua_pushinteger(L, entity->GetBounds().w);
+	lua_pushinteger(L, entity->GetBounds().h);
+	return 4;
+}
+
 static const luaL_Reg entityLib[] = {
 	{"SetRoomIndex", setRoomIndex},
 	{"SetOrigin", setOrigin},
 	{"SetMotion", setMotion},
+	{"SetBounds", setBounds},
 	{"GetRoomIndex", getRoomIndex},
 	{"GetOrigin", getOrigin},
 	{"GetMotion", getMotion},
+	{"GetBounds", getBounds},
 	{nullptr, nullptr}
 };
 

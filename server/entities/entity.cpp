@@ -33,6 +33,10 @@ Vector2 Entity::SetMotion(Vector2 v) {
 	return motion = v;
 }
 
+BoundingBox Entity::SetBounds(BoundingBox b) {
+	return bounds = b;
+}
+
 int Entity::GetRoomIndex() const {
 	return roomIndex;
 }
@@ -43,4 +47,8 @@ Vector2 Entity::GetOrigin() const {
 
 Vector2 Entity::GetMotion() const {
 	return motion;
+}
+
+BoundingBox Entity::GetBounds() const {
+	return bounds;
 }

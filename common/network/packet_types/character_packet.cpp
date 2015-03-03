@@ -36,10 +36,17 @@ void serializeCharacter(void* buffer, CharacterPacket* packet) {
 
 	//location
 	serialCopy(&buffer, &packet->roomIndex, sizeof(int));
+
 	serialCopy(&buffer, &packet->origin.x, sizeof(double));
 	serialCopy(&buffer, &packet->origin.y, sizeof(double));
+
 	serialCopy(&buffer, &packet->motion.x, sizeof(double));
 	serialCopy(&buffer, &packet->motion.y, sizeof(double));
+
+	serialCopy(&buffer, &packet->bounds.x, sizeof(int));
+	serialCopy(&buffer, &packet->bounds.y, sizeof(int));
+	serialCopy(&buffer, &packet->bounds.w, sizeof(int));
+	serialCopy(&buffer, &packet->bounds.h, sizeof(int));
 
 	//gameplay components: equipment, items, buffs, debuffs...
 }
@@ -57,10 +64,17 @@ void deserializeCharacter(void* buffer, CharacterPacket* packet) {
 
 	//location
 	deserialCopy(&buffer, &packet->roomIndex, sizeof(int));
+
 	deserialCopy(&buffer, &packet->origin.x, sizeof(double));
 	deserialCopy(&buffer, &packet->origin.y, sizeof(double));
+
 	deserialCopy(&buffer, &packet->motion.x, sizeof(double));
 	deserialCopy(&buffer, &packet->motion.y, sizeof(double));
+
+	deserialCopy(&buffer, &packet->bounds.x, sizeof(int));
+	deserialCopy(&buffer, &packet->bounds.y, sizeof(int));
+	deserialCopy(&buffer, &packet->bounds.w, sizeof(int));
+	deserialCopy(&buffer, &packet->bounds.h, sizeof(int));
 
 	//gameplay components: equipment, items, buffs, debuffs...
 }

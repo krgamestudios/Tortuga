@@ -148,4 +148,5 @@ void copyCharacterToPacket(CharacterPacket* const packet, int characterIndex) {
 	packet->roomIndex = characterData->GetRoomIndex();
 	packet->origin = characterData->GetOrigin();
 	packet->motion = characterData->GetMotion();
+	packet->bounds = characterData->GetBounds();
 }
