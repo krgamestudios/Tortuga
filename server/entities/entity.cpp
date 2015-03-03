@@ -21,6 +21,10 @@
 */
 #include "entity.hpp"
 
+void Entity::Update() {
+	origin += motion;
+}
+
 int Entity::SetRoomIndex(int i) {
 	return roomIndex = i;
 }

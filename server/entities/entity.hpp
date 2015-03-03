@@ -28,6 +28,8 @@
 //The base class for all objects in the world
 class Entity {
 public:
+	virtual void Update();
+
 	//accessors & mutators
 	int SetRoomIndex(int i);
 	Vector2 SetOrigin(Vector2 v);

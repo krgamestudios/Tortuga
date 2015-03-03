@@ -2,6 +2,7 @@ print("Lua script check")
 
 mapMaker = require("map_maker")
 mapSaver = require("map_saver")
+mapSystem = require("map_system")
 roomSystem = require("room_system")
 characterSystem = require("character_system")
 networkSystem = require("network")
@@ -47,6 +48,17 @@ end)
 local overworld, uid = roomSystem.RoomManager.CreateRoom("overworld", "overworld.bmp")
 roomSystem.Room.Initialize(overworld, mapSaver.Load, mapSaver.Save, mapMaker.DebugIsland, mapSaver.Save)
 
+--debug: test the trigger system
+local pager = roomSystem.Room.GetPager(overworld)
+mapSystem.RegionPager.SetTile(pager, 0, 0, 0, mapMaker.dirt)
+local triggerMgr = roomSystem.Room.GetTriggerMgr(overworld)
+--TODO: (1) What does the trigger script take as a parameter?
+triggerSystem.TriggerManager.Create(triggerMgr, "dirt", 0, 0, 0, 0, 32, 32, function(character)
+	local x, y = characterSystem.Character.GetOrigin(character)
+	characterSystem.Character.SetOrigin(character, x, y + 128)
+	networkSystem.PumpCharacterUpdate(character)
+end)
+
 --debugging
 function dumpTrigger(t)
 	local originX, originY = triggerSystem.Trigger.GetOrigin(t)
@@ -55,6 +67,7 @@ function dumpTrigger(t)
 	print(triggerSystem.Trigger.GetHandle(t), originX, originY, bx, by, bw, bh, s)
 end
 
+--[[
 triggerMgr = roomSystem.Room.GetTriggerMgr(overworld)
 trigger1, uid1 = triggerSystem.TriggerManager.Create(triggerMgr, "handle1")
 trigger2, uid2 = triggerSystem.TriggerManager.Create(triggerMgr, "handle2", 30.2, 40.2)
@@ -63,5 +76,6 @@ trigger3, uid3 = triggerSystem.TriggerManager.Create(triggerMgr, "handle3", 30.2
 dumpTrigger(trigger1)
 dumpTrigger(trigger2)
 dumpTrigger(trigger3)
+--]]
 
 print("Finished the lua script")

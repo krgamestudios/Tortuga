@@ -1,5 +1,6 @@
 TODO: upgrade to lua 5.3
 TODO: Split config.cfg in two, one for the server and the client
+TODO: Consistency for bounds names
 
 TODO: Account passwords (list)
 	* backbone account server OR

@@ -21,19 +21,56 @@
 */
 #include "room_data.hpp"
 
+#include <iostream>
+#include <stdexcept>
+
 void RoomData::RunFrame() {
 	//get the hook
 	lua_rawgeti(lua, LUA_REGISTRYINDEX, tickRef);
 
-	if (lua_isnil(lua, -1)) {
+	if (!lua_isnil(lua, -1)) {
+		//call the tick function, with this as a parameter
+		lua_pushlightuserdata(lua, this);
+		if (lua_pcall(lua, 1, 0, 0) != LUA_OK) {
+			throw(std::runtime_error(std::string() + "Lua error: " + lua_tostring(lua, -1) ));
+		}
+	}
+	else {
 		lua_pop(lua, 1);
-		return;
 	}
 
-	//call the tick function, with this as a parameter
-	lua_pushlightuserdata(lua, this);
-	if (lua_pcall(lua, 1, 0, 0) != LUA_OK) {
-		throw(std::runtime_error(std::string() + "Lua error: " + lua_tostring(lua, -1) ));
+	//update the entities in the room
+	for (auto& it : characterList) {
+		it->Update();
+	}
+	for (auto& it : *monsterMgr.GetContainer()) {
+		it.second.Update();
+	}
+
+	//compare the triggers to the entities
+	for (auto& it : *triggerMgr.GetContainer()) {
+		for (auto& character : characterList) {
+			//positional boxes
+			BoundingBox hitBox = character->GetBounds() + character->GetOrigin();
+			BoundingBox itBox = it.second.GetBoundingBox() + it.second.GetOrigin();
+
+			if ( itBox.CheckOverlap(hitBox) ) {
+				//TODO: trigger script
+				lua_rawgeti(lua, LUA_REGISTRYINDEX, it.second.GetScriptReference());
+				lua_pushlightuserdata(lua, character);
+
+				//run the script
+				if (lua_pcall(lua, 1, 0, 0) != LUA_OK) {
+					//error
+					throw(std::runtime_error(std::string() + "Lua error: " + lua_tostring(lua, -1) ));
+				}
+			}
+		}
+//		for (auto& monster : *monsterMgr.GetContainer()) {
+//			if (it.second.Compare(static_cast<Entity*>(&monster.second))) {
+//				//TODO: (1) trigger script
+//			}
+//		}
 	}
 }
 

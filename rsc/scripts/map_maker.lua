@@ -62,24 +62,6 @@ function mapMaker.SmoothEdgesSimple(r)
 	end
 end
 
-function mapMaker.PlaceMonsterSpawn(r, x, y, script)
-	--place monster spawns here, highlighted by dirt patches
-
-	--wrong region
-	if  x < Region.GetX(r) or x >= Region.GetX(r) + Region.GetWidth(r) or
-		y < Region.GetY(r) or y >= Region.GetY(r) + Region.GetHeight(r)
-		then
-		return
-	end
-
-	--place a dirt tile, clearing the above layers
-	Region.SetTile(r, x - Region.GetX(r), y - Region.GetY(r), 1, mapMaker.dirt)
-	Region.SetTile(r, x - Region.GetX(r), y - Region.GetY(r), 2, mapMaker.blank)
-	Region.SetTile(r, x - Region.GetX(r), y - Region.GetY(r), 3, mapMaker.blank)
-
-	--TODO: (1) create a monster spawn trigger using the given script
-end
-
 --custom generation systems here
 function mapMaker.DebugIsland(r)
 	--basic distance check for each tile, placing an island around the world origin
@@ -109,9 +91,6 @@ function mapMaker.DebugIsland(r)
 
 	--A generic edge system
 	mapMaker.SmoothEdgesSimple(r)
-
-	--place monster spawns
-	mapMaker.PlaceMonsterSpawn(r, -5, -5, nil)
 end
 
 return mapMaker
