@@ -29,12 +29,12 @@ std::string TriggerData::GetHandle() const {
 	return handle;
 }
 
-int TriggerData::SetScriptReference(int i) {
-	return scriptRef = i;
+Vector2 TriggerData::SetOrigin(Vector2 v) {
+	return origin = v;
 }
 
-int TriggerData::GetScriptReference() {
-	return scriptRef;
+Vector2 TriggerData::GetOrigin() {
+	return origin;
 }
 
 BoundingBox TriggerData::SetBoundingBox(BoundingBox b) {
@@ -45,10 +45,10 @@ BoundingBox TriggerData::GetBoundingBox() {
 	return bounds;
 }
 
-Vector2 TriggerData::SetOrigin(Vector2 v) {
-	return origin = v;
+int TriggerData::SetScriptReference(int i) {
+	return scriptRef = i;
 }
 
-Vector2 TriggerData::GetOrigin() {
-	return origin;
+int TriggerData::GetScriptReference() {
+	return scriptRef;
 }

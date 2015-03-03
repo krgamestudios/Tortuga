@@ -26,36 +26,40 @@
 //TODO: (1) figure out a way to iterate through elements of managers from lua
 
 static int create(lua_State* L) {
+	//DOCS: params: create(triggerMgr, name[, originX, originY[, boundsX, boundsY, boundsW, boundsH]][, script])
+
+	//get the trigger manager
 	TriggerManager* mgr = static_cast<TriggerManager*>(lua_touserdata(L, 1));
 
-	//pad the stack with default parameters
-	if (lua_gettop(L) == 2) {
-		lua_pushnumber(L, 0.0); //vector.x
-		lua_pushnumber(L, 0.0); //vector.y
-	}
-	if (lua_gettop(L) == 4) {
-		lua_pushinteger(L, 0); //bounds.x
-		lua_pushinteger(L, 0); //bounds.y
-		lua_pushinteger(L, 0); //bounds.w
-		lua_pushinteger(L, 0); //bounds.h
+	//create the trigger
+	int index = mgr->Create(lua_tostring(L, 2));
+	TriggerData* triggerData = mgr->Get(index);
+
+	//origin
+	if (lua_gettop(L) >= 4) {
+		triggerData->SetOrigin({lua_tonumber(L, 3), lua_tonumber(L, 4)}); //vectorX, vectorY
 	}
 
-	//create the trigger
-	int index = mgr->Create(
-		lua_tostring(L, 2), //handle
-		{
-			lua_tonumber(L, 3), //vector.x
-			lua_tonumber(L, 4) //vector.y
-		},
-		{
-			lua_tointeger(L, 5), //bounds.x
-			lua_tointeger(L, 6), //bounds.y
-			lua_tointeger(L, 7), //bounds.w
-			lua_tointeger(L, 8) //bounds.h
+	//bounds
+	if (lua_gettop(L) >= 8) {
+		triggerData->SetBoundingBox({
+			lua_tointeger(L, 5), //boundsX
+			lua_tointeger(L, 6), //boundsY
+			lua_tointeger(L, 7), //boundsW
+			lua_tointeger(L, 8)  //boundsH
 		});
+	}
+
+	//if the parameter list isn't capped with a script, append a nil instead
+	if (lua_type(L, -1) != LUA_TFUNCTION) {
+		lua_pushnil(L);
+	}
+
+	//set the script reference (may be nil)
+	triggerData->SetScriptReference(luaL_ref(L, LUA_REGISTRYINDEX));
 
 	//push to the scipts
-	lua_pushlightuserdata(L, static_cast<void*>(mgr->Get(index)) );
+	lua_pushlightuserdata(L, static_cast<void*>(triggerData));
 	lua_pushinteger(L, index);
 
 	return 2;

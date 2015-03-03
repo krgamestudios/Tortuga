@@ -96,7 +96,7 @@ static int setOnTick(lua_State* L) {
 
 static int getOnTick(lua_State* L) {
 	RoomData* room = reinterpret_cast<RoomData*>(lua_touserdata(L, 1));
-	lua_rawgeti(lua, LUA_REGISTRYINDEX, room->GetTickReference());
+	lua_rawgeti(L, LUA_REGISTRYINDEX, room->GetTickReference());
 	return 1;
 }
 

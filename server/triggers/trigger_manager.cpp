@@ -29,13 +29,11 @@ TriggerManager::~TriggerManager() {
 	UnloadAll();
 }
 
-int TriggerManager::Create(std::string handle, Vector2 origin, BoundingBox bounds) {
+int TriggerManager::Create(std::string handle) {
 	//implicitly creates the element
 	TriggerData& triggerData = elementMap[counter];
 
 	triggerData.SetHandle(handle);
-	triggerData.SetOrigin(origin);
-	triggerData.SetBoundingBox(bounds);
 
 	return counter++;
 }
@@ -45,6 +43,7 @@ void TriggerManager::Unload(int uid) {
 }
 
 void TriggerManager::UnloadAll() {
+	//TODO: save?
 	elementMap.clear();
 }
 

@@ -38,7 +38,7 @@ public:
 	~TriggerManager();
 
 	//common public methods
-	int Create(std::string handle, Vector2 origin, BoundingBox bounds);
+	int Create(std::string handle);
 	void Unload(int uid);
 
 	void UnloadAll();

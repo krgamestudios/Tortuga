@@ -64,10 +64,10 @@ static int setBoundingBox(lua_State* L) {
 
 static int getBoundingBox(lua_State* L) {
 	TriggerData* trigger = static_cast<TriggerData*>(lua_touserdata(L, 1));
-	lua_pushnumber(L, trigger->GetBoundingBox().x);
-	lua_pushnumber(L, trigger->GetBoundingBox().y);
-	lua_pushnumber(L, trigger->GetBoundingBox().w);
-	lua_pushnumber(L, trigger->GetBoundingBox().h);
+	lua_pushinteger(L, trigger->GetBoundingBox().x);
+	lua_pushinteger(L, trigger->GetBoundingBox().y);
+	lua_pushinteger(L, trigger->GetBoundingBox().w);
+	lua_pushinteger(L, trigger->GetBoundingBox().h);
 	return 4;
 }
 
