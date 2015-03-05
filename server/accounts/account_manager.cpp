@@ -27,6 +27,7 @@
 //Define the queries
 //-------------------------
 
+//TODO: (1) ensure this is independant of column order
 static const char* CREATE_USER_ACCOUNT = "INSERT INTO Accounts (username) VALUES (?);";
 static const char* LOAD_USER_ACCOUNT = "SELECT * FROM Accounts WHERE username = ?;";
 static const char* SAVE_USER_ACCOUNT = "UPDATE OR FAIL Accounts SET blacklisted = ?2, whitelisted = ?3, mod = ?4, admin = ?5 WHERE uid = ?1;";

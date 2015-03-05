@@ -47,17 +47,16 @@ void RoomData::RunFrame() {
 		it.second.Update();
 	}
 
-	//compare the triggers to the entities
+	//compare the triggers to the entities, using their real hitboxes
 	for (auto& it : *triggerMgr.GetContainer()) {
+		BoundingBox itBox = it.second.GetBoundingBox() + it.second.GetOrigin();
 		for (auto& character : characterList) {
-			//positional boxes
 			BoundingBox hitBox = character->GetBounds() + character->GetOrigin();
-			BoundingBox itBox = it.second.GetBoundingBox() + it.second.GetOrigin();
 
 			if ( itBox.CheckOverlap(hitBox) ) {
-				//TODO: trigger script
+				//trigger script
 				lua_rawgeti(lua, LUA_REGISTRYINDEX, it.second.GetScriptReference());
-				lua_pushlightuserdata(lua, character);
+				lua_pushlightuserdata(lua, character); //TODO: (1) entity type
 
 				//run the script
 				if (lua_pcall(lua, 1, 0, 0) != LUA_OK) {

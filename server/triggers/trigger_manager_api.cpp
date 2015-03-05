@@ -23,8 +23,6 @@
 
 #include "trigger_manager.hpp"
 
-//TODO: (1) figure out a way to iterate through elements of managers from lua
-
 static int create(lua_State* L) {
 	//DOCS: params: create(triggerMgr, name[, originX, originY[, boundsX, boundsY, boundsW, boundsH]][, script])
 
