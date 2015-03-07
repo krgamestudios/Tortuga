@@ -30,45 +30,45 @@ MonsterManager::~MonsterManager() {
 }
 
 int MonsterManager::Create(std::string) {
-	//Create
+	//TODO: (9) MonsterManager::Create()
 }
 
 void MonsterManager::Unload(int uid) {
-	//Unload
+	//TODO: (9) MonsterManager::Unload()
 }
 
 void MonsterManager::UnloadAll() {
-	//UnloadAll
+	//TODO: (9) MonsterManager::UnloadAll()
 }
 
 void MonsterManager::UnloadIf(std::function<bool(std::pair<const int, MonsterData const&>)> fn) {
-	//UnloadIf
+	//TODO: (9) MonsterManager::UnloadIf()
 }
 
 MonsterData* MonsterManager::Get(int uid) {
-	//Get
+	//TODO: (9) MonsterManager::Get()
 }
 
 int MonsterManager::GetLoadedCount() {
-	//GetLoadedCount
+	//TODO: (9) MonsterManager::GetLoadedCount()
 }
 
 std::map<int, MonsterData>* MonsterManager::GetContainer() {
-	//GetContainer
+	//TODO: (9) MonsterManager::GetContainer()
 }
 
 lua_State* MonsterManager::SetLuaState(lua_State* L) {
-	//SetLuaState
+	//TODO: (9) MonsterManager::SetLuaState()
 }
 
 lua_State* MonsterManager::GetLuaState() {
-	//GetLuaState
+	//TODO: (9) MonsterManager::GetLuaState()
 }
 
 sqlite3* MonsterManager::SetDatabase(sqlite3* db) {
-	//SetDatabase
+	//TODO: (9) MonsterManager::SetDatabase()
 }
 
 sqlite3* MonsterManager::GetDatabase() {
-	//GetDatabase
+	//TODO: (9) MonsterManager::GetDatabase()
 }

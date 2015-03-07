@@ -43,9 +43,7 @@ void RoomData::RunFrame() {
 	for (auto& it : characterList) {
 		it->Update();
 	}
-	for (auto& it : *monsterMgr.GetContainer()) {
-		it.second.Update();
-	}
+	//TODO: (3) iterate through the monster map
 
 	//compare the triggers to the entities, using their real hitboxes
 	for (auto& it : *triggerMgr.GetContainer()) {

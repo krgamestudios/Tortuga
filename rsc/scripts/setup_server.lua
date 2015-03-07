@@ -67,6 +67,12 @@ function dumpTrigger(t)
 	print(triggerSystem.Trigger.GetHandle(t), originX, originY, bx, by, bw, bh, s)
 end
 
+function dumpTable(t)
+	for k, v in pairs(t) do
+		print("", k, v)
+	end
+end
+
 --[[
 triggerMgr = roomSystem.Room.GetTriggerMgr(overworld)
 trigger1, uid1 = triggerSystem.TriggerManager.Create(triggerMgr, "handle1")
