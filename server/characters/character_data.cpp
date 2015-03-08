@@ -21,6 +21,10 @@
 */
 #include "character_data.hpp"
 
+CharacterData::CharacterData(): Entity("character") {
+	//EMPTY
+}
+
 int CharacterData::GetOwner() {
 	return owner;
 }

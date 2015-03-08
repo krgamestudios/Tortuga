@@ -82,6 +82,12 @@ static int getBounds(lua_State* L) {
 	return 4;
 }
 
+static int getType(lua_State* L) {
+	Entity* entity = static_cast<Entity*>(lua_touserdata(L, 1));
+	lua_pushstring(L, entity->GetType());
+	return 1;
+}
+
 static const luaL_Reg entityLib[] = {
 	{"SetRoomIndex", setRoomIndex},
 	{"SetOrigin", setOrigin},
@@ -91,6 +97,7 @@ static const luaL_Reg entityLib[] = {
 	{"GetOrigin", getOrigin},
 	{"GetMotion", getMotion},
 	{"GetBounds", getBounds},
+	{"GetType", getType},
 	{nullptr, nullptr}
 };
 

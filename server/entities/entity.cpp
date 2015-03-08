@@ -21,6 +21,10 @@
 */
 #include "entity.hpp"
 
+Entity::Entity(const char* _type): type(_type) {
+	//EMPTY
+}
+
 void Entity::Update() {
 	origin += motion;
 }
@@ -55,4 +59,8 @@ Vector2 Entity::GetMotion() const {
 
 BoundingBox Entity::GetBounds() const {
 	return bounds;
+}
+
+const char* Entity::GetType() const {
+	return type;
 }

@@ -43,13 +43,17 @@ function createTrigger(handle, room, x, y, script)
 end
 
 characterAPI = require("character")
+entityAPI = require("entity")
 networkAPI = require("network")
 
 --simple teleporter
-createTrigger("trigger 1", overworld, 0, 0, function(character)
-	local x, y = characterAPI.GetOrigin(character)
-	characterAPI.SetOrigin(character, x, y + 128)
-	networkAPI.PumpCharacterUpdate(character)
+createTrigger("trigger 1", overworld, 0, 0, function(entity)
+	if entityAPI.GetType(entity) ~= "character" then
+		return
+	end
+	local x, y = characterAPI.GetOrigin(entity)
+	characterAPI.SetOrigin(entity, x, y + 128)
+	networkAPI.PumpCharacterUpdate(entity)
 end)
 
 print("Finished the lua script")
