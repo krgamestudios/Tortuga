@@ -7,9 +7,19 @@ roomAPI = require("room")
 mapMaker = require("map_maker")
 mapSaver = require("map_saver")
 
+characterAPI = require("character")
+entityAPI = require("entity")
+networkAPI = require("network")
+
 --test the room hooks
 roomManagerAPI.SetOnCreate(function(room, index)
 	print("", "Creating room: ", roomAPI.GetName(room), index)
+
+	roomAPI.SetOnTick(room, function(room)
+		roomAPI.ForEachCharacter(room, function(character)
+			characterAPI.SetRoomIndex(character, 0)
+		end)
+	end)
 end)
 
 roomManagerAPI.SetOnUnload(function(room, index)
@@ -39,10 +49,6 @@ function createTrigger(handle, room, x, y, script)
 		script
 		)
 end
-
-characterAPI = require("character")
-entityAPI = require("entity")
-networkAPI = require("network")
 
 --simple teleporter
 createTrigger("trigger 1", overworld, 0, 0, function(entity)
