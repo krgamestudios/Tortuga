@@ -1,4 +1,4 @@
-local Region = require("map_system").Region
+local regionAPI = require("region")
 
 local mapMaker = {}
 
@@ -25,38 +25,38 @@ mapMaker.edges.west = -1
 function mapMaker.SmoothEdgesSimple(r)
 	--make and pad an array to use
 	local shiftArray = {}
-	for i = 1, Region.GetWidth(r) do
+	for i = 1, regionAPI.GetWidth(r) do
 		shiftArray[i] = {}
-		for j = 1, Region.GetHeight(r) do
+		for j = 1, regionAPI.GetHeight(r) do
 			shiftArray[i][j] = 0
 		end
 	end
 
 	--build the array
-	for i = 1, Region.GetWidth(r) do
-		for j = 1, Region.GetHeight(r) do
-			--if (not region edge) and (west tile < this tile), etc.
-			if i > 1 and Region.GetTile(r, i - 1, j, 1) < Region.GetTile(r, i, j, 1) then
+	for i = 1, regionAPI.GetWidth(r) do
+		for j = 1, regionAPI.GetHeight(r) do
+			--if (not regionAPI edge) and (west tile < this tile), etc.
+			if i > 1 and regionAPI.GetTile(r, i - 1, j, 1) < regionAPI.GetTile(r, i, j, 1) then
 				shiftArray[i][j] = shiftArray[i][j] + mapMaker.edges.west
 			end
-			if j > 1 and Region.GetTile(r, i, j - 1, 1) < Region.GetTile(r, i, j, 1) then
+			if j > 1 and regionAPI.GetTile(r, i, j - 1, 1) < regionAPI.GetTile(r, i, j, 1) then
 				shiftArray[i][j] = shiftArray[i][j] + mapMaker.edges.north
 			end
-			if i < Region.GetWidth(r) and Region.GetTile(r, i + 1, j, 1) < Region.GetTile(r, i, j, 1) then
+			if i < regionAPI.GetWidth(r) and regionAPI.GetTile(r, i + 1, j, 1) < regionAPI.GetTile(r, i, j, 1) then
 				shiftArray[i][j] = shiftArray[i][j] + mapMaker.edges.east
 			end
-			if j < Region.GetHeight(r) and Region.GetTile(r, i, j + 1, 1) < Region.GetTile(r, i, j, 1) then
+			if j < regionAPI.GetHeight(r) and regionAPI.GetTile(r, i, j + 1, 1) < regionAPI.GetTile(r, i, j, 1) then
 				shiftArray[i][j] = shiftArray[i][j] + mapMaker.edges.south
 			end
 		end
 	end
 
 	--finally apply this
-	for i = 1, Region.GetWidth(r) do
-		for j = 1, Region.GetHeight(r) do
+	for i = 1, regionAPI.GetWidth(r) do
+		for j = 1, regionAPI.GetHeight(r) do
 			if shiftArray[i][j] ~= 0 then
-				Region.SetTile(r, i, j, 2, Region.GetTile(r, i, j, 1) + shiftArray[i][j])
-				Region.SetTile(r, i, j, 1, Region.GetTile(r, i, j, 1) - 3)
+				regionAPI.SetTile(r, i, j, 2, regionAPI.GetTile(r, i, j, 1) + shiftArray[i][j])
+				regionAPI.SetTile(r, i, j, 1, regionAPI.GetTile(r, i, j, 1) - 3)
 			end
 		end
 	end
@@ -65,27 +65,27 @@ end
 --custom generation systems here
 function mapMaker.DebugIsland(r)
 	--basic distance check for each tile, placing an island around the world origin
-	for i = 1, Region.GetWidth(r) do
-		for j = 1, Region.GetHeight(r) do
-			local dist = mapMaker.Dist(0, 0, i + Region.GetX(r) -1, j + Region.GetY(r) -1)
+	for i = 1, regionAPI.GetWidth(r) do
+		for j = 1, regionAPI.GetHeight(r) do
+			local dist = mapMaker.Dist(0, 0, i + regionAPI.GetX(r) -1, j + regionAPI.GetY(r) -1)
 			if dist < 10 then
-				Region.SetTile(r, i, j, 1, mapMaker.plains)
+				regionAPI.SetTile(r, i, j, 1, mapMaker.plains)
 			elseif dist < 12 then
-				Region.SetTile(r, i, j, 1, mapMaker.sand)
+				regionAPI.SetTile(r, i, j, 1, mapMaker.sand)
 			else
-				Region.SetTile(r, i, j, 1, mapMaker.water)
-				Region.SetSolid(r, i, j, true)
+				regionAPI.SetTile(r, i, j, 1, mapMaker.water)
+				regionAPI.SetSolid(r, i, j, true)
 			end
 		end
 	end
 
 	--examples of the smoothing function NOT working correctly
 	--[[
-	for j = 1, Region.GetHeight(r) do
-		Region.SetTile(r, 3, j, 1, mapMaker.dirt)
-		Region.SetTile(r, 4, j, 1, mapMaker.dirt)
+	for j = 1, regionAPI.GetHeight(r) do
+		regionAPI.SetTile(r, 3, j, 1, mapMaker.dirt)
+		regionAPI.SetTile(r, 4, j, 1, mapMaker.dirt)
 
-		Region.SetTile(r, 10, j, 1, mapMaker.dirt)
+		regionAPI.SetTile(r, 10, j, 1, mapMaker.dirt)
 	end
 	--]]
 

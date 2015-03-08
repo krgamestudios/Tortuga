@@ -37,12 +37,17 @@
 #include "lua.hpp"
 
 #include "entity_api.hpp"
-#include "character_system_api.hpp"
-#include "map_system_api.hpp"
-#include "monster_system_api.hpp"
+#include "character_api.hpp"
+#include "character_manager_api.hpp"
+#include "region_api.hpp"
+#include "region_pager_api.hpp"
+#include "monster_api.hpp"
+#include "monster_manager_api.hpp"
 #include "network_api.hpp"
-#include "room_system_api.hpp"
-#include "trigger_system_api.hpp"
+#include "room_api.hpp"
+#include "room_manager_api.hpp"
+#include "trigger_api.hpp"
+#include "trigger_manager_api.hpp"
 
 //these libs are loaded by lua.c and are readily available to any Lua program
 static const luaL_Reg loadedlibs[] = {
@@ -63,12 +68,17 @@ static const luaL_Reg loadedlibs[] = {
 //these libs are preloaded and must be required before used
 static const luaL_Reg preloadedlibs[] = {
 	{TORTUGA_ENTITY_API, openEntityAPI}, //required by derived classes
-	{TORTUGA_CHARACTER_SYSTEM_API, openCharacterSystemAPI},
-	{TORTUGA_MAP_SYSTEM_API, openMapSystemAPI},
-	{TORTUGA_MONSTER_SYSTEM_API, openMonsterSystemAPI},
+	{TORTUGA_CHARACTER_API, openCharacterAPI},
+	{TORTUGA_CHARACTER_MANAGER_API, openCharacterManagerAPI},
+	{TORTUGA_MONSTER_API, openMonsterAPI},
+	{TORTUGA_MONSTER_MANAGER_API, openMonsterManagerAPI},
 	{TORTUGA_NETWORK_API, openNetworkAPI},
-	{TORTUGA_ROOM_SYSTEM_API, openRoomSystemAPI},
-	{TORTUGA_TRIGGER_SYSTEM_API, openTriggerSystemAPI},
+	{TORTUGA_REGION_API, openRegionAPI},
+	{TORTUGA_REGION_PAGER_API, openRegionPagerAPI},
+	{TORTUGA_ROOM_API, openRoomAPI},
+	{TORTUGA_ROOM_MANAGER_API, openRoomManagerAPI},
+	{TORTUGA_TRIGGER_API, openTriggerAPI},
+	{TORTUGA_TRIGGER_MANAGER_API, openTriggerManagerAPI},
 	{NULL, NULL}
 };
 
