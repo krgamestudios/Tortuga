@@ -27,17 +27,32 @@
 //Define the queries
 //-------------------------
 
-//TODO: (1) ensure this is independant of column order
 static const char* CREATE_USER_ACCOUNT = "INSERT INTO Accounts (username) VALUES (?);";
-static const char* LOAD_USER_ACCOUNT = "SELECT * FROM Accounts WHERE username = ?;";
-static const char* SAVE_USER_ACCOUNT = "UPDATE OR FAIL Accounts SET blacklisted = ?2, whitelisted = ?3, mod = ?4, admin = ?5 WHERE uid = ?1;";
+
+static const char* LOAD_USER_ACCOUNT = "SELECT "
+	"uid, "
+	"blacklisted, "
+	"whitelisted, "
+	"mod, "
+	"admin "
+	" FROM Accounts WHERE username = ?;";
+
+static const char* SAVE_USER_ACCOUNT = "UPDATE OR FAIL Accounts SET "
+	"blacklisted = ?2, "
+	"whitelisted = ?3, "
+	"mod = ?4, "
+	"admin = ?5 "
+	"WHERE uid = ?1;";
+
 static const char* DELETE_USER_ACCOUNT = "DELETE FROM Accounts WHERE uid = ?;";
+
 static const char* COUNT_USER_ACCOUNT_RECORDS = "SELECT COUNT(*) FROM Accounts;";
 
 //-------------------------
 //Define the public methods
 //-------------------------
 
+//TODO: (1) block blacklisted accounts
 int AccountManager::Create(std::string username, int clientIndex) {
 	//create this user account, failing if it exists, leave this account in memory
 	sqlite3_stmt* statement = nullptr;
@@ -95,11 +110,11 @@ int AccountManager::Load(std::string username, int clientIndex) {
 
 		//extract the data into memory
 		AccountData& newAccount = elementMap[uid];
-		newAccount.username = reinterpret_cast<const char*>(sqlite3_column_text(statement, 1));
-		newAccount.blackListed = sqlite3_column_int(statement, 2);
-		newAccount.whiteListed = sqlite3_column_int(statement, 3);
-		newAccount.mod = sqlite3_column_int(statement, 4);
-		newAccount.admin = sqlite3_column_int(statement, 5);
+		newAccount.username = username;
+		newAccount.blackListed = sqlite3_column_int(statement, 1);
+		newAccount.whiteListed = sqlite3_column_int(statement, 2);
+		newAccount.mod = sqlite3_column_int(statement, 3);
+		newAccount.admin = sqlite3_column_int(statement, 4);
 		newAccount.clientIndex = clientIndex;
 
 		//finish the routine

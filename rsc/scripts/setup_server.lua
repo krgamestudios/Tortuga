@@ -21,8 +21,6 @@ local overworld, uid = roomManagerAPI.CreateRoom("overworld", "overworld.bmp")
 roomAPI.Initialize(overworld, mapSaver.Load, mapSaver.Save, mapMaker.DebugIsland, mapSaver.Save)
 
 --debug: test the trigger system
---TODO: (0) What userdata type does the trigger script take as a parameter?
-
 regionPagerAPI = require("region_pager")
 triggerManagerAPI = require("trigger_manager")
 
