@@ -212,21 +212,7 @@ void ServerApplication::hCharacterMovement(CharacterPacket* const argPacket) {
 
 	//check if moving rooms
 	if (characterData->GetRoomIndex() != argPacket->roomIndex) {
-		//delete from the old room
-		CharacterPacket newPacket;
-		copyCharacterToPacket(&newPacket, argPacket->characterIndex);
-		newPacket.type = SerialPacketType::CHARACTER_DELETE;
-		pumpPacketProximity(&newPacket, characterData->GetRoomIndex());
-
-		//move the character between rooms
-		roomMgr.PopCharacter(characterData);
-		characterData->SetRoomIndex(argPacket->roomIndex);
-		roomMgr.PushCharacter(characterData);
-
-		//create in the new room
-		copyCharacterToPacket(&newPacket, argPacket->characterIndex);
-		newPacket.type = SerialPacketType::CHARACTER_CREATE;
-		pumpPacketProximity(&newPacket, characterData->GetRoomIndex());
+		pumpAndChangeRooms(characterData, argPacket->roomIndex, argPacket->characterIndex);
 	}
 	//if not moving between rooms
 	else {

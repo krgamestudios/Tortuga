@@ -22,18 +22,14 @@
 #include "character_api.hpp"
 
 #include "character_data.hpp"
-
 #include "entity_api.hpp"
-
 #include "room_manager.hpp"
+#include "server_utilities.hpp"
 
 static int setRoomIndex(lua_State* L) {
 	//NOTE: type-dependant calls to various API functions, see bug #43
 	CharacterData* character = static_cast<CharacterData*>(lua_touserdata(L, 1));
-	RoomManager::GetSingleton().PopCharacter(character);
-	character->SetRoomIndex(lua_tointeger(L, 2));
-	RoomManager::GetSingleton().PushCharacter(character);
-	//TODO: (0) send character room change messages
+	pumpAndChangeRooms(character, lua_tointeger(L, 2), -1); //TODO: (0) undefined behavior without character index
 	return 0;
 }
 

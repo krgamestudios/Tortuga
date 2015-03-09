@@ -140,6 +140,10 @@ void copyCharacterToPacket(CharacterPacket* const packet, int characterIndex) {
 		throw(std::runtime_error("Failed to copy a character to a packet"));
 	}
 
+	copyCharacterToPacket(packet, characterData, characterIndex);
+}
+
+void copyCharacterToPacket(CharacterPacket* const packet, CharacterData* const characterData, int characterIndex) {
 	//NOTE: keep this up to date when the character changes
 	packet->characterIndex = characterIndex;
 	strncpy(packet->handle, characterData->GetHandle().c_str(), PACKET_STRING_SIZE);
@@ -149,4 +153,32 @@ void copyCharacterToPacket(CharacterPacket* const packet, int characterIndex) {
 	packet->origin = characterData->GetOrigin();
 	packet->motion = characterData->GetMotion();
 	packet->bounds = characterData->GetBounds();
+}
+
+void pumpAndChangeRooms(int characterIndex, int newRoomIndex) {
+	//BUG: three redundant lookups
+
+	//get the character object
+	CharacterData* character = CharacterManager::GetSingleton().Get(characterIndex);
+
+	//pass ownwards
+	pumpAndChangeRooms(character, newRoomIndex, characterIndex);
+}
+
+void pumpAndChangeRooms(CharacterData* const characterData, int newRoomIndex, int characterIndex) {
+	//delete from the old room
+	CharacterPacket newPacket;
+	copyCharacterToPacket(&newPacket, characterData, characterIndex);
+	newPacket.type = SerialPacketType::CHARACTER_DELETE;
+	pumpPacketProximity(&newPacket, characterData->GetRoomIndex());
+
+	//move the character between rooms
+	RoomManager::GetSingleton().PopCharacter(characterData);
+	characterData->SetRoomIndex(newRoomIndex);
+	RoomManager::GetSingleton().PushCharacter(characterData);
+
+	//create in the new room
+	copyCharacterToPacket(&newPacket, characterData, characterIndex);
+	newPacket.type = SerialPacketType::CHARACTER_CREATE;
+	pumpPacketProximity(&newPacket, characterData->GetRoomIndex());
 }
