@@ -22,14 +22,37 @@
 #include "character_api.hpp"
 
 #include "character_data.hpp"
+#include "character_manager.hpp"
 #include "entity_api.hpp"
 #include "room_manager.hpp"
 #include "server_utilities.hpp"
 
-static int setRoomIndex(lua_State* L) {
+#include <stdexcept>
+
+static int setRoomIndex(lua_State* L) { //TODO: (1) take the room userdata as a parameter
 	//NOTE: type-dependant calls to various API functions, see bug #43
+
+	//reverse engineer the character index
+	int characterIndex = -1;
 	CharacterData* character = static_cast<CharacterData*>(lua_touserdata(L, 1));
-	pumpAndChangeRooms(character, lua_tointeger(L, 2), -1); //TODO: (0) undefined behavior without character index
+	int roomIndex = lua_tointeger(L, 2);
+	RoomData* roomData = RoomManager::GetSingleton().Get(roomIndex);
+
+	CharacterManager& characterMgr = CharacterManager::GetSingleton();
+
+	for (auto& it : *characterMgr.GetContainer()) {
+		if (character == &it.second) {
+			characterIndex = it.first;
+			break;
+		}
+	}
+
+	//error checking
+	if (characterIndex == -1) {
+		throw(std::runtime_error("Failed to find character index by reference"));
+	}
+
+	pumpAndChangeRooms(character, lua_tointeger(L, 2), characterIndex);
 	return 0;
 }
 

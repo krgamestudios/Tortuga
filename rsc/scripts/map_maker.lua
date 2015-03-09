@@ -93,4 +93,16 @@ function mapMaker.DebugIsland(r)
 	mapMaker.SmoothEdgesSimple(r)
 end
 
+function mapMaker.DebugGrassland(r)
+	--all dirt
+	for i = 1, regionAPI.GetWidth(r) do
+		for j = 1, regionAPI.GetHeight(r) do
+			regionAPI.SetTile(r, i, j, 1, mapMaker.grass)
+		end
+	end
+
+	--A generic edge system
+--	mapMaker.SmoothEdgesSimple(r)
+end
+
 return mapMaker

@@ -54,12 +54,24 @@ void RoomData::RunFrame() {
 			if ( itBox.CheckOverlap(hitBox) ) {
 				//trigger script
 				lua_rawgeti(lua, LUA_REGISTRYINDEX, it.second.GetScriptReference());
-				lua_pushlightuserdata(lua, character); //TODO: (1) entity type
+				lua_pushlightuserdata(lua, character);
+
+				//BUG: (0)
+
+				std::cout << "running scripts" << std::endl;
 
 				//run the script
-				if (lua_pcall(lua, 1, 0, 0) != LUA_OK) {
+				//BUGFIX: changing the character's room via lua invalidates the list, therefore, the script much signal for an early exit
+				//TODO: (2) fix this somehow (operate on a stack?)
+				if (lua_pcall(lua, 1, 1, 0) != LUA_OK) {
 					//error
 					throw(std::runtime_error(std::string() + "Lua error: " + lua_tostring(lua, -1) ));
+				}
+
+				//true = safe to continue, false = exit early
+				if (!lua_toboolean(lua, -1)) {
+					std::cout << "Warning!: Early abort" << std::endl;
+					return;
 				}
 			}
 		}

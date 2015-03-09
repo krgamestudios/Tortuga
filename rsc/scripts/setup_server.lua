@@ -17,7 +17,7 @@ roomManagerAPI.SetOnCreate(function(room, index)
 
 	roomAPI.SetOnTick(room, function(room)
 		roomAPI.ForEachCharacter(room, function(character)
-			characterAPI.SetRoomIndex(character, 0)
+			--
 		end)
 	end)
 end)
@@ -27,8 +27,10 @@ roomManagerAPI.SetOnUnload(function(room, index)
 end)
 
 --NOTE: room 0 is the first that the client asks for, therefore it must exist
-local overworld, uid = roomManagerAPI.CreateRoom("overworld", "overworld.bmp")
+local overworld, uidOne = roomManagerAPI.CreateRoom("overworld", "overworld.bmp")
 roomAPI.Initialize(overworld, mapSaver.Load, mapSaver.Save, mapMaker.DebugIsland, mapSaver.Save)
+local underworld, uidTwo = roomManagerAPI.CreateRoom("underworld", "overworld.bmp")
+roomAPI.Initialize(underworld, mapSaver.Load, mapSaver.Save, mapMaker.DebugGrassland, mapSaver.Save)
 
 --debug: test the trigger system
 regionPagerAPI = require("region_pager")
@@ -38,9 +40,9 @@ function createTrigger(handle, room, x, y, script)
 	local pager = roomAPI.GetPager(room)
 
 	--place the indicator tile
-	regionPagerAPI.SetTile(pager, x, y, 0, mapMaker.dirt)
-	regionPagerAPI.SetTile(pager, x, y, 1, mapMaker.blank)
-	regionPagerAPI.SetTile(pager, x, y, 2, mapMaker.blank)
+	regionPagerAPI.SetTile(pager, x / 32, y / 32, 0, mapMaker.dirt)
+	regionPagerAPI.SetTile(pager, x / 32, y / 32, 1, mapMaker.blank)
+	regionPagerAPI.SetTile(pager, x / 32, y / 32, 2, mapMaker.blank)
 
 	--create the trigger object
 	triggerManagerAPI.Create(
@@ -50,14 +52,41 @@ function createTrigger(handle, room, x, y, script)
 		)
 end
 
---simple teleporter
-createTrigger("trigger 1", overworld, 0, 0, function(entity)
+--simple door pair
+createTrigger("door 1", overworld, 128, -128, function(entity)
 	if entityAPI.GetType(entity) ~= "character" then
 		return
 	end
+
+	print("mark 1")
 	local x, y = characterAPI.GetOrigin(entity)
-	characterAPI.SetOrigin(entity, x, y + 128)
+	print("mark 2")
+	characterAPI.SetRoomIndex(entity, uidTwo) --TODO: (1) take exit coordinates as a parameter
+	print("mark 3")
+	characterAPI.SetOrigin(entity, 0, 0)
+	print("mark 4")
 	networkAPI.PumpCharacterUpdate(entity)
+	print("mark 5")
+
+	return false
+end)
+
+createTrigger("door 1", underworld, 128, -128, function(entity)
+	if entityAPI.GetType(entity) ~= "character" then
+		return
+	end
+
+	print("mark 6")
+	local x, y = characterAPI.GetOrigin(entity)
+	print("mark 7")
+	characterAPI.SetRoomIndex(entity, uidOne)
+	print("mark 8")
+	characterAPI.SetOrigin(entity, 0, 0)
+	print("mark 9")
+	networkAPI.PumpCharacterUpdate(entity)
+	print("mark 10")
+
+	return false
 end)
 
 print("Finished the lua script")

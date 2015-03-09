@@ -71,6 +71,7 @@ World::World(int* const argClientIndex,	int* const argAccountIndex):
 	newPacket.accountIndex = accountIndex;
 	network.SendTo(Channels::SERVER, &newPacket);
 
+	//TODO: (2) replace this duplication with a request for just this player's character
 	//query the world state
 	memset(&newPacket, 0, MAX_PACKET_SIZE);
 	newPacket.type = SerialPacketType::QUERY_CHARACTER_EXISTS;

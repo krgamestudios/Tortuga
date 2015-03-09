@@ -87,6 +87,15 @@ void World::hCharacterCreate(CharacterPacket* const argPacket) {
 		//focus on this character's info
 		characterIndex = argPacket->characterIndex;
 		roomIndex = argPacket->roomIndex;
+
+		//query the world state
+		CharacterPacket newPacket;
+		memset(&newPacket, 0, MAX_PACKET_SIZE);
+		newPacket.type = SerialPacketType::QUERY_CHARACTER_EXISTS; //TODO: (2) the EXISTS and LOCATION queries are backwards?
+		newPacket.roomIndex = roomIndex;
+		network.SendTo(Channels::SERVER, &newPacket);
+		newPacket.type = SerialPacketType::QUERY_MONSTER_EXISTS;
+		network.SendTo(Channels::SERVER, &newPacket);
 	}
 
 	//debug
@@ -110,10 +119,14 @@ void World::hCharacterDelete(CharacterPacket* const argPacket) {
 
 		//clear the room
 		roomIndex = -1;
+		regionPager.UnloadAll();
+		characterMap.clear();
+		monsterMap.clear();
 	}
-
-	//remove this character
-	characterMap.erase(characterIt);
+	else {
+		//remove this character
+		characterMap.erase(characterIt);
+	}
 
 	//debug
 	std::cout << "Character Delete, total: " << characterMap.size() << std::endl;
@@ -121,9 +134,9 @@ void World::hCharacterDelete(CharacterPacket* const argPacket) {
 
 void World::hQueryCharacterExists(CharacterPacket* const argPacket) {
 	//prevent a double message about this player's character
-	if (argPacket->accountIndex == accountIndex) {
-		return;
-	}
+//	if (argPacket->accountIndex == accountIndex) {
+//		return;
+//	}
 
 	//ignore characters in a different room (sub-optimal)
 	if (argPacket->roomIndex != roomIndex) {
