@@ -91,7 +91,7 @@ void World::hCharacterCreate(CharacterPacket* const argPacket) {
 		//query the world state
 		CharacterPacket newPacket;
 		memset(&newPacket, 0, MAX_PACKET_SIZE);
-		newPacket.type = SerialPacketType::QUERY_CHARACTER_EXISTS; //TODO: (2) the EXISTS and LOCATION queries are backwards?
+		newPacket.type = SerialPacketType::QUERY_CHARACTER_EXISTS; //TODO: (1) the EXISTS and LOCATION queries are backwards?
 		newPacket.roomIndex = roomIndex;
 		network.SendTo(Channels::SERVER, &newPacket);
 		newPacket.type = SerialPacketType::QUERY_MONSTER_EXISTS;
