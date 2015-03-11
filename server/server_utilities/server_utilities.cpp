@@ -156,8 +156,6 @@ void copyCharacterToPacket(CharacterPacket* const packet, CharacterData* const c
 }
 
 void pumpAndChangeRooms(int characterIndex, int newRoomIndex) {
-	//BUG: three redundant lookups
-
 	//get the character object
 	CharacterData* character = CharacterManager::GetSingleton().Get(characterIndex);
 

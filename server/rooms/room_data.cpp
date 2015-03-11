@@ -22,6 +22,7 @@
 #include "room_data.hpp"
 
 #include <iostream>
+#include <stack>
 #include <stdexcept>
 
 void RoomData::RunFrame() {
@@ -44,42 +45,40 @@ void RoomData::RunFrame() {
 		it->Update();
 	}
 	//TODO: (3) iterate through the monster map
+	//TODO: (3) trigger script for monsters
+
+	//build a list of game entities
+	std::stack<Entity*> entityStack;
+	for (auto& it : characterList) {
+		entityStack.push(it);
+	}
+	//TODO: (3) push the monster entities
 
 	//compare the triggers to the entities, using their real hitboxes
-	for (auto& it : *triggerMgr.GetContainer()) {
-		BoundingBox itBox = it.second.GetBoundingBox() + it.second.GetOrigin();
-		for (auto& character : characterList) {
-			BoundingBox hitBox = character->GetBounds() + character->GetOrigin();
+	//NOTE: this stack solution should prevent problems when modifying the various lists
+	while(entityStack.size()) {
+		//get the entity & hitbox
+		Entity* entity = entityStack.top();
+		BoundingBox entityBox = entity->GetBounds() + entity->GetOrigin();
 
-			if ( itBox.CheckOverlap(hitBox) ) {
-				//trigger script
+		//get the trigger & hitbox
+		for (auto& it : *triggerMgr.GetContainer()) {
+			BoundingBox triggerBox = it.second.GetBoundingBox() + it.second.GetOrigin();
+
+			if (entityBox.CheckOverlap(triggerBox)) {
+				//run the trigger script
 				lua_rawgeti(lua, LUA_REGISTRYINDEX, it.second.GetScriptReference());
-				lua_pushlightuserdata(lua, character);
+				lua_pushlightuserdata(lua, entity);
 
-				//BUG: (0)
-
-				std::cout << "running scripts" << std::endl;
-
-				//run the script
-				//BUGFIX: changing the character's room via lua invalidates the list, therefore, the script much signal for an early exit
-				//TODO: (2) fix this somehow (operate on a stack?)
-				if (lua_pcall(lua, 1, 1, 0) != LUA_OK) {
+				if (lua_pcall(lua, 1, 0, 0) != LUA_OK) {
 					//error
 					throw(std::runtime_error(std::string() + "Lua error: " + lua_tostring(lua, -1) ));
 				}
-
-				//true = safe to continue, false = exit early
-				if (!lua_toboolean(lua, -1)) {
-					std::cout << "Warning!: Early abort" << std::endl;
-					return;
-				}
 			}
 		}
-//		for (auto& monster : *monsterMgr.GetContainer()) {
-//			if (it.second.Compare(static_cast<Entity*>(&monster.second))) {
-//				//TODO: (1) trigger script
-//			}
-//		}
+
+		//next
+		entityStack.pop();
 	}
 }
 

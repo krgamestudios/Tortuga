@@ -32,7 +32,7 @@ roomAPI.Initialize(overworld, mapSaver.Load, mapSaver.Save, mapMaker.DebugIsland
 local underworld, uidTwo = roomManagerAPI.CreateRoom("underworld", "overworld.bmp")
 roomAPI.Initialize(underworld, mapSaver.Load, mapSaver.Save, mapMaker.DebugGrassland, mapSaver.Save)
 
---debug: test the trigger system
+--NOTE: test the trigger system
 regionPagerAPI = require("region_pager")
 triggerManagerAPI = require("trigger_manager")
 
@@ -58,17 +58,10 @@ createTrigger("door 1", overworld, 128, -128, function(entity)
 		return
 	end
 
-	print("mark 1")
 	local x, y = characterAPI.GetOrigin(entity)
-	print("mark 2")
 	characterAPI.SetRoomIndex(entity, uidTwo) --TODO: (1) take exit coordinates as a parameter
-	print("mark 3")
 	characterAPI.SetOrigin(entity, 0, 0)
-	print("mark 4")
 	networkAPI.PumpCharacterUpdate(entity)
-	print("mark 5")
-
-	return false
 end)
 
 createTrigger("door 1", underworld, 128, -128, function(entity)
@@ -76,17 +69,10 @@ createTrigger("door 1", underworld, 128, -128, function(entity)
 		return
 	end
 
-	print("mark 6")
 	local x, y = characterAPI.GetOrigin(entity)
-	print("mark 7")
 	characterAPI.SetRoomIndex(entity, uidOne)
-	print("mark 8")
 	characterAPI.SetOrigin(entity, 0, 0)
-	print("mark 9")
 	networkAPI.PumpCharacterUpdate(entity)
-	print("mark 10")
-
-	return false
 end)
 
 print("Finished the lua script")
