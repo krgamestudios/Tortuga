@@ -59,7 +59,7 @@ createTrigger("door 1", overworld, 128, -128, function(entity)
 	end
 
 	local x, y = characterAPI.GetOrigin(entity)
-	characterAPI.SetRoomIndex(entity, uidTwo) --TODO: (1) take exit coordinates as a parameter
+	characterAPI.SetRoomIndex(entity, uidTwo) --TODO: (0) take exit coordinates as a parameter
 	characterAPI.SetOrigin(entity, 0, 0)
 	networkAPI.PumpCharacterUpdate(entity)
 end)

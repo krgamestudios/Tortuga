@@ -21,6 +21,7 @@ mapMaker.edges.south = 16
 mapMaker.edges.east = 1
 mapMaker.edges.west = -1
 
+--TODO: (1) path system
 --use these macros (mapped to "overworld.bmp" for now) to smooth the region's edges
 function mapMaker.SmoothEdgesSimple(r)
 	--make and pad an array to use

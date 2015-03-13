@@ -29,7 +29,7 @@
 
 #include <stdexcept>
 
-static int setRoomIndex(lua_State* L) { //TODO: (1) take the room userdata as a parameter
+static int setRoomIndex(lua_State* L) { //TODO: (1) take the room userdata as a parameter?
 	//NOTE: type-dependant calls to various API functions, see bug #43
 
 	//reverse engineer the character index

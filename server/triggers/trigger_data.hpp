@@ -29,6 +29,7 @@
 
 #include <string>
 
+//TODO: (0) state-system for preventing double triggering
 class TriggerData {
 public:
 	TriggerData() = default;
