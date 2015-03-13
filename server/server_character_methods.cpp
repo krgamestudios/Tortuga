@@ -212,6 +212,11 @@ void ServerApplication::hCharacterMovement(CharacterPacket* const argPacket) {
 
 	//check if moving rooms
 	if (characterData->GetRoomIndex() != argPacket->roomIndex) {
+		//set the character's origin and motion
+		characterData->SetOrigin(argPacket->origin);
+		characterData->SetMotion(argPacket->motion);
+
+		//send the delete & create messages
 		pumpAndChangeRooms(characterData, argPacket->roomIndex, argPacket->characterIndex);
 	}
 	//if not moving between rooms

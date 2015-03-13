@@ -49,9 +49,10 @@ static int setRoomIndex(lua_State* L) { //TODO: (1) take the room userdata as a 
 
 	//error checking
 	if (characterIndex == -1) {
-		throw(std::runtime_error("Failed to find character index by reference"));
+		throw(std::runtime_error("Lua Error: Failed to find character index by reference"));
 	}
 
+	//send the delete & create messages
 	pumpAndChangeRooms(character, lua_tointeger(L, 2), characterIndex);
 	return 0;
 }
@@ -75,8 +76,8 @@ static int getAvatar(lua_State* L) {
 }
 
 static const luaL_Reg characterLib[] = {
-//	{"GetOwner", getOwner}, //unusable without account API
 	{"SetRoomIndex", setRoomIndex},
+//	{"GetOwner", getOwner}, //unusable without account API
 	{"GetHandle", getHandle},
 	{"GetAvatar", getAvatar},
 	{nullptr, nullptr}
