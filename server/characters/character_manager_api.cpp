@@ -23,24 +23,29 @@
 
 #include "character_manager.hpp"
 
+#include <sstream>
+#include <stdexcept>
+
+//TODO: (1) character hooks?
+
 static int setOnCreate(lua_State* L) {
-	//TODO: (9) empty
+	//TODO: (9) setOnCreate()
 }
 
 static int setOnLoad(lua_State* L) {
-	//TODO: (9) empty
+	//TODO: (9) setOnLoad()
 }
 
 static int setOnSave(lua_State* L) {
-	//TODO: (9) empty
+	//TODO: (9) setOnSave()
 }
 
 static int setOnUnload(lua_State* L) {
-	//TODO: (9) empty
+	//TODO: (9) setOnUnload()
 }
 
 static int setOnDelete(lua_State* L) {
-	//TODO: (9) empty
+	//TODO: (9) setOnDelete()
 }
 
 static int getCharacter(lua_State* L) {
@@ -75,7 +80,20 @@ static int getLoadedCount(lua_State* L) {
 }
 
 static int forEach(lua_State* L) {
-	//TODO: (1) find a way to update the clients when a script alters a character's data
+	CharacterManager& characterMgr = CharacterManager::GetSingleton();
+	//pass each character to the given function
+	for (auto& it : *characterMgr.GetContainer()) {
+		lua_pushvalue(L, -1);
+		lua_pushlightuserdata(L, static_cast<void*>(&it.second));
+		//call each iteration, throwing an exception if something happened
+		if (lua_pcall(L, 1, 0, 0) != LUA_OK) {
+			std::ostringstream os;
+			os << "Lua error: ";
+			os << lua_tostring(L, -1);
+			throw(std::runtime_error(os.str()));
+		}
+	}
+	return 0;
 }
 
 static const luaL_Reg characterManagerLib[] = {
@@ -86,7 +104,7 @@ static const luaL_Reg characterManagerLib[] = {
 //	{"SetOnDelete", setOnDelete},
 	{"GetCharacter", getCharacter},
 	{"GetLoadedCount", getLoadedCount},
-//	{"ForEach", forEach},
+	{"ForEach", forEach},
 	{nullptr, nullptr}
 };
 

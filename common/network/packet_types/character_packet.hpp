@@ -24,6 +24,7 @@
 
 #include "serial_packet_base.hpp"
 
+#include "bounding_box.hpp"
 #include "vector2.hpp"
 
 struct CharacterPacket : SerialPacketBase {
@@ -39,6 +40,7 @@ struct CharacterPacket : SerialPacketBase {
 	int roomIndex;
 	Vector2 origin;
 	Vector2 motion;
+	BoundingBox bounds;
 };
 
 void serializeCharacter(void* buffer, CharacterPacket* packet);

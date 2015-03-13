@@ -61,27 +61,27 @@ static const luaL_Reg monsterLib[] = {
 };
 
 LUAMOD_API int openMonsterAPI(lua_State* L) {
-	//the local table
-	luaL_newlib(L, monsterLib);
-
 	//get the parent table
 	luaL_requiref(L, TORTUGA_ENTITY_API, openEntityAPI, false);
 
-	//clone the parent table into the local table
+	//the local table
+	luaL_newlib(L, monsterLib);
+
+	//merge the local table into the parent table
 	lua_pushnil(L);	//first key
 	while(lua_next(L, -2)) {
 		//copy the key-value pair
 		lua_pushvalue(L, -2);
 		lua_pushvalue(L, -2);
 
-		//push the copy to the local table
+		//push the copy to the parent table
 		lua_settable(L, -6);
 
 		//pop the original value before continuing
 		lua_pop(L, 1);
 	}
 
-	//remove the parent table, leaving the expanded child table
+	//remove the local table, leaving the expanded parent table
 	lua_pop(L, 1);
 
 	return 1;

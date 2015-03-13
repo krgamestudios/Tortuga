@@ -19,37 +19,12 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#include "room_system_api.hpp"
+#ifndef TRIGGERAPI_HPP_
+#define TRIGGERAPI_HPP_
 
-//all room API headers
-#include "room_api.hpp"
-#include "room_manager_api.hpp"
+#include "lua.hpp"
 
-//useful "globals"
-//...
+#define TORTUGA_TRIGGER_API "trigger"
+LUAMOD_API int openTriggerAPI(lua_State* L);
 
-//This mimics linit.c to create a nested collection of all room modules.
-static const luaL_Reg funcs[] = {
-	{nullptr, nullptr}
-};
-
-static const luaL_Reg libs[] = {
-	{"Room", openRoomAPI},
-	{"RoomManager", openRoomManagerAPI},
-	{nullptr, nullptr}
-};
-
-int openRoomSystemAPI(lua_State* L) {
-	//create the table
-	luaL_newlibtable(L, libs);
-
-	//push the "global" functions
-	luaL_setfuncs(L, funcs, 0);
-
-	//push the substable
-	for (const luaL_Reg* lib = libs; lib->func; lib++) {
-		lib->func(L);
-		lua_setfield(L, -2, lib->name);
-	}
-	return 1;
-}
+#endif

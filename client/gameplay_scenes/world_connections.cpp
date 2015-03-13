@@ -91,9 +91,8 @@ void World::SendDisconnectRequest() {
 }
 
 void World::SendAdminDisconnectForced() {
-	//TODO: (9) empty
+	//TODO: (9) World::SendAdminDisconnectForced()
 }
-
 
 void World::SendAdminShutdownRequest() {
 	ClientPacket newPacket;

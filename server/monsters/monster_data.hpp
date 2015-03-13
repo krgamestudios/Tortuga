@@ -24,11 +24,13 @@
 
 #include "entity.hpp"
 
+#include "lua.hpp"
+
 #include <string>
 
 class MonsterData: public Entity {
 public:
-	MonsterData() = default;
+	MonsterData();
 	~MonsterData() = default;
 
 	std::string SetAvatar(std::string);
@@ -41,7 +43,7 @@ private:
 	friend class MonsterManager;
 
 	std::string avatar;
-	int scriptRef;
+	int scriptRef = LUA_NOREF;
 };
 
 #endif

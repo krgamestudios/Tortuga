@@ -19,28 +19,46 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#include "waypoint_data.hpp"
+#ifndef TRIGGERMANAGER_HPP_
+#define TRIGGERMANAGER_HPP_
 
-int WaypointData::SetTriggerReference(int i) {
-	return triggerRef = i;
-}
+#include "bounding_box.hpp"
+#include "vector2.hpp"
+#include "trigger_data.hpp"
 
-int WaypointData::GetTriggerReference() {
-	return triggerRef;
-}
+#include "lua.hpp"
 
-BoundingBox WaypointData::SetBoundingBox(BoundingBox b) {
-	return bounds = b;
-}
+#include <functional>
+#include <map>
+#include <string>
 
-BoundingBox WaypointData::GetBoundingBox() {
-	return bounds;
-}
+class TriggerManager {
+public:
+	TriggerManager();
+	~TriggerManager();
 
-Vector2 WaypointData::SetOrigin(Vector2 v) {
-	return origin = v;
-}
+	//common public methods
+	int Create(std::string handle);
+	void Unload(int uid);
 
-Vector2 WaypointData::GetOrigin() {
-	return origin;
-}
+	void UnloadAll();
+	void UnloadIf(std::function<bool(std::pair<const int, TriggerData const&>)> fn);
+
+	//accessors & mutators
+	TriggerData* Get(int uid);
+	TriggerData* Get(std::string handle);
+	int GetLoadedCount();
+	std::map<int, TriggerData>* GetContainer();
+
+	//hooks
+	lua_State* SetLuaState(lua_State* L);
+	lua_State* GetLuaState();
+
+private:
+	//members
+	std::map<int, TriggerData> elementMap;
+	lua_State* lua = nullptr;
+	int counter = 0;
+};
+
+#endif

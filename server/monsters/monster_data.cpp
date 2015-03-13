@@ -21,6 +21,10 @@
 */
 #include "monster_data.hpp"
 
+MonsterData::MonsterData(): Entity("monster") {
+	//EMPTY
+}
+
 std::string MonsterData::SetAvatar(std::string s) {
 	return avatar = s;
 }

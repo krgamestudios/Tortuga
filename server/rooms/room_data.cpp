@@ -21,19 +21,83 @@
 */
 #include "room_data.hpp"
 
+#include <algorithm>
+#include <iostream>
+#include <stack>
+#include <stdexcept>
+
 void RoomData::RunFrame() {
 	//get the hook
 	lua_rawgeti(lua, LUA_REGISTRYINDEX, tickRef);
 
-	if (lua_isnil(lua, -1)) {
+	if (!lua_isnil(lua, -1)) {
+		//call the tick function, with this as a parameter
+		lua_pushlightuserdata(lua, this);
+		if (lua_pcall(lua, 1, 0, 0) != LUA_OK) {
+			throw(std::runtime_error(std::string() + "Lua error: " + lua_tostring(lua, -1) ));
+		}
+	}
+	else {
 		lua_pop(lua, 1);
-		return;
 	}
 
-	//call the tick function, with this as a parameter
-	lua_pushlightuserdata(lua, this);
-	if (lua_pcall(lua, 1, 0, 0) != LUA_OK) {
-		throw(std::runtime_error(std::string() + "Lua error: " + lua_tostring(lua, -1) ));
+	//update the entities in the room
+	for (auto& it : characterList) {
+		it->Update();
+	}
+	//TODO: (3) iterate through the monster map
+	//TODO: (3) trigger script for monsters
+
+	//build a list of game entities
+	std::stack<Entity*> entityStack;
+	for (auto& it : characterList) {
+		entityStack.push(it);
+	}
+	//TODO: (3) push the monster entities
+
+	//compare the triggers to the entities, using their real hitboxes
+	//NOTE: this stack solution should prevent problems when modifying the various lists
+	while(entityStack.size()) {
+		//get the entity & hitbox
+		Entity* entity = entityStack.top();
+		BoundingBox entityBox = entity->GetBounds() + entity->GetOrigin();
+
+		//get the trigger pair & hitbox
+		for (auto& triggerPair : *triggerMgr.GetContainer()) {
+			BoundingBox triggerBox = triggerPair.second.GetBoundingBox() + triggerPair.second.GetOrigin();
+
+			//find all collisions
+			if (entityBox.CheckOverlap(triggerBox)) {
+				//skip members of the exclusion list
+				if (std::any_of(triggerPair.second.GetExclusionList()->begin(), triggerPair.second.GetExclusionList()->end(), [entity](Entity* ptr) -> bool {
+					return entity == ptr;
+				})) {
+					continue;
+				}
+
+				//run the trigger script
+				lua_rawgeti(lua, LUA_REGISTRYINDEX, triggerPair.second.GetScriptReference());
+				lua_pushlightuserdata(lua, entity);
+
+				if (lua_pcall(lua, 1, 0, 0) != LUA_OK) {
+					//error
+					throw(std::runtime_error(std::string() + "Lua error: " + lua_tostring(lua, -1) ));
+				}
+
+				//push to the exclusion list
+				triggerPair.second.GetExclusionList()->push_back(entity);
+			}
+			else {
+				//remove members of the exclusion list
+				//NOTE: characters in different rooms won't be removed, but that shouldn't be a problem
+				triggerPair.second.GetExclusionList()->remove_if([entity](Entity* ptr) -> bool {
+					return entity == ptr;
+				});
+			}
+		}
+
+		//next
+		entityStack.pop();
 	}
 }
 
@@ -61,8 +125,8 @@ MonsterManager* RoomData::GetMonsterMgr() {
 	return &monsterMgr;
 }
 
-WaypointManager* RoomData::GetWaypointMgr() {
-	return &waypointMgr;
+TriggerManager* RoomData::GetTriggerMgr() {
+	return &triggerMgr;
 }
 
 std::list<CharacterData*>* RoomData::GetCharacterList() {
@@ -73,7 +137,7 @@ lua_State* RoomData::SetLuaState(lua_State* L) {
 	lua = L;
 	pager.SetLuaState(lua);
 	monsterMgr.SetLuaState(lua);
-	waypointMgr.SetLuaState(lua);
+	triggerMgr.SetLuaState(lua);
 	return lua;
 }
 

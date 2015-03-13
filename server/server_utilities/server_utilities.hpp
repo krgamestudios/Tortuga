@@ -22,14 +22,20 @@
 #ifndef SERVERUTILITIES_HPP_
 #define SERVERUTILITIES_HPP_
 
+#include "character_data.hpp"
 #include "serial_packet.hpp"
 #include "vector2.hpp"
 
 void fullClientUnload(int index);
 void fullAccountUnload(int index);
 void fullCharacterUnload(int index);
+
 void pumpPacket(SerialPacket* const argPacket);
 void pumpPacketProximity(SerialPacket* const argPacket, int roomIndex, Vector2 position = {0, 0}, int distance = -1);
+
 void copyCharacterToPacket(CharacterPacket* const packet, int characterIndex);
+void copyCharacterToPacket(CharacterPacket* const packet, CharacterData* const characterData, int characterIndex);
+void pumpAndChangeRooms(int characterIndex, int newRoomIndex);
+void pumpAndChangeRooms(CharacterData* const characterData, int newRoomIndex, int characterIndex);
 
 #endif

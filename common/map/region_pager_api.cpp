@@ -25,6 +25,7 @@
 #include "region.hpp"
 
 //DOCS: These glue functions simply wrap RegionPagerLua's methods
+//NOTE: zero indexing is used here, but not in the region API
 
 static int setTile(lua_State* L) {
 	RegionPagerLua* pager = reinterpret_cast<RegionPagerLua*>(lua_touserdata(L, 1));

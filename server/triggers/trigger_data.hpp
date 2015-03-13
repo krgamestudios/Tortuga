@@ -19,37 +19,43 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#include "monster_system_api.hpp"
+#ifndef TRIGGERDATA_HPP_
+#define TRIGGERDATA_HPP_
 
-//all monster API headers
-#include "monster_api.hpp"
-#include "monster_manager_api.hpp"
+#include "bounding_box.hpp"
+#include "entity.hpp"
+#include "vector2.hpp"
 
-//useful "globals"
-//...
+#include "lua.hpp"
 
-//This mimics linit.c to create a nested collection of all monster modules.
-static const luaL_Reg funcs[] = {
-	{nullptr, nullptr}
+#include <list>
+#include <string>
+
+class TriggerData {
+public:
+	TriggerData() = default;
+	~TriggerData() = default;
+
+	std::string SetHandle(std::string);
+	std::string GetHandle() const;
+
+	Vector2 SetOrigin(Vector2 v);
+	Vector2 GetOrigin();
+
+	BoundingBox SetBoundingBox(BoundingBox b);
+	BoundingBox GetBoundingBox();
+
+	int SetScriptReference(int i);
+	int GetScriptReference();
+
+	std::list<Entity*>* GetExclusionList();
+
+private:
+	std::string handle;
+	Vector2 origin;
+	BoundingBox bounds;
+	int scriptRef = LUA_NOREF;
+	std::list<Entity*> exclusionList;
 };
 
-static const luaL_Reg libs[] = {
-	{"Monster", openMonsterAPI},
-	{"MonsterManager", openMonsterManagerAPI},
-	{nullptr, nullptr}
-};
-
-int openMonsterSystemAPI(lua_State* L) {
-	//create the table
-	luaL_newlibtable(L, libs);
-
-	//push the "global" functions
-	luaL_setfuncs(L, funcs, 0);
-
-	//push the substable
-	for (const luaL_Reg* lib = libs; lib->func; lib++) {
-		lib->func(L);
-		lua_setfield(L, -2, lib->name);
-	}
-	return 1;
-}
+#endif

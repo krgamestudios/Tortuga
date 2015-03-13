@@ -22,8 +22,58 @@
 #include "character_api.hpp"
 
 #include "character_data.hpp"
-
+#include "character_manager.hpp"
 #include "entity_api.hpp"
+#include "room_manager.hpp"
+#include "server_utilities.hpp"
+
+#include <stdexcept>
+
+static int setRoom(lua_State* L) {
+	//reverse engineer the character index
+	int characterIndex = -1;
+	CharacterData* character = static_cast<CharacterData*>(lua_touserdata(L, 1));
+	CharacterManager& characterMgr = CharacterManager::GetSingleton();
+
+	for (auto& it : *characterMgr.GetContainer()) {
+		if (character == &it.second) {
+			characterIndex = it.first;
+			break;
+		}
+	}
+
+	//error checking
+	if (characterIndex == -1) {
+		throw(std::runtime_error("Lua Error: Failed to find character index by reference"));
+	}
+
+	//get the room index, depending on the parameter type
+	int roomIndex = -1;
+	RoomManager& roomMgr = RoomManager::GetSingleton();
+	switch(lua_type(L, 2)) {
+		case LUA_TNUMBER:
+			roomIndex = lua_tointeger(L, 2);
+		break;
+		case LUA_TLIGHTUSERDATA:
+			//reverse engineer the room index
+			for (auto& it : *roomMgr.GetContainer()) {
+				if (lua_touserdata(L, 2) == &it.second) {
+					roomIndex = it.first;
+					break;
+				}
+			}
+		break;
+	}
+
+	//error checking
+	if (roomIndex == -1) {
+		throw(std::runtime_error("Lua Error: Failed to find room index by reference"));
+	}
+
+	//send the delete & create messages
+	pumpAndChangeRooms(character, roomIndex, characterIndex);
+	return 0;
+}
 
 static int getOwner(lua_State* L) {
 	CharacterData* character = static_cast<CharacterData*>(lua_touserdata(L, 1));
@@ -44,6 +94,7 @@ static int getAvatar(lua_State* L) {
 }
 
 static const luaL_Reg characterLib[] = {
+	{"SetRoom", setRoom},
 //	{"GetOwner", getOwner}, //unusable without account API
 	{"GetHandle", getHandle},
 	{"GetAvatar", getAvatar},
@@ -51,27 +102,27 @@ static const luaL_Reg characterLib[] = {
 };
 
 LUAMOD_API int openCharacterAPI(lua_State* L) {
-	//the local table
-	luaL_newlib(L, characterLib);
-
 	//get the parent table
 	luaL_requiref(L, TORTUGA_ENTITY_API, openEntityAPI, false);
 
-	//clone the parent table into the local table
+	//the local table
+	luaL_newlib(L, characterLib);
+
+	//merge the local table into the parent table
 	lua_pushnil(L);	//first key
 	while(lua_next(L, -2)) {
 		//copy the key-value pair
 		lua_pushvalue(L, -2);
 		lua_pushvalue(L, -2);
 
-		//push the copy to the local table
+		//push the copy to the parent table
 		lua_settable(L, -6);
 
 		//pop the original value before continuing
 		lua_pop(L, 1);
 	}
 
-	//remove the parent table, leaving the expanded child table
+	//remove the local table, leaving the expanded parent table
 	lua_pop(L, 1);
 
 	return 1;

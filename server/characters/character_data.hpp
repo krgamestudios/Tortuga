@@ -32,7 +32,7 @@
 
 class CharacterData: public Entity {
 public:
-	CharacterData() = default;
+	CharacterData();
 	~CharacterData() = default;
 
 	//database stuff
@@ -43,7 +43,7 @@ public:
 private:
 	friend class CharacterManager;
 
-	int owner;
+	int owner = -1;
 	std::string handle;
 	std::string avatar;
 };

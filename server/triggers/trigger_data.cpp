@@ -19,12 +19,40 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef ROOMSYSTEMAPI_HPP_
-#define ROOMSYSTEMAPI_HPP_
+#include "trigger_data.hpp"
 
-#include "lua.hpp"
+std::string TriggerData::SetHandle(std::string s) {
+	return handle = s;
+}
 
-#define TORTUGA_ROOM_SYSTEM_API "room_system"
-LUAMOD_API int openRoomSystemAPI(lua_State* L);
+std::string TriggerData::GetHandle() const {
+	return handle;
+}
 
-#endif
+Vector2 TriggerData::SetOrigin(Vector2 v) {
+	return origin = v;
+}
+
+Vector2 TriggerData::GetOrigin() {
+	return origin;
+}
+
+BoundingBox TriggerData::SetBoundingBox(BoundingBox b) {
+	return bounds = b;
+}
+
+BoundingBox TriggerData::GetBoundingBox() {
+	return bounds;
+}
+
+int TriggerData::SetScriptReference(int i) {
+	return scriptRef = i;
+}
+
+int TriggerData::GetScriptReference() {
+	return scriptRef;
+}
+
+std::list<Entity*>* TriggerData::GetExclusionList() {
+	return &exclusionList;
+}

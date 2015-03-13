@@ -205,28 +205,19 @@ void ServerApplication::hCharacterMovement(CharacterPacket* const argPacket) {
 
 	//check if allowed
 	if (characterData->GetOwner() != argPacket->accountIndex && !accountData->GetModerator() && !accountData->GetAdministrator()) {
-		//TODO: (2) send to the client?
+		//TODO: (3) send to the client?
 		std::cerr << "Failed to set character motion due to lack of permissions targeting uid(" << argPacket->characterIndex << ")" << std::endl;
 		return;
 	}
 
 	//check if moving rooms
 	if (characterData->GetRoomIndex() != argPacket->roomIndex) {
-		//delete from the old room
-		CharacterPacket newPacket;
-		copyCharacterToPacket(&newPacket, argPacket->characterIndex);
-		newPacket.type = SerialPacketType::CHARACTER_DELETE;
-		pumpPacketProximity(&newPacket, characterData->GetRoomIndex());
+		//set the character's origin and motion
+		characterData->SetOrigin(argPacket->origin);
+		characterData->SetMotion(argPacket->motion);
 
-		//move the character between rooms
-		roomMgr.PopCharacter(characterData);
-		characterData->SetRoomIndex(argPacket->roomIndex);
-		roomMgr.PushCharacter(characterData);
-
-		//create in the new room
-		copyCharacterToPacket(&newPacket, argPacket->characterIndex);
-		newPacket.type = SerialPacketType::CHARACTER_CREATE;
-		pumpPacketProximity(&newPacket, characterData->GetRoomIndex());
+		//send the delete & create messages
+		pumpAndChangeRooms(characterData, argPacket->roomIndex, argPacket->characterIndex);
 	}
 	//if not moving between rooms
 	else {
@@ -243,9 +234,9 @@ void ServerApplication::hCharacterMovement(CharacterPacket* const argPacket) {
 }
 
 void ServerApplication::hCharacterAttack(CharacterPacket* const argPacket) {
-	//TODO: (9) empty
+	//TODO: (9) ServerApplication::hCharacterAttack()
 }
 
 void ServerApplication::hCharacterDamage(CharacterPacket* const argPacket) {
-	//TODO: (9) empty
+	//TODO: (9) ServerApplication::hCharacterDamage()
 }

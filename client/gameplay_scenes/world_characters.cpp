@@ -67,25 +67,35 @@ void World::hCharacterCreate(CharacterPacket* const argPacket) {
 	BaseCharacter* character = &characterMap[argPacket->characterIndex];
 
 	//fill the character's info
-	character->SetOrigin(argPacket->origin);
-	character->SetMotion(argPacket->motion);
-	character->SetBounds({CHARACTER_BOUNDS_X, CHARACTER_BOUNDS_Y, CHARACTER_BOUNDS_WIDTH, CHARACTER_BOUNDS_HEIGHT}); //TODO: (1) send the bounds from the server
 	character->SetHandle(argPacket->handle);
 	character->SetAvatar(argPacket->avatar);
 	character->SetOwner(argPacket->accountIndex);
+	character->SetOrigin(argPacket->origin);
+	character->SetMotion(argPacket->motion);
+	character->SetBounds(argPacket->bounds);
+
 	character->CorrectSprite();
 
 	//check for this player's character
 	if (character->GetOwner() == accountIndex) {
 		localCharacter = static_cast<LocalCharacter*>(character);
 
-		//focus the camera on this character
+		//focus the camera on this character's sprite
 		camera.marginX = (camera.width / 2 - localCharacter->GetSprite()->GetImage()->GetClipW() / 2);
 		camera.marginY = (camera.height/ 2 - localCharacter->GetSprite()->GetImage()->GetClipH() / 2);
 
 		//focus on this character's info
 		characterIndex = argPacket->characterIndex;
 		roomIndex = argPacket->roomIndex;
+
+		//query the world state (room)
+		CharacterPacket newPacket;
+		memset(&newPacket, 0, MAX_PACKET_SIZE);
+		newPacket.type = SerialPacketType::QUERY_CHARACTER_EXISTS;
+		newPacket.roomIndex = roomIndex;
+		network.SendTo(Channels::SERVER, &newPacket);
+		newPacket.type = SerialPacketType::QUERY_MONSTER_EXISTS;
+		network.SendTo(Channels::SERVER, &newPacket);
 	}
 
 	//debug
@@ -109,10 +119,14 @@ void World::hCharacterDelete(CharacterPacket* const argPacket) {
 
 		//clear the room
 		roomIndex = -1;
+		regionPager.UnloadAll();
+		characterMap.clear();
+		monsterMap.clear();
 	}
-
-	//remove this character
-	characterMap.erase(characterIt);
+	else {
+		//remove this character
+		characterMap.erase(characterIt);
+	}
 
 	//debug
 	std::cout << "Character Delete, total: " << characterMap.size() << std::endl;
@@ -120,9 +134,9 @@ void World::hCharacterDelete(CharacterPacket* const argPacket) {
 
 void World::hQueryCharacterExists(CharacterPacket* const argPacket) {
 	//prevent a double message about this player's character
-	if (argPacket->accountIndex == accountIndex) {
-		return;
-	}
+//	if (argPacket->accountIndex == accountIndex) {
+//		return;
+//	}
 
 	//ignore characters in a different room (sub-optimal)
 	if (argPacket->roomIndex != roomIndex) {
@@ -146,11 +160,11 @@ void World::hQueryCharacterExists(CharacterPacket* const argPacket) {
 }
 
 void World::hQueryCharacterStats(CharacterPacket* const argPacket) {
-	//TODO: (9) empty
+	//TODO: (9) World::hQueryCharacterStats()
 }
 
 void World::hQueryCharacterLocation(CharacterPacket* const argPacket) {
-	//TODO: (9) empty
+	//TODO: (9) World::hQueryCharacterLocation()
 }
 
 void World::hCharacterMovement(CharacterPacket* const argPacket) {
@@ -170,11 +184,11 @@ void World::hCharacterMovement(CharacterPacket* const argPacket) {
 }
 
 void World::hCharacterAttack(CharacterPacket* const argPacket) {
-	//TODO: (9) empty
+	//TODO: (9) World::hCharacterAttack()
 }
 
 void World::hCharacterDamage(CharacterPacket* const argPacket) {
-	//TODO: (9) empty
+	//TODO: (9) World::hCharacterDamage()
 }
 
 //-------------------------

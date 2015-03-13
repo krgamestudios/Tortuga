@@ -19,47 +19,36 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#include "waypoint_manager.hpp"
+#include "trigger_manager.hpp"
 
-WaypointManager::WaypointManager() {
+TriggerManager::TriggerManager() {
 	//EMPTY
 }
 
-WaypointManager::~WaypointManager() {
+TriggerManager::~TriggerManager() {
 	UnloadAll();
 }
 
-int WaypointManager::Create() {
+int TriggerManager::Create(std::string handle) {
 	//implicitly creates the element
-	WaypointData& waypointData = elementMap[counter];
+	TriggerData& triggerData = elementMap[counter];
 
-	//no real values set
-	waypointData.origin = {0, 0};
-	waypointData.bounds = {0, 0, 0, 0};
+	triggerData.SetHandle(handle);
 
 	return counter++;
 }
 
-int WaypointManager::Create(Vector2 origin, BoundingBox bounds) {
-	//implicitly creates the element
-	WaypointData& waypointData = elementMap[counter];
-
-	waypointData.origin = origin;
-	waypointData.bounds = bounds;
-
-	return counter++;
-}
-
-void WaypointManager::Unload(int uid) {
+void TriggerManager::Unload(int uid) {
 	elementMap.erase(uid);
 }
 
-void WaypointManager::UnloadAll() {
+void TriggerManager::UnloadAll() {
+	//TODO: save?
 	elementMap.clear();
 }
 
-void WaypointManager::UnloadIf(std::function<bool(std::pair<const int, WaypointData const&>)> fn) {
-	std::map<int, WaypointData>::iterator it = elementMap.begin();
+void TriggerManager::UnloadIf(std::function<bool(std::pair<const int, TriggerData const&>)> fn) {
+	std::map<int, TriggerData>::iterator it = elementMap.begin();
 	while (it != elementMap.end()) {
 		if (fn(*it)) {
 			it = elementMap.erase(it);
@@ -70,8 +59,8 @@ void WaypointManager::UnloadIf(std::function<bool(std::pair<const int, WaypointD
 	}
 }
 
-WaypointData* WaypointManager::Get(int uid) {
-	std::map<int, WaypointData>::iterator it = elementMap.find(uid);
+TriggerData* TriggerManager::Get(int uid) {
+	std::map<int, TriggerData>::iterator it = elementMap.find(uid);
 
 	if (it == elementMap.end()) {
 		return nullptr;
@@ -80,19 +69,28 @@ WaypointData* WaypointManager::Get(int uid) {
 	return &it->second;
 }
 
-int WaypointManager::GetLoadedCount() {
+TriggerData* TriggerManager::Get(std::string handle) {
+	for (std::map<int, TriggerData>::iterator it = elementMap.begin(); it != elementMap.end(); ++it) {
+		if (it->second.GetHandle() == handle) {
+			return &it->second;
+		}
+	}
+	return nullptr;
+}
+
+int TriggerManager::GetLoadedCount() {
 	return elementMap.size();
 }
 
-std::map<int, WaypointData>* WaypointManager::GetContainer() {
+std::map<int, TriggerData>* TriggerManager::GetContainer() {
 	return &elementMap;
 }
 
 //hooks
-lua_State* WaypointManager::SetLuaState(lua_State* L) {
+lua_State* TriggerManager::SetLuaState(lua_State* L) {
 	return lua = L;
 }
 
-lua_State* WaypointManager::GetLuaState() {
+lua_State* TriggerManager::GetLuaState() {
 	return lua;
 }

@@ -23,6 +23,9 @@
 
 #include "room_data.hpp"
 
+#include <sstream>
+#include <stdexcept>
+
 static int setRoomName(lua_State* L) {
 	RoomData* room = reinterpret_cast<RoomData*>(lua_touserdata(L, 1));
 	room->SetName(lua_tostring(L, 2));
@@ -59,19 +62,42 @@ static int getMonsterMgr(lua_State* L) {
 	return 1;
 }
 
-static int getWaypointMgr(lua_State* L) {
+static int getTriggerMgr(lua_State* L) {
 	RoomData* room = reinterpret_cast<RoomData*>(lua_touserdata(L, 1));
-	lua_pushlightuserdata(L, reinterpret_cast<void*>(room->GetWaypointMgr()) );
+	lua_pushlightuserdata(L, reinterpret_cast<void*>(room->GetTriggerMgr()) );
 	return 1;
 }
 
 //TODO: character list
+
+static int forEachCharacter(lua_State* L) {
+	RoomData* room = reinterpret_cast<RoomData*>(lua_touserdata(L, 1));
+	//pass each character to the given function
+	for (auto& it : *room->GetCharacterList()) {
+		lua_pushvalue(L, -1);
+		lua_pushlightuserdata(L, static_cast<void*>(it));
+		//call each iteration, throwing an exception if something happened
+		if (lua_pcall(L, 1, 0, 0) != LUA_OK) {
+			std::ostringstream os;
+			os << "Lua error: ";
+			os << lua_tostring(L, -1);
+			throw(std::runtime_error(os.str()));
+		}
+	}
+	return 0;
+}
 
 static int setOnTick(lua_State* L) {
 	RoomData* room = reinterpret_cast<RoomData*>(lua_touserdata(L, 1));
 	luaL_unref(L, LUA_REGISTRYINDEX, room->GetTickReference());
 	room->SetTickReference(luaL_ref(L, LUA_REGISTRYINDEX));
 	return 0;
+}
+
+static int getOnTick(lua_State* L) {
+	RoomData* room = reinterpret_cast<RoomData*>(lua_touserdata(L, 1));
+	lua_rawgeti(L, LUA_REGISTRYINDEX, room->GetTickReference());
+	return 1;
 }
 
 static int initialize(lua_State* L) {
@@ -95,9 +121,12 @@ static const luaL_Reg roomLib[] = {
 
 	{"GetPager",getPager},
 	{"GetMonsterMgr",getMonsterMgr},
-	{"GetWaypointMgr",getWaypointMgr},
+	{"GetTriggerMgr",getTriggerMgr},
+
+	{"ForEachCharacter", forEachCharacter},
 
 	{"SetOnTick", setOnTick},
+	{"GetOnTick", getOnTick},
 
 	{"Initialize", initialize},
 	{nullptr, nullptr}

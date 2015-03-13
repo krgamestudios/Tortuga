@@ -22,13 +22,13 @@
 #include "server_application.hpp"
 
 void ServerApplication::hTextBroadcast(TextPacket* const argPacket) {
-	//TODO: (9) empty
+	//TODO: (9) ServerApplication::hTextBroadcast()
 }
 
 void ServerApplication::hTextSpeech(TextPacket* const argPacket) {
-	//TODO: (9) empty
+	//TODO: (9) ServerApplication::hTextSpeech()
 }
 
 void ServerApplication::hTextWhisper(TextPacket* const argPacket) {
-	//TODO: (9) empty
+	//TODO: (9) ServerApplication::hTextWhisper()
 }

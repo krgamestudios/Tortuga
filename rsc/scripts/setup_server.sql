@@ -1,8 +1,8 @@
---TODO: (9) An archive table of all dead characters
+--TODO: (3) An archive table of all dead characters
 
 CREATE TABLE IF NOT EXISTS Accounts (
 	uid			INTEGER PRIMARY KEY AUTOINCREMENT,
-	username	varchar(100) UNIQUE, --TODO: (9) Swap username for email address
+	username	varchar(100) UNIQUE, --TODO: (3) Swap username for email address
 
 	--server-client security
 --	passhash	varchar(100),
@@ -24,10 +24,14 @@ CREATE TABLE IF NOT EXISTS Characters (
 	avatar		varchar(100),
 	birth		timestamp NOT NULL DEFAULT (datetime()),
 
-	--position in the world
+	--physically exists in the world
 	roomIndex	INTEGER DEFAULT 0,
 	originX		INTEGER DEFAULT 0,
 	originY		INTEGER DEFAULT 0,
+	boundsX		INTEGER DEFAULT 0,
+	boundsY		INTEGER DEFAULT 0,
+	boundsW		INTEGER DEFAULT 0,
+	boundsH		INTEGER DEFAULT 0,
 
 	--statistics
 	baseStats	INTEGER REFERENCES StatisticSets(uid),

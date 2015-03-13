@@ -1,46 +1,36 @@
 print("Lua script check")
 
+--requirements
+roomManagerAPI = require("room_manager")
+roomAPI = require("room")
+
 mapMaker = require("map_maker")
 mapSaver = require("map_saver")
-roomSystem = require("room_system")
-characterSystem = require("character_system")
-networkSystem = require("network")
 
-local function dumpTable(t)
-	print(t)
-	for k, v in pairs(t) do
-		print("",k,v)
-	end
-end
+doorUtility = require("door_utility")
 
 --test the room hooks
-roomSystem.RoomManager.SetOnCreate(function(room, index)
-	print("", "Creating room: ", roomSystem.Room.GetName(room), index)
+roomManagerAPI.SetOnCreate(function(room, index)
+	print("", "Creating room: ", roomAPI.GetName(room), index)
 
-	--called ~60 times per second
-	roomSystem.Room.SetOnTick(room, function(room)
-		--[[
-		local character = characterSystem.CharacterManager.GetCharacter("handle")
-		if character ~= nil then
-			--debugging
-			local originX, originY = characterSystem.Character.GetOrigin(character)
-			local motionX, motionY = characterSystem.Character.GetMotion(character)
-			if motionY < 0 then
-				characterSystem.Character.SetMotion(character, motionX, 0)
-				networkSystem.PumpCharacterUpdate(character)
-				print("Sending: ", motionX, motionY)
-			end
-		end
-		--]]
+	roomAPI.SetOnTick(room, function(room)
+		roomAPI.ForEachCharacter(room, function(character)
+			--
+		end)
 	end)
 end)
 
-roomSystem.RoomManager.SetOnUnload(function(room, index)
-	print("", "Unloading room: ", roomSystem.Room.GetName(room), index)
+roomManagerAPI.SetOnUnload(function(room, index)
+	print("", "Unloading room: ", roomAPI.GetName(room), index)
 end)
 
 --NOTE: room 0 is the first that the client asks for, therefore it must exist
-local overworld, uid = roomSystem.RoomManager.CreateRoom("overworld", "overworld.bmp")
-roomSystem.Room.Initialize(overworld, mapSaver.Load, mapSaver.Save, mapMaker.DebugIsland, mapSaver.Save)
+local overworld, uidOne = roomManagerAPI.CreateRoom("overworld", "overworld.bmp")
+roomAPI.Initialize(overworld, mapSaver.Load, mapSaver.Save, mapMaker.DebugIsland, mapSaver.Save)
+local underworld, uidTwo = roomManagerAPI.CreateRoom("underworld", "overworld.bmp")
+roomAPI.Initialize(underworld, mapSaver.Load, mapSaver.Save, mapMaker.DebugGrassland, mapSaver.Save)
+
+--call the monstrosity
+doorUtility.createDoorPair("pair 1", overworld, 0, -64, underworld, 0, 0)
 
 print("Finished the lua script")

@@ -1,15 +1,15 @@
-local Region = require("map_system").Region
+local region = require("region")
 
 local mapSaver = {}
 
 function mapSaver.Load(r)
 	--empty
-	io.write("map_saver:Load(", Region.GetX(r), ", ", Region.GetY(r), ")\n")
+	io.write("map_saver:Load(", region.GetX(r), ", ", region.GetY(r), ")\n")
 end
 function mapSaver.Save(r)
 	--empty
-	io.write("map_saver:Save(", Region.GetX(r), ", ", Region.GetY(r), ")\n")
+	io.write("map_saver:Save(", region.GetX(r), ", ", region.GetY(r), ")\n")
 end
 
---TODO: (9) create a flexible saving & loading system
+--TODO: (3) create a flexible saving & loading system
 return mapSaver

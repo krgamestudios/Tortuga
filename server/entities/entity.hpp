@@ -22,27 +22,38 @@
 #ifndef ENTITY_HPP_
 #define ENTITY_HPP_
 
+#include "bounding_box.hpp"
 #include "vector2.hpp"
+
+#include <string>
 
 //The base class for all objects in the world
 class Entity {
 public:
+	virtual void Update();
+
 	//accessors & mutators
 	int SetRoomIndex(int i);
 	Vector2 SetOrigin(Vector2 v);
 	Vector2 SetMotion(Vector2 v);
+	BoundingBox SetBounds(BoundingBox b);
 
 	int GetRoomIndex() const;
 	Vector2 GetOrigin() const;
 	Vector2 GetMotion() const;
+	BoundingBox GetBounds() const;
+
+	const char* GetType() const;
 
 protected:
-	Entity() = default;
+	Entity(const char*);
 	virtual ~Entity() = default;
 
 	int roomIndex = -1;
-	Vector2 origin;
-	Vector2 motion;
+	Vector2 origin = {0, 0};
+	Vector2 motion = {0, 0};
+	BoundingBox bounds = {0, 0, 0, 0};
+	const char* type;
 };
 
 #endif

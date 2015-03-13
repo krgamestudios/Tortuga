@@ -60,7 +60,7 @@ World::World(int* const argClientIndex,	int* const argAccountIndex):
 	shutDownButton.SetText("Shut Down");
 
 	//load the tilesheet
-	//TODO: (1) Tile size and tile sheet should be loaded elsewhere
+	//TODO: (2) Tile size and tile sheet should be loaded elsewhere
 	tileSheet.Load(config["dir.tilesets"] + "overworld.bmp", 32, 32);
 
 	//Send the character data
@@ -69,13 +69,6 @@ World::World(int* const argClientIndex,	int* const argAccountIndex):
 	strncpy(newPacket.handle, config["client.handle"].c_str(), PACKET_STRING_SIZE);
 	strncpy(newPacket.avatar, config["client.avatar"].c_str(), PACKET_STRING_SIZE);
 	newPacket.accountIndex = accountIndex;
-	network.SendTo(Channels::SERVER, &newPacket);
-
-	//query the world state
-	memset(&newPacket, 0, MAX_PACKET_SIZE);
-	newPacket.type = SerialPacketType::QUERY_CHARACTER_EXISTS;
-	network.SendTo(Channels::SERVER, &newPacket);
-	newPacket.type = SerialPacketType::QUERY_MONSTER_EXISTS;
 	network.SendTo(Channels::SERVER, &newPacket);
 
 	//set the camera's values
@@ -221,7 +214,7 @@ void World::KeyDown(SDL_KeyboardEvent const& key) {
 	//hotkeys
 	switch(key.keysym.sym) {
 		case SDLK_ESCAPE:
-			//TODO: (1) the escape key should actually control menus and stuff
+			//TODO: (3) the escape key should actually control menus and stuff
 			SendLogoutRequest();
 		return;
 	}
