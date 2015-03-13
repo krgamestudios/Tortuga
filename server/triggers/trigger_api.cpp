@@ -86,6 +86,21 @@ static int getReference(lua_State* L) {
 	return 1;
 }
 
+static int pushExclusionEntity(lua_State* L) {
+	TriggerData* trigger = static_cast<TriggerData*>(lua_touserdata(L, 1));
+	trigger->GetExclusionList()->push_back(static_cast<Entity*>(lua_touserdata(L, 2)));
+	return 0;
+}
+
+static int removeExclusionEntity(lua_State* L) {
+	TriggerData* trigger = static_cast<TriggerData*>(lua_touserdata(L, 1));
+	Entity* entity = static_cast<Entity*>(lua_touserdata(L, 2));
+	trigger->GetExclusionList()->remove_if([entity](Entity* ptr){
+		return entity == ptr;
+	});
+	return 0;
+}
+
 static const luaL_Reg triggerLib[] = {
 	{"SetHandle", setHandle},
 	{"GetHandle", getHandle},
@@ -98,6 +113,9 @@ static const luaL_Reg triggerLib[] = {
 
 	{"SetScript",setReference},
 	{"GetScript",getReference},
+
+	{"PushExclusionEntity", pushExclusionEntity},
+	{"RemoveExclusionEntity", removeExclusionEntity},
 
 	{nullptr, nullptr}
 };

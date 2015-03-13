@@ -21,6 +21,7 @@
 */
 #include "room_data.hpp"
 
+#include <algorithm>
 #include <iostream>
 #include <stack>
 #include <stdexcept>
@@ -61,19 +62,37 @@ void RoomData::RunFrame() {
 		Entity* entity = entityStack.top();
 		BoundingBox entityBox = entity->GetBounds() + entity->GetOrigin();
 
-		//get the trigger & hitbox
-		for (auto& it : *triggerMgr.GetContainer()) {
-			BoundingBox triggerBox = it.second.GetBoundingBox() + it.second.GetOrigin();
+		//get the trigger pair & hitbox
+		for (auto& triggerPair : *triggerMgr.GetContainer()) {
+			BoundingBox triggerBox = triggerPair.second.GetBoundingBox() + triggerPair.second.GetOrigin();
 
+			//find all collisions
 			if (entityBox.CheckOverlap(triggerBox)) {
+				//skip members of the exclusion list
+				if (std::any_of(triggerPair.second.GetExclusionList()->begin(), triggerPair.second.GetExclusionList()->end(), [entity](Entity* ptr) -> bool {
+					return entity == ptr;
+				})) {
+					continue;
+				}
+
 				//run the trigger script
-				lua_rawgeti(lua, LUA_REGISTRYINDEX, it.second.GetScriptReference());
+				lua_rawgeti(lua, LUA_REGISTRYINDEX, triggerPair.second.GetScriptReference());
 				lua_pushlightuserdata(lua, entity);
 
 				if (lua_pcall(lua, 1, 0, 0) != LUA_OK) {
 					//error
 					throw(std::runtime_error(std::string() + "Lua error: " + lua_tostring(lua, -1) ));
 				}
+
+				//push to the exclusion list
+				triggerPair.second.GetExclusionList()->push_back(entity);
+			}
+			else {
+				//remove members of the exclusion list
+				//NOTE: characters in different rooms won't be removed, but that shouldn't be a problem
+				triggerPair.second.GetExclusionList()->remove_if([entity](Entity* ptr) -> bool {
+					return entity == ptr;
+				});
 			}
 		}
 

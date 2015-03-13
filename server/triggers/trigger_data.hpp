@@ -23,13 +23,14 @@
 #define TRIGGERDATA_HPP_
 
 #include "bounding_box.hpp"
+#include "entity.hpp"
 #include "vector2.hpp"
 
 #include "lua.hpp"
 
+#include <list>
 #include <string>
 
-//TODO: (0) state-system for preventing double triggering
 class TriggerData {
 public:
 	TriggerData() = default;
@@ -47,11 +48,14 @@ public:
 	int SetScriptReference(int i);
 	int GetScriptReference();
 
+	std::list<Entity*>* GetExclusionList();
+
 private:
 	std::string handle;
 	Vector2 origin;
 	BoundingBox bounds;
 	int scriptRef = LUA_NOREF;
+	std::list<Entity*> exclusionList;
 };
 
 #endif

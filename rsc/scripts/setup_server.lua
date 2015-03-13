@@ -11,6 +11,10 @@ characterAPI = require("character")
 entityAPI = require("entity")
 networkAPI = require("network")
 
+regionPagerAPI = require("region_pager")
+triggerAPI = require("trigger")
+triggerManagerAPI = require("trigger_manager")
+
 --test the room hooks
 roomManagerAPI.SetOnCreate(function(room, index)
 	print("", "Creating room: ", roomAPI.GetName(room), index)
@@ -33,8 +37,6 @@ local underworld, uidTwo = roomManagerAPI.CreateRoom("underworld", "overworld.bm
 roomAPI.Initialize(underworld, mapSaver.Load, mapSaver.Save, mapMaker.DebugGrassland, mapSaver.Save)
 
 --NOTE: test the trigger system
-regionPagerAPI = require("region_pager")
-triggerManagerAPI = require("trigger_manager")
 
 function createTrigger(handle, room, x, y, script)
 	local pager = roomAPI.GetPager(room)
@@ -52,13 +54,52 @@ function createTrigger(handle, room, x, y, script)
 		)
 end
 
+function createDoorPair(handle, roomOne, roomOneUID, Xone, Yone, roomTwo, roomTwoUID, Xtwo, Ytwo)
+	--create the scripts
+	local function scriptOne(entity)
+		if entityAPI.GetType(entity) ~= "character" then return end
+
+		--move the character
+		characterAPI.SetRoomIndex(entity, roomTwoUID)
+		characterAPI.SetOrigin(entity, Xtwo, Ytwo-16)
+		networkAPI.PumpCharacterUpdate(entity)
+
+		--disable the other trigger
+		local triggerTwo = triggerManagerAPI.GetTrigger(roomAPI.GetTriggerMgr(roomTwo), handle)
+		triggerAPI.PushExclusionEntity(triggerTwo, entity)
+	end
+
+	local function scriptTwo(entity)
+		if entityAPI.GetType(entity) ~= "character" then return end
+
+		--move the character
+		characterAPI.SetRoomIndex(entity, roomOneUID)
+		characterAPI.SetOrigin(entity, Xone, Yone-16) --NOTE: the 16 pixel margin for presentation
+		networkAPI.PumpCharacterUpdate(entity)
+
+		--disable the other trigger
+		local triggerOne = triggerManagerAPI.GetTrigger(roomAPI.GetTriggerMgr(roomOne), handle)
+		triggerAPI.PushExclusionEntity(triggerOne, entity)
+	end
+
+	--create the triggers proper
+	createTrigger(handle, roomOne, Xone, Yone, scriptOne)
+	createTrigger(handle, roomTwo, Xtwo, Ytwo, scriptTwo)
+end
+
+--call the monstrosity
+createDoorPair("pair 1", overworld, uidOne, 0, -64, underworld, uidTwo, 0, 0)
+createDoorPair("pair 2", overworld, uidOne, 64, -64, underworld, uidTwo, 64, 0)
+createDoorPair("pair 3", overworld, uidOne, 128, -64, underworld, uidTwo, 128, 0)
+
+--[[
 --simple door pair
 createTrigger("door 1", overworld, 128, -128, function(entity)
 	if entityAPI.GetType(entity) ~= "character" then
 		return
 	end
 
-	local x, y = characterAPI.GetOrigin(entity)
+	--move the character
 	characterAPI.SetRoomIndex(entity, uidTwo)
 	characterAPI.SetOrigin(entity, 0, 0)
 	networkAPI.PumpCharacterUpdate(entity)
@@ -69,10 +110,11 @@ createTrigger("door 1", underworld, 128, -128, function(entity)
 		return
 	end
 
-	local x, y = characterAPI.GetOrigin(entity)
+	--move the character
 	characterAPI.SetRoomIndex(entity, uidOne)
 	characterAPI.SetOrigin(entity, 0, 0)
 	networkAPI.PumpCharacterUpdate(entity)
 end)
+--]]
 
 print("Finished the lua script")

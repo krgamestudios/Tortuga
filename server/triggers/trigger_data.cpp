@@ -52,3 +52,7 @@ int TriggerData::SetScriptReference(int i) {
 int TriggerData::GetScriptReference() {
 	return scriptRef;
 }
+
+std::list<Entity*>* TriggerData::GetExclusionList() {
+	return &exclusionList;
+}
