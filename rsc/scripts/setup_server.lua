@@ -54,13 +54,13 @@ function createTrigger(handle, room, x, y, script)
 		)
 end
 
-function createDoorPair(handle, roomOne, roomOneUID, Xone, Yone, roomTwo, roomTwoUID, Xtwo, Ytwo)
+function createDoorPair(handle, roomOne, Xone, Yone, roomTwo, Xtwo, Ytwo)
 	--create the scripts
 	local function scriptOne(entity)
 		if entityAPI.GetType(entity) ~= "character" then return end
 
 		--move the character
-		characterAPI.SetRoomIndex(entity, roomTwoUID)
+		characterAPI.SetRoom(entity, roomTwo)
 		characterAPI.SetOrigin(entity, Xtwo, Ytwo-16)
 		networkAPI.PumpCharacterUpdate(entity)
 
@@ -73,7 +73,7 @@ function createDoorPair(handle, roomOne, roomOneUID, Xone, Yone, roomTwo, roomTw
 		if entityAPI.GetType(entity) ~= "character" then return end
 
 		--move the character
-		characterAPI.SetRoomIndex(entity, roomOneUID)
+		characterAPI.SetRoom(entity, roomOne)
 		characterAPI.SetOrigin(entity, Xone, Yone-16) --NOTE: the 16 pixel margin for presentation
 		networkAPI.PumpCharacterUpdate(entity)
 
@@ -88,9 +88,9 @@ function createDoorPair(handle, roomOne, roomOneUID, Xone, Yone, roomTwo, roomTw
 end
 
 --call the monstrosity
-createDoorPair("pair 1", overworld, uidOne, 0, -64, underworld, uidTwo, 0, 0)
-createDoorPair("pair 2", overworld, uidOne, 64, -64, underworld, uidTwo, 64, 0)
-createDoorPair("pair 3", overworld, uidOne, 128, -64, underworld, uidTwo, 128, 0)
+createDoorPair("pair 1", overworld, 0, -64, underworld, 0, 0)
+createDoorPair("pair 2", overworld, 64, -64, underworld, 64, 0)
+createDoorPair("pair 3", overworld, 128, -64, underworld, 128, 0)
 
 --[[
 --simple door pair
@@ -100,7 +100,7 @@ createTrigger("door 1", overworld, 128, -128, function(entity)
 	end
 
 	--move the character
-	characterAPI.SetRoomIndex(entity, uidTwo)
+	characterAPI.SetRoom(entity, uidTwo)
 	characterAPI.SetOrigin(entity, 0, 0)
 	networkAPI.PumpCharacterUpdate(entity)
 end)
@@ -111,7 +111,7 @@ createTrigger("door 1", underworld, 128, -128, function(entity)
 	end
 
 	--move the character
-	characterAPI.SetRoomIndex(entity, uidOne)
+	characterAPI.SetRoom(entity, uidOne)
 	characterAPI.SetOrigin(entity, 0, 0)
 	networkAPI.PumpCharacterUpdate(entity)
 end)

@@ -29,15 +29,10 @@
 
 #include <stdexcept>
 
-static int setRoomIndex(lua_State* L) { //TODO: (0) take the room userdata as a parameter
-	//NOTE: type-dependant calls to various API functions, see bug #43
-
+static int setRoom(lua_State* L) {
 	//reverse engineer the character index
 	int characterIndex = -1;
 	CharacterData* character = static_cast<CharacterData*>(lua_touserdata(L, 1));
-	int roomIndex = lua_tointeger(L, 2);
-	RoomData* roomData = RoomManager::GetSingleton().Get(roomIndex);
-
 	CharacterManager& characterMgr = CharacterManager::GetSingleton();
 
 	for (auto& it : *characterMgr.GetContainer()) {
@@ -52,8 +47,31 @@ static int setRoomIndex(lua_State* L) { //TODO: (0) take the room userdata as a 
 		throw(std::runtime_error("Lua Error: Failed to find character index by reference"));
 	}
 
+	//get the room index, depending on the parameter type
+	int roomIndex = -1;
+	RoomManager& roomMgr = RoomManager::GetSingleton();
+	switch(lua_type(L, 2)) {
+		case LUA_TNUMBER:
+			roomIndex = lua_tointeger(L, 2);
+		break;
+		case LUA_TLIGHTUSERDATA:
+			//reverse engineer the room index
+			for (auto& it : *roomMgr.GetContainer()) {
+				if (lua_touserdata(L, 2) == &it.second) {
+					roomIndex = it.first;
+					break;
+				}
+			}
+		break;
+	}
+
+	//error checking
+	if (roomIndex == -1) {
+		throw(std::runtime_error("Lua Error: Failed to find room index by reference"));
+	}
+
 	//send the delete & create messages
-	pumpAndChangeRooms(character, lua_tointeger(L, 2), characterIndex);
+	pumpAndChangeRooms(character, roomIndex, characterIndex);
 	return 0;
 }
 
@@ -76,7 +94,7 @@ static int getAvatar(lua_State* L) {
 }
 
 static const luaL_Reg characterLib[] = {
-	{"SetRoomIndex", setRoomIndex},
+	{"SetRoom", setRoom},
 //	{"GetOwner", getOwner}, //unusable without account API
 	{"GetHandle", getHandle},
 	{"GetAvatar", getAvatar},
