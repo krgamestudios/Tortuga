@@ -62,8 +62,13 @@ static int pumpCharacterUpdate(lua_State* L) {
 	return 1;
 }
 
+static int pumpMonsterUpdate(lua_State* L) {
+	//TODO: (0) send the info about a specific monster instance
+}
+
 static const luaL_Reg networkLib[] = {
 	{"PumpCharacterUpdate", pumpCharacterUpdate},
+	{"PumpMonsterUpdate", pumpMonsterUpdate},
 	{nullptr, nullptr}
 };
 

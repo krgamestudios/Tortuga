@@ -27,7 +27,7 @@
 //Define the queries
 //-------------------------
 
-static const char* CREATE_USER_ACCOUNT = "INSERT INTO Accounts (username) VALUES (?);";
+static const char* CREATE_USER_ACCOUNT = "INSERT INTO UserAccounts (username) VALUES (?);";
 
 static const char* LOAD_USER_ACCOUNT = "SELECT "
 	"uid, "
@@ -35,18 +35,18 @@ static const char* LOAD_USER_ACCOUNT = "SELECT "
 	"whitelisted, "
 	"mod, "
 	"admin "
-	" FROM Accounts WHERE username = ?;";
+	" FROM UserAccounts WHERE username = ?;";
 
-static const char* SAVE_USER_ACCOUNT = "UPDATE OR FAIL Accounts SET "
+static const char* SAVE_USER_ACCOUNT = "UPDATE OR FAIL UserAccounts SET "
 	"blacklisted = ?2, "
 	"whitelisted = ?3, "
 	"mod = ?4, "
 	"admin = ?5 "
 	"WHERE uid = ?1;";
 
-static const char* DELETE_USER_ACCOUNT = "DELETE FROM Accounts WHERE uid = ?;";
+static const char* DELETE_USER_ACCOUNT = "DELETE FROM UserAccounts WHERE uid = ?;";
 
-static const char* COUNT_USER_ACCOUNT_RECORDS = "SELECT COUNT(*) FROM Accounts;";
+static const char* COUNT_USER_ACCOUNT_RECORDS = "SELECT COUNT(*) FROM UserAccounts;";
 
 //-------------------------
 //Define the public methods

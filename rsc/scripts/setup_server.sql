@@ -1,6 +1,6 @@
 --TODO: (3) An archive table of all dead characters
 
-CREATE TABLE IF NOT EXISTS Accounts (
+CREATE TABLE IF NOT EXISTS UserAccounts (
 	uid			INTEGER PRIMARY KEY AUTOINCREMENT,
 	username	varchar(100) UNIQUE, --TODO: (3) Swap username for email address
 
@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS Accounts (
 	admin		BIT DEFAULT 0
 );
 
-CREATE TABLE IF NOT EXISTS Characters (
+CREATE TABLE IF NOT EXISTS LiveCharacters (
 	uid			INTEGER PRIMARY KEY AUTOINCREMENT,
 
 	--metadata
@@ -31,16 +31,28 @@ CREATE TABLE IF NOT EXISTS Characters (
 	boundsX		INTEGER DEFAULT 0,
 	boundsY		INTEGER DEFAULT 0,
 	boundsW		INTEGER DEFAULT 0,
-	boundsH		INTEGER DEFAULT 0,
+	boundsH		INTEGER DEFAULT 0
 
-	--statistics
-	baseStats	INTEGER REFERENCES StatisticSets(uid),
+	--TODO: statistics
+--	baseStats	INTEGER REFERENCES StatisticSets(uid)
 
-	--equipment
-	weapon		INTEGER REFERENCES WornEquipment(uid),
-	helmet		INTEGER REFERENCES WornEquipment(uid),
-	armour		INTEGER REFERENCES WornEquipment(uid)
+	--TODO: equipment
+--	weapon		INTEGER REFERENCES WornEquipment(uid)
+--	helmet		INTEGER REFERENCES WornEquipment(uid)
+--	armour		INTEGER REFERENCES WornEquipment(uid)
 	--etc.
+);
+
+CREATE TABLE IF NOT EXISTS DeadCharacters (
+	uid INTEGER PRIMARY KEY AUTOINCREMENT
+);
+
+CREATE TABLE IF NOT EXISTS LiveMonsters (
+	uid INTEGER PRIMARY KEY AUTOINCREMENT
+);
+
+CREATE TABLE IF NOT EXISTS DeadMonsters (
+	uid INTEGER PRIMARY KEY AUTOINCREMENT
 );
 
 -------------------------
