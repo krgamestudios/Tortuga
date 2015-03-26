@@ -68,14 +68,30 @@ static int getTriggerMgr(lua_State* L) {
 	return 1;
 }
 
-//TODO: character list
-
 static int forEachCharacter(lua_State* L) {
 	RoomData* room = reinterpret_cast<RoomData*>(lua_touserdata(L, 1));
 	//pass each character to the given function
 	for (auto& it : *room->GetCharacterList()) {
 		lua_pushvalue(L, -1);
 		lua_pushlightuserdata(L, static_cast<void*>(it));
+		//call each iteration, throwing an exception if something happened
+		if (lua_pcall(L, 1, 0, 0) != LUA_OK) {
+			std::ostringstream os;
+			os << "Lua error: ";
+			os << lua_tostring(L, -1);
+			throw(std::runtime_error(os.str()));
+		}
+	}
+	return 0;
+}
+
+static int forEachMonster(lua_State* L) {
+	RoomData* room = reinterpret_cast<RoomData*>(lua_touserdata(L, 1));
+	MonsterManager* monsterMgr = room->GetMonsterMgr();
+	//pass each monster to the given function
+	for (auto& it : *monsterMgr->GetContainer()) {
+		lua_pushvalue(L, -1);
+		lua_pushlightuserdata(L, static_cast<void*>(&it.second));
 		//call each iteration, throwing an exception if something happened
 		if (lua_pcall(L, 1, 0, 0) != LUA_OK) {
 			std::ostringstream os;
@@ -124,6 +140,7 @@ static const luaL_Reg roomLib[] = {
 	{"GetTriggerMgr",getTriggerMgr},
 
 	{"ForEachCharacter", forEachCharacter},
+	{"ForEachMonster", forEachMonster},
 
 	{"SetOnTick", setOnTick},
 	{"GetOnTick", getOnTick},

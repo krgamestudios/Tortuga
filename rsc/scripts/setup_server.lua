@@ -41,6 +41,10 @@ roomManagerAPI.SetOnCreate(function(room, index)
 		roomAPI.ForEachCharacter(room, function(character)
 			--
 		end)
+
+		roomAPI.ForEachMonster(room, function(monster)
+			--
+		end)
 	end)
 end)
 
@@ -51,6 +55,7 @@ end)
 --NOTE: room 0 is the first that the client asks for, therefore it must exist
 local overworld, uidOne = roomManagerAPI.CreateRoom("overworld", "overworld.bmp")
 roomAPI.Initialize(overworld, mapSaver.Load, mapSaver.Save, mapMaker.DebugIsland, mapSaver.Save)
+
 local underworld, uidTwo = roomManagerAPI.CreateRoom("underworld", "overworld.bmp")
 roomAPI.Initialize(underworld, mapSaver.Load, mapSaver.Save, mapMaker.DebugGrassland, mapSaver.Save)
 

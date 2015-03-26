@@ -20,8 +20,6 @@
  * distribution.
 */
 
---TODO: (3) An archive table of all dead characters
-
 CREATE TABLE IF NOT EXISTS UserAccounts (
 	uid			INTEGER PRIMARY KEY AUTOINCREMENT,
 	username	varchar(100) UNIQUE, --TODO: (3) Swap username for email address
@@ -54,27 +52,44 @@ CREATE TABLE IF NOT EXISTS LiveCharacters (
 	boundsY		INTEGER DEFAULT 0,
 	boundsW		INTEGER DEFAULT 0,
 	boundsH		INTEGER DEFAULT 0
-
-	--TODO: statistics
---	baseStats	INTEGER REFERENCES StatisticSets(uid)
-
-	--TODO: equipment
---	weapon		INTEGER REFERENCES WornEquipment(uid)
---	helmet		INTEGER REFERENCES WornEquipment(uid)
---	armour		INTEGER REFERENCES WornEquipment(uid)
-	--etc.
 );
 
 CREATE TABLE IF NOT EXISTS DeadCharacters (
-	uid INTEGER PRIMARY KEY AUTOINCREMENT
+	uid INTEGER PRIMARY KEY,
+
+	--metadata
+	owner		INTEGER REFERENCES Accounts(uid),
+	handle		varchar(100),
+	avatar		varchar(100),
+	birth		timestamp NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS LiveMonsters (
-	uid INTEGER PRIMARY KEY AUTOINCREMENT
+	uid INTEGER PRIMARY KEY AUTOINCREMENT,
+
+	--metadata
+	handle		varchar(100) UNIQUE,
+	avatar		varchar(100),
+
+	--actions
+--	script
+
+	--physically exists in the world
+	roomIndex	INTEGER DEFAULT 0,
+	originX		INTEGER DEFAULT 0,
+	originY		INTEGER DEFAULT 0,
+	boundsX		INTEGER DEFAULT 0,
+	boundsY		INTEGER DEFAULT 0,
+	boundsW		INTEGER DEFAULT 0,
+	boundsH		INTEGER DEFAULT 0
 );
 
 CREATE TABLE IF NOT EXISTS DeadMonsters (
-	uid INTEGER PRIMARY KEY AUTOINCREMENT
+	uid INTEGER PRIMARY KEY,
+
+	--metadata
+	handle		varchar(100) UNIQUE,
+	avatar		varchar(100)
 );
 
 -------------------------
