@@ -37,7 +37,13 @@ roomAPI.Initialize(underworld, mapSaver.Load, mapSaver.Save, mapMaker.DebugGrass
 doorUtility.createDoorPair("pair 1", overworld, 0, -64, underworld, 0, 0)
 
 --testing the metatables
-local meta = getmetatable(underworld)
-print("", "userdata metatable: ", meta)
+print("debug")
+overworld["key"] = "value"
+local key = overworld["key"]
+print("", "result: ", key)
+
+local key = underworld["key"]
+print("", "result: ", key)
+--end test
 
 print("Finished the lua script")
