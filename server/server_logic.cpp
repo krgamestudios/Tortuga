@@ -23,6 +23,7 @@
 
 //utility functions
 #include "sql_tools.hpp"
+#include "userdata.hpp"
 
 //std & STL
 #include <stdexcept>
@@ -77,6 +78,21 @@ void ServerApplication::Init(int argc, char* argv[]) {
 	luaL_openlibs(luaState);
 
 	std::cout << "Initialized lua" << std::endl;
+
+	//create the userdata metatable
+	lua_pushlightuserdata(luaState, nullptr); //userdata
+	lua_createtable(luaState, 1, 0); //table
+
+	//__index
+	lua_pushstring(luaState, "__index");
+	lua_pushcfunction(luaState, userdataIndex);
+	lua_settable(luaState, -3);
+
+	//set in the object
+	lua_setmetatable(luaState, -2); //set the metatable for userdata
+	lua_pop(luaState, 1); //pop the userdata
+
+	std::cout << "\tCreated userdata metatable" << std::endl;
 
 	//append config["dir.scripts"] to the module path
 	if (config["dir.scripts"].size() > 0) {
