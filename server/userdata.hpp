@@ -24,8 +24,6 @@
 
 #include "lua.hpp"
 
-#define TORTUGA_USERDATA_NAME "userdata"
-
-int userdataIndex(lua_State* L);
+int createUserdataMetatable(lua_State* L);
 
 #endif

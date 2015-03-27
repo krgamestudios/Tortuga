@@ -80,17 +80,7 @@ void ServerApplication::Init(int argc, char* argv[]) {
 	std::cout << "Initialized lua" << std::endl;
 
 	//create the userdata metatable
-	lua_pushlightuserdata(luaState, nullptr); //userdata
-	lua_createtable(luaState, 1, 0); //table
-
-	//__index
-	lua_pushstring(luaState, "__index");
-	lua_pushcfunction(luaState, userdataIndex);
-	lua_settable(luaState, -3);
-
-	//set in the object
-	lua_setmetatable(luaState, -2); //set the metatable for userdata
-	lua_pop(luaState, 1); //pop the userdata
+	createUserdataMetatable(luaState);
 
 	std::cout << "\tCreated userdata metatable" << std::endl;
 
