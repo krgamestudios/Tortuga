@@ -21,13 +21,9 @@
 */
 #include "userdata.hpp"
 
-#include <iostream>
-
 #define METAMETA "__metameta"
 
 static int index(lua_State* L) {
-	std::cout << "debug: index" << std::endl;
-
 	//get __metameta
 	lua_getmetatable(L, 1); //get the userdata metatable
 	lua_pushstring(L, METAMETA); //push the __metameta name
@@ -39,7 +35,6 @@ static int index(lua_State* L) {
 
 	//table doesn't exist yet
 	if (lua_isnil(L, -1)) {
-		std::cout << "debug: index (no table)" << std::endl;
 		return 1;
 	}
 
@@ -52,8 +47,6 @@ static int index(lua_State* L) {
 }
 
 static int newindex(lua_State* L) {
-	std::cout << "debug: newindex" << std::endl;
-
 	//get __metameta
 	lua_getmetatable(L, 1); //get the userdata metatable
 	lua_pushstring(L, METAMETA); //push the __metameta name
@@ -65,7 +58,6 @@ static int newindex(lua_State* L) {
 
 	//if this table doesn't exist yet
 	if (lua_isnil(L, -1)) {
-		std::cout << "debug: newindex (new table)" << std::endl;
 		lua_pop(L, 1); //pop nil
 
 		lua_pushvalue(L, 1); //copy userdata (key)
