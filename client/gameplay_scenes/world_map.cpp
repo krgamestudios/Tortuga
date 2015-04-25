@@ -22,6 +22,7 @@
 #include "world.hpp"
 
 #include "channels.hpp"
+#include "region_checksum.hpp"
 
 #include <iostream>
 
@@ -49,16 +50,7 @@ void World::hRegionContent(RegionPacket* const argPacket) {
 	std::cout << "hRegionContent(" << roomIndex << ", " << argPacket->x << ", " << argPacket->y << ")" << std::endl;
 
 	//checksum
-	int checksum = 0;
-	for(int i = 0; i < REGION_WIDTH; i++) {
-		for (int j = 0; j < REGION_HEIGHT; j++) {
-			for (int k = 0; k < REGION_DEPTH; k++) {
-				checksum += argPacket->region->GetTile(i, j, k);
-			}
-		}
-	}
-
-	if (checksum == 0) {
+	if (debugRegionSum(argPacket->region) == 0) {
 		std::cout << "Received checksum failed: " << argPacket->x << ", " << argPacket->y << std::endl;
 	}
 
@@ -97,18 +89,8 @@ void World::UpdateMap() {
 				SendRegionRequest(roomIndex, i, j);
 			}
 			else {
-				Region* region = regionPager.FindRegion(i, j);
-
-				int checksum = 0;
-				for(int x = 0; x < REGION_WIDTH; x++) {
-					for (int y = 0; y < REGION_HEIGHT; y++) {
-						for (int z = 0; z < REGION_DEPTH; z++) {
-							checksum += region->GetTile(x, y, z);
-						}
-					}
-				}
-
-				if (checksum == 0) {
+				//checksum
+				if (debugRegionSum(regionPager.FindRegion(i, j)) == 0) {
 					std::cout << "Existing checksum failed: " << roomIndex << ", " << i << ", " << j << std::endl;
 				}
 			}

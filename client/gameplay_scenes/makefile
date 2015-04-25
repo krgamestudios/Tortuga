@@ -1,5 +1,5 @@
 #config
-INCLUDES+=. .. ../client_utilities ../entities ../../common/gameplay ../../common/graphics ../../common/map ../../common/network ../../common/network/packet_types ../../common/ui ../../common/utilities
+INCLUDES+=. .. ../client_utilities ../entities ../../common/debugging ../../common/gameplay ../../common/graphics ../../common/map ../../common/network ../../common/network/packet_types ../../common/ui ../../common/utilities
 LIBS+=
 CXXFLAGS+=-std=c++11 $(addprefix -I,$(INCLUDES))
 

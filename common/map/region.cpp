@@ -25,6 +25,8 @@
 #include <cstring>
 #include <stdexcept>
 
+#include <iostream>
+
 int snapToBase(int base, int x) {
 	return floor((double)x / base) * base;
 }
@@ -39,6 +41,9 @@ Region::Region(int argX, int argY): x(argX), y(argY) {
 Region::Region(Region const& rhs): x(rhs.x), y(rhs.y) {
 	memcpy(tiles, rhs.tiles, REGION_WIDTH*REGION_HEIGHT*REGION_DEPTH*sizeof(type_t));
 	solid = rhs.solid;
+
+	//debugging
+	std::cout << "Moved: (" << x << ", " << y << "): " << int(***tiles) << ", " << int(***rhs.tiles) << std::endl;
 }
 
 Region::type_t Region::SetTile(int x, int y, int z, type_t v) {

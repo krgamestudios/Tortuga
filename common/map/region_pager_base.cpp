@@ -21,6 +21,8 @@
 */
 #include "region_pager_base.hpp"
 
+#include "region_checksum.hpp"
+
 #include <stdexcept>
 #include <algorithm>
 
@@ -70,7 +72,11 @@ Region* RegionPagerBase::FindRegion(int x, int y) {
 }
 
 Region* RegionPagerBase::PushRegion(Region* const ptr) {
+	//BUG: Lists seem to not work properly
 	regionList.push_front(*ptr);
+	if (debugRegionSum(&regionList.front())) {
+		throw(std::runtime_error("Checksum fail; RegionPagerBase::PushRegion()"));
+	}
 	return &regionList.front();
 }
 
