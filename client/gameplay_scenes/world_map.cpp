@@ -23,11 +23,16 @@
 
 #include "channels.hpp"
 
+#include <iostream>
+
 //-------------------------
 //map management
 //-------------------------
 
 void World::SendRegionRequest(int roomIndex, int x, int y) {
+	//debugging
+//	std::cout << "SendRegionRequest(" << roomIndex << ", " << x << ", " << y << ")" << std::endl;
+
 	RegionPacket packet;
 
 	//pack the region's data
@@ -40,6 +45,23 @@ void World::SendRegionRequest(int roomIndex, int x, int y) {
 }
 
 void World::hRegionContent(RegionPacket* const argPacket) {
+	//debugging
+	std::cout << "hRegionContent(" << roomIndex << ", " << argPacket->x << ", " << argPacket->y << ")" << std::endl;
+
+	//checksum
+	int checksum = 0;
+	for(int i = 0; i < REGION_WIDTH; i++) {
+		for (int j = 0; j < REGION_HEIGHT; j++) {
+			for (int k = 0; k < REGION_DEPTH; k++) {
+				checksum += argPacket->region->GetTile(i, j, k);
+			}
+		}
+	}
+
+	if (checksum == 0) {
+		std::cout << "Received checksum failed: " << argPacket->x << ", " << argPacket->y << std::endl;
+	}
+
 	//replace existing regions
 	regionPager.UnloadIf([&](Region const& region) -> bool {
 		return region.GetX() == argPacket->x && region.GetY() == argPacket->y;
@@ -73,6 +95,22 @@ void World::UpdateMap() {
 		for (int j = yStart; j <= yEnd; j += REGION_HEIGHT) {
 			if (!regionPager.FindRegion(i, j)) {
 				SendRegionRequest(roomIndex, i, j);
+			}
+			else {
+				Region* region = regionPager.FindRegion(i, j);
+
+				int checksum = 0;
+				for(int x = 0; x < REGION_WIDTH; x++) {
+					for (int y = 0; y < REGION_HEIGHT; y++) {
+						for (int z = 0; z < REGION_DEPTH; z++) {
+							checksum += region->GetTile(x, y, z);
+						}
+					}
+				}
+
+				if (checksum == 0) {
+					std::cout << "Existing checksum failed: " << roomIndex << ", " << i << ", " << j << std::endl;
+				}
 			}
 		}
 	}

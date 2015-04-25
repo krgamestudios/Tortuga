@@ -65,6 +65,9 @@ end
 
 --custom generation systems here
 function mapMaker.DebugIsland(r)
+	--debug
+	io.write("map_maker:DebugIsland(", regionAPI.GetX(r), ", ", regionAPI.GetY(r), ")\n")
+
 	--basic distance check for each tile, placing an island around the world origin
 	for i = 1, regionAPI.GetWidth(r) do
 		for j = 1, regionAPI.GetHeight(r) do
@@ -95,6 +98,9 @@ function mapMaker.DebugIsland(r)
 end
 
 function mapMaker.DebugGrassland(r)
+	--debug
+	io.write("map_maker:DebugGrassland(", regionAPI.GetX(r), ", ", regionAPI.GetY(r), ")\n")
+
 	--all dirt
 	for i = 1, regionAPI.GetWidth(r) do
 		for j = 1, regionAPI.GetHeight(r) do

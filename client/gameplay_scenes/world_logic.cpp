@@ -152,7 +152,7 @@ void World::FrameEnd() {
 }
 
 void World::RenderFrame() {
-//	SDL_FillRect(GetScreen(), 0, 0);
+	SDL_FillRect(GetScreen(), 0, 0);
 	Render(GetScreen());
 	SDL_Flip(GetScreen());
 	fps.Calculate();
@@ -162,6 +162,11 @@ void World::Render(SDL_Surface* const screen) {
 	//draw the map
 	for (std::list<Region>::iterator it = regionPager.GetContainer()->begin(); it != regionPager.GetContainer()->end(); it++) {
 		tileSheet.DrawRegionTo(screen, &(*it), camera.x, camera.y);
+
+		//debugging
+		std::ostringstream msg;
+		msg << it->GetX() << ", " << it->GetY();
+		font.DrawStringTo(msg.str(), screen, it->GetX() * tileSheet.GetImage()->GetClipW() - camera.x, it->GetY() * tileSheet.GetImage()->GetClipH() - camera.y);
 	}
 
 	//draw the entities
