@@ -85,7 +85,8 @@ void World::UpdateMap() {
 	//request empty regions within this zone
 	for (int i = xStart; i <= xEnd; i += REGION_WIDTH) {
 		for (int j = yStart; j <= yEnd; j += REGION_HEIGHT) {
-			if (!regionPager.FindRegion(i, j)) {
+			Region* region = regionPager.FindRegion(i, j);
+			if (!region || debugRegionSum(region) == 0) {
 				SendRegionRequest(roomIndex, i, j);
 			}
 			else {
