@@ -43,6 +43,14 @@ Region::Region(Region const& rhs): x(rhs.x), y(rhs.y) {
 	solid = rhs.solid;
 
 	//debugging
+	std::cout << "Copied: (" << x << ", " << y << "): " << int(***tiles) << ", " << int(***rhs.tiles) << std::endl;
+}
+
+Region::Region(Region&& rhs): x(rhs.x), y(rhs.y) {
+	memcpy(tiles, rhs.tiles, REGION_WIDTH*REGION_HEIGHT*REGION_DEPTH*sizeof(type_t));
+	solid = rhs.solid;
+
+	//debugging
 	std::cout << "Moved: (" << x << ", " << y << "): " << int(***tiles) << ", " << int(***rhs.tiles) << std::endl;
 }
 

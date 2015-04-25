@@ -39,6 +39,7 @@ public:
 	Region() = delete;
 	Region(int x, int y);
 	Region(Region const&);
+	Region(Region&&);
 	~Region() = default;
 
 	type_t SetTile(int x, int y, int z, type_t v);
