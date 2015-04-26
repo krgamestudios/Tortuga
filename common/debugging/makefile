@@ -1,5 +1,5 @@
 #config
-INCLUDES+=. ../map
+INCLUDES+=.
 LIBS+=
 CXXFLAGS+=-std=c++11 $(addprefix -I,$(INCLUDES))
 
