@@ -1,6 +1,6 @@
 ## Outline
 
-Tortuga is a 2D multiplayer JRPG featuring permadeath, with an emphasis on multiplayer cooperation, exploration and customization. The game runs on customizable public and private servers.
+Tortuga is a 2D MMORPG featuring permadeath, with an emphasis on multiplayer cooperation, exploration and customization. The game runs on customizable public and private servers.
 
 This game is inspired by classic 2D RPGs (Final Fantasy, The Legend of Zelda), as well as more modern sandboxes amd MMOs (Minecraft, EVE Online). This project is currently independently created and funded, with the goal of creating a game that will engage the players and inspire a large community.
 

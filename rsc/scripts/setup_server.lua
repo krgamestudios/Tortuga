@@ -31,6 +31,6 @@ local underworld, uidTwo = roomManagerAPI.CreateRoom("underworld", "overworld.bm
 roomAPI.Initialize(underworld, mapSaver.Load, mapSaver.Save, mapMaker.DebugGrassland, mapSaver.Save)
 
 --call the monstrosity
-doorUtility.createDoorPair("pair 1", overworld, 0, -64, underworld, 0, 0)
+doorUtility.createDoorPair("pair 1", overworld, -64, -64, underworld, 64, 64)
 
 print("Finished the lua script")

@@ -26,6 +26,7 @@
 #include <stack>
 #include <stdexcept>
 
+//TODO: (9) character collisions should be preformed client-side
 void RoomData::RunFrame() {
 	//get the hook
 	lua_rawgeti(lua, LUA_REGISTRYINDEX, tickRef);

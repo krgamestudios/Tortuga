@@ -23,6 +23,24 @@
 
 #include "channels.hpp"
 
+#include <sstream>
+
+//-------------------------
+//static functions
+//-------------------------
+
+static int regionChecksum(Region* const region) {
+	int sum = 0;
+	for(int i = 0; i < REGION_WIDTH; i++) {
+		for (int j = 0; j < REGION_HEIGHT; j++) {
+			for (int k = 0; k < REGION_DEPTH; k++) {
+				sum += region->GetTile(i, j, k);
+			}
+		}
+	}
+	return sum;
+}
+
 //-------------------------
 //map management
 //-------------------------
@@ -40,6 +58,13 @@ void World::SendRegionRequest(int roomIndex, int x, int y) {
 }
 
 void World::hRegionContent(RegionPacket* const argPacket) {
+	//checksum
+	if (regionChecksum(argPacket->region) == 0) {
+		std::ostringstream msg;
+		msg << "Received region checksum failed: " << argPacket->x << ", " << argPacket->y;
+		throw(std::runtime_error(msg.str()));
+	}
+
 	//replace existing regions
 	regionPager.UnloadIf([&](Region const& region) -> bool {
 		return region.GetX() == argPacket->x && region.GetY() == argPacket->y;
@@ -71,8 +96,22 @@ void World::UpdateMap() {
 	//request empty regions within this zone
 	for (int i = xStart; i <= xEnd; i += REGION_WIDTH) {
 		for (int j = yStart; j <= yEnd; j += REGION_HEIGHT) {
-			if (!regionPager.FindRegion(i, j)) {
+			Region* region = regionPager.FindRegion(i, j);
+			if (!region) {
+				//request absent region
 				SendRegionRequest(roomIndex, i, j);
+			}
+			else if (regionChecksum(region) == 0) {
+				//checksum failed
+				//NOTE: this patches bug #45, but does not resolve it
+				regionPager.UnloadIf([region](Region const& ref) -> bool {
+					//remove the erroneous region
+					return region == &ref;
+				});
+				SendRegionRequest(roomIndex, i, j);
+				std::ostringstream msg;
+				msg << "Existing region checksum failed: " << roomIndex << ", " << i << ", " << j;
+				throw(std::runtime_error(msg.str()));
 			}
 		}
 	}
