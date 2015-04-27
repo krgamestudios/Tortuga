@@ -125,8 +125,16 @@ void World::Update() {
 		it.second.Update();
 	}
 
-	//update the map
-	UpdateMap();
+	try {
+		//update the map
+		UpdateMap();
+	}
+	catch(terminal_error& e) {
+		throw(e);
+	}
+	catch(std::exception& e) {
+		std::cerr << "UpdateMap Error: " << e.what() << std::endl;
+	}
 
 	//skip the rest without a local character
 	if (!localCharacter) {
@@ -164,9 +172,9 @@ void World::Render(SDL_Surface* const screen) {
 		tileSheet.DrawRegionTo(screen, &(*it), camera.x, camera.y);
 
 		//debugging
-		std::ostringstream msg;
-		msg << it->GetX() << ", " << it->GetY();
-		font.DrawStringTo(msg.str(), screen, it->GetX() * tileSheet.GetImage()->GetClipW() - camera.x, it->GetY() * tileSheet.GetImage()->GetClipH() - camera.y);
+//		std::ostringstream msg;
+//		msg << it->GetX() << ", " << it->GetY();
+//		font.DrawStringTo(msg.str(), screen, it->GetX() * tileSheet.GetImage()->GetClipW() - camera.x, it->GetY() * tileSheet.GetImage()->GetClipH() - camera.y);
 	}
 
 	//draw the entities

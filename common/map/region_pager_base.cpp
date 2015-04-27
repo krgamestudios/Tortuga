@@ -70,11 +70,8 @@ Region* RegionPagerBase::FindRegion(int x, int y) {
 }
 
 Region* RegionPagerBase::PushRegion(Region* const ptr) {
-	//BUG: Lists seem to not work properly
+	//BUG: #45 Some regions are occasionally losing their tile data
 	regionList.push_front(*ptr);
-//	if (debugRegionSum(&regionList.front()) == 0) {
-//		throw(std::runtime_error("Checksum fail; RegionPagerBase::PushRegion()"));
-//	}
 	return &regionList.front();
 }
 
