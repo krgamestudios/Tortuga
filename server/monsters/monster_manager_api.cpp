@@ -23,7 +23,54 @@
 
 #include "monster_manager.hpp"
 
+static int create(lua_State* L) {
+	MonsterManager* mgr = static_cast<MonsterManager* const>(lua_touserdata(L, 1));
+	int index = mgr->Create(lua_tostring(L, 2), lua_tointeger(L, 3));
+	MonsterData* monster = mgr->Get(index);
+	lua_pushlightuserdata(L, static_cast<void*>(monster));
+	lua_pushinteger(L, index);
+	return 2;
+}
+
+//TOOD: this needs to take the userdata as a parameter too
+static int unload(lua_State* L) {
+	MonsterManager* mgr = static_cast<MonsterManager* const>(lua_touserdata(L, 1));
+	mgr->Unload(lua_tointeger(L, 2));
+	return 0;
+}
+
+static int unloadAll(lua_State* L) {
+	MonsterManager* mgr = static_cast<MonsterManager* const>(lua_touserdata(L, 1));
+	mgr->UnloadAll();
+	return 0;
+}
+
+static int unloadIf(lua_State* L) {
+	MonsterManager* mgr = static_cast<MonsterManager* const>(lua_touserdata(L, 1));
+	//TODO: unloadIf
+	return 0;
+}
+
+static int get(lua_State* L) {
+	MonsterManager* mgr = static_cast<MonsterManager* const>(lua_touserdata(L, 1));
+	MonsterData* monster = mgr->Get(lua_tointeger(L, 2));
+	lua_pushlightuserdata(L, static_cast<void*>(monster));
+	return 1;
+}
+
+static int getLoadedCount(lua_State* L) {
+	MonsterManager* mgr = static_cast<MonsterManager* const>(lua_touserdata(L, 1));
+	lua_pushinteger(L, mgr->GetLoadedCount());
+	return 1;
+}
+
 static const luaL_Reg monsterManagerLib[] = {
+	{"Create", create},
+	{"Unload", unload},
+	{"UnloadAll", unloadAll},
+//	{"UnloadIf", unloadIf},
+	{"Get", get},
+	{"GetLoadedCount", getLoadedCount},
 	{nullptr, nullptr}
 };
 

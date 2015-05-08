@@ -29,9 +29,15 @@ MonsterManager::~MonsterManager() {
 	UnloadAll();
 }
 
-int MonsterManager::Create(std::string s) {
-	//TODO: (1) MonsterManager::Create()
+int MonsterManager::Create(std::string avatar, int scriptRef) {
+	//implicitly create the new
+	elementMap.emplace(counter, MonsterData(avatar, scriptRef));
+
+	//TODO: do various things like saving to the database
+	return counter++;
 }
+
+//TODO: (1) monster load, save
 
 void MonsterManager::Unload(int uid) {
 	elementMap.erase(uid);
