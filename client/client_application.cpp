@@ -27,6 +27,7 @@
 #include <stdexcept>
 #include <chrono>
 #include <iostream>
+#include <sstream>
 
 //-------------------------
 //Scene headers
@@ -57,7 +58,9 @@ void ClientApplication::Init(int argc, char* argv[]) {
 
 	//initialize SDL
 	if (SDL_Init(SDL_INIT_VIDEO)) {
-		throw(std::runtime_error("Failed to initialize SDL"));
+		std::ostringstream os;
+		os << "Failed to initialize SDL: " <<  SDL_GetError();
+		throw(std::runtime_error(os.str()));
 	}
 	std::cout << "Initialized SDL" << std::endl;
 

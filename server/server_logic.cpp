@@ -27,6 +27,7 @@
 //std & STL
 #include <stdexcept>
 #include <chrono>
+ #include <cstring>
 #include <iostream>
 #include <list>
 #include <sstream>
@@ -51,7 +52,9 @@ void ServerApplication::Init(int argc, char* argv[]) {
 
 	//Init SDL
 	if (SDL_Init(0)) {
-		throw(std::runtime_error("Failed to initialize SDL"));
+		std::ostringstream os;
+		os << "Failed to initialize SDL: " <<  SDL_GetError();
+		throw(std::runtime_error(os.str()));
 	}
 	std::cout << "Initialized SDL" << std::endl;
 

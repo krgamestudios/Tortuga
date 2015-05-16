@@ -6,8 +6,3 @@ all:
 	$(MAKE) -C network
 	$(MAKE) -C ui
 	$(MAKE) -C utilities
-
-clean:
-	$(RM) *.o *.a *.exe
-
-rebuild: clean all

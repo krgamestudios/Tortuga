@@ -22,6 +22,7 @@
 #include "server_application.hpp"
 
 #include <chrono>
+ #include <cstring>
 #include <iostream>
 #include <sstream>
 

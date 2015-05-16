@@ -26,6 +26,7 @@
 #include "character_defines.hpp"
 
 #include <algorithm>
+#include <cstring>
 #include <stdexcept>
 
 //-------------------------

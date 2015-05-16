@@ -30,8 +30,3 @@ $(OUTDIR):
 
 $(OBJDIR)/%.o: %.cpp
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
-
-clean:
-	$(RM) *.o *.a *.exe
-
-rebuild: clean all
