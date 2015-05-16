@@ -20,10 +20,10 @@ release: clean all package
 #For use on my machine ONLY
 package:
 ifeq ($(OS),Windows_NT)
-	rar a -r -ep Tortuga.rar $(OUTDIR)/*.exe  $(OUTDIR)/*.dll
-	rar a -r Tortuga.rar rsc/* copyright.txt instructions.txt
+	rar a -r -ep Tortuga-win.rar $(OUTDIR)/*.exe  $(OUTDIR)/*.dll
+	rar a -r Tortuga-win.rar rsc/* copyright.txt instructions.txt
 else ifeq ($(shell uname), Linux)
-	tar -C $(OUTDIR) -zcvf Tortuga.tar client server ../rsc ../copyright.txt ../instructions.txt
+	tar -C $(OUTDIR) -zcvf Tortuga-linux.tar client server ../rsc ../copyright.txt ../instructions.txt
 endif
 
 $(OUTDIR):
