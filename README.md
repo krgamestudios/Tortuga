@@ -6,7 +6,7 @@ This game is inspired by classic 2D RPGs (Final Fantasy, The Legend of Zelda), a
 
 ## Releases
 
-The most recent stable build for Windows can be found [here](https://dl.dropboxusercontent.com/u/46669050/Tortuga.rar).
+The most recent stable build for Windows can be found [here](https://dl.dropboxusercontent.com/u/46669050/Tortuga-win.rar).
 
 ## Documentation
 
