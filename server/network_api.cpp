@@ -25,6 +25,8 @@
 #include "character_manager.hpp"
 #include "server_utilities.hpp"
 
+#include <cstring>
+
 static int pumpCharacterUpdate(lua_State* L) {
 	CharacterData* characterData = static_cast<CharacterData*>(lua_touserdata(L, 1));
 

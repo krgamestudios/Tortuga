@@ -21,6 +21,7 @@
 */
 #include "server_application.hpp"
 
+#include <cstring>
 #include <iostream>
 #include <sstream>
 

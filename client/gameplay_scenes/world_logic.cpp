@@ -22,11 +22,12 @@
 #include "world.hpp"
 
 #include "channels.hpp"
-
 #include "terminal_error.hpp"
+
 #include <stdexcept>
 #include <algorithm>
 #include <cmath>
+#include <cstring>
 #include <iostream>
 #include <sstream>
 

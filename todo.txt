@@ -1,4 +1,5 @@
 TODO: upgrade to lua 5.3
+TODO: upgrade to SDL 2.0
 TODO: Split config.cfg in two, one for the server and the client
 TODO: Consistency for bounds names
 

@@ -23,6 +23,7 @@
 
 #include "channels.hpp"
 
+#include <cstring>
 #include <iostream>
 #include <sstream>
 #include <stdexcept>

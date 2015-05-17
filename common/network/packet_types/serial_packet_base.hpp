@@ -24,7 +24,7 @@
 
 #include "serial_packet_type.hpp"
 
-#include "SDL/SDL_net.h"
+#include "SDL_net.h"
 
 constexpr int PACKET_STRING_SIZE = 100;
 
