@@ -1,5 +1,5 @@
 #include directories
-INCLUDES+=. client_utilities entities gameplay_scenes menu_scenes ../common/debugging ../common/gameplay ../common/graphics ../common/map ../common/network ../common/network/packet_types ../common/ui ../common/utilities
+INCLUDES+=SDL . client_utilities entities gameplay_scenes menu_scenes ../common/debugging ../common/gameplay ../common/graphics ../common/map ../common/network ../common/network/packet_types ../common/ui ../common/utilities
 
 #libraries
 #the order of the $(LIBS) is important, at least for MinGW
@@ -45,6 +45,12 @@ $(OBJDIR)/%.o: %.cpp
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
 clean:
+ifeq ($(OS),Windows_NT)
 	$(RM) *.o *.a *.exe
+else ifeq ($(shell uname), Linux)
+	find . -type f -name *.o -exec rm -f -r -v {} \;
+	find . -type f -name *.a -exec rm -f -r -v {} \;
+	rm -f -v out/client out/server
+endif
 
 rebuild: clean all

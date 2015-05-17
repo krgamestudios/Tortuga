@@ -22,7 +22,7 @@
 #ifndef CLIENTDATA_HPP_
 #define CLIENTDATA_HPP_
 
-#include "SDL/SDL_net.h"
+#include "SDL_net.h"
 
 #include <chrono>
 

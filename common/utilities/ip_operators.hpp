@@ -22,7 +22,7 @@
 #ifndef IPOPERATORS_HPP_
 #define IPOPERATORS_HPP_
 
-#include "SDL/SDL_net.h"
+#include "SDL_net.h"
 
 //these should've come standard
 bool operator==(IPaddress lhs, IPaddress rhs);

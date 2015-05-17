@@ -27,6 +27,8 @@
 #include "room_manager.hpp"
 #include "udp_network_utility.hpp"
 
+#include <cstring>
+
 //-------------------------
 //manager unload functions
 //-------------------------

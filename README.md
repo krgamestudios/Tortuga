@@ -6,7 +6,8 @@ This game is inspired by classic 2D RPGs (Final Fantasy, The Legend of Zelda), a
 
 ## Releases
 
-The most recent stable build for Windows can be found [here](https://dl.dropboxusercontent.com/u/46669050/Tortuga.rar).
+* The most recent stable build for Windows can be found [here](https://dl.dropboxusercontent.com/u/46669050/Tortuga-win.rar).
+* The most recent stable build for Linux can be found [here](https://dl.dropboxusercontent.com/u/46669050/Tortuga-linux.tar).
 
 ## Documentation
 
@@ -16,13 +17,14 @@ The most recent stable build for Windows can be found [here](https://dl.dropboxu
 ## External Dependencies
 
 * [SDL 1.2](http://www.libsdl.org/) - Simple DirectMedia Layer API
-* [SDL_net 1.2](http://www.libsdl.org/projects/SDL_net/) - SDL's networking extension
+* [SDL_net 2.0](http://www.libsdl.org/projects/SDL_net/) - SDL's networking extension
 * [lua 5.2](http://www.lua.org/) - The lua programming language
 * [SQLite3](http://www.sqlite.org/) - A lightweight SQL database engine
 
 ## Tools
 
-* [WinRAR](http://www.rarlab.com/) - The best compression tool available IMO; only needed for distribution
+* [WinRAR](http://www.rarlab.com/) - The best compression tool available IMO; only needed for Windows distribution
+* [Dropbox](https://www.dropbox.com/) - For hosting and distribution
 
 ## Copyright
 
