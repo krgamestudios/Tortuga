@@ -9,6 +9,9 @@
 Release/
 Debug/
 Out/
+release/
+debug/
+out/
 
 #Project generated files
 *.db
