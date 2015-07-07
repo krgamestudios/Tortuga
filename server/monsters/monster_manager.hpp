@@ -37,7 +37,7 @@ public:
 	~MonsterManager();
 
 	//common public methods
-	int Create(std::string);
+	int Create(std::string avatar, int scriptRef);
 	void Unload(int uid);
 
 	void UnloadAll();
@@ -57,6 +57,7 @@ public:
 private:
 	//members
 	std::map<int, MonsterData> elementMap;
+	int counter = 0;
 	lua_State* lua = nullptr;
 	sqlite3* database = nullptr;
 };

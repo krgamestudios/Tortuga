@@ -327,11 +327,6 @@ void ServerApplication::HandlePacket(SerialPacket* const argPacket) {
 			hCharacterDamage(static_cast<CharacterPacket*>(argPacket));
 		break;
 
-		//monster management
-		case SerialPacketType::MONSTER_DAMAGE:
-			hMonsterDamage(static_cast<MonsterPacket*>(argPacket));
-		break;
-
 		//chat
 		case SerialPacketType::TEXT_BROADCAST:
 			hTextBroadcast(static_cast<TextPacket*>(argPacket));

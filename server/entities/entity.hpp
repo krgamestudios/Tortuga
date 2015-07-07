@@ -46,7 +46,7 @@ public:
 	const char* GetType() const;
 
 protected:
-	Entity(const char*);
+	Entity(const char* type);
 	virtual ~Entity() = default;
 
 	int roomIndex = -1;

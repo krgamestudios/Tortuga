@@ -28,7 +28,7 @@
 static int setAvatar(lua_State* L) {
 	MonsterData* monster = static_cast<MonsterData*>(lua_touserdata(L, 1));
 	monster->SetAvatar(lua_tostring(L, 2));
-	//TODO: send an update to the clients?
+	//TODO: (1) send an update to the clients?
 	return 0;
 }
 

@@ -29,46 +29,66 @@ MonsterManager::~MonsterManager() {
 	UnloadAll();
 }
 
-int MonsterManager::Create(std::string) {
-	//TODO: (9) MonsterManager::Create()
+int MonsterManager::Create(std::string avatar, int scriptRef) {
+	//implicitly create the new
+	elementMap.emplace(counter, MonsterData(avatar, scriptRef));
+
+	//TODO: do various things like saving to the database
+	return counter++;
 }
 
+//TODO: (1) monster load, save
+
 void MonsterManager::Unload(int uid) {
-	//TODO: (9) MonsterManager::Unload()
+	elementMap.erase(uid);
 }
 
 void MonsterManager::UnloadAll() {
-	//TODO: (9) MonsterManager::UnloadAll()
+	elementMap.clear();
 }
 
 void MonsterManager::UnloadIf(std::function<bool(std::pair<const int, MonsterData const&>)> fn) {
-	//TODO: (9) MonsterManager::UnloadIf()
+	std::map<int, MonsterData>::iterator it = elementMap.begin();
+	while (it != elementMap.end()) {
+		if (fn(*it)) {
+			it = elementMap.erase(it);
+		}
+		else {
+			++it;
+		}
+	}
 }
 
 MonsterData* MonsterManager::Get(int uid) {
-	//TODO: (9) MonsterManager::Get()
+	std::map<int, MonsterData>::iterator it = elementMap.find(uid);
+
+	if (it == elementMap.end()) {
+		return nullptr;
+	}
+
+	return &it->second;
 }
 
 int MonsterManager::GetLoadedCount() {
-	//TODO: (9) MonsterManager::GetLoadedCount()
+	return elementMap.size();
 }
 
 std::map<int, MonsterData>* MonsterManager::GetContainer() {
-	//TODO: (9) MonsterManager::GetContainer()
+	return &elementMap;
 }
 
 lua_State* MonsterManager::SetLuaState(lua_State* L) {
-	//TODO: (9) MonsterManager::SetLuaState()
+	return lua = L;
 }
 
 lua_State* MonsterManager::GetLuaState() {
-	//TODO: (9) MonsterManager::GetLuaState()
+	return lua;
 }
 
 sqlite3* MonsterManager::SetDatabase(sqlite3* db) {
-	//TODO: (9) MonsterManager::SetDatabase()
+	return database = db;
 }
 
 sqlite3* MonsterManager::GetDatabase() {
-	//TODO: (9) MonsterManager::GetDatabase()
+	return database;
 }

@@ -28,10 +28,21 @@
 
 #include <string>
 
+/* DOCS: Monster attributes, read more
+ *  species (avatar, script)
+ *  level
+ *  health/mana
+ *  permadeath/respawn
+*/
+
 class MonsterData: public Entity {
 public:
-	MonsterData();
+	MonsterData(std::string avatar, int scriptRef);
 	~MonsterData() = default;
+
+	virtual void Update();
+
+	//accessors & mutators
 
 	std::string SetAvatar(std::string);
 	std::string GetAvatar();

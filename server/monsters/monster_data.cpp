@@ -21,9 +21,22 @@
 */
 #include "monster_data.hpp"
 
-MonsterData::MonsterData(): Entity("monster") {
+MonsterData::MonsterData(std::string _avatar, int _scriptRef):
+	Entity("monster"),
+	avatar(_avatar),
+	scriptRef(_scriptRef)
+{
 	//EMPTY
 }
+
+void MonsterData::Update() {
+	Entity::Update();
+	//TODO: (0) call the script reference
+}
+
+//-------------------------
+//accessors & mutators
+//-------------------------
 
 std::string MonsterData::SetAvatar(std::string s) {
 	return avatar = s;

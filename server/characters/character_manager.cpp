@@ -36,7 +36,7 @@
 //NOTE: Programmer set variables are NOT zero-indexed
 //NOTE: SQLite3 returned variables (i.e. loading) ARE zero-indexed
 
-static const char* CREATE_CHARACTER = "INSERT INTO Characters ("
+static const char* CREATE_CHARACTER = "INSERT INTO LiveCharacters ("
 	"owner, "
 	"handle, "
 	"avatar, "
@@ -58,9 +58,9 @@ static const char* LOAD_CHARACTER = "SELECT "
 	"boundsY, "
 	"boundsW, "
 	"boundsH "
-	"FROM Characters WHERE handle = ?;";
+	"FROM LiveCharacters WHERE handle = ?;";
 
-static const char* SAVE_CHARACTER = "UPDATE OR FAIL Characters SET "
+static const char* SAVE_CHARACTER = "UPDATE OR FAIL LiveCharacters SET "
 	"roomIndex = ?2, "
 	"originX = ?3, "
 	"originY = ?4, "
@@ -70,9 +70,9 @@ static const char* SAVE_CHARACTER = "UPDATE OR FAIL Characters SET "
 	"boundsH = ?8 "
 	"WHERE uid = ?1;";
 
-static const char* DELETE_CHARACTER = "DELETE FROM Characters WHERE uid = ?;";
+static const char* DELETE_CHARACTER = "DELETE FROM LiveCharacters WHERE uid = ?;";
 
-static const char* COUNT_CHARACTER_RECORDS = "SELECT COUNT(*) FROM Characters;";
+static const char* COUNT_CHARACTER_RECORDS = "SELECT COUNT(*) FROM LiveCharacters;";
 
 //-------------------------
 //Define the methods
