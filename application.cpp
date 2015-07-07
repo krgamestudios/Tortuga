@@ -56,6 +56,16 @@ void Application::Init(int argc, char* argv[]) {
 
 	//set the hook for the renderer
 	BaseScene::SetRenderer(renderer);
+
+	//setup lua
+	lua = luaL_newstate();
+	if (!lua) {
+		std::ostringstream msg;
+		msg << "Failed to create the lua state";
+		throw(std::runtime_error(msg.str()));
+	}
+
+	luaL_openlibs(lua);
 }
 
 void Application::Proc() {
@@ -103,7 +113,9 @@ void Application::Proc() {
 }
 
 void Application::Quit() {
-	//cleran up after the program
+	lua_close(lua);
+
+	//clean up after the program
 	BaseScene::SetRenderer(nullptr);
 	SDL_DestroyRenderer(renderer);
 	SDL_DestroyWindow(window);
@@ -125,7 +137,7 @@ void Application::ProcessSceneSignal(SceneSignal signal) {
 	switch(signal) {
 		case SceneSignal::FIRST:
 		case SceneSignal::EXAMPLE_SCENE:
-			activeScene = new ExampleScene();
+			activeScene = new ExampleScene(lua);
 		break;
 		default: {
 			std::ostringstream msg;

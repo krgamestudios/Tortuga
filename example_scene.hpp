@@ -22,10 +22,14 @@
 #pragma once
 
 #include "base_scene.hpp"
+#include "region_pager_lua.hpp"
+#include "tile_sheet.hpp"
+
+#include "lua.hpp"
 
 class ExampleScene : public BaseScene {
 public:
-	ExampleScene();
+	ExampleScene(lua_State* L);
 	~ExampleScene();
 
 	void RenderFrame(SDL_Renderer* renderer) override;
@@ -43,4 +47,17 @@ private:
 	void MouseWheel(SDL_MouseWheelEvent const& event) override;
 	void KeyDown(SDL_KeyboardEvent const& event) override;
 	void KeyUp(SDL_KeyboardEvent const& event) override;
+
+	//members
+	lua_State* lua = nullptr;
+	RegionPagerLua regionPager;
+	TileSheet tileSheet;
+	struct {
+		int x = 0;
+		int y = 0;
+		double scale = 1.0;
+	} camera;
+
+	int selection = 1;
+	int layer = 0;
 };

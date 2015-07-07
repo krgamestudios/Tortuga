@@ -1,3 +1,7 @@
+#NOTE: I know it's a wonky spot, sue me
+debug: export CXXFLAGS+=-g
+debug: clean all
+
 #include directories
 INCLUDES+=. common libmap
 
@@ -8,6 +12,10 @@ ifeq ($(OS),Windows_NT)
 	LIBS+=-lmingw32
 endif
 LIBS+=-lSDL2main -lSDL2 -lSDL2_image -llua
+ifeq ($(shell uname), Linux)
+	#I don't know what this does, but Ubuntu needs it (dynamic linking for lua)
+	LIBS+=-ldl
+endif
 
 #flags
 CXXFLAGS+=-std=c++11 $(addprefix -I,$(INCLUDES))

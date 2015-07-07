@@ -21,8 +21,24 @@
 */
 #include "example_scene.hpp"
 
-ExampleScene::ExampleScene() {
-	//
+#include <iostream>
+
+ExampleScene::ExampleScene(lua_State* L) {
+	lua = L;
+
+	tileSheet.Load(GetRenderer(), "./rsc/terrain.bmp", 32, 32);
+
+	//set the pager's hook
+	regionPager.SetLuaState(lua);
+
+	//load the file as a chunk
+	luaL_loadfile(lua, "./rsc/startup.lua");
+
+	//push the pager as an arg
+	lua_pushlightuserdata(lua, static_cast<void*>(&regionPager));
+
+	//run the function
+	lua_pcall(lua, 1, LUA_MULTRET, 0);
 }
 
 ExampleScene::~ExampleScene() {
@@ -46,7 +62,9 @@ void ExampleScene::FrameEnd() {
 }
 
 void ExampleScene::RenderFrame(SDL_Renderer* renderer) {
-	//
+	for (std::list<Region>::iterator it = regionPager.GetContainer()->begin(); it != regionPager.GetContainer()->end(); it++) {
+		tileSheet.DrawRegionTo(renderer, &(*it), camera.x, camera.y, camera.scale, camera.scale);
+	}
 }
 
 //-------------------------
@@ -54,11 +72,20 @@ void ExampleScene::RenderFrame(SDL_Renderer* renderer) {
 //-------------------------
 
 void ExampleScene::MouseMotion(SDL_MouseMotionEvent const& event) {
-	//
+	//right mouse button moves the camera
+	if (event.state & SDL_BUTTON_RMASK) {
+		camera.x -= event.xrel;
+		camera.y -= event.yrel;
+	}
 }
 
 void ExampleScene::MouseButtonDown(SDL_MouseButtonEvent const& event) {
-	//
+	switch(event.button) {
+		case SDL_BUTTON_LEFT:
+			//change the selected tile
+			regionPager.SetTile((event.x + camera.x) / 32, (event.y + camera.y) / 32, layer, selection);
+		break;
+	}
 }
 
 void ExampleScene::MouseButtonUp(SDL_MouseButtonEvent const& event) {

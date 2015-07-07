@@ -24,6 +24,7 @@
 #include "base_scene.hpp"
 #include "scene_signal.hpp"
 
+#include "lua.hpp"
 #include "SDL2/SDL.h"
 
 //TODO: do something with these
@@ -50,4 +51,6 @@ private:
 	//TODO: build a "window" class?
 	SDL_Window* window = nullptr;
 	SDL_Renderer* renderer = nullptr;
+
+	lua_State* lua = nullptr;
 };
