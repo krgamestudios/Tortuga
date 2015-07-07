@@ -23,41 +23,48 @@
 
 #include "image.hpp"
 
-class SpriteSheet {
+class SpriteSheet : public Image {
 public:
 	SpriteSheet() = default;
-	SpriteSheet(std::string fname, Uint16 xCellCount, Uint16 yCellCount) { LoadSurface(fname, xCellCount, yCellCount); }
-	SpriteSheet(SDL_Surface* surface, Uint16 xCellCount, Uint16 yCellCount) { SetSurface(surface, xCellCount, yCellCount); }
-	~SpriteSheet() { FreeSurface(); };
+	SpriteSheet(SpriteSheet const& rhs) { *this = rhs; }
+	SpriteSheet(SpriteSheet&& rhs) { *this = std::move(rhs); }
+	SpriteSheet(SDL_Renderer* r, std::string fname, Uint16 cx, Uint16 cy)
+		{ Load(r, fname, cx, cy); }
+	SpriteSheet(SDL_Renderer* r, Uint16 w, Uint16 h, Uint16 cx, Uint16 cy)
+		{ Create(r, w, h, cx, cy); }
+	SpriteSheet(SDL_Texture* p, Uint16 cx, Uint16 cy)
+		{ SetTexture(p, cx, cy); }
+	~SpriteSheet() = default;
+
+	SpriteSheet& operator=(SpriteSheet const&);
+	SpriteSheet& operator=(SpriteSheet&&);
 
 	void Update(double delta);
 
-	SDL_Surface* LoadSurface(std::string fname, Uint16 xCellCount, Uint16 yCellCount);
-	SDL_Surface* SetSurface(SDL_Surface* surface, Uint16 xCellCount, Uint16 yCellCount);
-	SDL_Surface* GetSurface() { return image.GetSurface(); }
-	void FreeSurface();
+	SDL_Texture* Load(SDL_Renderer*, std::string fname, Uint16 cx, Uint16 cy);
+	SDL_Texture* Create(SDL_Renderer*, Uint16 w, Uint16 h, Uint16 cx, Uint16 cy);
+	SDL_Texture* SetTexture(SDL_Texture*, Uint16 cx, Uint16 cy);
+	void Free() override;
 
-	void DrawTo(SDL_Surface* const dest, Sint16 x, Sint16 y) { image.DrawTo(dest, x, y); }
+	Uint16 SetCountX(Uint16);
+	Uint16 SetCountY(Uint16);
+	Uint16 SetIndexX(Uint16);
+	Uint16 SetIndexY(Uint16);
 
-	//accessors and mutators
-	Image* GetImage() { return &image; } //OO breaker
-
-	Uint16 SetXCount(Uint16);
-	Uint16 SetYCount(Uint16);
-	Uint16 SetXIndex(Uint16);
-	Uint16 SetYIndex(Uint16);
-
-	Uint16 GetXCount() const { return xCount; }
-	Uint16 GetYCount() const { return yCount; }
-	Uint16 GetXIndex() const { return xIndex; }
-	Uint16 GetYIndex() const { return yIndex; }
+	Uint16 GetCountX() const { return countX; }
+	Uint16 GetCountY() const { return countY; }
+	Uint16 GetIndexX() const { return indexX; }
+	Uint16 GetIndexY() const { return indexY; }
 
 	double SetDelay(double d);
 	double GetDelay() const { return delay; }
 
 private:
-	Image image;
-	Uint16 xCount = 0, yCount = 0; //number of cells
-	Uint16 xIndex = 0, yIndex = 0; //current cell being drawn
+	Uint16 countX = 0, countY = 0, indexX = 0, indexY = 0;
 	double delay = 0.0, tick = 0.0;
+
+	//disable access
+	using Image::Load;
+	using Image::Create;
+	using Image::SetTexture;
 };

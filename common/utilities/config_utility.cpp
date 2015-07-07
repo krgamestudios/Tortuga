@@ -61,7 +61,7 @@ void ConfigUtility::Load(std::string fname, bool skipMissingFile, int argc, char
 			memset(key, 0, 256);
 
 			//read the key-value pair
-			if (sscanf(argv[i], "-%[^=]=%[^\0]", key, val) != 2) {
+			if (sscanf(argv[i], "-%[^=]=%[^\\0]", key, val) != 2) {
 				std::ostringstream os;
 				os << "Failed to read a command line config argument (expected -%s=%s):" << std::endl;
 				os << "\targv[" << i << "]: " << argv[i] << std::endl;

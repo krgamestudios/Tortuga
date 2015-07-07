@@ -21,17 +21,12 @@
 */
 #pragma once
 
-enum class SceneList {
-	//these are reserved
-	QUIT,
-	CONTINUE,
-	FIRST,
+enum SceneSignal {
+	//reserved members for internal use
+	QUIT = -1,
+	CONTINUE = 0,
+	FIRST = 1,
 
-	//custom indexes
-	SPLASHSCREEN,
-	MAINMENU,
-	OPTIONSMENU,
-	LOBBYMENU,
-	WORLD,
-	DISCONNECTEDSCREEN,
+	//custom scenes
+	EXAMPLE_SCENE
 };

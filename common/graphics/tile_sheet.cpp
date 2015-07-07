@@ -21,28 +21,71 @@
 */
 #include "tile_sheet.hpp"
 
-void TileSheet::Load(std::string fname, int tileWidth, int tileHeight) {
-	image.LoadSurface(fname);
-	image.SetClipW(tileWidth);
-	image.SetClipH(tileHeight);
-	xCount = image.GetSurface()->w / image.GetClipW();
-	yCount = image.GetSurface()->h / image.GetClipH();
+TileSheet& TileSheet::operator=(TileSheet const& rhs) {
+	//don't screw yourself
+	if (this == &rhs) {
+		return *this;
+	}
+
+	Free();
+
+	//Copy the other TileSheet's stuff
+	texture = rhs.texture;
+	clip = rhs.clip;
+	local = false;
+	countX = rhs.countX;
+	countY = rhs.countY;
 }
 
-void TileSheet::Unload() {
-	image.FreeSurface();
-	xCount = yCount = 0;
+TileSheet& TileSheet::operator=(TileSheet&& rhs) {
+	//don't screw yourself
+	if (this == &rhs) {
+		return *this;
+	}
+
+	Free();
+
+	//Copy the other TileSheet's stuff
+	texture = rhs.texture;
+	clip = rhs.clip;
+	local = false;
+	countX = rhs.countX;
+	countY = rhs.countY;
+
+	rhs.texture = nullptr;
+	rhs.clip = {0, 0, 0, 0};
+	rhs.local = false;
+	rhs.countX = 0;
+	rhs.countY = 0;
 }
 
-void TileSheet::DrawTileTo(SDL_Surface* const dest, int x, int y, Region::type_t tile) {
-	//0 is invisible
-	if (tile == 0) return;
-	image.SetClipX((tile-1) % xCount * image.GetClipW());
-	image.SetClipY((tile-1) / xCount * image.GetClipH());
-	image.DrawTo(dest, x, y);
+void TileSheet::Load(SDL_Renderer* renderer, std::string fname, int tileWidth, int tileHeight) {
+	Image::Load(renderer, fname);
+	countX = clip.w / tileWidth;
+	countY = clip.h / tileHeight;
+	clip.w = tileWidth;
+	clip.h = tileHeight;
 }
 
-void TileSheet::DrawRegionTo(SDL_Surface* const dest, Region* const region, int camX, int camY) {
+SDL_Texture* TileSheet::SetTexture(SDL_Texture* ptr, int tileWidth, int tileHeight) {
+	Image::SetTexture(ptr);
+	countX = clip.w / tileWidth;
+	countY = clip.h / tileHeight;
+	clip.w = tileWidth;
+	clip.h = tileHeight;
+}
+
+void TileSheet::Free() {
+	Image::Free();
+	countX = countY = 0;
+}
+
+void TileSheet::DrawLayerTo(SDL_Renderer* const renderer, Region* const region, int layer, int camX, int camY, double scaleX, double scaleY) {
+	//TODO: empty
+}
+
+void TileSheet::DrawRegionTo(SDL_Renderer* const renderer, Region* const region, int camX, int camY, double scaleX, double scaleY) {
+	//TODO: (2) make TileSheet a friend class of Region
 	Region::type_t tile = 0;
 	for (register int i = 0; i < REGION_WIDTH; ++i) {
 		for (register int j = 0; j < REGION_HEIGHT; ++j) {
@@ -50,11 +93,13 @@ void TileSheet::DrawRegionTo(SDL_Surface* const dest, Region* const region, int 
 				tile = region->GetTile(i, j, k);
 				//0 is invisible
 				if (tile == 0) continue;
-				image.SetClipX((tile-1) % xCount * image.GetClipW());
-				image.SetClipY((tile-1) / xCount * image.GetClipH());
-				image.DrawTo(dest,
-					(region->GetX() + i) * image.GetClipW() - camX,
-					(region->GetY() + j) * image.GetClipH() - camY);
+				clip.x = (tile-1) % countX * clip.h;
+				clip.y = (tile-1) / countX * clip.w;
+				//TODO: (2) raw rendering; improve preformance
+				Image::DrawTo(renderer,
+					(region->GetX() + i) * clip.w - camX,
+					(region->GetY() + j) * clip.h - camY,
+					scaleX, scaleY);
 			}
 		}
 	}

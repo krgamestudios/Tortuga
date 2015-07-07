@@ -21,89 +21,57 @@
 */
 #include "base_scene.hpp"
 
-#include <stdexcept>
-
-//-------------------------
-//Static declarations
-//-------------------------
-
-SDL_Surface* BaseScene::screen = nullptr;
-
-//-------------------------
-//Public access members
-//-------------------------
+SDL_Renderer* BaseScene::rendererHandle = nullptr;
 
 BaseScene::BaseScene() {
-	//
+	//EMPTY
 }
 
 BaseScene::~BaseScene() {
-	//
+	//EMPTY
 }
-
-//-------------------------
-//Program control
-//-------------------------
-
-SDL_Surface* BaseScene::SetScreen(int w, int h, int bpp, Uint32 flags) {
-	if (!bpp) {
-		bpp = SDL_GetVideoInfo()->vfmt->BitsPerPixel;
-	}
-
-	screen = SDL_SetVideoMode(w, h, bpp, flags);
-
-	if (!screen) {
-		throw(std::runtime_error("Failed to create the screen surface"));
-	}
-
-	return screen;
-}
-
-SDL_Surface* BaseScene::GetScreen() {
-	return screen;
-}
-
-SceneList BaseScene::SetNextScene(SceneList sceneIndex) {
-	return nextScene = sceneIndex;
-}
-
-SceneList BaseScene::GetNextScene() const {
-	return nextScene;
-}
-
-//-------------------------
-//Frame loop
-//-------------------------
 
 void BaseScene::RunFrame() {
 	FrameStart();
-	HandleEvents();
+	ProcessEvents();
 	Update();
 	FrameEnd();
 }
 
-void BaseScene::RenderFrame() {
-	SDL_FillRect(screen, 0, 0);
-	Render(screen);
-	SDL_Flip(screen);
-	SDL_Delay(10);
+void BaseScene::RenderFrame(SDL_Renderer* renderer) {
+	//EMPTY
+}
+
+void BaseScene::SetRenderer(SDL_Renderer* r) {
+	rendererHandle = r;
+}
+
+SDL_Renderer* BaseScene::GetRenderer() {
+	return rendererHandle;
+}
+
+void BaseScene::SetSceneSignal(SceneSignal signal) {
+	sceneSignal = signal;
+}
+
+SceneSignal BaseScene::GetSceneSignal() {
+	return sceneSignal;
 }
 
 //-------------------------
-//Event handlers
+//frame phases
 //-------------------------
 
-void BaseScene::HandleEvents() {
-	SDL_Event event;
+void BaseScene::FrameStart() {
+	//EMPTY
+}
 
+void BaseScene::ProcessEvents() {
+	SDL_Event event;
 	while(SDL_PollEvent(&event)) {
 		switch(event.type) {
 			case SDL_QUIT:
 				QuitEvent();
-			break;
-
-			case SDL_VIDEORESIZE:
-				SetScreen(event.resize.w, event.resize.h, 0, screen->flags);
 			break;
 
 			case SDL_MOUSEMOTION:
@@ -126,15 +94,52 @@ void BaseScene::HandleEvents() {
 				KeyUp(event.key);
 			break;
 
-#ifdef USE_EVENT_JOYSTICK
-			//EMPTY
-#endif
+			//TODO: joystick and controller events
+		}
+	}
+}
 
-#ifdef USE_EVENT_UNKNOWN
-			default:
-				UnknownEvent(event);
-			break;
-#endif
-		}//switch
-	}//while
+void BaseScene::Update() {
+	//EMPTY
+}
+
+void BaseScene::FrameEnd() {
+	//EMPTY
+}
+
+//-------------------------
+//input events
+//-------------------------
+
+void BaseScene::QuitEvent() {
+	sceneSignal = SceneSignal::QUIT;
+}
+
+void BaseScene::MouseMotion(SDL_MouseMotionEvent const& event) {
+	//EMPTY
+}
+
+void BaseScene::MouseButtonDown(SDL_MouseButtonEvent const& event) {
+	//EMPTY
+}
+
+void BaseScene::MouseButtonUp(SDL_MouseButtonEvent const& event) {
+	//EMPTY
+}
+
+void BaseScene::MouseWheel(SDL_MouseWheelEvent const& event) {
+	//EMPTY
+}
+
+void BaseScene::KeyDown(SDL_KeyboardEvent const& event) {
+	//preference as a default
+	switch(event.keysym.sym) {
+		case SDLK_ESCAPE:
+			QuitEvent();
+		break;
+	}
+}
+
+void BaseScene::KeyUp(SDL_KeyboardEvent const& event) {
+	//EMPTY
 }

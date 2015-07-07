@@ -21,51 +21,44 @@
 */
 #pragma once
 
-#include "scene_list.hpp"
+#include "scene_signal.hpp"
 
-#include "SDL/SDL.h"
+#include "SDL2/SDL.h"
 
 class BaseScene {
 public:
-	//Public access members
 	BaseScene();
 	virtual ~BaseScene();
 
-	//Program control
-	static SDL_Surface* SetScreen(int w, int h, int bpp = 0, Uint32 flags = SDL_HWSURFACE|SDL_DOUBLEBUF);
-	static SDL_Surface* GetScreen();
-
-	SceneList SetNextScene(SceneList sceneIndex);
-	SceneList GetNextScene() const;
-
-	//Frame loop
 	virtual void RunFrame();
-	virtual void RenderFrame();
+	virtual void RenderFrame(SDL_Renderer*);
+
+	static void SetRenderer(SDL_Renderer*);
+	SceneSignal GetSceneSignal();
 
 protected:
-	virtual void FrameStart() {}
-	virtual void HandleEvents();
-	virtual void Update() {}
-	virtual void FrameEnd() {}
-	virtual void Render(SDL_Surface* const screen) {}
+	//control
+	static SDL_Renderer* GetRenderer();
+	void SetSceneSignal(SceneSignal);
 
-	//Event handlers
-	virtual void QuitEvent() { SetNextScene(SceneList::QUIT); }
-	virtual void MouseMotion(SDL_MouseMotionEvent const&) {}
-	virtual void MouseButtonDown(SDL_MouseButtonEvent const&) {}
-	virtual void MouseButtonUp(SDL_MouseButtonEvent const&) {}
-	virtual void KeyDown(SDL_KeyboardEvent const&) {}
-	virtual void KeyUp(SDL_KeyboardEvent const&) {}
+	//frame phases
+	virtual void FrameStart();
+	virtual void ProcessEvents();
+	virtual void Update();
+	virtual void FrameEnd();
 
-#ifdef USE_EVENT_JOYSTICK
-	//EMPTY
-#endif
+	//input events
+	virtual void QuitEvent();
+	virtual void MouseMotion(SDL_MouseMotionEvent const& event);
+	virtual void MouseButtonDown(SDL_MouseButtonEvent const& event);
+	virtual void MouseButtonUp(SDL_MouseButtonEvent const& event);
+	virtual void MouseWheel(SDL_MouseWheelEvent const& event);
+	virtual void KeyDown(SDL_KeyboardEvent const& event);
+	virtual void KeyUp(SDL_KeyboardEvent const& event);
 
-#ifdef USE_EVENT_UNKNOWN
-	virtual void UnknownEvent(SDL_Event const&) {}
-#endif
+	//TODO: joystick and controller events
 
 private:
-	static SDL_Surface* screen;
-	SceneList nextScene = SceneList::CONTINUE;
+	static SDL_Renderer* rendererHandle;
+	SceneSignal sceneSignal = SceneSignal::CONTINUE;
 };

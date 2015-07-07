@@ -21,8 +21,10 @@
 */
 #include "image.hpp"
 
-#include <stdexcept>
+#include "SDL2/SDL_image.h"
+
 #include <sstream>
+#include <stdexcept>
 
 Image& Image::operator=(Image const& rhs) {
 	//don't screw yourself
@@ -30,10 +32,10 @@ Image& Image::operator=(Image const& rhs) {
 		return *this;
 	}
 
-	FreeSurface();
+	Free();
 
 	//Copy the other Image's stuff
-	surface = rhs.surface;
+	texture = rhs.texture;
 	clip = rhs.clip;
 	local = false;
 }
@@ -44,102 +46,139 @@ Image& Image::operator=(Image&& rhs) {
 		return *this;
 	}
 
-	FreeSurface();
+	Free();
 
 	//Steal the other Image's stuff
-	surface = rhs.surface;
+	texture = rhs.texture;
 	clip = rhs.clip;
 	local = rhs.local;
 
-	rhs.surface = nullptr;
+	rhs.texture = nullptr;
 	rhs.clip = {0, 0, 0, 0};
 	rhs.local = false;
 }
 
-SDL_Surface* Image::LoadSurface(std::string fname) {
-	FreeSurface();
-	SDL_Surface* p = SDL_LoadBMP(fname.c_str());
-	if (!p) {
-		std::ostringstream os;
-		os << "Failed to load file: " << fname;
-		throw(std::runtime_error(os.str()));
+SDL_Texture* Image::Load(SDL_Renderer* renderer, std::string fname) {
+	Free();
+
+	//load the file into a surface
+	SDL_Surface* surface = IMG_Load(fname.c_str());
+	if (!surface) {
+		std::ostringstream msg;
+		msg << "Failed to load an image file: " << fname;
+		msg << "; " << IMG_GetError();
+		throw(std::runtime_error(msg.str()));
 	}
-	surface = p;
-	clip = {0, 0, (Uint16)surface->w, (Uint16)surface->h};
+
+	//create a texture from this surface
+	texture = SDL_CreateTextureFromSurface(renderer, surface);
+	if (!texture) {
+		std::ostringstream msg;
+		msg << "Failed to convert a newly loaded image file: " << fname;
+		msg << "; " << SDL_GetError();
+		throw(std::runtime_error(msg.str()));
+	}
+
+	//set the metadata
+	clip.x = 0;
+	clip.y = 0;
+	if (SDL_QueryTexture(texture, nullptr, nullptr, &clip.w, &clip.h)) {
+		std::ostringstream msg;
+		msg << "Failed to record metadata for a newly loaded image file: " << fname;
+		msg << "; " << SDL_GetError();
+		throw(std::runtime_error(msg.str()));
+	}
 	local = true;
-	SetTransparentColor(255, 0, 255); //default
-	return surface;
+
+	//free the surface & return
+	SDL_FreeSurface(surface);
+	return texture;
 }
 
-SDL_Surface* Image::CreateSurface(Uint16 w, Uint16 h) {
-	FreeSurface();
-	Uint32 rmask, gmask, bmask, amask;
-#if SDL_BYTEORDER == SDL_BIG_ENDIAN
-    rmask = 0xff000000;
-    gmask = 0x00ff0000;
-    bmask = 0x0000ff00;
-    amask = 0x000000ff;
-#else
-    rmask = 0x000000ff;
-    gmask = 0x0000ff00;
-    bmask = 0x00ff0000;
-    amask = 0xff000000;
-#endif
-	SDL_Surface* p = SDL_CreateRGBSurface(SDL_SWSURFACE, w, h, 32, rmask, gmask, bmask, amask);
-	if (!p) {
-		throw(std::runtime_error("Failed to create Image surface"));
+SDL_Texture* Image::Create(SDL_Renderer* renderer, Uint16 w, Uint16 h) {
+	Free();
+
+	//make the texture
+	texture = SDL_CreateTexture(renderer,
+		SDL_PIXELFORMAT_RGBA8888,
+		SDL_TEXTUREACCESS_STATIC,
+		w, h);
+
+	if (!texture) {
+		std::ostringstream msg;
+		msg << "Failed to create a texture; " << SDL_GetError();
+		throw(std::runtime_error(msg.str()));
 	}
-	surface = p;
-	clip = {0, 0, (Uint16)surface->w, (Uint16)surface->h};
+
+	//set the metadata
+	clip.x = 0;
+	clip.y = 0;
+	if (SDL_QueryTexture(texture, nullptr, nullptr, &clip.w, &clip.h)) {
+		std::ostringstream msg;
+		msg << "Failed to record metadata for a newly created image";
+		msg << "; " << SDL_GetError();
+		throw(std::runtime_error(msg.str()));
+	}
 	local = true;
-	SetTransparentColor(255, 0, 255); //default
-	return surface;
+
+	return texture;
 }
 
-SDL_Surface* Image::SetSurface(SDL_Surface* p) {
-	FreeSurface();
-	if (!p) {
-		throw(std::invalid_argument("No surface pointer provided"));
+SDL_Texture* Image::SetTexture(SDL_Texture* ptr) {
+	Free();
+
+	texture = ptr;
+
+	//set the metadata
+	clip.x = 0;
+	clip.y = 0;
+	if (SDL_QueryTexture(texture, nullptr, nullptr, &clip.w, &clip.h)) {
+		std::ostringstream msg;
+		msg << "Failed to record metadata for a newly image image";
+		msg << "; " << SDL_GetError();
+		throw(std::runtime_error(msg.str()));
 	}
-	surface = p;
-	clip = {0, 0, (Uint16)surface->w, (Uint16)surface->h};
 	local = false;
-	return surface;
+
+	return texture;
 }
 
-void Image::FreeSurface() {
+SDL_Texture* Image::GetTexture() const {
+	return texture;
+}
+
+void Image::Free() {
 	if (local) {
-		SDL_FreeSurface(surface);
+		SDL_DestroyTexture(texture);
 		local = false;
 	}
-	surface = nullptr;
+	texture = nullptr;
 	clip = {0, 0, 0, 0};
 }
 
-void Image::DrawTo(SDL_Surface* dest, Sint16 x, Sint16 y) {
-	if (!surface) {
-		throw(std::logic_error("No image surface to draw"));
+void Image::DrawTo(SDL_Renderer* const renderer, Sint16 x, Sint16 y, double scaleX, double scaleY) {
+	if (!texture) {
+		throw(std::logic_error("No image texture to draw"));
 	}
-	SDL_Rect sclip = clip, dclip = {x,y};
-	SDL_BlitSurface(surface, &sclip, dest, &dclip);
+	SDL_Rect sclip = clip;
+	SDL_Rect dclip = {x, y, Uint16(clip.w * scaleX), Uint16(clip.h * scaleY)};
+	SDL_RenderCopy(renderer, texture, &sclip, &dclip);
 }
 
-void Image::SetTransparentColor(Uint8 r, Uint8 g, Uint8 b) {
-	if (!surface) {
-		throw(std::logic_error("Failed to set the transparent color"));
+void Image::SetAlpha(Uint8 a) {
+	if (SDL_SetTextureAlphaMod(texture, a)) {
+		std::ostringstream msg;
+		msg << "Failed to set alpha; " << SDL_GetError();
+		throw(std::runtime_error(msg.str()));
 	}
-	if (!local) {
-		throw(std::logic_error("Cannot set the transparent color of a non-local surface"));
-	}
-	SDL_SetColorKey(surface, SDL_SRCCOLORKEY, SDL_MapRGB(surface->format, r, g, b));
 }
 
-void Image::ClearTransparentColor() {
-	if (!surface) {
-		throw(std::logic_error("Failed to clear the transparent color"));
+Uint8 Image::GetAlpha() {
+	Uint8 ret = 0;
+	if (SDL_GetTextureAlphaMod(texture, &ret)) {
+		std::ostringstream msg;
+		msg << "Failed to get alpha; " << SDL_GetError();
+		throw(std::runtime_error(msg.str()));
 	}
-	if (!local) {
-		throw(std::logic_error("Cannot clear the transparent color of a non-local surface"));
-	}
-	SDL_SetColorKey(surface, 0, 0);
+	return ret;
 }

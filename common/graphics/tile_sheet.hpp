@@ -27,25 +27,41 @@
 
 #include <string>
 
-class TileSheet {
+class TileSheet : public Image {
 public:
 	TileSheet() = default;
-	TileSheet(std::string f, int w, int h) { Load(f, w, h); }
+	TileSheet(TileSheet const& rhs) { *this = rhs; }
+	TileSheet(TileSheet&& rhs) { *this = std::move(rhs); }
+	TileSheet(SDL_Renderer* r, std::string fn, int tw, int th) { Load(r, fn, tw, th); }
+	TileSheet(SDL_Texture* p, int tw, int th) { SetTexture(p, tw, th); }
 	~TileSheet() = default;
 
-	void Load(std::string fname, int tileWidth, int tileHeight);
-	void Unload();
+	TileSheet& operator=(TileSheet const&);
+	TileSheet& operator=(TileSheet&&);
 
-	void DrawTileTo(SDL_Surface* const dest, int x, int y, Region::type_t tile);
-	void DrawRegionTo(SDL_Surface* const dest, Region* const region, int camX, int camY);
+	void Load(SDL_Renderer*, std::string fname, int tileWidth, int tileHeight);
+	SDL_Texture* SetTexture(SDL_Texture*, int tileWidth, int tileHeight);
+	void Free() override;
+
+	void DrawLayerTo(SDL_Renderer* const renderer, Region* const region, int layer, int camX, int camY, double scaleX = 1.0, double scaleY = 1.0);
+	void DrawRegionTo(SDL_Renderer* const renderer, Region* const region, int camX, int camY, double scaleX = 1.0, double scaleY = 1.0);
 
 	//accessors
-	Image* GetImage() { return &image; }
-	int GetXCount() { return xCount; }
-	int GetYCount() { return yCount; }
-	int GetTileW() { return image.GetClipW(); }
-	int GetTileH() { return image.GetClipH(); }
-private:
-	Image image;
-	int xCount = 0, yCount = 0;
+	//DOCS: reuse Image::clip for tile sizes
+	int GetCountX() { return countX; }
+	int GetCountY() { return countY; }
+	int GetTileW() { return clip.w; }
+	int GetTileH() { return clip.h; }
+
+protected:
+	int countX = 0, countY = 0;
+
+	using Image::Load;
+	using Image::Create;
+	using Image::SetTexture;
+	using Image::SetClip;
+	using Image::SetClipX;
+	using Image::SetClipY;
+	using Image::SetClipW;
+	using Image::SetClipH;
 };

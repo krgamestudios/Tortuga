@@ -21,79 +21,163 @@
 */
 #include "sprite_sheet.hpp"
 
-#include <stdexcept>
 #include <sstream>
+#include <stdexcept>
+
+SpriteSheet& SpriteSheet::operator=(SpriteSheet const& rhs) {
+	//don't screw yourself
+	if (this == &rhs) {
+		return *this;
+	}
+
+	Free();
+
+	//Copy the other SpriteSheet's stuff
+	texture = rhs.texture;
+	clip = rhs.clip;
+	local = false;
+	countX = rhs.countX;
+	countY = rhs.countY;
+	indexX = rhs.indexX;
+	indexY = rhs.indexY;
+	delay = rhs.delay;
+	tick = rhs.tick;
+}
+
+SpriteSheet& SpriteSheet::operator=(SpriteSheet&& rhs) {
+	//don't screw yourself
+	if (this == &rhs) {
+		return *this;
+	}
+
+	Free();
+
+	//Steal the other SpriteSheet's stuff
+	texture = rhs.texture;
+	clip = rhs.clip;
+	local = rhs.local;
+	countX = rhs.countX;
+	countY = rhs.countY;
+	indexX = rhs.indexX;
+	indexY = rhs.indexY;
+	delay = rhs.delay;
+	tick = rhs.tick;
+
+	rhs.texture = nullptr;
+	rhs.clip = {0, 0, 0, 0};
+	rhs.local = false;
+	rhs.countX = 0;
+	rhs.countY = 0;
+	rhs.indexX = 0;
+	rhs.indexY = 0;
+	rhs.delay = 0.0;
+	rhs.tick = 0.0;
+}
 
 void SpriteSheet::Update(double delta) {
+	//if the delay has passed
 	if (delay && (tick += delta) >= delay) {
-		if (++xIndex >= xCount) {
-			xIndex = 0;
+		//if the index is out of bounds
+		if (++indexX >= countX) {
+			indexX = 0;
 		}
 		tick = 0;
 	}
-	image.SetClipX(xIndex * image.GetClipW());
-	image.SetClipY(yIndex * image.GetClipH());
+	//modify area drawn
+	clip.x = indexX * clip.w;
+	clip.y = indexX * clip.y;
 }
 
-SDL_Surface* SpriteSheet::LoadSurface(std::string fname, Uint16 xCellCount, Uint16 yCellCount) {
-	image.LoadSurface(fname);
+SDL_Texture* SpriteSheet::Load(SDL_Renderer* r, std::string fname, Uint16 cx, Uint16 cy) {
+	//call the base function
+	Image::Load(r, fname);
 
-	xCount = xCellCount;
-	yCount = yCellCount;
+	//set the metadata
+	countX = cx;
+	countY = cy;
 
-	image.SetClipW(image.GetSurface()->w / xCount);
-	image.SetClipH(image.GetSurface()->h / yCount);
+	//assume clip.x and clip.y were set to the size of the texture
+	//reduce the w & h to the size of one cell
+	clip.w = clip.w / countX;
+	clip.h = clip.h / countY;
 
-	xIndex = yIndex = 0;
+	indexX = indexY = 0;
+	delay = tick = 0.0;
+
+	return texture;
+}
+
+SDL_Texture* SpriteSheet::Create(SDL_Renderer* r, Uint16 w, Uint16 h, Uint16 cx, Uint16 cy) {
+	//call the base function
+	Image::Create(r, w, h);
+
+	//set the metadata
+	countX = cx;
+	countY = cy;
+
+	//assume clip.x and clip.y were set to the size of the texture
+	//reduce the w & h to the size of one cell
+	clip.w = clip.w / countX;
+	clip.h = clip.h / countY;
+
+	indexX = indexY = 0;
+	delay = tick = 0.0;
+
+	return texture;
+}
+
+SDL_Texture* SpriteSheet::SetTexture(SDL_Texture* ptr, Uint16 cx, Uint16 cy) {
+	//call the base function
+	Image::SetTexture(ptr);
+
+	//set the metadata
+	countX = cx;
+	countY = cy;
+
+	//assume clip.x and clip.y were set to the size of the texture
+	//reduce the w & h to the size of one cell
+	clip.w = clip.w / countX;
+	clip.h = clip.h / countY;
+
+	indexX = indexY = 0;
+	delay = tick = 0.0;
+
+	return texture;
+}
+
+void SpriteSheet::Free() {
+	Image::Free();
+	countX = countY = 0;
+	indexX = indexY = 0;
 	delay = tick = 0.0;
 }
 
-SDL_Surface* SpriteSheet::SetSurface(SDL_Surface* surface, Uint16 xCellCount, Uint16 yCellCount) {
-	image.SetSurface(surface);
-
-	xCount = xCellCount;
-	yCount = yCellCount;
-
-	image.SetClipW(image.GetSurface()->w / xCount);
-	image.SetClipH(image.GetSurface()->h / yCount);
-
-	xIndex = yIndex = 0;
-	delay = tick = 0.0;
+Uint16 SpriteSheet::SetCountX(Uint16 i) {
+	indexX = 0;
+	return countX = i;
 }
 
-void SpriteSheet::FreeSurface() {
-	image.FreeSurface();
-	xCount = yCount = 0;
-	xIndex = yIndex = 0;
-	delay = tick = 0.0;
+Uint16 SpriteSheet::SetCountY(Uint16 i) {
+	indexY = 0;
+	return countY = i;
 }
 
-Uint16 SpriteSheet::SetXCount(Uint16 i) {
-	xIndex = 0;
-	return xCount = i;
-}
-
-Uint16 SpriteSheet::SetYCount(Uint16 i) {
-	yIndex = 0;
-	return yCount = i;
-}
-
-Uint16 SpriteSheet::SetXIndex(Uint16 i) {
-	if (i > xCount) {
-		std::ostringstream os;
-		os << "Cannot set x index to " << i;
-		throw(std::invalid_argument(os.str()));
+Uint16 SpriteSheet::SetIndexX(Uint16 i) {
+	if (i > countX) {
+		std::ostringstream msg;
+		msg << "Cannot set index 'x' to " << i;
+		throw(std::out_of_range(msg.str()));
 	}
-	return xIndex = i;
+	return indexX = i;
 }
 
-Uint16 SpriteSheet::SetYIndex(Uint16 i) {
-	if (i > yCount) {
-		std::ostringstream os;
-		os << "Cannot set y index to " << i;
-		throw(std::invalid_argument(os.str()));
+Uint16 SpriteSheet::SetIndexY(Uint16 i) {
+	if (i > countY) {
+		std::ostringstream msg;
+		msg << "Cannot set index 'y' to " << i;
+		throw(std::invalid_argument(msg.str()));
 	}
-	return yIndex = i;
+	return indexY = i;
 }
 
 double SpriteSheet::SetDelay(double d) {

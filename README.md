@@ -16,7 +16,7 @@ This game is inspired by classic 2D RPGs (Final Fantasy, The Legend of Zelda), a
 
 ## External Dependencies
 
-* [SDL 1.2](http://www.libsdl.org/) - Simple DirectMedia Layer API
+* [SDL 2.0](http://www.libsdl.org/) - Simple DirectMedia Layer API
 * [SDL_net 2.0](http://www.libsdl.org/projects/SDL_net/) - SDL's networking extension
 * [lua 5.2](http://www.lua.org/) - The lua programming language
 * [SQLite3](http://www.sqlite.org/) - A lightweight SQL database engine

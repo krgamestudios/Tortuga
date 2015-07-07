@@ -21,7 +21,8 @@
 */
 #pragma once
 
-#include "SDL/SDL.h"
+#include "SDL2/SDL.h"
+
 #include <string>
 
 class Image {
@@ -29,21 +30,24 @@ public:
 	Image() = default;
 	Image(Image const& rhs) { *this = rhs; }
 	Image(Image&& rhs) { *this = std::move(rhs); }
-	Image(std::string fname) { LoadSurface(fname); }
-	Image(Uint16 w, Uint16 h) { CreateSurface(w, h); }
-	Image(SDL_Surface* p) { SetSurface(p); }
-	~Image() { FreeSurface(); }
+	Image(SDL_Renderer* r, std::string fname) { Load(r, fname); }
+	Image(SDL_Renderer* r, Uint16 w, Uint16 h) { Create(r, w, h); }
+	Image(SDL_Texture* p) { SetTexture(p); }
+	virtual ~Image() { Free(); }
 
 	Image& operator=(Image const&);
 	Image& operator=(Image&&);
 
-	SDL_Surface* LoadSurface(std::string fname);
-	SDL_Surface* CreateSurface(Uint16 w, Uint16 h);
-	SDL_Surface* SetSurface(SDL_Surface*);
-	SDL_Surface* GetSurface() const { return surface; }
-	void FreeSurface();
+	SDL_Texture* Load(SDL_Renderer* renderer, std::string fname);
+	SDL_Texture* Create(SDL_Renderer* renderer, Uint16 w, Uint16 h);
+	SDL_Texture* SetTexture(SDL_Texture*);
+	SDL_Texture* GetTexture() const;
+	virtual void Free();
 
-	void DrawTo(SDL_Surface* const, Sint16 x, Sint16 y);
+	void DrawTo(SDL_Renderer* const, Sint16 x, Sint16 y, double scaleX = 1.0, double scaleY = 1.0);
+
+	void SetAlpha(Uint8 a);
+	Uint8 GetAlpha();
 
 	//Clip handlers
 	SDL_Rect SetClip(SDL_Rect r) { return clip = r; }
@@ -61,10 +65,8 @@ public:
 
 	bool GetLocal() const { return local; }
 
-	void SetTransparentColor(Uint8 r, Uint8 g, Uint8 b);
-	void ClearTransparentColor();
 protected:
-	SDL_Surface* surface = nullptr;
+	SDL_Texture* texture = nullptr;
 	SDL_Rect clip = {0, 0, 0, 0};
 	bool local = false;
 };
