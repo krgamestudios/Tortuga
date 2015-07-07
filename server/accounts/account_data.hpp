@@ -19,8 +19,7 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef ACCOUNTDATA_HPP_
-#define ACCOUNTDATA_HPP_
+#pragma once
 
 #include <string>
 
@@ -55,5 +54,3 @@ private:
 	bool mod = false;
 	bool admin = false;
 };
-
-#endif

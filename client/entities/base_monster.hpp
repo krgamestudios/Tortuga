@@ -19,8 +19,7 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef BASEMONSTER_HPP_
-#define BASEMONSTER_HPP_
+#pragma once
 
 #include "entity.hpp"
 
@@ -41,5 +40,3 @@ protected:
 	std::string handle;
 	std::string avatar;
 };
-
-#endif

@@ -19,8 +19,7 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef BOUNDINGBOX_HPP_
-#define BOUNDINGBOX_HPP_
+#pragma once
 
 #include <type_traits>
 #include <algorithm>
@@ -74,5 +73,3 @@ inline BoundingBox operator+(BoundingBox b, Vector2 v) {
 inline BoundingBox operator+(Vector2 v, BoundingBox b) {
 	return b + v;
 }
-
-#endif

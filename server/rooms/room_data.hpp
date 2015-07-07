@@ -19,8 +19,7 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef ROOMDATA_HPP_
-#define ROOMDATA_HPP_
+#pragma once
 
 #include "character_data.hpp"
 #include "region_pager_lua.hpp"
@@ -78,5 +77,3 @@ private:
 	//hooks
 	int tickRef = LUA_NOREF;
 };
-
-#endif

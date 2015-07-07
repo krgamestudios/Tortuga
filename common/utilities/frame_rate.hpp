@@ -19,8 +19,7 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef FRAMERATE_HPP_
-#define FRAMERATE_HPP_
+#pragma once
 
 #include <chrono>
 
@@ -44,5 +43,3 @@ private:
 	int lastFrameRate = 0;
 	Clock::time_point tick = Clock::now();
 };
-
-#endif

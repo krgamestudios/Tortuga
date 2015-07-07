@@ -19,8 +19,7 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef SERIALPACKET_HPP_
-#define SERIALPACKET_HPP_
+#pragma once
 
 #include "serial_packet_base.hpp"
 #include "character_packet.hpp"
@@ -62,5 +61,3 @@ constexpr int PACKET_BUFFER_SIZE =
 	REGION_METADATA_FOOTPRINT +
 	REGION_TILE_FOOTPRINT +
 	REGION_SOLID_FOOTPRINT;
-
-#endif

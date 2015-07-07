@@ -19,8 +19,7 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef BASESCENE_HPP_
-#define BASESCENE_HPP_
+#pragma once
 
 #include "scene_list.hpp"
 
@@ -70,5 +69,3 @@ private:
 	static SDL_Surface* screen;
 	SceneList nextScene = SceneList::CONTINUE;
 };
-
-#endif

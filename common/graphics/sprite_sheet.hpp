@@ -19,8 +19,7 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef SPRITESHEET_HPP_
-#define SPRITESHEET_HPP_
+#pragma once
 
 #include "image.hpp"
 
@@ -62,5 +61,3 @@ private:
 	Uint16 xIndex = 0, yIndex = 0; //current cell being drawn
 	double delay = 0.0, tick = 0.0;
 };
-
-#endif

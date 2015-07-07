@@ -19,8 +19,7 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef CLIENTMANAGER_HPP_
-#define CLIENTMANAGER_HPP_
+#pragma once
 
 #include "client_data.hpp"
 #include "server_packet.hpp"
@@ -61,5 +60,3 @@ private:
 	std::map<int, ClientData> elementMap;
 	int counter = 0;
 };
-
-#endif

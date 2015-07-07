@@ -19,8 +19,7 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef SERIALPACKETBASE_HPP_
-#define SERIALPACKETBASE_HPP_
+#pragma once
 
 #include "serial_packet_type.hpp"
 
@@ -35,5 +34,3 @@ struct SerialPacketBase {
 
 	virtual ~SerialPacketBase() {};
 };
-
-#endif

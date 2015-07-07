@@ -19,8 +19,7 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef CLIENTPACKET_HPP_
-#define CLIENTPACKET_HPP_
+#pragma once
 
 #include "serial_packet_base.hpp"
 
@@ -33,5 +32,3 @@ struct ClientPacket : SerialPacketBase {
 
 void serializeClient(void* buffer, ClientPacket* packet);
 void deserializeClient(void* buffer, ClientPacket* packet);
-
-#endif

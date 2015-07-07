@@ -19,8 +19,7 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef REGIONPAGERBASE_HPP_
-#define REGIONPAGERBASE_HPP_
+#pragma once
 
 #include "region.hpp"
 
@@ -57,5 +56,3 @@ public:
 protected:
 	std::list<Region> regionList;
 };
-
-#endif

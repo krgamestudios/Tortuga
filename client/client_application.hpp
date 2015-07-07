@@ -19,8 +19,7 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef CLIENTAPPLICATION_HPP_
-#define CLIENTAPPLICATION_HPP_
+#pragma once
 
 #include "scene_list.hpp"
 #include "base_scene.hpp"
@@ -54,5 +53,3 @@ private:
 	int clientIndex = -1;
 	int accountIndex = -1;
 };
-
-#endif

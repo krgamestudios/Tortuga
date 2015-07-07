@@ -19,8 +19,7 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef CONFIGUTILITY_HPP_
-#define CONFIGUTILITY_HPP_
+#pragma once
 
 #include "singleton.hpp"
 
@@ -51,5 +50,3 @@ private:
 
 	table_t configMap;
 };
-
-#endif

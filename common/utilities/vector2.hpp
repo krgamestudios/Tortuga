@@ -19,8 +19,7 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef VECTOR2_HPP_
-#define VECTOR2_HPP_
+#pragma once
 
 #include <type_traits>
 #include <stdexcept>
@@ -110,5 +109,3 @@ public:
 
 //This is explicitly a POD
 static_assert(std::is_pod<Vector2>::value, "Vector2 is not a POD");
-
-#endif

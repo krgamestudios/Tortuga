@@ -19,8 +19,7 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef TRIGGERDATA_HPP_
-#define TRIGGERDATA_HPP_
+#pragma once
 
 #include "bounding_box.hpp"
 #include "entity.hpp"
@@ -57,5 +56,3 @@ private:
 	int scriptRef = LUA_NOREF;
 	std::list<Entity*> exclusionList;
 };
-
-#endif

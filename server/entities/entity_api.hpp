@@ -19,12 +19,9 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef ENTITYAPI_HPP_
-#define ENTITYAPI_HPP_
+#pragma once
 
 #include "lua.hpp"
 
 #define TORTUGA_ENTITY_API "entity"
 LUAMOD_API int openEntityAPI(lua_State* L);
-
-#endif

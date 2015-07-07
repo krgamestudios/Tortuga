@@ -19,8 +19,7 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef MAINMENU_HPP_
-#define MAINMENU_HPP_
+#pragma once
 
 #include "base_scene.hpp"
 
@@ -55,5 +54,3 @@ protected:
 	Button optionsButton;
 	Button quitButton;
 };
-
-#endif

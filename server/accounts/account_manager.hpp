@@ -19,8 +19,7 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef ACCOUNTMANAGER_HPP_
-#define ACCOUNTMANAGER_HPP_
+#pragma once
 
 #include "account_data.hpp"
 #include "singleton.hpp"
@@ -61,5 +60,3 @@ private:
 	std::map<int, AccountData> elementMap;
 	sqlite3* database = nullptr;
 };
-
-#endif

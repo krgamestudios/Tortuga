@@ -19,8 +19,7 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef OPTIONSMENU_HPP_
-#define OPTIONSMENU_HPP_
+#pragma once
 
 #include "base_scene.hpp"
 
@@ -54,5 +53,3 @@ protected:
 	RasterFont font;
 	Button backButton;
 };
-
-#endif

@@ -19,8 +19,7 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef ROOMMANAGER_HPP_
-#define ROOMMANAGER_HPP_
+#pragma once
 
 #include "character_data.hpp"
 #include "room_data.hpp"
@@ -80,5 +79,3 @@ private:
 	int createRef = LUA_NOREF;
 	int unloadRef = LUA_NOREF;
 };
-
-#endif

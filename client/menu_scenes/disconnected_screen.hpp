@@ -19,8 +19,7 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef DISCONNECTEDSCREEN_HPP_
-#define DISCONNECTEDSCREEN_HPP_
+#pragma once
 
 //graphics
 #include "image.hpp"
@@ -62,5 +61,3 @@ protected:
 	//auto return
 	std::chrono::steady_clock::time_point startTick;
 };
-
-#endif

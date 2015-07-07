@@ -19,8 +19,7 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef INWORLD_HPP_
-#define INWORLD_HPP_
+#pragma once
 
 //maps
 #include "region_pager_base.hpp"
@@ -166,5 +165,3 @@ protected:
 	ConfigUtility& config = ConfigUtility::GetSingleton();
 	UDPNetworkUtility& network = UDPNetworkUtility::GetSingleton();
 };
-
-#endif

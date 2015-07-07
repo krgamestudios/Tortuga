@@ -19,12 +19,9 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef TRIGGERAPI_HPP_
-#define TRIGGERAPI_HPP_
+#pragma once
 
 #include "lua.hpp"
 
 #define TORTUGA_TRIGGER_API "trigger"
 LUAMOD_API int openTriggerAPI(lua_State* L);
-
-#endif

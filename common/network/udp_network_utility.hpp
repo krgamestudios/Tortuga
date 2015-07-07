@@ -19,8 +19,7 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef UDPNETWORKUTILITY_HPP_
-#define UDPNETWORKUTILITY_HPP_
+#pragma once
 
 //common
 #include "serial_packet_base.hpp"
@@ -73,5 +72,3 @@ private:
 	UDPsocket socket = nullptr;
 	UDPpacket* packet = nullptr;
 };
-
-#endif

@@ -19,8 +19,7 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef LOBBYMENU_HPP_
-#define LOBBYMENU_HPP_
+#pragma once
 
 //graphics & ui
 #include "image.hpp"
@@ -101,5 +100,3 @@ protected:
 	BoundingBox listBox;
 	ServerInformation* selection = nullptr;
 };
-
-#endif

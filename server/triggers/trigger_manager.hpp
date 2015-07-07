@@ -19,8 +19,7 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef TRIGGERMANAGER_HPP_
-#define TRIGGERMANAGER_HPP_
+#pragma once
 
 #include "bounding_box.hpp"
 #include "vector2.hpp"
@@ -60,5 +59,3 @@ private:
 	lua_State* lua = nullptr;
 	int counter = 0;
 };
-
-#endif

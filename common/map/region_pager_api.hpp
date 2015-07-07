@@ -19,12 +19,9 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef REGIONPAGERAPI_HPP_
-#define REGIONPAGERAPI_HPP_
+#pragma once
 
 #include "lua.hpp"
 
 #define TORTUGA_REGION_PAGER_API "region_pager"
 LUAMOD_API int openRegionPagerAPI(lua_State* L);
-
-#endif

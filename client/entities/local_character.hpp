@@ -19,8 +19,7 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef LOCALCHARACTER_HPP_
-#define LOCALCHARACTER_HPP_
+#pragma once
 
 #include "base_character.hpp"
 #include "bounding_box.hpp"
@@ -38,5 +37,3 @@ public:
 private:
 	//NOTE: NO MEMBERS
 };
-
-#endif

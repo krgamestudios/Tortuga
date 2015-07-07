@@ -19,12 +19,9 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef CHARACTERMANAGERAPI_HPP_
-#define CHARACTERMANAGERAPI_HPP_
+#pragma once
 
 #include "lua.hpp"
 
 #define TORTUGA_CHARACTER_MANAGER_API "character_manager"
 LUAMOD_API int openCharacterManagerAPI(lua_State* L);
-
-#endif

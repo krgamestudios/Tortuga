@@ -19,8 +19,7 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef IMAGE_HPP_
-#define IMAGE_HPP_
+#pragma once
 
 #include "SDL/SDL.h"
 #include <string>
@@ -69,5 +68,3 @@ protected:
 	SDL_Rect clip = {0, 0, 0, 0};
 	bool local = false;
 };
-
-#endif

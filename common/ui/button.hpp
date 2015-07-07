@@ -19,8 +19,7 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef BUTTON_HPP_
-#define BUTTON_HPP_
+#pragma once
 
 #include "image.hpp"
 #include "raster_font.hpp"
@@ -90,5 +89,3 @@ private:
 	State state = State::NORMAL;
 	std::string text;
 };
-
-#endif

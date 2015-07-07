@@ -19,8 +19,7 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef MENUBAR_HPP_
-#define MENUBAR_HPP_
+#pragma once
 
 #include "image.hpp"
 #include "raster_font.hpp"
@@ -88,5 +87,3 @@ private:
 
 	friend class MenuBar;
 };
-
-#endif

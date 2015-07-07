@@ -19,12 +19,9 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef REGIONAPI_HPP_
-#define REGIONAPI_HPP_
+#pragma once
 
 #include "lua.hpp"
 
 #define TORTUGA_REGION_API "region"
 LUAMOD_API int openRegionAPI(lua_State* L);
-
-#endif

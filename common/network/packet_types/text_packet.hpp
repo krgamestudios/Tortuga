@@ -19,8 +19,7 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef TEXTPACKET_HPP_
-#define TEXTPACKET_HPP_
+#pragma once
 
 #include "serial_packet_base.hpp"
 
@@ -36,5 +35,3 @@ struct TextPacket : SerialPacketBase {
 
 void serializeText(void* buffer, TextPacket* packet);
 void deserializeText(void* buffer, TextPacket* packet);
-
-#endif

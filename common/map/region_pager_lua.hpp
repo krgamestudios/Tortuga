@@ -19,8 +19,7 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef REGIONPAGERLUA_HPP_
-#define REGIONPAGERLUA_HPP_
+#pragma once
 
 #include "region_pager_base.hpp"
 
@@ -65,5 +64,3 @@ protected:
 	int createRef = LUA_NOREF;
 	int unloadRef = LUA_NOREF;
 };
-
-#endif

@@ -19,8 +19,7 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef REGION_HPP_
-#define REGION_HPP_
+#pragma once
 
 #include <bitset>
 
@@ -59,5 +58,3 @@ private:
 	type_t tiles[REGION_WIDTH][REGION_HEIGHT][REGION_DEPTH];
 	std::bitset<REGION_WIDTH*REGION_HEIGHT> solid;
 };
-
-#endif

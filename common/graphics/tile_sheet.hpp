@@ -19,8 +19,7 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef TILESHEET_HPP_
-#define TILESHEET_HPP_
+#pragma once
 
 #include "region.hpp"
 
@@ -50,5 +49,3 @@ private:
 	Image image;
 	int xCount = 0, yCount = 0;
 };
-
-#endif

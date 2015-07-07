@@ -19,8 +19,7 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef MONSTERPACKET_HPP_
-#define MONSTERPACKET_HPP_
+#pragma once
 
 #include "serial_packet_base.hpp"
 
@@ -42,5 +41,3 @@ struct MonsterPacket : SerialPacketBase {
 
 void serializeMonster(void* buffer, MonsterPacket* packet);
 void deserializeMonster(void* buffer, MonsterPacket* packet);
-
-#endif

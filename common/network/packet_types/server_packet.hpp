@@ -19,8 +19,7 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef SERVERPACKET_HPP_
-#define SERVERPACKET_HPP_
+#pragma once
 
 #include "serial_packet_base.hpp"
 
@@ -33,5 +32,3 @@ struct ServerPacket : SerialPacketBase {
 
 void serializeServer(void* buffer, ServerPacket* packet);
 void deserializeServer(void* buffer, ServerPacket* packet);
-
-#endif

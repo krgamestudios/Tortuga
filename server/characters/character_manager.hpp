@@ -19,8 +19,7 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef CHARACTERMANAGER_HPP_
-#define CHARACTERMANAGER_HPP_
+#pragma once
 
 #include "character_data.hpp"
 #include "singleton.hpp"
@@ -66,5 +65,3 @@ private:
 	std::map<int, CharacterData> elementMap;
 	sqlite3* database = nullptr;
 };
-
-#endif

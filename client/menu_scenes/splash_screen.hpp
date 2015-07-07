@@ -19,8 +19,7 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef SPLASHSCREEN_HPP_
-#define SPLASHSCREEN_HPP_
+#pragma once
 
 #include "base_scene.hpp"
 
@@ -43,5 +42,3 @@ protected:
 	std::chrono::steady_clock::time_point startTick;
 	Image logo;
 };
-
-#endif

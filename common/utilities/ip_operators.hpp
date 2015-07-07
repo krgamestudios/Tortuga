@@ -19,13 +19,10 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef IPOPERATORS_HPP_
-#define IPOPERATORS_HPP_
+#pragma once
 
 #include "SDL_net.h"
 
 //these should've come standard
 bool operator==(IPaddress lhs, IPaddress rhs);
 bool operator!=(IPaddress lhs, IPaddress rhs);
-
-#endif

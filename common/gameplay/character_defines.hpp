@@ -19,8 +19,7 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef CHARACTERDEFINES_HPP_
-#define CHARACTERDEFINES_HPP_
+#pragma once
 
 #include <cmath>
 
@@ -38,5 +37,3 @@ constexpr int CHARACTER_BOUNDS_HEIGHT = 32;
 //the character's sprite format
 constexpr int CHARACTER_CELLS_X = 4;
 constexpr int CHARACTER_CELLS_Y = 4;
-
-#endif

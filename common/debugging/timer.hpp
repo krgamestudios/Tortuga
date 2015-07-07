@@ -19,8 +19,7 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef TIMER_HPP_
-#define TIMER_HPP_
+#pragma once
 
 #include <chrono>
 #include <string>
@@ -50,5 +49,3 @@ private:
 };
 
 std::ostream& operator<<(std::ostream& os, Timer& t);
-
-#endif

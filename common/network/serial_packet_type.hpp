@@ -19,8 +19,7 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef SERIALPACKETTYPE_HPP_
-#define SERIALPACKETTYPE_HPP_
+#pragma once
 
 /* DOCS: The headers indicate what packet type is used for each message
  * different messages under the same header will carry different amounts of
@@ -183,5 +182,3 @@ enum class SerialPacketType {
 
 	LAST
 };
-
-#endif

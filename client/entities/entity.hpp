@@ -19,8 +19,7 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef ENTITY_HPP_
-#define ENTITY_HPP_
+#pragma once
 
 #include "bounding_box.hpp"
 #include "sprite_sheet.hpp"
@@ -52,5 +51,3 @@ protected:
 	Vector2 motion;
 	BoundingBox bounds;
 };
-
-#endif

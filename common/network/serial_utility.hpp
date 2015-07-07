@@ -19,8 +19,7 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef SERIALIZEUTILITY_HPP_
-#define SERIALIZEUTILITY_HPP_
+#pragma once
 
 #include "serial_packet_base.hpp"
 
@@ -33,5 +32,3 @@ void deserialCopy(void** buffer, void* data, int size);
 //primary functions
 void serializePacket(void* buffer, SerialPacketBase* packet);
 void deserializePacket(void* buffer, SerialPacketBase* packet);
-
-#endif

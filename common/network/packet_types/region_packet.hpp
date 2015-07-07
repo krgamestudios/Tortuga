@@ -19,8 +19,7 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef REGIONPACKET_HPP_
-#define REGIONPACKET_HPP_
+#pragma once
 
 #include "serial_packet_base.hpp"
 
@@ -44,5 +43,3 @@ struct RegionPacket : SerialPacketBase {
 
 void serializeRegion(void* buffer, RegionPacket* packet);
 void deserializeRegion(void* buffer, RegionPacket* packet);
-
-#endif

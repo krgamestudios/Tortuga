@@ -19,8 +19,7 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef CHARACTERPACKET_HPP_
-#define CHARACTERPACKET_HPP_
+#pragma once
 
 #include "serial_packet_base.hpp"
 
@@ -45,5 +44,3 @@ struct CharacterPacket : SerialPacketBase {
 
 void serializeCharacter(void* buffer, CharacterPacket* packet);
 void deserializeCharacter(void* buffer, CharacterPacket* packet);
-
-#endif

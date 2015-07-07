@@ -19,8 +19,7 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef SERVERUTILITIES_HPP_
-#define SERVERUTILITIES_HPP_
+#pragma once
 
 #include "character_data.hpp"
 #include "serial_packet.hpp"
@@ -37,5 +36,3 @@ void copyCharacterToPacket(CharacterPacket* const packet, int characterIndex);
 void copyCharacterToPacket(CharacterPacket* const packet, CharacterData* const characterData, int characterIndex);
 void pumpAndChangeRooms(int characterIndex, int newRoomIndex);
 void pumpAndChangeRooms(CharacterData* const characterData, int newRoomIndex, int characterIndex);
-
-#endif

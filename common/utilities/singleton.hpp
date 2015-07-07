@@ -19,8 +19,7 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef SINGLETON_HPP_
-#define SINGLETON_HPP_
+#pragma once
 
 #include <stdexcept>
 
@@ -59,5 +58,3 @@ private:
 
 template<typename T>
 T* Singleton<T>::ptr = nullptr;
-
-#endif

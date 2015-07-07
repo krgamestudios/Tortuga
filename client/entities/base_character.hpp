@@ -19,8 +19,7 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef BASECHARACTER_HPP_
-#define BASECHARACTER_HPP_
+#pragma once
 
 //components
 #include "character_defines.hpp"
@@ -51,5 +50,3 @@ protected:
 	std::string handle;
 	std::string avatar;
 };
-
-#endif

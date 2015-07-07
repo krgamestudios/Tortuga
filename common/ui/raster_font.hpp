@@ -19,8 +19,7 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef RASTERFONT_HPP_
-#define RASTERFONT_HPP_
+#pragma once
 
 #include "image.hpp"
 
@@ -50,5 +49,3 @@ public:
 private:
 	Image image;
 };
-
-#endif
