@@ -11,19 +11,22 @@ This game is inspired by classic 2D RPGs (Final Fantasy, The Legend of Zelda), a
 
 ## Documentation
 
-* [Tortuga Wiki](https://github.com/Ratstail91/Tortuga/wiki) - Full documentation
+* [Tortuga Wiki](https://github.com/Ratstail91/Tortuga/wiki) - Full documentation (incomplete)
 * [Tortuga Bug Tracker](https://github.com/Ratstail91/Tortuga/issues) - A list of all known bugs and issues
 
 ## External Dependencies
 
 * [SDL 2.0](http://www.libsdl.org/) - Simple DirectMedia Layer API
+* [SDL_image 2.0](https://www.libsdl.org/projects/SDL_image/) - An SDL Extension for loading multiple image file formats
 * [SDL_net 2.0](http://www.libsdl.org/projects/SDL_net/) - SDL's networking extension
+* [SDL_ttf 2.0](https://www.libsdl.org/projects/SDL_ttf/) - An SDL extention for rendering fonts
 * [lua 5.2](http://www.lua.org/) - The lua programming language
 * [SQLite3](http://www.sqlite.org/) - A lightweight SQL database engine
 
 ## Tools
 
-* [WinRAR](http://www.rarlab.com/) - The best compression tool available IMO; only needed for Windows distribution
+* [WinRAR](http://www.rarlab.com/) - A free archive tool; needed for Windows distribution
+* [tar](http://www.gnu.org/software/tar/manual/) - The GNU archive tool; needed for Linux distribution
 * [Dropbox](https://www.dropbox.com/) - For hosting and distribution
 
 ## Copyright

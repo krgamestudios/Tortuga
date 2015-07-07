@@ -7,7 +7,7 @@ LIBS+=client.a ../libcommon.a -lSDL_net
 ifeq ($(OS),Windows_NT)
 	LIBS+=-lwsock32 -liphlpapi -lmingw32
 endif
-LIBS+=-lSDLmain -lSDL
+LIBS+=-lSDLmain -lSDL -lSDL2_image -lSDL2_ttf
 
 #flags
 CXXFLAGS+=-std=c++11 $(addprefix -I,$(INCLUDES))
