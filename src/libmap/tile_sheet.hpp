@@ -47,7 +47,7 @@ public:
 	void DrawRegionTo(SDL_Renderer* const renderer, Region* const region, int camX, int camY, double scaleX = 1.0, double scaleY = 1.0);
 
 	//accessors
-	//DOCS: reuse Image::clip for tile sizes
+	//DOCS: Reuse Image::clip for tile sizes
 	int GetCountX() { return countX; }
 	int GetCountY() { return countY; }
 	int GetTileW() { return clip.w; }

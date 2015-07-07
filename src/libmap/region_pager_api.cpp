@@ -104,7 +104,7 @@ static int unloadRegion(lua_State* L) {
 	return 0;
 }
 
-//TODO: check that parameters are not null
+//TODO: (1) check that parameters are not null
 
 static int setOnLoad(lua_State* L) {
 	RegionPagerLua* pager = reinterpret_cast<RegionPagerLua*>(lua_touserdata(L, 1));

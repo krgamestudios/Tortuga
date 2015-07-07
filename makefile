@@ -1,58 +1,13 @@
-#NOTE: I know it's a wonky spot, sue me
+OUTDIR=out
+
+all: $(OUTDIR)
+	$(MAKE) -C src
+
 debug: export CXXFLAGS+=-g
 debug: clean all
 
-#include directories
-INCLUDES+=. common libmap
-
-#libraries
-#the order of the $(LIBS) is important, at least for MinGW
-LIBS+=libcommon.a libmap.a
-ifeq ($(OS),Windows_NT)
-	LIBS+=-lmingw32
-endif
-LIBS+=-lSDL2main -lSDL2 -lSDL2_image -llua
-ifeq ($(shell uname), Linux)
-	#I don't know what this does, but Ubuntu needs it (dynamic linking for lua)
-	LIBS+=-ldl
-endif
-
-#flags
-CXXFLAGS+=-std=c++11 $(addprefix -I,$(INCLUDES))
-ifeq ($(shell uname), Linux)
-	#read data about the current install
-	CXXFLAGS+=$(shell sdl-config --cflags --static-libs)
-endif
-
-#source
-CXXSRC=$(wildcard *.cpp)
-
-#objects
-OBJDIR=obj
-OBJ+=$(addprefix $(OBJDIR)/,$(CXXSRC:.cpp=.o))
-
-#output
-OUTDIR=out
-OUT=$(addprefix $(OUTDIR)/,map)
-
-#targets
-all: $(OBJ) $(OUT)
-	$(MAKE) -C common
-	$(MAKE) -C libmap
-	$(CXX) $(CXXFLAGS) -o $(OUT) $(OBJ) $(LIBS)
-
-$(OBJ): | $(OBJDIR)
-
-$(OUT): | $(OUTDIR)
-
-$(OBJDIR):
-	mkdir $(OBJDIR)
-
 $(OUTDIR):
 	mkdir $(OUTDIR)
-
-$(OBJDIR)/%.o: %.cpp
-	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
 clean:
 ifeq ($(OS),Windows_NT)
