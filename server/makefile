@@ -9,7 +9,7 @@ ifeq ($(OS),Windows_NT)
 endif
 LIBS+=-lSDLmain -lSDL -llua -lsqlite3
 ifeq ($(shell uname), Linux)
-	#I don't know what this does, but Ubuntu needs it
+	#I don't know what this does, but Ubuntu needs it (dynamic linking for lua)
 	LIBS+=-ldl
 endif
 
