@@ -23,11 +23,11 @@
 #define ROOMDATA_HPP_
 
 #include "character_data.hpp"
-#include "monster_manager.hpp"
 #include "region_pager_lua.hpp"
 #include "trigger_manager.hpp"
 
 #include "lua.hpp"
+#include "sqlite3.h"
 
 #include <list>
 #include <string>
@@ -47,7 +47,6 @@ public:
 	std::string GetTileset();
 
 	RegionPagerLua* GetPager();
-	MonsterManager* GetMonsterMgr();
 	TriggerManager* GetTriggerMgr();
 	std::list<CharacterData*>* GetCharacterList();
 
@@ -69,7 +68,6 @@ private:
 
 	//members
 	RegionPagerLua pager;
-	MonsterManager monsterMgr;
 	TriggerManager triggerMgr;
 	std::list<CharacterData*> characterList;
 

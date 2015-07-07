@@ -56,11 +56,13 @@ static int getPager(lua_State* L) {
 	return 1;
 }
 
+/*
 static int getMonsterMgr(lua_State* L) {
 	RoomData* room = reinterpret_cast<RoomData*>(lua_touserdata(L, 1));
 	lua_pushlightuserdata(L, reinterpret_cast<void*>(room->GetMonsterMgr()) );
 	return 1;
 }
+*/
 
 static int getTriggerMgr(lua_State* L) {
 	RoomData* room = reinterpret_cast<RoomData*>(lua_touserdata(L, 1));
@@ -85,6 +87,7 @@ static int forEachCharacter(lua_State* L) {
 	return 0;
 }
 
+/*
 static int forEachMonster(lua_State* L) {
 	RoomData* room = reinterpret_cast<RoomData*>(lua_touserdata(L, 1));
 	MonsterManager* monsterMgr = room->GetMonsterMgr();
@@ -102,6 +105,7 @@ static int forEachMonster(lua_State* L) {
 	}
 	return 0;
 }
+*/
 
 static int setOnTick(lua_State* L) {
 	RoomData* room = reinterpret_cast<RoomData*>(lua_touserdata(L, 1));
@@ -136,11 +140,11 @@ static const luaL_Reg roomLib[] = {
 	{"GetTileset", getTilesetName},
 
 	{"GetPager",getPager},
-	{"GetMonsterMgr",getMonsterMgr},
+//	{"GetMonsterMgr",getMonsterMgr},
 	{"GetTriggerMgr",getTriggerMgr},
 
 	{"ForEachCharacter", forEachCharacter},
-	{"ForEachMonster", forEachMonster},
+//	{"ForEachMonster", forEachMonster},
 
 	{"SetOnTick", setOnTick},
 	{"GetOnTick", getOnTick},

@@ -22,6 +22,8 @@
 */
 --]]
 
+--DOCS: a placeholder map generator
+
 local regionAPI = require("region")
 
 local mapMaker = {}

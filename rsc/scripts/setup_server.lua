@@ -22,13 +22,13 @@
 */
 --]]
 
+--DOCS: This script is run by the server on startup
+
 print("Lua script check")
 
 --requirements
 roomManagerAPI = require("room_manager")
 roomAPI = require("room")
-monsterManagerAPI = require("monster_manager")
-monsterAPI = require("monster")
 
 mapMaker = require("map_maker")
 mapSaver = require("map_saver")
@@ -42,10 +42,6 @@ roomManagerAPI.SetOnCreate(function(room, index)
 	roomAPI.SetOnTick(room, function(room)
 		roomAPI.ForEachCharacter(room, function(character)
 			--
-		end)
-
-		roomAPI.ForEachMonster(room, function(monster)
-			--TODO: move ForEachMonster to the monster manager API
 		end)
 	end)
 end)
@@ -63,16 +59,3 @@ roomAPI.Initialize(underworld, mapSaver.Load, mapSaver.Save, mapMaker.DebugGrass
 
 --call the monstrosity
 doorUtility.createDoorPair("pair 1", overworld, -64, -64, underworld, 64, 64)
-
---testing the monster creation
-print("testing monsters")
-local monsterMgr = roomAPI.GetMonsterMgr(overworld)
-
-local monster, mIndex = monsterManagerAPI.Create(monsterMgr, "skume.bmp", 0)
-
-print("Monster count: ", monsterManagerAPI.GetLoadedCount(monsterMgr))
-print("Monster avatar: ", monsterAPI.GetAvatar(monster), mIndex)
-
-monsterManagerAPI.UnloadAll(monsterMgr)
-
-print("Finished the lua script")

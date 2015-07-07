@@ -22,6 +22,8 @@
 */
 --]]
 
+--DOCS: a placeholder door utility
+
 local doorUtility = {}
 
 roomAPI = require("room")

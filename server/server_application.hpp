@@ -26,7 +26,6 @@
 #include "account_manager.hpp"
 #include "character_manager.hpp"
 #include "client_manager.hpp"
-#include "monster_manager.hpp"
 #include "room_manager.hpp"
 
 //utilities
@@ -104,9 +103,6 @@ private:
 	void hCharacterMovement(CharacterPacket* const);
 	void hCharacterAttack(CharacterPacket* const);
 	void hCharacterDamage(CharacterPacket* const);
-
-	//character management
-	void hMonsterDamage(MonsterPacket* const);
 
 	//chat
 	void hTextBroadcast(TextPacket* const);

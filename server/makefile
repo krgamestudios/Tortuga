@@ -1,5 +1,5 @@
 #include directories
-INCLUDES+=SDL . accounts characters clients entities monsters rooms server_utilities triggers ../common/debugging ../common/gameplay ../common/map ../common/network ../common/network/packet_types ../common/utilities
+INCLUDES+=SDL . accounts characters clients entities rooms server_utilities triggers ../common/debugging ../common/gameplay ../common/map ../common/network ../common/network/packet_types ../common/utilities
 
 #libraries
 #the order of the $(LIBS) is important, at least for MinGW
@@ -33,7 +33,7 @@ all: $(OBJ) $(OUT)
 	$(MAKE) -C characters
 	$(MAKE) -C clients
 	$(MAKE) -C entities
-	$(MAKE) -C monsters
+#	$(MAKE) -C monsters
 	$(MAKE) -C rooms
 	$(MAKE) -C server_utilities
 	$(MAKE) -C triggers
