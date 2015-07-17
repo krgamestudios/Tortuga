@@ -21,6 +21,7 @@
 */
 #include "example_scene.hpp"
 
+#include <iomanip>
 #include <iostream>
 
 ExampleScene::ExampleScene(lua_State* L) {
@@ -81,9 +82,20 @@ void ExampleScene::MouseMotion(SDL_MouseMotionEvent const& event) {
 
 void ExampleScene::MouseButtonDown(SDL_MouseButtonEvent const& event) {
 	switch(event.button) {
-		case SDL_BUTTON_LEFT:
-			//change the selected tile
-			regionPager.SetTile((event.x + camera.x) / 32, (event.y + camera.y) / 32, layer, selection);
+		case SDL_BUTTON_LEFT: {
+			//DOCS: broke this down into several lines for clarity
+			//these are the "real" click positions, relative to the map (can be scaled)
+			int fieldX = event.x + camera.x;
+			int fieldY = event.y + camera.y;
+
+			//these are the x & y indexes of the selected tile
+			//NOTE: the terniary operator is used to circumvent an error with integer devision
+			int tileX = (fieldX >= 0 ? fieldX : fieldX - 32) / 32;
+			int tileY = (fieldY >= 0 ? fieldY : fieldY - 32) / 32;
+
+			//finally, call the method
+			regionPager.SetTile(tileX, tileY, layer, selection);
+		}
 		break;
 	}
 }
