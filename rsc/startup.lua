@@ -6,7 +6,9 @@ pager = ...
 
 ---[[
 
---BUG: RegionPagerLua fails without these
+--DOCS: These lambdas should return true or false, depending on if the operation succeeded or not
+--DOCS: No return value given is recognized as a failure
+--DOCS: OnCreate() and OnUnload() return values are currently ignored
 region_pager.SetOnLoad(pager, function(r)
 	print("Calling SetOnLoad's lambda")
 end)

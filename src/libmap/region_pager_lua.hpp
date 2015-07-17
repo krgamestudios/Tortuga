@@ -28,7 +28,7 @@
 #include <functional>
 #include <string>
 
-//NOTE: set the lua hook before use
+//DOCS: set the lua hook before use
 
 class RegionPagerLua : public RegionPagerBase {
 public:

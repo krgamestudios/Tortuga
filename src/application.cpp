@@ -119,9 +119,6 @@ void Application::Quit() {
 	BaseScene::SetRenderer(nullptr);
 	SDL_DestroyRenderer(renderer);
 	SDL_DestroyWindow(window);
-
-	//TODO: is this necessary?
-//	SDL_Quit();
 }
 
 //-------------------------

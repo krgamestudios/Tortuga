@@ -23,9 +23,6 @@
 
 #include <stdexcept>
 
-//DOCS: Load, Save and Create fail unless the lua function has been set
-//DOCS: UnloadIf and UnloadAll will still continue without the function set
-
 RegionPagerLua::~RegionPagerLua() {
 	//unload all regions
 	UnloadAll();
@@ -44,6 +41,7 @@ Region* RegionPagerLua::LoadRegion(int x, int y) {
 	//check if this function is available
 	if (lua_isnil(lua, -1)) {
 		lua_pop(lua, 1);
+		//signal that there is no load function
 		return nullptr;
 	}
 
@@ -57,17 +55,20 @@ Region* RegionPagerLua::LoadRegion(int x, int y) {
 	}
 
 	//check the return value, success or failure
-	if (lua_toboolean(lua, -1)) {
+	if (lua_isboolean(lua, -1) && lua_toboolean(lua, -1)) {
 		lua_pop(lua, 1);
+		//push and return the loaded region
 		regionList.push_front(tmpRegion);
 		return &regionList.front();
 	}
 	else {
 		lua_pop(lua, 1);
+		//signal a failure
 		return nullptr;
 	}
 }
 
+//NOTE: this return value seems strange; could replace it with a boolean
 //return the saved region, or nullptr on failure
 Region* RegionPagerLua::SaveRegion(int x, int y) {
 	//get the pager's function from the registry
@@ -76,6 +77,7 @@ Region* RegionPagerLua::SaveRegion(int x, int y) {
 	//check if this function is available
 	if (lua_isnil(lua, -1)) {
 		lua_pop(lua, 1);
+		//signal that the region wasn't saved
 		return nullptr;
 	}
 
@@ -83,6 +85,7 @@ Region* RegionPagerLua::SaveRegion(int x, int y) {
 	Region* ptr = FindRegion(x, y);
 	if (!ptr) {
 		lua_pop(lua, 1);
+		//signal that there is no save function
 		return nullptr;
 	}
 	lua_pushlightuserdata(lua, ptr);
@@ -93,17 +96,20 @@ Region* RegionPagerLua::SaveRegion(int x, int y) {
 	}
 
 	//check the return value, success or failure
-	if (lua_toboolean(lua, -1)) {
+	if (lua_isboolean(lua, -1) && lua_toboolean(lua, -1)) {
 		lua_pop(lua, 1);
+		//return the specified region that was saved
 		return ptr;
 	}
 	else {
 		lua_pop(lua, 1);
+		//signal a failure
 		return nullptr;
 	}
 }
 
-//return the created region, or nullptr on failure
+//DOCS: since this method is the last ditch call from GetRegion, it must return a valid region object, even if the create function hasn't been set.
+//return a new region, throwing an error on failure
 Region* RegionPagerLua::CreateRegion(int x, int y) {
 	if (FindRegion(x, y)) {
 		throw(std::logic_error("Cannot overwrite an existing region"));
@@ -115,7 +121,9 @@ Region* RegionPagerLua::CreateRegion(int x, int y) {
 	//check if this function is available
 	if (lua_isnil(lua, -1)) {
 		lua_pop(lua, 1);
-		return nullptr;
+		//return an empty region object
+		regionList.emplace_front(x, y);
+		return &regionList.front();
 	}
 
 	//something to work on

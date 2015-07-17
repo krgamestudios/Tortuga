@@ -28,8 +28,6 @@ RegionPagerBase::~RegionPagerBase() {
 	UnloadAll();
 };
 
-//TODO: (1) add nullptr checks to the calls to GetRegion()
-
 Region::type_t RegionPagerBase::SetTile(int x, int y, int z, Region::type_t v) {
 	Region* ptr = GetRegion(x, y);
 	return ptr->SetTile(x - ptr->GetX(), y - ptr->GetY(), z, v);
