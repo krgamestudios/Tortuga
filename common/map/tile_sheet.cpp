@@ -21,6 +21,8 @@
 */
 #include "tile_sheet.hpp"
 
+#include <stdexcept>
+
 TileSheet& TileSheet::operator=(TileSheet const& rhs) {
 	//don't screw yourself
 	if (this == &rhs) {
@@ -81,25 +83,41 @@ void TileSheet::Free() {
 }
 
 void TileSheet::DrawLayerTo(SDL_Renderer* const renderer, Region* const region, int layer, int camX, int camY, double scaleX, double scaleY) {
-	//TODO: empty
+	//TODO: (2) empty
 }
 
 void TileSheet::DrawRegionTo(SDL_Renderer* const renderer, Region* const region, int camX, int camY, double scaleX, double scaleY) {
-	//TODO: (2) make TileSheet a friend class of Region
+	//NOTE: TileSheet is a friend class of Region
+	//reimplementing DrawTo() to improve performance (less indirection)
+	if (!texture) {
+		throw(std::logic_error("No image texture to draw"));
+	}
+
+	//the local variables
+	SDL_Rect sclip = {0, 0, clip.w, clip.h};
+	SDL_Rect dclip = {0, 0, Uint16(clip.w * scaleX), Uint16(clip.h * scaleY)};
 	Region::type_t tile = 0;
+
+	//for each tile
 	for (register int i = 0; i < REGION_WIDTH; ++i) {
 		for (register int j = 0; j < REGION_HEIGHT; ++j) {
 			for (register int k = 0; k < REGION_DEPTH; ++k) {
-				tile = region->GetTile(i, j, k);
+				//get the value to skip expensive lookups
+				tile = region->tiles[i][j][k];
+
 				//0 is invisible
 				if (tile == 0) continue;
-				clip.x = (tile-1) % countX * clip.h;
-				clip.y = (tile-1) / countX * clip.w;
-				//TODO: (2) raw rendering; improve preformance
-				Image::DrawTo(renderer,
-					(region->GetX() + i) * clip.w - camX,
-					(region->GetY() + j) * clip.h - camY,
-					scaleX, scaleY);
+
+				//set the sclip
+				sclip.x = (tile-1) % countX * clip.h;
+				sclip.x = (tile-1) / countX * clip.w;
+
+				//set the dclip
+				dclip.x = ((region->x + i) * clip.w - camX) * scaleX;
+				dclip.y = ((region->y + j) * clip.h - camY) * scaleY;
+
+				//draw
+				SDL_RenderCopy(renderer, texture, &sclip, &dclip);
 			}
 		}
 	}

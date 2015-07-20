@@ -28,6 +28,8 @@
 #include <functional>
 #include <string>
 
+//DOCS: set the lua hook before use
+
 class RegionPagerLua : public RegionPagerBase {
 public:
 	RegionPagerLua() = default;
