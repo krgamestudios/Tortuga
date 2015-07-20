@@ -27,6 +27,7 @@
 ExampleScene::ExampleScene(lua_State* L) {
 	lua = L;
 
+	//TODO: non-hardcoded source
 	tileSheet.Load(GetRenderer(), "./rsc/terrain.bmp", 32, 32);
 
 	//set the pager's hook

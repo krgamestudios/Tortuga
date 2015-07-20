@@ -81,7 +81,7 @@ void TileSheet::Free() {
 }
 
 void TileSheet::DrawLayerTo(SDL_Renderer* const renderer, Region* const region, int layer, int camX, int camY, double scaleX, double scaleY) {
-	//TODO: empty
+	//TODO: (2) empty
 }
 
 void TileSheet::DrawRegionTo(SDL_Renderer* const renderer, Region* const region, int camX, int camY, double scaleX, double scaleY) {
