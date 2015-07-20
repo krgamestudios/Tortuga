@@ -31,13 +31,6 @@ BaseScene::~BaseScene() {
 	//EMPTY
 }
 
-void BaseScene::RunFrame() {
-	FrameStart();
-	ProcessEvents();
-	Update();
-	FrameEnd();
-}
-
 void BaseScene::RenderFrame(SDL_Renderer* renderer) {
 	//EMPTY
 }
@@ -64,43 +57,6 @@ SceneSignal BaseScene::GetSceneSignal() {
 
 void BaseScene::FrameStart() {
 	//EMPTY
-}
-
-void BaseScene::ProcessEvents() {
-	SDL_Event event;
-	while(SDL_PollEvent(&event)) {
-		switch(event.type) {
-			case SDL_QUIT:
-				QuitEvent();
-			break;
-
-			case SDL_MOUSEMOTION:
-				MouseMotion(event.motion);
-			break;
-
-			case SDL_MOUSEBUTTONDOWN:
-				MouseButtonDown(event.button);
-			break;
-
-			case SDL_MOUSEBUTTONUP:
-				MouseButtonUp(event.button);
-			break;
-
-			case SDL_MOUSEWHEEL:
-				MouseWheel(event.wheel);
-			break;
-
-			case SDL_KEYDOWN:
-				KeyDown(event.key);
-			break;
-
-			case SDL_KEYUP:
-				KeyUp(event.key);
-			break;
-
-			//TODO: joystick and controller events
-		}
-	}
 }
 
 void BaseScene::Update() {

@@ -43,6 +43,7 @@ public:
 
 private:
 	//scene management
+	void ProcessEvents();
 	void ProcessSceneSignal(SceneSignal);
 	void ClearScene();
 

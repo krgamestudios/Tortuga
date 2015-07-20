@@ -94,7 +94,11 @@ void Application::Proc() {
 		if (simTime < realTime) {
 			while(simTime < realTime) {
 				//call the user defined functions
-				activeScene->RunFrame();
+				activeScene->FrameStart();
+				ProcessEvents();
+				activeScene->Update();
+				activeScene->FrameEnd();
+
 				//step to the next frame
 				simTime += frameDelay;
 			}
@@ -124,6 +128,43 @@ void Application::Quit() {
 //-------------------------
 //Scene management
 //-------------------------
+
+void Application::ProcessEvents() {
+	SDL_Event event;
+	while(SDL_PollEvent(&event)) {
+		switch(event.type) {
+			case SDL_QUIT:
+				activeScene->QuitEvent();
+			break;
+
+			case SDL_MOUSEMOTION:
+				activeScene->MouseMotion(event.motion);
+			break;
+
+			case SDL_MOUSEBUTTONDOWN:
+				activeScene->MouseButtonDown(event.button);
+			break;
+
+			case SDL_MOUSEBUTTONUP:
+				activeScene->MouseButtonUp(event.button);
+			break;
+
+			case SDL_MOUSEWHEEL:
+				activeScene->MouseWheel(event.wheel);
+			break;
+
+			case SDL_KEYDOWN:
+				activeScene->KeyDown(event.key);
+			break;
+
+			case SDL_KEYUP:
+				activeScene->KeyUp(event.key);
+			break;
+
+			//TODO: joystick and controller events
+		}
+	}
+}
 
 //Add the custom scene headers here
 #include "example_scene.hpp"
