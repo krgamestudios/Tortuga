@@ -110,7 +110,7 @@ void TileSheet::DrawRegionTo(SDL_Renderer* const renderer, Region* const region,
 
 				//set the sclip
 				sclip.x = (tile-1) % countX * clip.h;
-				sclip.x = (tile-1) / countX * clip.w;
+				sclip.y = (tile-1) / countX * clip.w;
 
 				//set the dclip
 				dclip.x = ((region->x + i) * clip.w - camX) * scaleX;
