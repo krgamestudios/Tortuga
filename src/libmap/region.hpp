@@ -52,6 +52,8 @@ public:
 
 	std::bitset<REGION_WIDTH*REGION_HEIGHT>* GetSolidBitset();
 private:
+	friend class TileSheet;
+
 	const int x;
 	const int y;
 

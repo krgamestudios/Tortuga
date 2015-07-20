@@ -86,6 +86,10 @@ void BaseScene::ProcessEvents() {
 				MouseButtonUp(event.button);
 			break;
 
+			case SDL_MOUSEWHEEL:
+				MouseWheel(event.wheel);
+			break;
+
 			case SDL_KEYDOWN:
 				KeyDown(event.key);
 			break;
