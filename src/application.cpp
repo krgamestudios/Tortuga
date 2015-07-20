@@ -162,6 +162,15 @@ void Application::ProcessEvents() {
 			break;
 
 			//TODO: joystick and controller events
+
+			//window events are handled internally
+			case SDL_WINDOWEVENT:
+				switch(event.window.event) {
+					case SDL_WINDOWEVENT_RESIZED:
+						SDL_RenderSetLogicalSize(renderer, event.window.data1, event.window.data2);
+					break;
+				}
+			break;
 		}
 	}
 }
