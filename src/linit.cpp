@@ -48,7 +48,6 @@ static const luaL_Reg preloadedlibs[] = {
   {NULL, NULL}
 };
 
-
 LUALIB_API void luaL_openlibs (lua_State *L) {
   const luaL_Reg *lib;
   /* call open functions from 'loadedlibs' and set results to global table */

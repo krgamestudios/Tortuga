@@ -139,6 +139,14 @@ void ExampleScene::KeyDown(SDL_KeyboardEvent const& event) {
 		case SDLK_ESCAPE:
 			QuitEvent();
 		break;
+
+		case SDLK_r:
+			SetSceneSignal(SceneSignal::EXAMPLE_SCENE);
+		break;
+
+		case SDLK_SPACE:
+			camera.scale = 1.0;
+		break;
 	}
 }
 

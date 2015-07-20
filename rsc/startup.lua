@@ -24,4 +24,12 @@ end)
 
 --]]
 
+generator, msg = loadfile("rsc/roguegenerator.lua")
+
+if generator == nil then
+	print("error: ", msg)
+else
+	generator(pager)
+end
+
 print("Finished startup script")
