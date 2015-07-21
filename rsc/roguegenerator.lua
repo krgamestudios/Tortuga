@@ -13,16 +13,10 @@ This specification isn't ironclad.
 
 print("Beginning generator...")
 
-math.randomseed(os.time())
-
-roomcount = math.random(5, 10)
-roomlist = {}
-tunnellist = {}
-
-function newroom()
+function newroom(northBound, eastBound, southBound, westBound)
 	--place the room within proximity of the center, so that they're not too far apart.
-	local x = math.random(-30, 30)
-	local y = math.random(-30, 30)
+	local x = math.random(westBound, eastBound)
+	local y = math.random(northBound, southBound)
 	local w = math.random(2, 5)
 	local h = math.random(2, 5)
 
@@ -68,21 +62,46 @@ function newpath(x1, y1, x2, y2)
 	return path
 end
 
+function buildpaths(roomlist)
+	local roomcount = #roomlist
+	local pathlist = {}
+	--tunnel the shortest paths
+	for i = 1, roomcount-1 do
+		table.insert(pathlist, newpath(
+			roomlist[i].seedX,
+			roomlist[i].seedY,
+			roomlist[i+1].seedX,
+			roomlist[i+1].seedY))
+	end
+
+	--return the new paths
+	return pathlist
+end
+
 print("populating lists")
 
+math.randomseed(os.time())
+
+roomlist = {}
+pathlist = {}
+
 --populate the roomlist
+roomcount = math.random(10, 15)
 for i = 1, roomcount do
-	table.insert(roomlist, newroom())
+	table.insert(roomlist, newroom(-30, 0, 30, -60)) --60x60
 end
 
---tunnel the shortest paths
-for i = 1, roomcount-1 do
-	table.insert(tunnellist, newpath(
-		roomlist[i].seedX,
-		roomlist[i].seedY,
-		roomlist[i+1].seedX,
-		roomlist[i+1].seedY))
+roomcount = math.random(10, 15)
+for i = 1, roomcount do
+	table.insert(roomlist, newroom(-30, 50, 30, -10)) --60x60
 end
+
+roomcount = math.random(20, 30)
+for i = 1, roomcount do
+	table.insert(roomlist, newroom(-60, 120, 60, 70)) --50x120
+end
+
+pathlist = buildpaths(roomlist)
 
 --pass the data onto the pager
 pager = ... --called as a chunk
@@ -93,19 +112,17 @@ for k, iter in next, roomlist do
 	for i = iter.east, iter.west do
 		for j = iter.north, iter.south do
 			--set
-			local ret = region_pager.SetTile(pager, i, j, 0, 14)
---			print("ret: ", ret)
+			region_pager.SetTile(pager, i, j, 0, 14)
 		end
 	end
 end
 
 --create the paths
 iter = nil
-for k, path in next, tunnellist do --multiple paths in the tunnellsit
+for k, path in next, pathlist do --multiple paths in the lsit
 	for k, iter in next, path do
 		--for each tile in the path, set
-		local ret = region_pager.SetTile(pager, iter.x, iter.y, 1, 50) --DEBUG: set to layer 1
---		print("ret: ", ret)
+		region_pager.SetTile(pager, iter.x, iter.y, 0, 14)
 	end
 end
 

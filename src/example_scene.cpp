@@ -41,6 +41,11 @@ ExampleScene::ExampleScene(lua_State* L) {
 
 	//run the function
 	lua_pcall(lua, 1, LUA_MULTRET, 0);
+
+	//DEBUG: cam jump
+	camera.x = -3000;
+	camera.y = -1500;
+	camera.scale = 0.25;
 }
 
 ExampleScene::~ExampleScene() {
