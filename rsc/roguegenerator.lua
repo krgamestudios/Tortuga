@@ -7,7 +7,8 @@ center of rooms. The rooms can be any size, as long as they don't overlap. From
 There, a tunnel can be "carved" from each seed tile to the next. Finally, the 
 map is populated, but that is beyond this exercise.
 
-This specification isn't ironclad.
+This specification isn't ironclad, as the current implementation has no overlap
+prevention, resulting in some strange dungeon designs.
 
 --]]
 
@@ -78,7 +79,7 @@ function buildpaths(roomlist)
 	return pathlist
 end
 
-print("populating lists")
+print("Populating lists")
 
 math.randomseed(os.time())
 
@@ -135,4 +136,4 @@ for k, path in next, pathlist do --multiple paths in the lsit
 	end
 end
 
-print("generator finished")
+print("Generator finished")

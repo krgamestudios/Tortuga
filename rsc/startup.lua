@@ -4,7 +4,7 @@ print("Running startup script")
 
 pager = ...
 
----[[
+--[[
 
 --DOCS: These lambdas should return true or false, depending on if the operation succeeded or not
 --DOCS: No return value given is recognized as a failure
