@@ -91,7 +91,7 @@ for i = 1, roomcount do
 	table.insert(roomlist, newroom(-30, 0, 30, -60)) --60x60
 end
 
-roomcount = math.random(10, 15)
+roomcount = math.random(5, 10)
 for i = 1, roomcount do
 	table.insert(roomlist, newroom(-30, 50, 30, -10)) --60x60
 end
