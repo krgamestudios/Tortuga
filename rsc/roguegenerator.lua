@@ -27,8 +27,8 @@ function newroom(northBound, eastBound, southBound, westBound)
 		--give it a decent size
 		north = y - h,
 		south = y + h,
-		east = x - w,
-		west = x + w,
+		east = x + w,
+		west = x - w,
 	}
 end
 
@@ -96,11 +96,20 @@ for i = 1, roomcount do
 	table.insert(roomlist, newroom(-30, 50, 30, -10)) --60x60
 end
 
-roomcount = math.random(20, 30)
-for i = 1, roomcount do
-	table.insert(roomlist, newroom(-60, 120, 60, 70)) --50x120
-end
+print("Building boss room")
+--boss room
+local bossRoom = {
+	seedX = math.random(60, 90),
+	seedY = math.random(-30, 30),
+}
+bossRoom.north = bossRoom.seedY - 5
+bossRoom.south = bossRoom.seedY + 5
+bossRoom.east = bossRoom.seedX + 5
+bossRoom.west = bossRoom.seedX - 5
 
+table.insert(roomlist, bossRoom)
+
+--paths
 pathlist = buildpaths(roomlist)
 
 --pass the data onto the pager
@@ -109,7 +118,7 @@ pager = ... --called as a chunk
 --create the rooms
 for k, iter in next, roomlist do
 	--for each tile in the room
-	for i = iter.east, iter.west do
+	for i = iter.west, iter.east do
 		for j = iter.north, iter.south do
 			--set
 			region_pager.SetTile(pager, i, j, 0, 14)
