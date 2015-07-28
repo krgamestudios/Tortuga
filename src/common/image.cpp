@@ -101,7 +101,7 @@ SDL_Texture* Image::Create(SDL_Renderer* renderer, Uint16 w, Uint16 h) {
 	//make the texture
 	texture = SDL_CreateTexture(renderer,
 		SDL_PIXELFORMAT_RGBA8888,
-		SDL_TEXTUREACCESS_STATIC,
+		SDL_TEXTUREACCESS_TARGET,
 		w, h);
 
 	if (!texture) {

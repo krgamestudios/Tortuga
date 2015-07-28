@@ -1,4 +1,4 @@
-/* Copyright: (c) Kayne Ruse 2015
+/* Copyright: (c) Kayne Ruse 2013-2015
  * 
  * This software is provided 'as-is', without any express or implied
  * warranty. In no event will the authors be held liable for any damages
@@ -21,38 +21,41 @@
 */
 #pragma once
 
-#include "base_scene.hpp"
-#include "scene_signal.hpp"
+#include "image.hpp"
 
-#include "lua.hpp"
-#include "SDL2/SDL.h"
 #include "SDL2/SDL_ttf.h"
 
-//TODO: do something with these
-constexpr int screenWidth = 800;
-constexpr int screenHeight = 600;
+#include <string>
 
-//DOCS: The Application class handles scene switching, utilizing only one window
-class Application {
+class Button {
 public:
-	Application() = default;
-	~Application() = default;
+	//types
+	typedef int (*fptr)();
 
-	void Init(int argc, char* argv[]);
-	void Proc();
-	void Quit();
+	//methods
+	Button() = default;
+	~Button() = default;
 
-private:
-	//scene management
-	void ProcessEvents();
-	void ProcessSceneSignal(SceneSignal);
-	void ClearScene();
+	void DrawTo(SDL_Renderer*);
 
-	BaseScene* activeScene = nullptr;
+	//setup
+	void SetBackgroundTexture(SDL_Renderer*, SDL_Texture*);
+	void SetText(SDL_Renderer*, TTF_Font*, std::string, SDL_Color);
+	void SetX(int x);
+	void SetY(int y);
 
-	//TODO: build a "window" class?
-	SDL_Window* window = nullptr;
-	SDL_Renderer* renderer = nullptr;
+	//capture input
+	void MouseMotion(SDL_MouseMotionEvent const&);
+	void MouseButtonDown(SDL_MouseButtonEvent const&);
+	void MouseButtonUp(SDL_MouseButtonEvent const&);
 
-	lua_State* lua = nullptr;
+	//responses
+	void SetOnPress(fptr);
+	void SetOnRelease(fptr);
+
+protected:
+	Image image;
+	int posX = 0, posY = 0;
+	fptr onPress = nullptr;
+	fptr onRelease = nullptr;
 };

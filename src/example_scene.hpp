@@ -22,10 +22,12 @@
 #pragma once
 
 #include "base_scene.hpp"
+#include "button.hpp"
 #include "region_pager_lua.hpp"
 #include "tile_sheet.hpp"
 
 #include "lua.hpp"
+#include "SDL2/SDL_ttf.h"
 
 class ExampleScene : public BaseScene {
 public:
@@ -60,4 +62,7 @@ private:
 
 	int selection = 1;
 	int layer = 0;
+
+	TTF_Font* font = nullptr;
+	Button button;
 };

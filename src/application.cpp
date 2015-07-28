@@ -57,6 +57,13 @@ void Application::Init(int argc, char* argv[]) {
 	//set the hook for the renderer
 	BaseScene::SetRenderer(renderer);
 
+	//setting up SDL2_ttf
+	if (TTF_Init()) {
+		std::ostringstream msg;
+		msg << "Failed to initialize SDL2_ttf: " << SDL_GetError();
+		throw(std::runtime_error(msg.str()));
+	}
+
 	//setup lua
 	lua = luaL_newstate();
 	if (!lua) {
@@ -118,6 +125,7 @@ void Application::Proc() {
 
 void Application::Quit() {
 	lua_close(lua);
+	TTF_Quit();
 
 	//clean up after the program
 	BaseScene::SetRenderer(nullptr);

@@ -7,7 +7,7 @@ LIBS+=libcommon.a libmap.a
 ifeq ($(OS),Windows_NT)
 	LIBS+=-lmingw32
 endif
-LIBS+=-lSDL2main -lSDL2 -lSDL2_image -llua
+LIBS+=-lSDL2main -lSDL2 -lSDL2_image -lSDL2_ttf -llua
 ifeq ($(shell uname), Linux)
 	#I don't know what this does, but Ubuntu needs it (dynamic linking for lua)
 	LIBS+=-ldl

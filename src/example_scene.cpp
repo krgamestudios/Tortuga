@@ -23,6 +23,7 @@
 
 #include <iomanip>
 #include <iostream>
+#include <sstream>
 
 ExampleScene::ExampleScene(lua_State* L) {
 	lua = L;
@@ -46,6 +47,16 @@ ExampleScene::ExampleScene(lua_State* L) {
 	camera.x = -3000;
 	camera.y = -1500;
 	camera.scale = 0.25;
+
+	//DEBUG: testing buttons
+	font = TTF_OpenFont("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 12);
+	if (!font) {
+		std::ostringstream msg;
+		msg << "Failed to load a font: " << SDL_GetError();
+		throw(std::runtime_error(msg.str()));
+	}
+	button.SetBackgroundTexture(GetRenderer(), tileSheet.GetTexture());
+	button.SetText(GetRenderer(), font, "BUTTON TEXT", {255, 255, 255, 255});
 }
 
 ExampleScene::~ExampleScene() {
@@ -73,6 +84,9 @@ void ExampleScene::RenderFrame(SDL_Renderer* renderer) {
 		//NOTE: Graphical scaling is done internally
 		tileSheet.DrawRegionTo(renderer, &(*it), camera.x, camera.y, camera.scale, camera.scale);
 	}
+
+	//DEBUG: testing UI
+	button.DrawTo(renderer);
 }
 
 //-------------------------
