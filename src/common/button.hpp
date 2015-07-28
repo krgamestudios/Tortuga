@@ -29,8 +29,9 @@
 
 class Button {
 public:
-	//types
-	typedef int (*fptr)();
+	enum State {
+		IDLE = 0, HOVER = 1, PRESSED = 2
+	};
 
 	//methods
 	Button() = default;
@@ -45,17 +46,18 @@ public:
 	void SetY(int y);
 
 	//capture input
-	void MouseMotion(SDL_MouseMotionEvent const&);
-	void MouseButtonDown(SDL_MouseButtonEvent const&);
-	void MouseButtonUp(SDL_MouseButtonEvent const&);
+	State MouseMotion(SDL_MouseMotionEvent const&);
+	State MouseButtonDown(SDL_MouseButtonEvent const&);
+	State MouseButtonUp(SDL_MouseButtonEvent const&);
 
-	//responses
-	void SetOnPress(fptr);
-	void SetOnRelease(fptr);
+	//states
+	void SetState(State); //idle, busy or disabled
+	State GetState();
 
 protected:
+	bool CheckBounds(int x, int y);
+
 	Image image;
 	int posX = 0, posY = 0;
-	fptr onPress = nullptr;
-	fptr onRelease = nullptr;
+	State state;
 };

@@ -24,6 +24,7 @@
 #include <stdexcept>
 
 void Button::DrawTo(SDL_Renderer* renderer) {
+	image.SetClipY(image.GetClipH() * state);
 	image.DrawTo(renderer, 0, 0);
 }
 
@@ -31,7 +32,7 @@ void Button::SetBackgroundTexture(SDL_Renderer* renderer, SDL_Texture* texture) 
 	//copy the given texture
 	image.Free();
 
-	//a blank texture can simply free the image
+	//a null texture can simply free the image
 	if (!texture) {
 		return;
 	}
@@ -45,6 +46,9 @@ void Button::SetBackgroundTexture(SDL_Renderer* renderer, SDL_Texture* texture) 
 	SDL_SetRenderTarget(renderer, image.GetTexture());
 	SDL_RenderCopy(renderer, texture, nullptr, nullptr);
 	SDL_SetRenderTarget(renderer, nullptr);
+
+	//prune
+	image.SetClipH(image.GetClipH() / 3);
 }
 
 void Button::SetText(SDL_Renderer* renderer, TTF_Font* font, std::string s, SDL_Color color) {
@@ -60,21 +64,30 @@ void Button::SetText(SDL_Renderer* renderer, TTF_Font* font, std::string s, SDL_
 	if (!text) {
 		throw(std::runtime_error("Failed to create a TTF texture"));
 	}
-	int w, h;
+
+	//get the dimensions & rects
+	int x, y, w, h;
 	SDL_QueryTexture(text, nullptr, nullptr, &w, &h);
+	x = (image.GetClipW() - w) / 2;
+	y = (image.GetClipH() - h) / 2;
+	SDL_Rect src = {0, 0, w, h};
+	SDL_Rect dst;
 
 	//draw the text to the background
-	SDL_Rect src = {0, 0, w, h};
-	SDL_Rect dst = {
-		(image.GetClipW() - w) / 2,
-		(image.GetClipH() - h) / 2,
-		w, h};
 	SDL_SetRenderTarget(renderer, image.GetTexture());
-	SDL_RenderCopy(renderer, text, &src, &dst);
+
+	for (int i = 0; i < 3; i++) {
+		dst = {x, y + image.GetClipH() * i, w, h};
+		SDL_RenderCopy(renderer, text, &src, &dst);
+	}
+
 	SDL_SetRenderTarget(renderer, nullptr);
 
 	//free the texture
 	SDL_DestroyTexture(text);
+
+	//DEBUG: testing
+//	image.SetClipH(image.GetClipH() * 3);
 }
 
 void Button::SetX(int x) {
@@ -85,22 +98,55 @@ void Button::SetY(int y) {
 	posY = y;
 }
 
-void Button::MouseMotion(SDL_MouseMotionEvent const&) {
-	//TODO: empty
+Button::State Button::MouseMotion(SDL_MouseMotionEvent const& event) {
+	//if out of bounds, exit
+	if (CheckBounds(event.x, event.y)) {
+		return state = State::IDLE;
+	}
+
+	//if in bounds, check button
+	if (event.state & SDL_BUTTON_LMASK) {
+		state = State::PRESSED;
+	}
+	else {
+		state = State::HOVER;
+	}
+
+	return state;
 }
 
-void Button::MouseButtonDown(SDL_MouseButtonEvent const&) {
-	//TODO: empty
+Button::State Button::MouseButtonDown(SDL_MouseButtonEvent const& event) {
+	//if out of bounds, exit
+	if (CheckBounds(event.x, event.y)) {
+		return state = State::IDLE;
+	}
+
+	//if in bounds, set button
+	return state = State::PRESSED;
 }
 
-void Button::MouseButtonUp(SDL_MouseButtonEvent const&) {
-	//TODO: empty
+Button::State Button::MouseButtonUp(SDL_MouseButtonEvent const& event) {
+	//if out of bounds, exit
+	if (CheckBounds(event.x, event.y)) {
+		return state = State::IDLE;
+	}
+
+	//if in bounds, set button
+	return state = State::HOVER;
 }
 
-void Button::SetOnPress(fptr arg) {
-	onPress = arg;
+void Button::SetState(State s) {
+	state = s;
 }
 
-void Button::SetOnRelease(fptr arg) {
-	onRelease = arg;
+Button::State Button::GetState() {
+	return state;
+}
+
+bool Button::CheckBounds(int x, int y) {
+	return
+		x < posX ||
+		y < posY ||
+		x > posX + image.GetClipW() ||
+		y > posY + image.GetClipH();
 }

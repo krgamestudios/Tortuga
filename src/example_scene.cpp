@@ -49,14 +49,16 @@ ExampleScene::ExampleScene(lua_State* L) {
 	camera.scale = 0.25;
 
 	//DEBUG: testing buttons
+	buttonBG.Load(GetRenderer(), "./rsc/button.png");
 	font = TTF_OpenFont("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 12);
 	if (!font) {
 		std::ostringstream msg;
 		msg << "Failed to load a font: " << SDL_GetError();
 		throw(std::runtime_error(msg.str()));
 	}
-	button.SetBackgroundTexture(GetRenderer(), tileSheet.GetTexture());
-	button.SetText(GetRenderer(), font, "BUTTON TEXT", {255, 255, 255, 255});
+	button.SetBackgroundTexture(GetRenderer(), buttonBG.GetTexture());
+	button.SetText(GetRenderer(), font, "BUTTON TEXT", {0, 0, 0, 255});
+//	{140, 62, 54, 255}
 }
 
 ExampleScene::~ExampleScene() {
@@ -94,6 +96,8 @@ void ExampleScene::RenderFrame(SDL_Renderer* renderer) {
 //-------------------------
 
 void ExampleScene::MouseMotion(SDL_MouseMotionEvent const& event) {
+	button.MouseMotion(event);
+
 	//right mouse button moves the camera
 	if (event.state & SDL_BUTTON_RMASK) {
 		camera.x -= event.xrel / camera.scale;
@@ -102,6 +106,8 @@ void ExampleScene::MouseMotion(SDL_MouseMotionEvent const& event) {
 }
 
 void ExampleScene::MouseButtonDown(SDL_MouseButtonEvent const& event) {
+	button.MouseButtonDown(event);
+
 	switch(event.button) {
 		case SDL_BUTTON_LEFT: {
 			//DOCS: broke this down into several lines for clarity
@@ -123,7 +129,7 @@ void ExampleScene::MouseButtonDown(SDL_MouseButtonEvent const& event) {
 }
 
 void ExampleScene::MouseButtonUp(SDL_MouseButtonEvent const& event) {
-	//
+	button.MouseButtonUp(event);
 }
 
 void ExampleScene::MouseWheel(SDL_MouseWheelEvent const& event) {

@@ -64,5 +64,6 @@ private:
 	int layer = 0;
 
 	TTF_Font* font = nullptr;
+	Image buttonBG;
 	Button button;
 };
