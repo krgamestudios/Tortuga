@@ -30,7 +30,7 @@
 class Button {
 public:
 	enum State {
-		IDLE = 0, HOVER = 1, PRESSED = 2
+		IDLE = 0, HOVER = 1, PRESSED = 2, RELEASED = 3
 	};
 
 	//methods
@@ -59,5 +59,5 @@ protected:
 
 	Image image;
 	int posX = 0, posY = 0;
-	State state;
+	State state = State::IDLE;
 };

@@ -100,13 +100,14 @@ void Button::SetY(int y) {
 
 Button::State Button::MouseMotion(SDL_MouseMotionEvent const& event) {
 	//if out of bounds, exit
-	if (CheckBounds(event.x, event.y)) {
+	if (!CheckBounds(event.x, event.y)) {
 		return state = State::IDLE;
 	}
 
 	//if in bounds, check button
-	if (event.state & SDL_BUTTON_LMASK) {
-		state = State::PRESSED;
+	if (event.state & SDL_BUTTON_LMASK && state == State::PRESSED) {
+		//stay pressed
+//		state = State::PRESSED;
 	}
 	else {
 		state = State::HOVER;
@@ -117,22 +118,37 @@ Button::State Button::MouseMotion(SDL_MouseMotionEvent const& event) {
 
 Button::State Button::MouseButtonDown(SDL_MouseButtonEvent const& event) {
 	//if out of bounds, exit
-	if (CheckBounds(event.x, event.y)) {
+	if (!CheckBounds(event.x, event.y)) {
 		return state = State::IDLE;
 	}
 
-	//if in bounds, set button
-	return state = State::PRESSED;
+	//if in bounds, check button
+	if (event.button == SDL_BUTTON_LEFT) {
+		return state = State::PRESSED;
+	}
+
+	//NOTE: if not left button down, ignore
+	return State::HOVER;
 }
 
 Button::State Button::MouseButtonUp(SDL_MouseButtonEvent const& event) {
 	//if out of bounds, exit
-	if (CheckBounds(event.x, event.y)) {
+	if (!CheckBounds(event.x, event.y)) {
 		return state = State::IDLE;
 	}
 
-	//if in bounds, set button
-	return state = State::HOVER;
+	//if not left button up, ignore
+	if (event.button != SDL_BUTTON_LEFT) {
+		return state;
+	}
+
+	//if in bounds and left button up, send release signal
+	if (state == State::PRESSED) {
+		state = State::HOVER;
+		return State::RELEASED;
+	}
+
+	return state;
 }
 
 void Button::SetState(State s) {
@@ -144,9 +160,11 @@ Button::State Button::GetState() {
 }
 
 bool Button::CheckBounds(int x, int y) {
-	return
+	//return if true (x, y) is within bounds, otherwise return false
+	return !(
 		x < posX ||
 		y < posY ||
 		x > posX + image.GetClipW() ||
-		y > posY + image.GetClipH();
+		y > posY + image.GetClipH()
+		);
 }

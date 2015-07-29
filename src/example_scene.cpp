@@ -96,7 +96,12 @@ void ExampleScene::RenderFrame(SDL_Renderer* renderer) {
 //-------------------------
 
 void ExampleScene::MouseMotion(SDL_MouseMotionEvent const& event) {
-	button.MouseMotion(event);
+	Button::State state = button.MouseMotion(event);
+
+	if (state == Button::State::PRESSED) {
+		//motion while pressed
+		return;
+	}
 
 	//right mouse button moves the camera
 	if (event.state & SDL_BUTTON_RMASK) {
@@ -106,7 +111,14 @@ void ExampleScene::MouseMotion(SDL_MouseMotionEvent const& event) {
 }
 
 void ExampleScene::MouseButtonDown(SDL_MouseButtonEvent const& event) {
-	button.MouseButtonDown(event);
+	Button::State state = button.MouseButtonDown(event);
+
+	//catch button input
+	if (state == Button::State::PRESSED) {
+		//TODO: do stuff
+		std::cout << "pressed" << std::endl;
+		return;
+	}
 
 	switch(event.button) {
 		case SDL_BUTTON_LEFT: {
@@ -129,7 +141,13 @@ void ExampleScene::MouseButtonDown(SDL_MouseButtonEvent const& event) {
 }
 
 void ExampleScene::MouseButtonUp(SDL_MouseButtonEvent const& event) {
-	button.MouseButtonUp(event);
+	Button::State state = button.MouseButtonUp(event);
+
+	//catch button input
+	if (state == Button::State::RELEASED) {
+		std::cout << "released" << std::endl;
+		return;
+	}
 }
 
 void ExampleScene::MouseWheel(SDL_MouseWheelEvent const& event) {
