@@ -21,7 +21,6 @@
 */
 #pragma once
 
-#include "bounding_box.hpp"
 #include "image.hpp"
 
 #include "SDL2/SDL_ttf.h"
@@ -30,29 +29,35 @@
 
 class Button {
 public:
-	//states available
-	enum class State {
-		NORMAL, HOVER, PRESSED
+	enum State {
+		IDLE = 0, HOVER = 1, PRESSED = 2, RELEASED = 3
 	};
 
 	//methods
 	Button() = default;
 	~Button() = default;
 
-	void RenderText(std::string s);
-	bool CaptureInput(int x, int y, bool pressed);
-	void DrawTo(SDL_Renderer*, int camX, int camY);
+	void DrawTo(SDL_Renderer*);
 
-	//accessors & mutators
-	int SetX(int x) { return posX = x; }
-	int SetY(int y) { return posY = y; }
-	int GetX() { return posX; }
-	int GetY() { return posY; }
-	Image* GetImage() { return &image; }
-	BoundingBox* GetBoundingBox() { return &boundingBox; }
+	//setup
+	void SetBackgroundTexture(SDL_Renderer*, SDL_Texture*);
+	void SetText(SDL_Renderer*, TTF_Font*, std::string, SDL_Color);
+	void SetX(int x);
+	void SetY(int y);
+
+	//capture input
+	State MouseMotion(SDL_MouseMotionEvent const&);
+	State MouseButtonDown(SDL_MouseButtonEvent const&);
+	State MouseButtonUp(SDL_MouseButtonEvent const&);
+
+	//states
+	void SetState(State); //TODO: idle, busy or disabled
+	State GetState();
 
 protected:
+	bool CheckBounds(int x, int y);
+
 	Image image;
-	BoundingBox boundingBox;
 	int posX = 0, posY = 0;
+	State state = State::IDLE;
 };
