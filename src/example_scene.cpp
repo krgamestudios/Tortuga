@@ -64,7 +64,7 @@ ExampleScene::ExampleScene(lua_State* L) {
 }
 
 ExampleScene::~ExampleScene() {
-	//
+	TTF_CloseFont(font);
 }
 
 //-------------------------
