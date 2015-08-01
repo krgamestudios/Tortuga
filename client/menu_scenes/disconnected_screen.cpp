@@ -56,7 +56,7 @@ DisconnectedScreen::DisconnectedScreen() {
 }
 
 DisconnectedScreen::~DisconnectedScreen() {
-	//
+	TTF_CloseFont(font);
 }
 
 //-------------------------
