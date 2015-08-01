@@ -21,14 +21,11 @@
 */
 #pragma once
 
-//graphics
-#include "image.hpp"
-#include "button.hpp"
-
-//client
 #include "base_scene.hpp"
+#include "button.hpp"
+#include "image.hpp"
+#include "SDL2/SDL_ttf.h"
 
-//std namespace
 #include <chrono>
 
 class DisconnectedScreen : public BaseScene {
@@ -55,6 +52,7 @@ protected:
 
 	//graphics
 	Image image;
+	TTF_Font* font = nullptr;
 	Button backButton;
 
 	//auto return

@@ -23,6 +23,7 @@
 
 #include "channels.hpp"
 #include "config_utility.hpp"
+#include "text_util.hpp"
 #include "udp_network_utility.hpp"
 
 #include <stdexcept>
@@ -35,20 +36,17 @@ DisconnectedScreen::DisconnectedScreen() {
 	ConfigUtility& config = ConfigUtility::GetSingleton();
 
 	//setup the utility objects
-	image.LoadSurface(config["dir.interface"] + "button_menu.bmp");
-	image.SetClipH(image.GetClipH()/3);
-	font.LoadSurface(config["dir.fonts"] + "pk_white_8.bmp");
+	//TODO: (1) resource tool, to prevent reloading like this
+	image.Load(GetRenderer(), config["dir.interface"] + "button.png");
+	font = TTF_OpenFont(config["client.font"].c_str(), 12);
 
-	//pass the utility objects
-	backButton.SetImage(&image);
-	backButton.SetFont(&font);
+	//setup the button
+	backButton.SetBackgroundTexture(GetRenderer(), image.GetTexture());
+	backButton.SetText(GetRenderer(), font, "Back", COLOR_WHITE);
 
 	//set the button positions
 	backButton.SetX(50);
-	backButton.SetY(50 + image.GetClipH() * 0);
-
-	//set the button texts
-	backButton.SetText("Back");
+	backButton.SetY(50);
 
 	//full reset
 	UDPNetworkUtility::GetSingleton().Unbind(Channels::SERVER);
@@ -71,7 +69,7 @@ void DisconnectedScreen::FrameStart() {
 
 void DisconnectedScreen::Update() {
 	if (std::chrono::steady_clock::now() - startTick > std::chrono::duration<int>(10)) {
-		SetNextScene(SceneList::MAINMENU);
+		SetSceneSignal(SceneSignal::MAINMENU);
 	}
 
 	//Eat incoming packets
@@ -86,7 +84,13 @@ void DisconnectedScreen::RenderFrame(SDL_Renderer* renderer) {
 	ConfigUtility& config = ConfigUtility::GetSingleton();
 
 	backButton.DrawTo(renderer);
-	font.DrawStringTo(config["client.disconnectMessage"], screen, 50, 30);
+	//render output message
+	SDL_Texture* tex = renderPlainText(renderer, font, config["client.disconnectMessage"], COLOR_WHITE);
+	int w = 0, h = 0;
+	SDL_QueryTexture(tex, nullptr, nullptr, &w, &h);
+	SDL_Rect d = {50, 30, w, h};
+	SDL_RenderCopy(renderer, tex, nullptr, &d);
+	SDL_DestroyTexture(tex);
 }
 
 //-------------------------
