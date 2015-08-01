@@ -21,32 +21,13 @@
 */
 #pragma once
 
-//components
-#include "character_defines.hpp"
-#include "entity.hpp"
+#include "SDL2/SDL.h"
+#include "SDL2/SDL_ttf.h"
 
-//std namespace
 #include <string>
 
-class BaseCharacter: public Entity {
-public:
-	BaseCharacter() = default;
-	virtual ~BaseCharacter() = default;
+constexpr SDL_Color COLOR_WHITE = {255, 255, 255, 255};
 
-	//graphics
-	void CorrectSprite();
-
-	//metadata
-	int SetOwner(int i);
-	int GetOwner();
-	std::string SetHandle(std::string s);
-	std::string GetHandle() const;
-	std::string SetAvatar(SDL_Renderer* const, std::string s);
-	std::string GetAvatar() const;
-
-protected:
-	//metadata
-	int owner;
-	std::string handle;
-	std::string avatar;
-};
+//TODO: some kind of persistent display widget
+//TODO: I need a full suite of widgets
+SDL_Texture* renderPlainText(SDL_Renderer*, TTF_Font*, std::string, SDL_Color color);

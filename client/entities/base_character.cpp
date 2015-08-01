@@ -30,16 +30,16 @@
 void BaseCharacter::CorrectSprite() {
 	//NOTE: These must correspond to the sprite sheet in use
 	if (motion.y > 0) {
-		sprite.SetYIndex(0);
+		sprite.SetIndexY(0);
 	}
 	else if (motion.y < 0) {
-		sprite.SetYIndex(1);
+		sprite.SetIndexY(1);
 	}
 	else if (motion.x > 0) {
-		sprite.SetYIndex(3);
+		sprite.SetIndexY(3);
 	}
 	else if (motion.x < 0) {
-		sprite.SetYIndex(2);
+		sprite.SetIndexY(2);
 	}
 
 	//animation
@@ -48,7 +48,7 @@ void BaseCharacter::CorrectSprite() {
 	}
 	else {
 		sprite.SetDelay(0);
-		sprite.SetXIndex(0);
+		sprite.SetIndexX(0);
 	}
 }
 
@@ -72,9 +72,9 @@ std::string BaseCharacter::GetHandle() const {
 	return handle;
 }
 
-std::string BaseCharacter::SetAvatar(std::string s) {
+std::string BaseCharacter::SetAvatar(SDL_Renderer* const renderer, std::string s) {
 	avatar = s;
-	sprite.LoadSurface(ConfigUtility::GetSingleton()["dir.sprites"] + avatar, CHARACTER_CELLS_X, CHARACTER_CELLS_Y);
+	sprite.Load(renderer, ConfigUtility::GetSingleton()["dir.sprites"] + avatar, CHARACTER_CELLS_X, CHARACTER_CELLS_Y);
 	return avatar;
 }
 

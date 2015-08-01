@@ -32,7 +32,7 @@ public:
 
 	std::string SetHandle(std::string s);
 	std::string GetHandle() const;
-	std::string SetAvatar(std::string s);
+	std::string SetAvatar(SDL_Renderer* const, std::string s);
 	std::string GetAvatar() const;
 
 protected:

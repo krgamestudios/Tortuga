@@ -29,7 +29,7 @@
 class Entity {
 public:
 	virtual void Update();
-	virtual void DrawTo(SDL_Surface* const, int camX, int camY);
+	virtual void DrawTo(SDL_Renderer* const, int camX, int camY);
 
 	SpriteSheet* GetSprite();
 

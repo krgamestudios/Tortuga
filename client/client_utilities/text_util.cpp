@@ -19,34 +19,27 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#pragma once
+#include "text_util.hpp"
 
-//components
-#include "character_defines.hpp"
-#include "entity.hpp"
+#include <stdexcept>
 
-//std namespace
-#include <string>
+SDL_Texture* renderPlainText(SDL_Renderer* renderer, TTF_Font* font, std::string str, SDL_Color color) {
+	//make the surface (from SDL_ttf)
+	SDL_Surface* surface = TTF_RenderText_Solid(font, str.c_str(), color);
+	if (!surface) {
+		throw(std::runtime_error("Failed to create a TTF surface"));
+	}
 
-class BaseCharacter: public Entity {
-public:
-	BaseCharacter() = default;
-	virtual ~BaseCharacter() = default;
+	//convert to texture
+	SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
+	if (!texture) {
+		SDL_FreeSurface(surface);
+		throw(std::runtime_error("Failed to create a TTF texture"));
+	}
 
-	//graphics
-	void CorrectSprite();
+	//cleanup
+	SDL_FreeSurface(surface);
 
-	//metadata
-	int SetOwner(int i);
-	int GetOwner();
-	std::string SetHandle(std::string s);
-	std::string GetHandle() const;
-	std::string SetAvatar(SDL_Renderer* const, std::string s);
-	std::string GetAvatar() const;
-
-protected:
-	//metadata
-	int owner;
-	std::string handle;
-	std::string avatar;
-};
+	//NOTE: free the texture yourself
+	return texture;
+}

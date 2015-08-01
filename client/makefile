@@ -29,8 +29,8 @@ OUT=$(addprefix $(OUTDIR)/,client)
 
 #targets
 all: $(OBJ) $(OUT)
-#	$(MAKE) -C client_utilities
-#	$(MAKE) -C entities
+	$(MAKE) -C client_utilities
+	$(MAKE) -C entities
 #	$(MAKE) -C gameplay_scenes
 #	$(MAKE) -C menu_scenes
 #	$(CXX) $(CXXFLAGS) -o $(OUT) $(OBJ) $(LIBS)
