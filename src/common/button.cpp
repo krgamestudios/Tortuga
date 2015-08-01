@@ -25,7 +25,7 @@
 
 void Button::DrawTo(SDL_Renderer* renderer) {
 	image.SetClipY(image.GetClipH() * state);
-	image.DrawTo(renderer, 0, 0);
+	image.DrawTo(renderer, posX, posY);
 }
 
 void Button::SetBackgroundTexture(SDL_Renderer* renderer, SDL_Texture* texture) {

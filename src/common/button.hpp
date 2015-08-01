@@ -51,7 +51,7 @@ public:
 	State MouseButtonUp(SDL_MouseButtonEvent const&);
 
 	//states
-	void SetState(State); //idle, busy or disabled
+	void SetState(State); //TODO: idle, busy or disabled
 	State GetState();
 
 protected:

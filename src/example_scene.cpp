@@ -58,6 +58,8 @@ ExampleScene::ExampleScene(lua_State* L) {
 	}
 	button.SetBackgroundTexture(GetRenderer(), buttonBG.GetTexture());
 	button.SetText(GetRenderer(), font, "BUTTON TEXT", {0, 0, 0, 255});
+	button.SetX(400);
+	button.SetY(200);
 //	{140, 62, 54, 255}
 }
 
