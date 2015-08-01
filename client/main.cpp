@@ -44,6 +44,7 @@ int main(int argc, char* argv[]) {
 		app.Proc();
 		app.Quit();
 
+		//control the position of the app's destructor
 		ClientApplication::DeleteSingleton();
 
 		//delete the singletons

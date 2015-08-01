@@ -40,12 +40,14 @@ SplashScreen::~SplashScreen() {
 //Frame loop
 //-------------------------
 
-void SplashScreen::Update() {
+void SplashScreen::FrameStart() {
 	if (std::chrono::steady_clock::now() - startTick > std::chrono::duration<int>(1)) {
-		SetNextScene(SceneList::MAINMENU);
+		SetSceneSignal(SceneSignal::MAINMENU);
 	}
 }
 
-void SplashScreen::Render(SDL_Surface* const screen) {
-	logo.DrawTo(screen, (screen->w - logo.GetClipW()) / 2, (screen->h - logo.GetClipH()) / 2);
+void SplashScreen::RenderFrame(SDL_Renderer* renderer) {
+	int w = 0, h = 0;
+	SDL_GetLogicalSize(renderer, &w, &h);
+	logo.DrawTo(renderer, (w - logo.GetClipW()) / 2, (h - logo.GetClipH()) / 2);
 }

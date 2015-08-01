@@ -33,10 +33,11 @@ public:
 	SplashScreen();
 	~SplashScreen();
 
-protected:
+	void RenderFrame(SDL_Renderer* renderer) override;
+
+private:
 	//Frame loop
-	void Update();
-	void Render(SDL_Surface* const);
+	void FrameStart() override;
 
 	//members
 	std::chrono::steady_clock::time_point startTick;

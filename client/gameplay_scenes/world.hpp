@@ -31,7 +31,6 @@
 
 //graphics
 #include "image.hpp"
-#include "raster_font.hpp"
 #include "button.hpp"
 #include "tile_sheet.hpp"
 
@@ -54,21 +53,21 @@ public:
 	World(int* const argClientIndex, int* const argAccountIndex);
 	~World();
 
-protected:
-	//Frame loop
-	void FrameStart();
-	void Update();
-	void FrameEnd();
-	void RenderFrame();
-	void Render(SDL_Surface* const);
+	void RenderFrame(SDL_Renderer* renderer) override;
 
-	//Event handlers
-	void QuitEvent();
-	void MouseMotion(SDL_MouseMotionEvent const&);
-	void MouseButtonDown(SDL_MouseButtonEvent const&);
-	void MouseButtonUp(SDL_MouseButtonEvent const&);
-	void KeyDown(SDL_KeyboardEvent const&);
-	void KeyUp(SDL_KeyboardEvent const&);
+private:
+	//frame phases
+	void FrameStart() override;
+	void Update() override;
+	void FrameEnd() override;
+
+	//input events
+	void MouseMotion(SDL_MouseMotionEvent const& event) override;
+	void MouseButtonDown(SDL_MouseButtonEvent const& event) override;
+	void MouseButtonUp(SDL_MouseButtonEvent const& event) override;
+	void MouseWheel(SDL_MouseWheelEvent const& event) override;
+	void KeyDown(SDL_KeyboardEvent const& event) override;
+	void KeyUp(SDL_KeyboardEvent const& event) override;
 
 	//handle incoming traffic
 	void HandlePacket(SerialPacket* const);
@@ -132,7 +131,6 @@ protected:
 
 	//graphics
 	Image buttonImage;
-	RasterFont font;
 	TileSheet tileSheet;
 
 	//map

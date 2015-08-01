@@ -24,22 +24,10 @@
 #include "serial_packet.hpp"
 #include "config_utility.hpp"
 
-#include <stdexcept>
 #include <chrono>
 #include <iostream>
 #include <sstream>
-
-//-------------------------
-//Scene headers
-//-------------------------
-
-//Add the custom scene headers here
-#include "splash_screen.hpp"
-#include "main_menu.hpp"
-#include "options_menu.hpp"
-#include "lobby_menu.hpp"
-#include "world.hpp"
-#include "disconnected_screen.hpp"
+#include <stdexcept>
 
 //-------------------------
 //Public access members
@@ -53,34 +41,57 @@ void ClientApplication::Init(int argc, char* argv[]) {
 	config.Load("rsc/config.cfg", false, argc, argv);
 
 	//-------------------------
-	//Initialize the APIs
-	//-------------------------
-
-	//initialize SDL
-	if (SDL_Init(SDL_INIT_VIDEO)) {
-		std::ostringstream os;
-		os << "Failed to initialize SDL: " <<  SDL_GetError();
-		throw(std::runtime_error(os.str()));
-	}
-	std::cout << "Initialized SDL" << std::endl;
-
-	//initialize SDL_net
-	if (SDLNet_Init()) {
-		throw(std::runtime_error("Failed to initialize SDL_net"));
-	}
-	UDPNetworkUtility::GetSingleton().Open(0);
-	std::cout << "Initialized SDL_net" << std::endl;
-
-	//-------------------------
-	//Setup the screen
+	//create and check the window
 	//-------------------------
 
 	int w = config.Int("client.screen.w");
 	int h = config.Int("client.screen.h");
-	int f = config.Bool("client.screen.f") ? SDL_HWSURFACE|SDL_DOUBLEBUF|SDL_FULLSCREEN : SDL_HWSURFACE|SDL_DOUBLEBUF;
+	int f = config.Bool("client.screen.f") ? SDL_WINDOW_FULLSCREEN : 0;
 
-	BaseScene::SetScreen(w ? w : 800, h ? h : 600, 0, f);
-	std::cout << "Initialized the screen" << std::endl;
+	window = SDL_CreateWindow(argv[0], SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, w ? w : 800, h ? h : 600, f);
+
+	if (!window) {
+		std::ostringstream msg;
+		msg << "Failed to create the window: " << SDL_GetError();
+		throw(std::runtime_error(msg.str()));
+	}
+
+	std::cout << "Initialized the window" << std::endl;
+
+	//-------------------------
+	//create and check the renderer
+	//-------------------------
+
+	renderer = SDL_CreateRenderer(window, -1, 0);
+
+	if (!renderer) {
+		std::ostringstream msg;
+		msg << "Failed to create the renderer: " << SDL_GetError();
+		throw(std::runtime_error(msg.str()));
+	}
+
+	//screen scaling
+	SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "best");
+	SDL_RenderSetLogicalSize(renderer, w, h);
+
+	//set the hook for the renderer
+	BaseScene::SetRenderer(renderer);
+
+	std::cout << "Initialized the renderer" << std::endl;
+
+	//-------------------------
+	//Initialize the APIs
+	//-------------------------
+
+	//initialize SDL_net
+	if (SDLNet_Init()) {
+		std::ostringstream msg;
+		msg << "Failed to initialize SDL_net: " << SDL_GetError();
+		throw(std::runtime_error(msg.str()));
+	}
+	UDPNetworkUtility::GetSingleton().Open(0);
+
+	std::cout << "Initialized SDL_net" << std::endl;
 
 	//-------------------------
 	//debug output
@@ -119,88 +130,155 @@ void ClientApplication::Init(int argc, char* argv[]) {
 }
 
 void ClientApplication::Proc() {
-	LoadScene(SceneList::FIRST);
+	//load the first scene
+	ProcessSceneSignal(SceneSignal::FIRST);
 
-	//prepare the time system
+	//fixed frame rate
 	typedef std::chrono::steady_clock Clock;
 
 	Clock::time_point simTime = Clock::now();
 	Clock::time_point realTime;
+	constexpr std::chrono::duration<int, std::milli> frameDelay(16); //~60FPS
 
-	//The main loop
-	while(activeScene->GetNextScene() != SceneList::QUIT) {
-		//switch scenes when necessary
-		if (activeScene->GetNextScene() != SceneList::CONTINUE) {
-			LoadScene(activeScene->GetNextScene());
+	//the game loop continues until the scenes signal QUIT
+	while(activeScene->GetSceneSignal() != SceneSignal::QUIT) {
+		//switch scenes if necessary
+		if(activeScene->GetSceneSignal() != SceneSignal::CONTINUE) {
+			ProcessSceneSignal(activeScene->GetSceneSignal());
 			continue;
 		}
 
 		//update the current time
 		realTime = Clock::now();
 
-		//simulate game time
+		//simulate the game or give the machine a break
 		if (simTime < realTime) {
-			while (simTime < realTime) {
-				//call each user defined function
-				activeScene->RunFrame();
-				//~60 FPS
-				simTime += std::chrono::duration<int, std::milli>(16);
+			while(simTime < realTime) {
+				//call the user defined functions
+				activeScene->FrameStart();
+				ProcessEvents();
+				activeScene->Update();
+				activeScene->FrameEnd();
+
+				//step to the next frame
+				simTime += frameDelay;
 			}
 		}
 		else {
-			//give the machine a break
-			SDL_Delay(10);
+			SDL_Delay(1);
 		}
 
-		//draw the game to the screen
-		activeScene->RenderFrame();
+		SDL_RenderClear(renderer);
+		activeScene->RenderFrame(renderer);
+		SDL_RenderPresent(renderer);
 	}
 
-	UnloadScene();
+	//cleanup
+	ClearScene();
 }
 
 void ClientApplication::Quit() {
+	//clean up after the program
 	std::cout << "Shutting down" << std::endl;
 	UDPNetworkUtility::GetSingleton().Close();
 	SDLNet_Quit();
-	SDL_Quit();
+	BaseScene::SetRenderer(nullptr);
+	SDL_DestroyRenderer(renderer);
+	SDL_DestroyWindow(window);
 	std::cout << "Clean exit" << std::endl;
 }
 
 //-------------------------
-//Private access members
+//Scene management
 //-------------------------
 
-void ClientApplication::LoadScene(SceneList sceneIndex) {
-	//BUG: #16 Resources are being reloaded between scenes
-	UnloadScene();
-	switch(sceneIndex) {
-		//add scene creation calls here
-		case SceneList::FIRST:
-		case SceneList::SPLASHSCREEN:
-			activeScene = new SplashScreen();
-		break;
-		case SceneList::MAINMENU:
-			activeScene = new MainMenu();
-		break;
-		case SceneList::OPTIONSMENU:
-			activeScene = new OptionsMenu();
-		break;
-		case SceneList::LOBBYMENU:
-			activeScene = new LobbyMenu(&clientIndex, &accountIndex);
-		break;
-		case SceneList::WORLD:
-			activeScene = new World(&clientIndex, &accountIndex);
-		break;
-		case SceneList::DISCONNECTEDSCREEN:
-			activeScene = new DisconnectedScreen();
-		break;
-		default:
-			throw(std::logic_error("Failed to recognize the scene index"));
+void ClientApplication::ProcessEvents() {
+	SDL_Event event;
+	while(SDL_PollEvent(&event)) {
+		switch(event.type) {
+			case SDL_QUIT:
+				activeScene->QuitEvent();
+			break;
+
+			case SDL_MOUSEMOTION:
+				activeScene->MouseMotion(event.motion);
+			break;
+
+			case SDL_MOUSEBUTTONDOWN:
+				activeScene->MouseButtonDown(event.button);
+			break;
+
+			case SDL_MOUSEBUTTONUP:
+				activeScene->MouseButtonUp(event.button);
+			break;
+
+			case SDL_MOUSEWHEEL:
+				activeScene->MouseWheel(event.wheel);
+			break;
+
+			case SDL_KEYDOWN:
+				activeScene->KeyDown(event.key);
+			break;
+
+			case SDL_KEYUP:
+				activeScene->KeyUp(event.key);
+			break;
+
+			//TODO: joystick and controller events
+
+			//window events are handled internally
+			case SDL_WINDOWEVENT:
+				switch(event.window.event) {
+					case SDL_WINDOWEVENT_RESIZED:
+						SDL_RenderSetLogicalSize(renderer, event.window.data1, event.window.data2);
+					break;
+				}
+			break;
+		}
 	}
 }
 
-void ClientApplication::UnloadScene() {
+//Add the custom scene headers here
+#include "splash_screen.hpp"
+#include "main_menu.hpp"
+#include "options_menu.hpp"
+#include "lobby_menu.hpp"
+#include "world.hpp"
+#include "disconnected_screen.hpp"
+
+void ClientApplication::ProcessSceneSignal(SceneSignal signal) {
+	//BUG: #16 Resources are being reloaded between scenes
+	ClearScene();
+	switch(signal) {
+		//add scene creation calls here
+		case SceneSignal::FIRST:
+		case SceneSignal::SPLASHSCREEN:
+			activeScene = new SplashScreen();
+		break;
+		case SceneSignal::MAINMENU:
+			activeScene = new MainMenu();
+		break;
+		case SceneSignal::OPTIONSMENU:
+			activeScene = new OptionsMenu();
+		break;
+		case SceneSignal::LOBBYMENU:
+			activeScene = new LobbyMenu(&clientIndex, &accountIndex);
+		break;
+		case SceneSignal::WORLD:
+			activeScene = new World(&clientIndex, &accountIndex);
+		break;
+		case SceneSignal::DISCONNECTEDSCREEN:
+			activeScene = new DisconnectedScreen();
+		break;
+		default: {
+			std::ostringstream msg;
+			msg << "Failed to recognize the scene signal: " << signal;
+			throw(std::logic_error(msg.str()));
+		}
+	}
+}
+
+void ClientApplication::ClearScene() {
 	delete activeScene;
 	activeScene = nullptr;
 }

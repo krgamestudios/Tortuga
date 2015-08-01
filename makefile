@@ -8,7 +8,7 @@ OUTDIR=out
 
 all: $(OUTDIR)
 	$(MAKE) -C common
-	$(MAKE) -C server
+#	$(MAKE) -C server
 	$(MAKE) -C client
 
 debug: export CXXFLAGS+=-g

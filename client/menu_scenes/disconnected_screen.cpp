@@ -65,6 +65,10 @@ DisconnectedScreen::~DisconnectedScreen() {
 //Frame loop
 //-------------------------
 
+void DisconnectedScreen::FrameStart() {
+	//
+}
+
 void DisconnectedScreen::Update() {
 	if (std::chrono::steady_clock::now() - startTick > std::chrono::duration<int>(10)) {
 		SetNextScene(SceneList::MAINMENU);
@@ -74,20 +78,20 @@ void DisconnectedScreen::Update() {
 	while(UDPNetworkUtility::GetSingleton().Receive());
 }
 
-void DisconnectedScreen::Render(SDL_Surface* const screen) {
+void DisconnectedScreen::FrameEnd() {
+	//
+}
+
+void DisconnectedScreen::RenderFrame(SDL_Renderer* renderer) {
 	ConfigUtility& config = ConfigUtility::GetSingleton();
 
-	backButton.DrawTo(screen);
+	backButton.DrawTo(renderer);
 	font.DrawStringTo(config["client.disconnectMessage"], screen, 50, 30);
 }
 
 //-------------------------
 //Event handlers
 //-------------------------
-
-void DisconnectedScreen::QuitEvent() {
-	SetNextScene(SceneList::QUIT);
-}
 
 void DisconnectedScreen::MouseMotion(SDL_MouseMotionEvent const& motion) {
 	backButton.MouseMotion(motion);
@@ -98,15 +102,15 @@ void DisconnectedScreen::MouseButtonDown(SDL_MouseButtonEvent const& button) {
 }
 
 void DisconnectedScreen::MouseButtonUp(SDL_MouseButtonEvent const& button) {
-	if (backButton.MouseButtonUp(button) == Button::State::HOVER) {
-		SetNextScene(SceneList::MAINMENU);
+	if (backButton.MouseButtonUp(button) == Button::State::RELEASED) {
+		SetSceneSignal(SceneSignal::MAINMENU);
 	}
 }
 
 void DisconnectedScreen::KeyDown(SDL_KeyboardEvent const& key) {
 	switch(key.keysym.sym) {
 		case SDLK_ESCAPE:
-			SetNextScene(SceneList::MAINMENU);
+			SetSceneSignal(SceneSignal::MAINMENU);
 		break;
 	}
 }

@@ -23,7 +23,6 @@
 
 //graphics
 #include "image.hpp"
-#include "raster_font.hpp"
 #include "button.hpp"
 
 //client
@@ -38,24 +37,24 @@ public:
 	DisconnectedScreen();
 	~DisconnectedScreen();
 
-protected:
-	//Frame loop
-	void Update();
-	void Render(SDL_Surface* const);
+	void RenderFrame(SDL_Renderer* renderer) override;
 
-	//Event handlers
-	void QuitEvent();
-	void MouseMotion(SDL_MouseMotionEvent const&);
-	void MouseButtonDown(SDL_MouseButtonEvent const&);
-	void MouseButtonUp(SDL_MouseButtonEvent const&);
-	void KeyDown(SDL_KeyboardEvent const&);
-	void KeyUp(SDL_KeyboardEvent const&);
+protected:
+	//frame phases
+	void FrameStart() override;
+	void Update() override;
+	void FrameEnd() override;
+
+	//input events
+	void MouseMotion(SDL_MouseMotionEvent const& event) override;
+	void MouseButtonDown(SDL_MouseButtonEvent const& event) override;
+	void MouseButtonUp(SDL_MouseButtonEvent const& event) override;
+	void MouseWheel(SDL_MouseWheelEvent const& event) override;
+	void KeyDown(SDL_KeyboardEvent const& event) override;
+	void KeyUp(SDL_KeyboardEvent const& event) override;
 
 	//graphics
 	Image image;
-	RasterFont font;
-
-	//UI
 	Button backButton;
 
 	//auto return

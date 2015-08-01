@@ -21,18 +21,15 @@
 */
 #pragma once
 
-#include "scene_list.hpp"
 #include "base_scene.hpp"
-
+#include "scene_signal.hpp"
+#include "singleton.hpp"
 #include "udp_network_utility.hpp"
 
-#include "singleton.hpp"
-
-#include <map>
+#include "SDL2/SDL.h"
 
 class ClientApplication: public Singleton<ClientApplication> {
 public:
-	//public methods
 	void Init(int argc, char* argv[]);
 	void Proc();
 	void Quit();
@@ -43,11 +40,16 @@ private:
 	ClientApplication() = default;
 	~ClientApplication() = default;
 
-	//Private access members
-	void LoadScene(SceneList sceneIndex);
-	void UnloadScene();
+	//scene management
+	void ProcessEvents();
+	void ProcessSceneSignal(SceneSignal);
+	void ClearScene();
 
 	BaseScene* activeScene = nullptr;
+
+	//TODO: build a "window" class?
+	SDL_Window* window = nullptr;
+	SDL_Renderer* renderer = nullptr;
 
 	//shared parameters
 	int clientIndex = -1;

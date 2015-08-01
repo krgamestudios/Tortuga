@@ -23,7 +23,6 @@
 
 //graphics & ui
 #include "image.hpp"
-#include "raster_font.hpp"
 #include "button.hpp"
 #include "bounding_box.hpp"
 
@@ -44,19 +43,21 @@ public:
 	LobbyMenu(int* const argClientIndex, int* const argAccountIndex);
 	~LobbyMenu();
 
-protected:
-	//Frame loop
-	void FrameStart();
-	void Update();
-	void FrameEnd();
-	void Render(SDL_Surface* const);
+	void RenderFrame(SDL_Renderer* renderer) override;
 
-	//Event handlers
-	void MouseMotion(SDL_MouseMotionEvent const&);
-	void MouseButtonDown(SDL_MouseButtonEvent const&);
-	void MouseButtonUp(SDL_MouseButtonEvent const&);
-	void KeyDown(SDL_KeyboardEvent const&);
-	void KeyUp(SDL_KeyboardEvent const&);
+protected:
+	//frame phases
+	void FrameStart() override;
+	void Update() override;
+	void FrameEnd() override;
+
+	//input events
+	void MouseMotion(SDL_MouseMotionEvent const& event) override;
+	void MouseButtonDown(SDL_MouseButtonEvent const& event) override;
+	void MouseButtonUp(SDL_MouseButtonEvent const& event) override;
+	void MouseWheel(SDL_MouseWheelEvent const& event) override;
+	void KeyDown(SDL_KeyboardEvent const& event) override;
+	void KeyUp(SDL_KeyboardEvent const& event) override;
 
 	//Network handlers
 	void HandlePacket(SerialPacket* const);
@@ -79,7 +80,6 @@ protected:
 
 	//members
 	Image image;
-	RasterFont font;
 	Button search;
 	Button join;
 	Button back;

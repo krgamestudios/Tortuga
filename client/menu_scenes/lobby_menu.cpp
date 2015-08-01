@@ -99,13 +99,13 @@ void LobbyMenu::FrameEnd() {
 	//
 }
 
-void LobbyMenu::Render(SDL_Surface* const screen) {
+void ExampleScene::RenderFrame(SDL_Renderer* renderer) {
 	//TODO: (2) I need a proper UI system for the entire client and the editor
 
 	//UI
-	search.DrawTo(screen);
-	join.DrawTo(screen);
-	back.DrawTo(screen);
+	search.DrawTo(renderer);
+	join.DrawTo(renderer);
+	back.DrawTo(renderer);
 
 	//TODO: (3) draw headers for the server list
 	//TODO: (3) ping/delay displayed in the server list
@@ -173,10 +173,14 @@ void LobbyMenu::MouseButtonUp(SDL_MouseButtonEvent const& button) {
 	}
 }
 
+void LobbyMenu::MouseWheel(SDL_MouseWheelEvent const& event) {
+	//
+}
+
 void LobbyMenu::KeyDown(SDL_KeyboardEvent const& key) {
 	switch(key.keysym.sym) {
 		case SDLK_ESCAPE:
-			SetNextScene(SceneList::MAINMENU);
+			SetSceneSignal(SceneSignal::MAINMENU);
 		break;
 	}
 }

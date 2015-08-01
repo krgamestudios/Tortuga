@@ -30,20 +30,12 @@ public:
 	BaseScene();
 	virtual ~BaseScene();
 
-	virtual void RunFrame();
 	virtual void RenderFrame(SDL_Renderer*);
-
 	static void SetRenderer(SDL_Renderer*);
 	SceneSignal GetSceneSignal();
 
-protected:
-	//control
-	static SDL_Renderer* GetRenderer();
-	void SetSceneSignal(SceneSignal);
-
 	//frame phases
 	virtual void FrameStart();
-	virtual void ProcessEvents();
 	virtual void Update();
 	virtual void FrameEnd();
 
@@ -57,6 +49,11 @@ protected:
 	virtual void KeyUp(SDL_KeyboardEvent const& event);
 
 	//TODO: joystick and controller events
+
+protected:
+	//control
+	static SDL_Renderer* GetRenderer();
+	void SetSceneSignal(SceneSignal);
 
 private:
 	static SDL_Renderer* rendererHandle;
