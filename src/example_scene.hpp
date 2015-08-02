@@ -24,6 +24,7 @@
 #include "base_scene.hpp"
 #include "button.hpp"
 #include "region_pager_lua.hpp"
+#include "text_util.hpp"
 #include "tile_sheet.hpp"
 
 #include "lua.hpp"
