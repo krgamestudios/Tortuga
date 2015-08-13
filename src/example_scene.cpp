@@ -63,7 +63,10 @@ ExampleScene::ExampleScene(lua_State* L) {
 //	{140, 62, 54, 255}
 
 	//DEBUG: testing textLine
-	textLine.SetText(GetRenderer(), font, "Button Text", {255, 255, 255, 255});
+	textBox.PushLine(GetRenderer(), font, "first line", {255, 255, 255, 255});
+	textBox.PushLine(GetRenderer(), font, "second line", {255, 255, 255, 255});
+	textBox.PushLine(GetRenderer(), font, "third line", {255, 255, 255, 255});
+	textBox.PushLine(GetRenderer(), font, "FOURTH LINE!!", {255, 0, 0, 0});
 }
 
 ExampleScene::~ExampleScene() {
@@ -94,7 +97,7 @@ void ExampleScene::RenderFrame(SDL_Renderer* renderer) {
 
 	//DEBUG: testing UI
 	button.DrawTo(renderer);
-	textLine.DrawTo(renderer, 0, 550);
+	textBox.DrawTo(renderer, 0, 550, 12);
 }
 
 //-------------------------
@@ -195,6 +198,10 @@ void ExampleScene::KeyDown(SDL_KeyboardEvent const& event) {
 
 		case SDLK_SPACE:
 			camera.scale = 1.0;
+		break;
+
+		case SDLK_RETURN:
+			textBox.PushLine(GetRenderer(), font, "You pressed enter.", {128, 128, 128, 255});
 		break;
 	}
 }

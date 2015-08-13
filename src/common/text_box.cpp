@@ -45,6 +45,10 @@ SDL_Texture* renderTextTexture(SDL_Renderer* renderer, TTF_Font* font, std::stri
 	return texture;
 }
 
+//-------------------------
+//TextLine
+//-------------------------
+
 TextLine::TextLine() {
 	//
 }
@@ -67,4 +71,40 @@ void TextLine::SetText(SDL_Renderer* renderer, TTF_Font* font, std::string str, 
 
 void TextLine::ClearText() {
 	SDL_DestroyTexture(texture);
+}
+
+//-------------------------
+//TextBox
+//-------------------------
+
+TextBox::TextBox() {
+	//
+}
+
+TextBox::~TextBox() {
+	//
+}
+
+void TextBox::DrawTo(SDL_Renderer* renderer, int posX, int posY, int pointSize) {
+	for (std::list<TextLine>::iterator it = lineList.begin(); it != lineList.end(); it++) {
+		it->DrawTo(renderer, posX, posY);
+		posY -= pointSize;
+	}
+}
+
+void TextBox::PushLine(SDL_Renderer* renderer, TTF_Font* font, std::string str, SDL_Color color) {
+	lineList.emplace_front(renderer, font, str, color);
+}
+
+void TextBox::PopLine(int num) {
+	//prevent underflow
+	num < lineList.size() ? num : lineList.size();
+
+	for (int i = 0; i < num; ++i) {
+		lineList.pop_back();
+	}
+}
+
+void TextBox::ClearLines() {
+	lineList.clear();
 }
