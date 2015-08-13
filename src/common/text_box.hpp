@@ -21,7 +21,6 @@
 */
 #pragma once
 
-#include "image.hpp"
 #include "SDL2/SDL.h"
 #include "SDL2/SDL_ttf.h"
 
@@ -33,8 +32,8 @@ SDL_Texture* renderTextTexture(SDL_Renderer*, TTF_Font*, std::string, SDL_Color 
 
 class TextBox {
 public:
-	TextBox() = default;
-	~TextBox() = default;
+	TextBox();
+	~TextBox();
 
 	void DrawTo(SDL_Renderer*);
 
@@ -49,6 +48,6 @@ public:
 	int SetY() { return posY; }
 
 protected:
-	Image image;
+	SDL_Texture* texture = nullptr;
 	int posX = 0, posY = 0;
 };
