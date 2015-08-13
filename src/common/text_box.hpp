@@ -21,35 +21,13 @@
 */
 #pragma once
 
+#include "text_line.hpp"
+
 #include "SDL2/SDL.h"
 #include "SDL2/SDL_ttf.h"
 
 #include <string>
 #include <list>
-
-constexpr SDL_Color COLOR_WHITE = {255, 255, 255, 255};
-
-SDL_Texture* renderTextTexture(SDL_Renderer*, TTF_Font*, std::string, SDL_Color color);
-
-//-------------------------
-
-class TextLine {
-public:
-	TextLine();
-	TextLine(SDL_Renderer* r, TTF_Font* f, std::string s, SDL_Color c)
-		{ SetText(r, f, s, c); }
-	~TextLine();
-
-	void DrawTo(SDL_Renderer*, int posX, int posY);
-
-	void SetText(SDL_Renderer*, TTF_Font*, std::string, SDL_Color color);
-	void ClearText();
-
-protected:
-	SDL_Texture* texture = nullptr;
-};
-
-//-------------------------
 
 class TextBox {
 public:

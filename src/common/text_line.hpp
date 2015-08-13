@@ -19,38 +19,27 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#include "text_box.hpp"
+#pragma once
 
-#include <stdexcept>
+#include "SDL2/SDL.h"
+#include "SDL2/SDL_ttf.h"
 
-TextBox::TextBox() {
-	//
-}
+#include <string>
 
-TextBox::~TextBox() {
-	//
-}
+SDL_Texture* renderTextTexture(SDL_Renderer*, TTF_Font*, std::string, SDL_Color color);
 
-void TextBox::DrawTo(SDL_Renderer* renderer, int posX, int posY, int pointSize) {
-	for (std::list<TextLine>::iterator it = lineList.begin(); it != lineList.end(); it++) {
-		it->DrawTo(renderer, posX, posY);
-		posY -= pointSize;
-	}
-}
+class TextLine {
+public:
+	TextLine();
+	TextLine(SDL_Renderer* r, TTF_Font* f, std::string s, SDL_Color c)
+		{ SetText(r, f, s, c); }
+	~TextLine();
 
-void TextBox::PushLine(SDL_Renderer* renderer, TTF_Font* font, std::string str, SDL_Color color) {
-	lineList.emplace_front(renderer, font, str, color);
-}
+	void DrawTo(SDL_Renderer*, int posX, int posY);
 
-void TextBox::PopLine(int num) {
-	//prevent underflow
-	num < lineList.size() ? num : lineList.size();
+	void SetText(SDL_Renderer*, TTF_Font*, std::string, SDL_Color color);
+	void ClearText();
 
-	for (int i = 0; i < num; ++i) {
-		lineList.pop_back();
-	}
-}
-
-void TextBox::ClearLines() {
-	lineList.clear();
-}
+protected:
+	SDL_Texture* texture = nullptr;
+};
