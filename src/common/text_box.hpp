@@ -30,24 +30,16 @@ constexpr SDL_Color COLOR_WHITE = {255, 255, 255, 255};
 
 SDL_Texture* renderTextTexture(SDL_Renderer*, TTF_Font*, std::string, SDL_Color color);
 
-class TextBox {
+class TextLine {
 public:
-	TextBox();
-	~TextBox();
+	TextLine();
+	~TextLine();
 
-	void DrawTo(SDL_Renderer*);
+	void DrawTo(SDL_Renderer*, int posX, int posY);
 
 	void SetText(SDL_Renderer*, TTF_Font*, std::string, SDL_Color color);
-	void AddText(SDL_Renderer*, TTF_Font*, std::string, SDL_Color color);
 	void ClearText();
-
-	//position
-	int SetX(int x) { return posX = x; }
-	int SetY(int y) { return posY = y; }
-	int SetX() { return posX; }
-	int SetY() { return posY; }
 
 protected:
 	SDL_Texture* texture = nullptr;
-	int posX = 0, posY = 0;
 };

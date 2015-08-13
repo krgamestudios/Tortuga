@@ -45,30 +45,26 @@ SDL_Texture* renderTextTexture(SDL_Renderer* renderer, TTF_Font* font, std::stri
 	return texture;
 }
 
-TextBox::TextBox() {
+TextLine::TextLine() {
 	//
 }
 
-TextBox::~TextBox() {
+TextLine::~TextLine() {
 	ClearText();
 }
 
-void TextBox::DrawTo(SDL_Renderer* renderer) {
+void TextLine::DrawTo(SDL_Renderer* renderer, int posX, int posY) {
 	SDL_Rect dclip = {posX, posY, 0, 0};
 	SDL_QueryTexture(texture, nullptr, nullptr, &dclip.w, &dclip.h);
 	SDL_RenderCopy(renderer, texture, nullptr, &dclip);
 }
 
-void TextBox::SetText(SDL_Renderer* renderer, TTF_Font* font, std::string str, SDL_Color color) {
+void TextLine::SetText(SDL_Renderer* renderer, TTF_Font* font, std::string str, SDL_Color color) {
 	//just use the above global function
 	SDL_DestroyTexture(texture);
 	texture = renderTextTexture(renderer, font, str, color);
 }
 
-void TextBox::AddText(SDL_Renderer* renderer, TTF_Font* font, std::string str, SDL_Color color) {
-	//TODO: empty
-}
-
-void TextBox::ClearText() {
+void TextLine::ClearText() {
 	SDL_DestroyTexture(texture);
 }

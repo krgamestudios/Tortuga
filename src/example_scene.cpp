@@ -62,9 +62,8 @@ ExampleScene::ExampleScene(lua_State* L) {
 	button.SetY(200);
 //	{140, 62, 54, 255}
 
-	//DEBUG: testing TextBox
-	textBox.SetY(500);
-	textBox.SetText(GetRenderer(), font, "Button Text", {255, 255, 255, 255});
+	//DEBUG: testing textLine
+	textLine.SetText(GetRenderer(), font, "Button Text", {255, 255, 255, 255});
 }
 
 ExampleScene::~ExampleScene() {
@@ -95,7 +94,7 @@ void ExampleScene::RenderFrame(SDL_Renderer* renderer) {
 
 	//DEBUG: testing UI
 	button.DrawTo(renderer);
-	textBox.DrawTo(renderer);
+	textLine.DrawTo(renderer, 0, 550);
 }
 
 //-------------------------
