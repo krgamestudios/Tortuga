@@ -101,9 +101,10 @@ SDL_Texture* Image::Create(SDL_Renderer* renderer, Uint16 w, Uint16 h) {
 	//make the texture
 	texture = SDL_CreateTexture(renderer,
 		SDL_PIXELFORMAT_RGBA8888,
-		SDL_TEXTUREACCESS_STATIC,
+		SDL_TEXTUREACCESS_TARGET,
 		w, h);
 
+	//check
 	if (!texture) {
 		std::ostringstream msg;
 		msg << "Failed to create a texture; " << SDL_GetError();
@@ -121,6 +122,31 @@ SDL_Texture* Image::Create(SDL_Renderer* renderer, Uint16 w, Uint16 h) {
 	}
 	local = true;
 
+	//blank (black) texture
+	SDL_SetRenderTarget(renderer, texture);
+	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
+	SDL_RenderFillRect(renderer, nullptr);
+	SDL_SetRenderTarget(renderer, nullptr);
+
+	return texture;
+}
+
+SDL_Texture* Image::CopyTexture(SDL_Renderer* renderer, SDL_Texture* ptr) {
+	Free();
+	int w = 0, h = 0;
+
+	//get the info
+	SDL_QueryTexture(ptr, nullptr, nullptr, &w, &h);
+
+	//create a texture of (w, h) size (also sets the metadata)
+	Create(renderer, w, h);
+
+	//copy the argument texture to the local texture
+	SDL_SetRenderTarget(renderer, texture);
+	SDL_RenderCopy(renderer, ptr, nullptr, nullptr);
+	SDL_SetRenderTarget(renderer, nullptr);
+
+	//return the local texture
 	return texture;
 }
 
