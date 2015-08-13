@@ -61,6 +61,10 @@ ExampleScene::ExampleScene(lua_State* L) {
 	button.SetX(400);
 	button.SetY(200);
 //	{140, 62, 54, 255}
+
+	//DEBUG: testing TextBox
+	textBox.SetY(500);
+	textBox.SetText(GetRenderer(), font, "Button Text", {255, 255, 255, 255});
 }
 
 ExampleScene::~ExampleScene() {
@@ -91,13 +95,7 @@ void ExampleScene::RenderFrame(SDL_Renderer* renderer) {
 
 	//DEBUG: testing UI
 	button.DrawTo(renderer);
-
-	SDL_Texture* tex = renderPlainText(renderer, font, "STRING\nTEXT", {255, 255, 255, 255});
-	int w = 0, h = 0;
-	SDL_QueryTexture(tex, nullptr, nullptr, &w, &h);
-	SDL_Rect d = {0, 0, w, h};
-	SDL_RenderCopy(renderer, tex, nullptr, &d);
-	SDL_DestroyTexture(tex);
+	textBox.DrawTo(renderer);
 }
 
 //-------------------------

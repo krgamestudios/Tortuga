@@ -24,7 +24,7 @@
 #include "base_scene.hpp"
 #include "button.hpp"
 #include "region_pager_lua.hpp"
-#include "text_util.hpp"
+#include "text_box.hpp"
 #include "tile_sheet.hpp"
 
 #include "lua.hpp"
@@ -67,4 +67,5 @@ private:
 	TTF_Font* font = nullptr;
 	Image buttonBG;
 	Button button;
+	TextBox textBox;
 };

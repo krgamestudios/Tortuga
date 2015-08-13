@@ -19,51 +19,36 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#include "text_util.hpp"
+#pragma once
 
-#include <stdexcept>
+#include "image.hpp"
+#include "SDL2/SDL.h"
+#include "SDL2/SDL_ttf.h"
 
-SDL_Texture* renderPlainText(SDL_Renderer* renderer, TTF_Font* font, std::string str, SDL_Color color) {
-	//make the surface (from SDL_ttf)
-	SDL_Surface* surface = TTF_RenderText_Solid(font, str.c_str(), color);
-	if (!surface) {
-		throw(std::runtime_error("Failed to create a TTF surface"));
-	}
+#include <string>
 
-	//convert to texture
-	SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
-	if (!texture) {
-		SDL_FreeSurface(surface);
-		throw(std::runtime_error("Failed to create a TTF texture"));
-	}
+constexpr SDL_Color COLOR_WHITE = {255, 255, 255, 255};
 
-	//cleanup
-	SDL_FreeSurface(surface);
+SDL_Texture* renderTextTexture(SDL_Renderer*, TTF_Font*, std::string, SDL_Color color);
 
-	//NOTE: free the texture yourself
-	return texture;
-}
+class TextBox {
+public:
+	TextBox() = default;
+	~TextBox() = default;
 
-TextBox::TextBox() {
-	//
-}
+	void DrawTo(SDL_Renderer*);
 
-TextBox::~TextBox() {
-	//
-}
+	void SetText(SDL_Renderer*, TTF_Font*, std::string, SDL_Color color);
+	void AddText(SDL_Renderer*, TTF_Font*, std::string, SDL_Color color);
+	void ClearText();
 
-void TextBox::DrawTo(SDL_Renderer* renderer) {
-	//
-}
+	//position
+	int SetX(int x) { return posX = x; }
+	int SetY(int y) { return posY = y; }
+	int SetX() { return posX; }
+	int SetY() { return posY; }
 
-void TextBox::SetText(SDL_Renderer*, std::string) {
-	//
-}
-
-void TextBox::AddText(SDL_Renderer*, std::string) {
-	//
-}
-
-void TextBox::ClearText() {
-	//
-}
+protected:
+	Image image;
+	int posX = 0, posY = 0;
+};
