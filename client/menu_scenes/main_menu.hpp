@@ -56,5 +56,5 @@ protected:
 	Button startButton;
 	Button optionsButton;
 	Button quitButton;
-	TextBox textBox;
+	TextBox<> textBox;
 };
