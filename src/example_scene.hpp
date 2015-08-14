@@ -67,5 +67,8 @@ private:
 	TTF_Font* font = nullptr;
 	Image buttonBG;
 	Button button;
-	TextBox<> textBox;
+	TextBox textBox;
+
+	//blank image
+	Image blankImage;
 };

@@ -95,7 +95,7 @@ SDL_Texture* Image::Load(SDL_Renderer* renderer, std::string fname) {
 	return texture;
 }
 
-SDL_Texture* Image::Create(SDL_Renderer* renderer, Uint16 w, Uint16 h) {
+SDL_Texture* Image::Create(SDL_Renderer* renderer, Uint16 w, Uint16 h, SDL_Color blank) {
 	Free();
 
 	//make the texture
@@ -124,8 +124,9 @@ SDL_Texture* Image::Create(SDL_Renderer* renderer, Uint16 w, Uint16 h) {
 
 	//blank (black) texture
 	SDL_SetRenderTarget(renderer, texture);
-	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
+	SDL_SetRenderDrawColor(renderer, blank.r, blank.g, blank.b, blank.a);
 	SDL_RenderFillRect(renderer, nullptr);
+	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
 	SDL_SetRenderTarget(renderer, nullptr);
 
 	return texture;

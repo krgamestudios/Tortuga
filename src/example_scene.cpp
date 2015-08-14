@@ -67,6 +67,9 @@ ExampleScene::ExampleScene(lua_State* L) {
 	textBox.PushLine(GetRenderer(), font, "second line", {255, 255, 255, 255});
 	textBox.PushLine(GetRenderer(), font, "third line", {255, 255, 255, 255});
 	textBox.PushLine(GetRenderer(), font, "FOURTH LINE!!", {255, 0, 0, 0});
+
+	//
+	blankImage.Create(GetRenderer(), 256, 256);
 }
 
 ExampleScene::~ExampleScene() {
@@ -98,6 +101,8 @@ void ExampleScene::RenderFrame(SDL_Renderer* renderer) {
 	//DEBUG: testing UI
 	button.DrawTo(renderer);
 	textBox.DrawTo(renderer, 0, 550, -12);
+
+	blankImage.DrawTo(renderer, 0, 0);
 }
 
 //-------------------------
