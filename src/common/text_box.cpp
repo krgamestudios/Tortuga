@@ -19,27 +19,38 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#pragma once
+#include "text_box.hpp"
 
-#include "text_line.hpp"
+#include <stdexcept>
 
-#include "SDL2/SDL.h"
-#include "SDL2/SDL_ttf.h"
+TextBox::TextBox() {
+	//
+}
 
-#include <string>
-#include <list>
+TextBox::~TextBox() {
+	//
+}
 
-class TextBox {
-public:
-	TextBox();
-	~TextBox();
+void TextBox::DrawTo(SDL_Renderer* renderer, int posX, int posY, int pointSize) {
+	for (std::list<TextLine>::iterator it = lineList.begin(); it != lineList.end(); it++) {
+		it->DrawTo(renderer, posX, posY);
+		posY -= pointSize;
+	}
+}
 
-	void DrawTo(SDL_Renderer*, int posX, int posY, int pointSize);
+void TextBox::PushLine(SDL_Renderer* renderer, TTF_Font* font, std::string str, SDL_Color color) {
+	lineList.emplace_front(renderer, font, str, color);
+}
 
-	void PushLine(SDL_Renderer*, TTF_Font*, std::string, SDL_Color color);
-	void PopLine(int num = 1);
-	void ClearLines();
+void TextBox::PopLine(int num) {
+	//prevent underflow
+	num < lineList.size() ? num : lineList.size();
 
-private:
-	std::list<TextLine> lineList;
-};
+	for (int i = 0; i < num; ++i) {
+		lineList.pop_back();
+	}
+}
+
+void TextBox::ClearLines() {
+	lineList.clear();
+}
