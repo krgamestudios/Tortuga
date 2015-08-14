@@ -4,5 +4,4 @@ all:
 	$(MAKE) -C graphics
 	$(MAKE) -C map
 	$(MAKE) -C network
-	$(MAKE) -C ui
 	$(MAKE) -C utilities
