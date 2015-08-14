@@ -19,42 +19,38 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#pragma once
-
-#include "base_scene.hpp"
-#include "button.hpp"
-#include "image.hpp"
 #include "text_box.hpp"
 
-#include "SDL2/SDL_ttf.h"
+#include <stdexcept>
 
-class MainMenu : public BaseScene {
-public:
-	//Public access members
-	MainMenu();
-	~MainMenu();
+TextBox::TextBox() {
+	//
+}
 
-	void RenderFrame(SDL_Renderer* renderer) override;
+TextBox::~TextBox() {
+	//
+}
 
-protected:
-	//frame phases
-	void FrameStart() override;
-	void Update() override;
-	void FrameEnd() override;
+void TextBox::DrawTo(SDL_Renderer* renderer, int posX, int posY, int pointSize) {
+	for (std::list<TextLine>::iterator it = lineList.begin(); it != lineList.end(); it++) {
+		it->DrawTo(renderer, posX, posY);
+		posY -= pointSize;
+	}
+}
 
-	//input events
-	void MouseMotion(SDL_MouseMotionEvent const& event) override;
-	void MouseButtonDown(SDL_MouseButtonEvent const& event) override;
-	void MouseButtonUp(SDL_MouseButtonEvent const& event) override;
-	void MouseWheel(SDL_MouseWheelEvent const& event) override;
-	void KeyDown(SDL_KeyboardEvent const& event) override;
-	void KeyUp(SDL_KeyboardEvent const& event) override;
+void TextBox::PushLine(SDL_Renderer* renderer, TTF_Font* font, std::string str, SDL_Color color) {
+	lineList.emplace_front(renderer, font, str, color);
+}
 
-	//members
-	Image buttonImage;
-	TTF_Font* font = nullptr;
-	Button startButton;
-	Button optionsButton;
-	Button quitButton;
-	TextBox textBox;
-};
+void TextBox::PopLine(int num) {
+	//prevent underflow
+	num < lineList.size() ? num : lineList.size();
+
+	for (int i = 0; i < num; ++i) {
+		lineList.pop_back();
+	}
+}
+
+void TextBox::ClearLines() {
+	lineList.clear();
+}

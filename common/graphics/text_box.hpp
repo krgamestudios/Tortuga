@@ -29,22 +29,10 @@
 #include <string>
 #include <list>
 
-/* DOCS: TextBox is a templated class to allow additional data, read more
- * As long as the class given as an argument meets these requirements, this
- * should work:
- * 
- *   Constructor(SDL_Renderer*, TTF_Font*, std::string, SDL_Color)
- *   DrawTo(SDL_Renderer*, int posX, int posY)
- * 
- * The class should also clean up after itself.
-*/
-
-//template class definition
-template<typename Line = TextLine>
 class TextBox {
 public:
-	TextBox() = default;
-	~TextBox() = default;
+	TextBox();
+	~TextBox();
 
 	void DrawTo(SDL_Renderer*, int posX, int posY, int pointSize);
 
@@ -53,35 +41,5 @@ public:
 	void ClearLines();
 
 private:
-	std::list<Line> lineList;
+	std::list<TextLine> lineList;
 };
-
-//method definitions
-template<typename Line>
-void TextBox<Line>::DrawTo(SDL_Renderer* renderer, int posX, int posY, int pointSize) {
-	//NOTE: pointSize should match the font's size, but may be negative to give a dialog effect
-	for (typename std::list<Line>::iterator it = lineList.begin(); it != lineList.end(); it++) {
-		it->DrawTo(renderer, posX, posY);
-		posY += pointSize;
-	}
-}
-
-template<typename Line>
-void TextBox<Line>::PushLine(SDL_Renderer* renderer, TTF_Font* font, std::string str, SDL_Color color) {
-	lineList.emplace_front(renderer, font, str, color);
-}
-
-template<typename Line>
-void TextBox<Line>::PopLine(int num) {
-	//prevent underflow
-	num < lineList.size() ? num : lineList.size();
-
-	for (int i = 0; i < num; ++i) {
-		lineList.pop_back();
-	}
-}
-
-template<typename Line>
-void TextBox<Line>::ClearLines() {
-	lineList.clear();
-}
