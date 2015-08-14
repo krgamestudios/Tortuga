@@ -25,6 +25,9 @@
 #include "image.hpp"
 #include "button.hpp"
 #include "bounding_box.hpp"
+#include "text_line.hpp"
+
+#include "SDL2/SDL_ttf.h"
 
 //utilities
 #include "config_utility.hpp"
@@ -78,14 +81,13 @@ protected:
 	int& clientIndex;
 	int& accountIndex;
 
-	//members
-	Image image;
-	Button search;
-	Button join;
-	Button back;
+	//define the list object
+	struct ServerInfo {
+		//graphics
+		TextLine nameImage;
+		TextLine playerCountImage;
 
-	//server list
-	struct ServerInformation {
+		//networking
 		IPaddress address;
 		std::string name;
 		int playerCount;
@@ -93,10 +95,16 @@ protected:
 		bool compatible;
 	};
 
-	std::vector<ServerInformation> serverInfo;
+	//members
+	Image buttonImage;
+	Image highlightImage;
+	TTF_Font* font = nullptr;
+	Button searchButton;
+	Button joinButton;
+	Button backButton;
 
-	//NOTE: a terrible hack
-	//I'd love a proper gui system for this
-	BoundingBox listBox;
-	ServerInformation* selection = nullptr;
+	std::vector<ServerInfo> serverVector;
+	ServerInfo* selection = nullptr;
+
+	BoundingBox boundingBox;
 };

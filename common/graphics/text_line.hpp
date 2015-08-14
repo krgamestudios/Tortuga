@@ -33,7 +33,7 @@ public:
 	TextLine();
 	TextLine(SDL_Renderer* r, TTF_Font* f, std::string s, SDL_Color c)
 		{ SetText(r, f, s, c); }
-	~TextLine();
+	virtual ~TextLine();
 
 	void DrawTo(SDL_Renderer*, int posX, int posY);
 
