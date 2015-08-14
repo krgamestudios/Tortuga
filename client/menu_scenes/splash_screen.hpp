@@ -22,7 +22,6 @@
 #pragma once
 
 #include "base_scene.hpp"
-
 #include "image.hpp"
 
 #include <chrono>

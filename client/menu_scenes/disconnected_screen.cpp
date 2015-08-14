@@ -23,7 +23,6 @@
 
 #include "channels.hpp"
 #include "config_utility.hpp"
-#include "text_util.hpp"
 #include "udp_network_utility.hpp"
 
 #include <stdexcept>
@@ -42,11 +41,14 @@ DisconnectedScreen::DisconnectedScreen() {
 
 	//setup the button
 	backButton.SetBackgroundTexture(GetRenderer(), image.GetTexture());
-	backButton.SetText(GetRenderer(), font, "Back", COLOR_WHITE);
+	backButton.SetText(GetRenderer(), font, "Back", {255, 255, 255, 255});
 
 	//set the button positions
 	backButton.SetX(50);
 	backButton.SetY(50);
+
+	//set the disconnection message text
+	textLine.SetText(GetRenderer(), font, config["client.disconnectMessage"], {255, 255, 255, 255});
 
 	//full reset
 	UDPNetworkUtility::GetSingleton().Unbind(Channels::SERVER);
@@ -81,44 +83,36 @@ void DisconnectedScreen::FrameEnd() {
 }
 
 void DisconnectedScreen::RenderFrame(SDL_Renderer* renderer) {
-	ConfigUtility& config = ConfigUtility::GetSingleton();
-
 	backButton.DrawTo(renderer);
-	//render output message
-	SDL_Texture* tex = renderPlainText(renderer, font, config["client.disconnectMessage"], COLOR_WHITE);
-	int w = 0, h = 0;
-	SDL_QueryTexture(tex, nullptr, nullptr, &w, &h);
-	SDL_Rect d = {50, 30, w, h};
-	SDL_RenderCopy(renderer, tex, nullptr, &d);
-	SDL_DestroyTexture(tex);
+	textLine.DrawTo(renderer, 50, 50);
 }
 
 //-------------------------
 //Event handlers
 //-------------------------
 
-void DisconnectedScreen::MouseMotion(SDL_MouseMotionEvent const& motion) {
-	backButton.MouseMotion(motion);
+void DisconnectedScreen::MouseMotion(SDL_MouseMotionEvent const& event) {
+	backButton.MouseMotion(event);
 }
 
-void DisconnectedScreen::MouseButtonDown(SDL_MouseButtonEvent const& button) {
-	backButton.MouseButtonDown(button);
+void DisconnectedScreen::MouseButtonDown(SDL_MouseButtonEvent const& event) {
+	backButton.MouseButtonDown(event);
 }
 
-void DisconnectedScreen::MouseButtonUp(SDL_MouseButtonEvent const& button) {
-	if (backButton.MouseButtonUp(button) == Button::State::RELEASED) {
+void DisconnectedScreen::MouseButtonUp(SDL_MouseButtonEvent const& event) {
+	if (backButton.MouseButtonUp(event) == Button::State::RELEASED) {
 		SetSceneSignal(SceneSignal::MAINMENU);
 	}
 }
 
-void DisconnectedScreen::KeyDown(SDL_KeyboardEvent const& key) {
-	switch(key.keysym.sym) {
+void DisconnectedScreen::KeyDown(SDL_KeyboardEvent const& event) {
+	switch(event.keysym.sym) {
 		case SDLK_ESCAPE:
 			SetSceneSignal(SceneSignal::MAINMENU);
 		break;
 	}
 }
 
-void DisconnectedScreen::KeyUp(SDL_KeyboardEvent const& key) {
+void DisconnectedScreen::KeyUp(SDL_KeyboardEvent const& event) {
 	//
 }

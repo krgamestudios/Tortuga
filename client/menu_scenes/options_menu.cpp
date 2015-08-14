@@ -31,24 +31,23 @@ OptionsMenu::OptionsMenu() {
 	ConfigUtility& config = ConfigUtility::GetSingleton();
 
 	//setup the utility objects
-	image.LoadSurface(config["dir.interface"] + "button_menu.bmp");
-	image.SetClipH(image.GetClipH()/3);
-	font.LoadSurface(config["dir.fonts"] + "pk_white_8.bmp");
+	buttonImage.Load(GetRenderer(), config["dir.interface"] + "button.png");
+	font = TTF_OpenFont(config["client.font"].c_str(), 12);
 
-	//pass the utility objects
-	backButton.SetImage(&image);
-	backButton.SetFont(&font);
+	//setup the button
+	backButton.SetBackgroundTexture(GetRenderer(), buttonImage.GetTexture());
+	backButton.SetText(GetRenderer(), font, "Back", {255, 255, 255, 255});
 
 	//set the button positions
 	backButton.SetX(50);
-	backButton.SetY(50 + image.GetClipH() * 0);
+	backButton.SetY(50);
 
-	//set the button texts
-	backButton.SetText("Back");
+	//text line
+	textLine.SetText(GetRenderer(), font, "This code is fucking hard to refactor.", {255, 255, 255, 255});
 }
 
 OptionsMenu::~OptionsMenu() {
-	//
+	TTF_CloseFont(font);
 }
 
 //-------------------------
@@ -67,38 +66,37 @@ void OptionsMenu::FrameEnd() {
 	//
 }
 
-void OptionsMenu::Render(SDL_Surface* const screen) {
-	backButton.DrawTo(screen);
-
-	font.DrawStringTo("Oh, were you looking for the options screen?", screen, 50, 30);
+void OptionsMenu::RenderFrame(SDL_Renderer* renderer) {
+	backButton.DrawTo(renderer);
+	textLine.DrawTo(renderer, 50, 30);
 }
 
 //-------------------------
 //Event handlers
 //-------------------------
 
-void OptionsMenu::MouseMotion(SDL_MouseMotionEvent const& motion) {
-	backButton.MouseMotion(motion);
+void OptionsMenu::MouseMotion(SDL_MouseMotionEvent const& event) {
+	backButton.MouseMotion(event);
 }
 
-void OptionsMenu::MouseButtonDown(SDL_MouseButtonEvent const& button) {
-	backButton.MouseButtonDown(button);
+void OptionsMenu::MouseButtonDown(SDL_MouseButtonEvent const& event) {
+	backButton.MouseButtonDown(event);
 }
 
-void OptionsMenu::MouseButtonUp(SDL_MouseButtonEvent const& button) {
-	if (backButton.MouseButtonUp(button) == Button::State::HOVER) {
-		SetNextScene(SceneList::MAINMENU);
+void OptionsMenu::MouseButtonUp(SDL_MouseButtonEvent const& event) {
+	if (backButton.MouseButtonUp(event) == Button::State::RELEASED) {
+		SetSceneSignal(SceneSignal::MAINMENU);
 	}
 }
 
-void OptionsMenu::KeyDown(SDL_KeyboardEvent const& key) {
-	switch(key.keysym.sym) {
+void OptionsMenu::KeyDown(SDL_KeyboardEvent const& event) {
+	switch(event.keysym.sym) {
 		case SDLK_ESCAPE:
-			SetNextScene(SceneList::MAINMENU);
+			SetSceneSignal(SceneSignal::MAINMENU);
 		break;
 	}
 }
 
-void OptionsMenu::KeyUp(SDL_KeyboardEvent const& key) {
+void OptionsMenu::KeyUp(SDL_KeyboardEvent const& event) {
 	//
 }

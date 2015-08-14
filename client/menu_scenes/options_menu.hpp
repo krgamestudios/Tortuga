@@ -21,10 +21,11 @@
 */
 #pragma once
 
-#include "base_scene.hpp"
-
-#include "image.hpp"
 #include "button.hpp"
+#include "image.hpp"
+#include "text_line.hpp"
+
+#include "base_scene.hpp"
 
 //NOTE: The options screen needs to be USED
 class OptionsMenu : public BaseScene {
@@ -50,6 +51,8 @@ private:
 	void KeyUp(SDL_KeyboardEvent const& event) override;
 
 	//members
-	Image image;
+	Image buttonImage;
+	TTF_Font* font = nullptr;
 	Button backButton;
+	TextLine textLine;
 };

@@ -24,6 +24,8 @@
 #include "base_scene.hpp"
 #include "button.hpp"
 #include "image.hpp"
+#include "text_line.hpp"
+
 #include "SDL2/SDL_ttf.h"
 
 #include <chrono>
@@ -54,6 +56,7 @@ protected:
 	Image image;
 	TTF_Font* font = nullptr;
 	Button backButton;
+	TextLine textLine;
 
 	//auto return
 	std::chrono::steady_clock::time_point startTick;
