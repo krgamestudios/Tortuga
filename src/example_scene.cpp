@@ -97,7 +97,7 @@ void ExampleScene::RenderFrame(SDL_Renderer* renderer) {
 
 	//DEBUG: testing UI
 	button.DrawTo(renderer);
-	textBox.DrawTo(renderer, 0, 550, 12);
+	textBox.DrawTo(renderer, 0, 550, -12);
 }
 
 //-------------------------
