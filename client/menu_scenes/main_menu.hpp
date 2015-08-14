@@ -22,9 +22,11 @@
 #pragma once
 
 #include "base_scene.hpp"
-
-#include "image.hpp"
 #include "button.hpp"
+#include "image.hpp"
+#include "text_box.hpp"
+
+#include "SDL2/SDL_ttf.h"
 
 class MainMenu : public BaseScene {
 public:
@@ -49,8 +51,10 @@ protected:
 	void KeyUp(SDL_KeyboardEvent const& event) override;
 
 	//members
-	Image image;
+	Image buttonImage;
+	TTF_Font* font = nullptr;
 	Button startButton;
 	Button optionsButton;
 	Button quitButton;
+	TextBox textBox;
 };

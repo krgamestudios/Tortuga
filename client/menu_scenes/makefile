@@ -7,7 +7,7 @@ CXXFLAGS+=-std=c++11 $(addprefix -I,$(INCLUDES))
 CXXSRC=$(wildcard *.cpp)
 
 #DEBUG: override the wildcard
-CXXSRC=disconnected_screen.cpp options_menu.cpp splash_screen.cpp
+CXXSRC=disconnected_screen.cpp main_menu.cpp options_menu.cpp splash_screen.cpp
 
 #objects
 OBJDIR=obj
