@@ -8,7 +8,6 @@ all: $(OUTDIR)
 	$(MAKE) -C graphics
 	$(MAKE) -C map
 	$(MAKE) -C network
-	$(MAKE) -C ui
 	$(MAKE) -C utilities
 
 debug: export CXXFLAGS+=-g

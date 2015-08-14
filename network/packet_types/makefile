@@ -10,13 +10,9 @@ CXXSRC=$(wildcard *.cpp)
 OBJDIR=obj
 OBJ+=$(addprefix $(OBJDIR)/,$(CXXSRC:.cpp=.o))
 
-#output
-OUTDIR=../$(OUTDIR)
-OUT=../$(OUT)
-
 #targets
 all: $(OBJ) $(OUT)
-	ar -crs $(OUT) $(OBJ)
+	ar -crs ../$(OUT) $(OBJ)
 
 $(OBJ): | $(OBJDIR)
 
