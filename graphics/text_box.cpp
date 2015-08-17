@@ -34,7 +34,7 @@ TextBox::~TextBox() {
 void TextBox::DrawTo(SDL_Renderer* renderer, int posX, int posY, int pointSize) {
 	for (std::list<TextLine>::iterator it = lineList.begin(); it != lineList.end(); it++) {
 		it->DrawTo(renderer, posX, posY);
-		posY -= pointSize;
+		posY += pointSize;
 	}
 }
 
