@@ -16,6 +16,7 @@ else ifeq ($(shell uname), Linux)
 	find . -type f -name '*.o' -exec rm -f -r -v {} \;
 	find . -type f -name '*.a' -exec rm -f -r -v {} \;
 	rm -f -v $(OUT)
+	find . -empty -type d -delete
 endif
 
 rebuild: clean all
