@@ -1,9 +1,9 @@
 #include directories
-INCLUDES+=. common libmap
+INCLUDES+=. ../common/graphics ../common/map
 
 #libraries
 #the order of the $(LIBS) is important, at least for MinGW
-LIBS+=libcommon.a libmap.a
+LIBS+=../common/libcommon.a
 ifeq ($(OS),Windows_NT)
 	LIBS+=-lmingw32
 endif
@@ -33,8 +33,6 @@ OUT=$(addprefix $(OUTDIR)/,map)
 
 #targets
 all: $(OBJ) $(OUT)
-	$(MAKE) -C common
-	$(MAKE) -C libmap
 	$(CXX) $(CXXFLAGS) -o $(OUT) $(OBJ) $(LIBS)
 
 $(OBJ): | $(OBJDIR)
