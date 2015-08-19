@@ -26,7 +26,7 @@
 #include "singleton.hpp"
 
 //APIs
-#include "SDL_net.h"
+#include "SDL2/SDL_net.h"
 
 class UDPNetworkUtility : public Singleton<UDPNetworkUtility> {
 public:

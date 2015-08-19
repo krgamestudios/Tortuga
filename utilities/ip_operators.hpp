@@ -21,7 +21,7 @@
 */
 #pragma once
 
-#include "SDL_net.h"
+#include "SDL2/SDL_net.h"
 
 //these should've come standard
 bool operator==(IPaddress lhs, IPaddress rhs);
