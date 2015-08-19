@@ -3,7 +3,7 @@ INCLUDES+=. client_utilities entities gameplay_scenes menu_scenes ../common/debu
 
 #libraries
 #the order of the $(LIBS) is important, at least for MinGW
-LIBS+=client.a ../libcommon.a -lSDL_net
+LIBS+=client.a ../common/libcommon.a -lSDL_net
 ifeq ($(OS),Windows_NT)
 	LIBS+=-lwsock32 -liphlpapi -lmingw32
 endif
@@ -31,7 +31,7 @@ OUT=$(addprefix $(OUTDIR)/,client)
 all: $(OBJ) $(OUT)
 	$(MAKE) -C client_utilities
 	$(MAKE) -C entities
-#	$(MAKE) -C gameplay_scenes
+	$(MAKE) -C gameplay_scenes
 	$(MAKE) -C menu_scenes
 #	$(CXX) $(CXXFLAGS) -o $(OUT) $(OBJ) $(LIBS)
 

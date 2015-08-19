@@ -42,6 +42,10 @@
 #include "base_monster.hpp"
 #include "local_character.hpp"
 
+#include "SDL2/SDL.h"
+#include "SDL2/SDL_net.h"
+#include "SDL2/SDL_ttf.h"
+
 //STL
 #include <map>
 
@@ -62,6 +66,7 @@ private:
 	void FrameEnd() override;
 
 	//input events
+	void QuitEvent();
 	void MouseMotion(SDL_MouseMotionEvent const& event) override;
 	void MouseButtonDown(SDL_MouseButtonEvent const& event) override;
 	void MouseButtonUp(SDL_MouseButtonEvent const& event) override;
@@ -130,15 +135,16 @@ private:
 	int roomIndex = -1;
 
 	//graphics
-	Image buttonImage;
 	TileSheet tileSheet;
 
 	//map
 	RegionPagerBase regionPager;
 
 	//UI
+	Image buttonImage;
+	TTF_Font* font = nullptr;
 	Button disconnectButton;
-	Button shutDownButton;
+	Button shutdownButton;
 	FrameRate fps;
 
 	//the camera structure

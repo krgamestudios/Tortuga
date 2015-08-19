@@ -3,7 +3,7 @@ INCLUDES+=SDL . accounts characters clients entities rooms server_utilities trig
 
 #libraries
 #the order of the $(LIBS) is important, at least for MinGW
-LIBS+=server.a ../libcommon.a -lSDL_net
+LIBS+=server.a ../common/libcommon.a -lSDL_net
 ifeq ($(OS),Windows_NT)
 	LIBS+=-lwsock32 -liphlpapi -lmingw32
 endif

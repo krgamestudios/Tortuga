@@ -6,6 +6,9 @@ CXXFLAGS+=-std=c++11 $(addprefix -I,$(INCLUDES))
 #source
 CXXSRC=$(wildcard *.cpp)
 
+#DEBUG: Overwrite the wildcard
+CXXSRC=world_logic.cpp
+
 #objects
 OBJDIR=obj
 OBJ+=$(addprefix $(OBJDIR)/,$(CXXSRC:.cpp=.o))
@@ -16,7 +19,7 @@ OUT=$(addprefix $(OUTDIR)/,client.a)
 
 #targets
 all: $(OBJ) $(OUT)
-	ar -crs $(OUT) $(OBJ)
+#	ar -crs $(OUT) $(OBJ)
 
 $(OBJ): | $(OBJDIR)
 
