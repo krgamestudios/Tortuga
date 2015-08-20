@@ -23,6 +23,9 @@
 
 #include "config_utility.hpp"
 
+#include <sstream>
+#include <stdexcept>
+
 //-------------------------
 //Public access members
 //-------------------------
@@ -33,6 +36,13 @@ MainMenu::MainMenu() {
 	//setup the utility objects
 	buttonImage.Load(GetRenderer(), config["dir.interface"] + "button.png");
 	font = TTF_OpenFont(config["client.font"].c_str(), 12);
+
+	//check that the font loaded
+	if (!font) {
+		std::ostringstream msg;
+		msg << "Failed to load a font file; " << SDL_GetError();
+		throw(std::runtime_error(msg.str()));
+	}
 
 	//setup the buttons
 	startButton.SetBackgroundTexture(GetRenderer(), buttonImage.GetTexture());
@@ -53,7 +63,7 @@ MainMenu::MainMenu() {
 	//text box
 	textBox.PushLine(GetRenderer(), font, "Thanks for playing!", {255, 255, 255, 255});
 	textBox.PushLine(GetRenderer(), font, "You can get the latest version at: ", {255, 255, 255, 255});
-	textBox.PushLine(GetRenderer(), font, "krgamestudios.com", {255, 255, 255, 255});
+	textBox.PushLine(GetRenderer(), font, "krgamestudios.com", {255, 255, 255, 255}); //TODO: click to open the website/update
 
 	//debug
 	//
@@ -84,7 +94,10 @@ void MainMenu::RenderFrame(SDL_Renderer* renderer) {
 	optionsButton.DrawTo(renderer);
 	quitButton.DrawTo(renderer);
 
-	textBox.DrawTo(renderer, 50, 50, 12);
+	int h = -1;
+	SDL_RenderGetLogicalSize(GetRenderer(), nullptr, &h);
+
+	textBox.DrawTo(renderer, 50, h-50, -12);
 }
 
 //-------------------------
@@ -114,6 +127,10 @@ void MainMenu::MouseButtonUp(SDL_MouseButtonEvent const& event) {
 	if (quitButton.MouseButtonUp(event) == Button::State::RELEASED) {
 		QuitEvent();
 	}
+}
+
+void MainMenu::MouseWheel(SDL_MouseWheelEvent const& event) {
+	//
 }
 
 void MainMenu::KeyDown(SDL_KeyboardEvent const& event) {

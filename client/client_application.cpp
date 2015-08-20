@@ -44,11 +44,16 @@ void ClientApplication::Init(int argc, char* argv[]) {
 	//create and check the window
 	//-------------------------
 
+	//get the config values
 	int w = config.Int("client.screen.w");
 	int h = config.Int("client.screen.h");
 	int f = config.Bool("client.screen.f") ? SDL_WINDOW_FULLSCREEN : 0;
 
-	window = SDL_CreateWindow(argv[0], SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, w ? w : 800, h ? h : 600, f);
+	//default sizes
+	w = w ? w : 800;
+	h = h ? h : 600;
+
+	window = SDL_CreateWindow(argv[0], SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, w, h, f);
 
 	if (!window) {
 		std::ostringstream msg;
@@ -86,12 +91,21 @@ void ClientApplication::Init(int argc, char* argv[]) {
 	//initialize SDL_net
 	if (SDLNet_Init()) {
 		std::ostringstream msg;
-		msg << "Failed to initialize SDL_net: " << SDL_GetError();
+		msg << "Failed to initialize SDL_net 2.0: " << SDL_GetError();
 		throw(std::runtime_error(msg.str()));
 	}
 	UDPNetworkUtility::GetSingleton().Open(0);
 
-	std::cout << "Initialized SDL_net" << std::endl;
+	std::cout << "Initialized SDL_net 2.0" << std::endl;
+
+	//setting up SDL2_ttf
+	if (TTF_Init()) {
+		std::ostringstream msg;
+		msg << "Failed to initialize SDL_ttf 2.0: " << SDL_GetError();
+		throw(std::runtime_error(msg.str()));
+	}
+
+	std::cout << "Initialized SDL_ttf 2.0" << std::endl;
 
 	//-------------------------
 	//debug output
@@ -181,6 +195,7 @@ void ClientApplication::Quit() {
 	//clean up after the program
 	std::cout << "Shutting down" << std::endl;
 	UDPNetworkUtility::GetSingleton().Close();
+	TTF_Quit();
 	SDLNet_Quit();
 	BaseScene::SetRenderer(nullptr);
 	SDL_DestroyRenderer(renderer);

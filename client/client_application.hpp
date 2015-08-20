@@ -27,6 +27,8 @@
 #include "udp_network_utility.hpp"
 
 #include "SDL2/SDL.h"
+#include "SDL2/SDL_net.h"
+#include "SDL2/SDL_ttf.h"
 
 class ClientApplication: public Singleton<ClientApplication> {
 public:

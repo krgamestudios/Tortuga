@@ -43,6 +43,13 @@ World::World(int* const argClientIndex,	int* const argAccountIndex):
 	buttonImage.Load(GetRenderer(), config["dir.interface"] + "button.png");
 	font = TTF_OpenFont(config["client.font"].c_str(), 12);
 
+	//check that the font loaded
+	if (!font) {
+		std::ostringstream msg;
+		msg << "Failed to load a font file; " << SDL_GetError();
+		throw(std::runtime_error(msg.str()));
+	}
+
 	//setup the buttons
 	disconnectButton.SetBackgroundTexture(GetRenderer(), buttonImage.GetTexture());
 	disconnectButton.SetText(GetRenderer(), font, "Disconnect", {255, 255, 255, 255});
@@ -214,6 +221,10 @@ void World::MouseButtonUp(SDL_MouseButtonEvent const& event) {
 	if (shutdownButton.MouseButtonUp(event) == Button::State::RELEASED) {
 		SendAdminShutdownRequest();
 	}
+}
+
+void World::MouseWheel(SDL_MouseWheelEvent const& event) {
+	//
 }
 
 void World::KeyDown(SDL_KeyboardEvent const& key) {

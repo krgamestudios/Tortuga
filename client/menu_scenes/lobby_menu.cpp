@@ -42,6 +42,13 @@ LobbyMenu::LobbyMenu(int* const argClientIndex, int* const argAccountIndex):
 	buttonImage.Load(GetRenderer(), config["dir.interface"] + "button.png");
 	font = TTF_OpenFont(config["client.font"].c_str(), 12);
 
+	//check that the font loaded
+	if (!font) {
+		std::ostringstream msg;
+		msg << "Failed to load a font file; " << SDL_GetError();
+		throw(std::runtime_error(msg.str()));
+	}
+
 	//setup the buttons
 	searchButton.SetBackgroundTexture(GetRenderer(), buttonImage.GetTexture());
 	searchButton.SetText(GetRenderer(), font, "Search", {255, 255, 255, 255});

@@ -28,6 +28,7 @@
 //-------------------------
 
 SplashScreen::SplashScreen() {
+	//TODO: I need a logo that isn't partially invisible
 	logo.Load(GetRenderer(), ConfigUtility::GetSingleton()["dir.logos"] + "krstudios.png");
 	startTick = std::chrono::steady_clock::now();
 }
@@ -49,5 +50,6 @@ void SplashScreen::FrameStart() {
 void SplashScreen::RenderFrame(SDL_Renderer* renderer) {
 	int w = 0, h = 0;
 	SDL_RenderGetLogicalSize(renderer, &w, &h);
-	logo.DrawTo(renderer, (w - logo.GetClipW()) / 2, (h - logo.GetClipH()) / 2);
+	//TODO: fix logo position
+	logo.DrawTo(renderer, (w - logo.GetClipW() / 4) / 2, (h - logo.GetClipH() / 4) / 2, .25, .25);
 }

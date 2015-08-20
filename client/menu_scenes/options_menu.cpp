@@ -23,6 +23,9 @@
 
 #include "config_utility.hpp"
 
+#include <sstream>
+#include <stdexcept>
+
 //-------------------------
 //Public access members
 //-------------------------
@@ -33,6 +36,13 @@ OptionsMenu::OptionsMenu() {
 	//setup the utility objects
 	buttonImage.Load(GetRenderer(), config["dir.interface"] + "button.png");
 	font = TTF_OpenFont(config["client.font"].c_str(), 12);
+
+	//check that the font loaded
+	if (!font) {
+		std::ostringstream msg;
+		msg << "Failed to load a font file; " << SDL_GetError();
+		throw(std::runtime_error(msg.str()));
+	}
 
 	//setup the button
 	backButton.SetBackgroundTexture(GetRenderer(), buttonImage.GetTexture());
@@ -87,6 +97,10 @@ void OptionsMenu::MouseButtonUp(SDL_MouseButtonEvent const& event) {
 	if (backButton.MouseButtonUp(event) == Button::State::RELEASED) {
 		SetSceneSignal(SceneSignal::MAINMENU);
 	}
+}
+
+void OptionsMenu::MouseWheel(SDL_MouseWheelEvent const& event) {
+	//
 }
 
 void OptionsMenu::KeyDown(SDL_KeyboardEvent const& event) {

@@ -25,6 +25,7 @@
 #include "config_utility.hpp"
 #include "udp_network_utility.hpp"
 
+#include <sstream>
 #include <stdexcept>
 
 //-------------------------
@@ -38,6 +39,13 @@ DisconnectedScreen::DisconnectedScreen() {
 	//TODO: (1) resource tool, to prevent reloading like this
 	image.Load(GetRenderer(), config["dir.interface"] + "button.png");
 	font = TTF_OpenFont(config["client.font"].c_str(), 12);
+
+	//check that the font loaded
+	if (!font) {
+		std::ostringstream msg;
+		msg << "Failed to load a font file; " << SDL_GetError();
+		throw(std::runtime_error(msg.str()));
+	}
 
 	//setup the button
 	backButton.SetBackgroundTexture(GetRenderer(), image.GetTexture());
@@ -103,6 +111,10 @@ void DisconnectedScreen::MouseButtonUp(SDL_MouseButtonEvent const& event) {
 	if (backButton.MouseButtonUp(event) == Button::State::RELEASED) {
 		SetSceneSignal(SceneSignal::MAINMENU);
 	}
+}
+
+void DisconnectedScreen::MouseWheel(SDL_MouseWheelEvent const& event) {
+	//
 }
 
 void DisconnectedScreen::KeyDown(SDL_KeyboardEvent const& event) {

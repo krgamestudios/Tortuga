@@ -33,7 +33,7 @@ all: $(OBJ) $(OUT)
 	$(MAKE) -C entities
 	$(MAKE) -C gameplay_scenes
 	$(MAKE) -C menu_scenes
-#	$(CXX) $(CXXFLAGS) -o $(OUT) $(OBJ) $(LIBS)
+	$(CXX) $(CXXFLAGS) -o $(OUT) $(OBJ) $(LIBS)
 
 $(OBJ): | $(OBJDIR)
 
