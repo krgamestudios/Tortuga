@@ -25,7 +25,7 @@
 #include "server_packet.hpp"
 #include "singleton.hpp"
 
-#include "SDL_net.h"
+#include "SDL2/SDL_net.h"
 
 #include <functional>
 #include <list>

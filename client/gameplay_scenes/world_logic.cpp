@@ -58,9 +58,9 @@ World::World(int* const argClientIndex,	int* const argAccountIndex):
 
 	//set the button positions
 	disconnectButton.SetX(50);
-	disconnectButton.SetY(50 + buttonImage.GetClipH() * 0);
+	disconnectButton.SetY(50);
 	shutdownButton.SetX(50);
-	shutdownButton.SetY(50 + buttonImage.GetClipH() * 1);
+	shutdownButton.SetY(70);
 
 	//load the tilesheet
 	//TODO: (2) Tile size and tile sheet should be loaded elsewhere
