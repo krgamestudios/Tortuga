@@ -64,7 +64,7 @@ World::World(int* const argClientIndex,	int* const argAccountIndex):
 
 	//load the tilesheet
 	//TODO: (2) Tile size and tile sheet should be loaded elsewhere
-	tileSheet.Load(GetRenderer(), config["dir.tilesets"] + "overworld.bmp", 32, 32);
+	tileSheet.Load(GetRenderer(), config["dir.tilesets"] + "overworld.png", 32, 32);
 
 	//Send the character data
 	CharacterPacket newPacket;
