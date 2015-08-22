@@ -27,6 +27,11 @@
 
 #include <string>
 
+constexpr SDL_Color COLOR_WHITE = {255, 255, 255, 255};
+constexpr SDL_Color COLOR_RED = {255, 0, 0, 255};
+constexpr SDL_Color COLOR_ORANGE = {255, 127, 0, 255};
+constexpr SDL_Color COLOR_BLUE = {0, 0, 255, 255};
+
 class Button {
 public:
 	enum State {
