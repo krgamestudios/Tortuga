@@ -24,6 +24,10 @@
 #include "serial_packet.hpp"
 #include "config_utility.hpp"
 
+//for handling platforms
+#include "SDL2/SDL_syswm.h"
+#include "SDL2/SDL_version.h"
+
 #include <chrono>
 #include <iostream>
 #include <sstream>
@@ -47,7 +51,7 @@ void ClientApplication::Init(int argc, char* argv[]) {
 	//get the config values
 	int w = config.Int("client.screen.w");
 	int h = config.Int("client.screen.h");
-	int f = config.Bool("client.screen.f") ? SDL_WINDOW_FULLSCREEN : 0;
+	int f = config.Int("client.screen.f") ? SDL_WINDOW_FULLSCREEN : 0;
 
 	//default sizes
 	w = w ? w : 800;
@@ -62,6 +66,75 @@ void ClientApplication::Init(int argc, char* argv[]) {
 	}
 
 	std::cout << "Initialized the window" << std::endl;
+
+	//-------------------------
+	//DEBUG: detecting platforms & versions
+	//-------------------------
+
+	SDL_SysWMinfo windowInfo;
+	SDL_VERSION(&windowInfo.version);
+	if (SDL_GetWindowWMInfo(window, &windowInfo)) {
+		//NOTE: Raw copy/paste from the SDL wiki
+		// success
+		std::string subsystem;
+		switch(windowInfo.subsystem) {
+			case SDL_SYSWM_UNKNOWN:
+				subsystem = "an unknown system!";
+			break;
+
+			case SDL_SYSWM_WINDOWS:
+			subsystem = "Microsoft Windows(TM)";
+			break;
+
+			case SDL_SYSWM_X11:
+				subsystem = "X Window System";
+			break;
+
+			case SDL_SYSWM_DIRECTFB:
+				subsystem = "DirectFB";
+			break;
+
+			case SDL_SYSWM_COCOA:
+				subsystem = "Apple OS X";
+			break;
+
+			case SDL_SYSWM_UIKIT:
+				subsystem = "UIKit";
+			break;
+
+#if SDL_VERSION_ATLEAST(2, 0, 2)
+			case SDL_SYSWM_WAYLAND:
+				subsystem = "Wayland";
+			break;
+
+			case SDL_SYSWM_MIR:
+				subsystem = "Mir";
+			break;
+#endif
+
+#if SDL_VERSION_ATLEAST(2, 0, 3)
+			case SDL_SYSWM_WINRT:
+				subsystem = "WinRT";
+			break;
+#endif
+
+#if SDL_VERSION_ATLEAST(2, 0, 4)
+			case SDL_SYSWM_ANDROID:
+				subsystem = "Android";
+			break;
+#endif
+		}
+
+		//final output
+		std::cout << "SDL Version ";
+		std::cout << (int)windowInfo.version.major << ".";
+		std::cout << (int)windowInfo.version.minor << ".";
+		std::cout << (int)windowInfo.version.patch << " on ";
+		std::cout << subsystem << std::endl;
+	}
+	else {
+		std::cerr << "(Non-Fatal) Failed to retrieve window info: " << SDL_GetError() << std::endl;
+	}
 
 	//-------------------------
 	//create and check the renderer
@@ -111,24 +184,22 @@ void ClientApplication::Init(int argc, char* argv[]) {
 	//debug output
 	//-------------------------
 
-#define DEBUG_OUTPUT_VAR(x) std::cout << "\t" << #x << ": " << x << std::endl;
+#define DEBUG_INTERNAL_VAR(x) std::cout << "\t" << #x << ": " << x << std::endl;
 
 	std::cout << "Internal sizes:" << std::endl;
 
-	DEBUG_OUTPUT_VAR(NETWORK_VERSION);
-	DEBUG_OUTPUT_VAR(sizeof(Region::type_t));
-	DEBUG_OUTPUT_VAR(sizeof(Region));
-	DEBUG_OUTPUT_VAR(REGION_WIDTH);
-	DEBUG_OUTPUT_VAR(REGION_HEIGHT);
-	DEBUG_OUTPUT_VAR(REGION_DEPTH);
-	DEBUG_OUTPUT_VAR(REGION_TILE_FOOTPRINT);
-	DEBUG_OUTPUT_VAR(REGION_SOLID_FOOTPRINT);
-	DEBUG_OUTPUT_VAR(PACKET_STRING_SIZE);
-	DEBUG_OUTPUT_VAR(PACKET_BUFFER_SIZE);
-	DEBUG_OUTPUT_VAR(MAX_PACKET_SIZE);
-	DEBUG_OUTPUT_VAR(static_cast<int>(SerialPacketType::LAST));
-
-#undef DEBUG_OUTPUT_VAR
+	DEBUG_INTERNAL_VAR(NETWORK_VERSION);
+	DEBUG_INTERNAL_VAR(sizeof(Region::type_t));
+	DEBUG_INTERNAL_VAR(sizeof(Region));
+	DEBUG_INTERNAL_VAR(REGION_WIDTH);
+	DEBUG_INTERNAL_VAR(REGION_HEIGHT);
+	DEBUG_INTERNAL_VAR(REGION_DEPTH);
+	DEBUG_INTERNAL_VAR(REGION_TILE_FOOTPRINT);
+	DEBUG_INTERNAL_VAR(REGION_SOLID_FOOTPRINT);
+	DEBUG_INTERNAL_VAR(PACKET_STRING_SIZE);
+	DEBUG_INTERNAL_VAR(PACKET_BUFFER_SIZE);
+	DEBUG_INTERNAL_VAR(MAX_PACKET_SIZE);
+	DEBUG_INTERNAL_VAR(static_cast<int>(SerialPacketType::LAST));
 
 	//-------------------------
 	//finalize the startup
