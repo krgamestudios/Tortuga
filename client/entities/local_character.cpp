@@ -26,6 +26,7 @@
 bool LocalCharacter::ProcessCollisionGrid(std::list<BoundingBox> boxList) {
 	for(auto& box : boxList) {
 		if (box.CheckOverlap(origin + bounds)) {
+			//TODO: write a better collision system
 			origin -= motion;
 			motion = {0, 0};
 			return true;

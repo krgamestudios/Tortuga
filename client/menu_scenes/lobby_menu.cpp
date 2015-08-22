@@ -68,7 +68,7 @@ LobbyMenu::LobbyMenu(int* const argClientIndex, int* const argAccountIndex):
 	//pseudo-list selection
 	boundingBox = {300, 50, 200, 12};
 
-	//DEBUG: hacked together a highlight box
+	//hacked together a highlight box
 	highlightImage.Create(GetRenderer(), 300, 12, {49, 150, 5, 255});
 
 	//Eat incoming packets

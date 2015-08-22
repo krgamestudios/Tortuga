@@ -229,9 +229,14 @@ void World::MouseWheel(SDL_MouseWheelEvent const& event) {
 	//
 }
 
-void World::KeyDown(SDL_KeyboardEvent const& key) {
+void World::KeyDown(SDL_KeyboardEvent const& event) {
+	//BUGFIX: SDL2 introduced key repeats, so I need to ignore it
+	if (event.repeat) {
+		return;
+	}
+
 	//hotkeys
-	switch(key.keysym.sym) {
+	switch(event.keysym.sym) {
 		case SDLK_ESCAPE:
 			//TODO: (3) the escape key should actually control menus and stuff
 			SendLogoutRequest();
@@ -243,7 +248,7 @@ void World::KeyDown(SDL_KeyboardEvent const& key) {
 		return;
 	}
 	Vector2 motion = localCharacter->GetMotion();
-	switch(key.keysym.sym) {
+	switch(event.keysym.sym) {
 		case SDLK_w:
 			motion.y -= CHARACTER_WALKING_SPEED;
 		break;
@@ -270,13 +275,18 @@ void World::KeyDown(SDL_KeyboardEvent const& key) {
 	SendLocalCharacterMovement();
 }
 
-void World::KeyUp(SDL_KeyboardEvent const& key) {
+void World::KeyUp(SDL_KeyboardEvent const& event) {
+	//BUGFIX: SDL2 introduced key repeats, so I need to ignore it
+	if (event.repeat) {
+		return;
+	}
+
 	//character movement
 	if (!localCharacter) {
 		return;
 	}
 	Vector2 motion = localCharacter->GetMotion();
-	switch(key.keysym.sym) {
+	switch(event.keysym.sym) {
 		case SDLK_w:
 			motion.y = std::min(0.0, motion.y += CHARACTER_WALKING_SPEED);
 		break;

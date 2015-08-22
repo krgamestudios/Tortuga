@@ -26,6 +26,7 @@
 #include "vector2.hpp"
 
 //The base class for all objects in the world
+//TODO: write a better hierarchy
 class Entity {
 public:
 	virtual void Update();
