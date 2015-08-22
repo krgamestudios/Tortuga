@@ -40,7 +40,7 @@ World::World(int* const argClientIndex,	int* const argAccountIndex):
 	accountIndex(*argAccountIndex)
 {
 	//setup the utility objects
-	buttonImage.Load(GetRenderer(), config["dir.interface"] + "button.png");
+	buttonImage.Load(GetRenderer(), config["dir.interface"] + "button_red.png");
 	font = TTF_OpenFont(config["client.font"].c_str(), 12);
 
 	//check that the font loaded
@@ -52,9 +52,9 @@ World::World(int* const argClientIndex,	int* const argAccountIndex):
 
 	//setup the buttons
 	disconnectButton.SetBackgroundTexture(GetRenderer(), buttonImage.GetTexture());
-	disconnectButton.SetText(GetRenderer(), font, "Disconnect", {255, 255, 255, 255});
+	disconnectButton.SetText(GetRenderer(), font, "Disconnect", COLOR_BLUE);
 	shutdownButton.SetBackgroundTexture(GetRenderer(), buttonImage.GetTexture());
-	shutdownButton.SetText(GetRenderer(), font, "Shutdown", {255, 255, 255, 255});
+	shutdownButton.SetText(GetRenderer(), font, "Shutdown", COLOR_BLUE);
 
 	//set the button positions
 	disconnectButton.SetX(50);

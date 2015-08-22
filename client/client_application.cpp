@@ -68,61 +68,37 @@ void ClientApplication::Init(int argc, char* argv[]) {
 	std::cout << "Initialized the window" << std::endl;
 
 	//-------------------------
-	//DEBUG: detecting platforms & versions
+	//DEBUG: detecting platforms, versions & appropriate fonts
 	//-------------------------
 
 	SDL_SysWMinfo windowInfo;
 	SDL_VERSION(&windowInfo.version);
 	if (SDL_GetWindowWMInfo(window, &windowInfo)) {
-		//NOTE: Raw copy/paste from the SDL wiki
-		// success
-		std::string subsystem;
-		switch(windowInfo.subsystem) {
-			case SDL_SYSWM_UNKNOWN:
-				subsystem = "an unknown system!";
-			break;
+		//
+		std::string platform;
+		std::string fontPath;
 
+		//get the info
+		switch(windowInfo.subsystem) {
 			case SDL_SYSWM_WINDOWS:
-			subsystem = "Microsoft Windows(TM)";
+				//TODO: ensure that this works
+				platform = "Microsoft Windows";
+				fontPath = "C:/Windows/Fonts/arialuni.ttf";
 			break;
 
 			case SDL_SYSWM_X11:
-				subsystem = "X Window System";
+				platform = "X Window System";
+				fontPath = "/usr/share/fonts/truetype/msttcorefonts/Arial_Bold.ttf";
 			break;
 
-			case SDL_SYSWM_DIRECTFB:
-				subsystem = "DirectFB";
-			break;
-
+			//NOTE: OS X is currently unsupported, but it could be
 			case SDL_SYSWM_COCOA:
-				subsystem = "Apple OS X";
+				platform = "Apple OS X";
+				fontPath = "/System/Library/Fonts/arialuni.ttf";
 			break;
 
-			case SDL_SYSWM_UIKIT:
-				subsystem = "UIKit";
-			break;
-
-#if SDL_VERSION_ATLEAST(2, 0, 2)
-			case SDL_SYSWM_WAYLAND:
-				subsystem = "Wayland";
-			break;
-
-			case SDL_SYSWM_MIR:
-				subsystem = "Mir";
-			break;
-#endif
-
-#if SDL_VERSION_ATLEAST(2, 0, 3)
-			case SDL_SYSWM_WINRT:
-				subsystem = "WinRT";
-			break;
-#endif
-
-#if SDL_VERSION_ATLEAST(2, 0, 4)
-			case SDL_SYSWM_ANDROID:
-				subsystem = "Android";
-			break;
-#endif
+			default:
+				platform = "an unsupported platform";
 		}
 
 		//final output
@@ -130,10 +106,17 @@ void ClientApplication::Init(int argc, char* argv[]) {
 		std::cout << (int)windowInfo.version.major << ".";
 		std::cout << (int)windowInfo.version.minor << ".";
 		std::cout << (int)windowInfo.version.patch << " on ";
-		std::cout << subsystem << std::endl;
+		std::cout << platform << std::endl;
+
+		//handle the default font paths
+		if (config["client.font"].size() == 0) {
+			config["client.font"] = fontPath;
+		}
 	}
 	else {
-		std::cerr << "(Non-Fatal) Failed to retrieve window info: " << SDL_GetError() << std::endl;
+		std::ostringstream msg;
+		msg << "Failed to retrieve window info: " << SDL_GetError();
+		throw(msg.str());
 	}
 
 	//-------------------------

@@ -39,7 +39,7 @@ LobbyMenu::LobbyMenu(int* const argClientIndex, int* const argAccountIndex):
 	accountIndex = -1;
 
 	//setup the utility objects
-	buttonImage.Load(GetRenderer(), config["dir.interface"] + "button.png");
+	buttonImage.Load(GetRenderer(), config["dir.interface"] + "button_red.png");
 	font = TTF_OpenFont(config["client.font"].c_str(), 12);
 
 	//check that the font loaded
@@ -51,11 +51,11 @@ LobbyMenu::LobbyMenu(int* const argClientIndex, int* const argAccountIndex):
 
 	//setup the buttons
 	searchButton.SetBackgroundTexture(GetRenderer(), buttonImage.GetTexture());
-	searchButton.SetText(GetRenderer(), font, "Search", {255, 255, 255, 255});
+	searchButton.SetText(GetRenderer(), font, "Search", COLOR_BLUE);
 	joinButton.SetBackgroundTexture(GetRenderer(), buttonImage.GetTexture());
-	joinButton.SetText(GetRenderer(), font, "Join", {255, 255, 255, 255});
+	joinButton.SetText(GetRenderer(), font, "Join", COLOR_BLUE);
 	backButton.SetBackgroundTexture(GetRenderer(), buttonImage.GetTexture());
-	backButton.SetText(GetRenderer(), font, "Back", {255, 255, 255, 255});
+	backButton.SetText(GetRenderer(), font, "Back", COLOR_BLUE);
 
 	//set the button positions (assumed)
 	searchButton.SetX(50);

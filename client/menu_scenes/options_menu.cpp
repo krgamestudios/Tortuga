@@ -34,7 +34,7 @@ OptionsMenu::OptionsMenu() {
 	ConfigUtility& config = ConfigUtility::GetSingleton();
 
 	//setup the utility objects
-	buttonImage.Load(GetRenderer(), config["dir.interface"] + "button.png");
+	buttonImage.Load(GetRenderer(), config["dir.interface"] + "button_red.png");
 	font = TTF_OpenFont(config["client.font"].c_str(), 12);
 
 	//check that the font loaded
@@ -46,7 +46,7 @@ OptionsMenu::OptionsMenu() {
 
 	//setup the button
 	backButton.SetBackgroundTexture(GetRenderer(), buttonImage.GetTexture());
-	backButton.SetText(GetRenderer(), font, "Back", {255, 255, 255, 255});
+	backButton.SetText(GetRenderer(), font, "Back", COLOR_BLUE);
 
 	//set the button positions
 	backButton.SetX(50);

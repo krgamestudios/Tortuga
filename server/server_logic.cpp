@@ -132,6 +132,8 @@ void ServerApplication::Init(int argc, char* argv[]) {
 	//debug output
 	//-------------------------
 
+#define DEBUG_INTERNAL_VAR(x) std::cout << "\t" << #x << ": " << x << std::endl;
+
 std::cout << "Internal sizes:" << std::endl;
 
 	DEBUG_INTERNAL_VAR(NETWORK_VERSION);
