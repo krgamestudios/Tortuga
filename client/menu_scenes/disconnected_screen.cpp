@@ -92,7 +92,7 @@ void DisconnectedScreen::FrameEnd() {
 
 void DisconnectedScreen::RenderFrame(SDL_Renderer* renderer) {
 	backButton.DrawTo(renderer);
-	textLine.DrawTo(renderer, 50, 50);
+	textLine.DrawTo(renderer, 50, 30);
 }
 
 //-------------------------

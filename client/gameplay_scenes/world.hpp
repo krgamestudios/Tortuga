@@ -33,6 +33,7 @@
 #include "image.hpp"
 #include "button.hpp"
 #include "tile_sheet.hpp"
+#include "text_line.hpp"
 
 //common
 #include "frame_rate.hpp"
@@ -146,6 +147,7 @@ private:
 	Button disconnectButton;
 	Button shutdownButton;
 	FrameRate fps;
+	TextLine fpsTextLine;
 
 	//the camera structure
 	struct {

@@ -121,7 +121,7 @@ void LobbyMenu::RenderFrame(SDL_Renderer* renderer) {
 
 		//draw the server's info
 		serverVector[i].nameImage.DrawTo(renderer, boundingBox.x, boundingBox.y + boundingBox.h * i);
-		serverVector[i].playerCountImage.DrawTo(renderer, boundingBox.x, boundingBox.y + boundingBox.h * i);
+		serverVector[i].playerCountImage.DrawTo(renderer, boundingBox.x+300, boundingBox.y + boundingBox.h * i);
 	}
 }
 
@@ -242,7 +242,7 @@ void LobbyMenu::HandleBroadcastResponse(ServerPacket* const argPacket) {
 	//fancy itoa
 	auto itoa_base10 = [](int i) -> std::string {
 		char str[20];
-		printf(str, "%d", i);
+		sprintf(str, "%d", i);
 		return std::string(str);
 	};
 

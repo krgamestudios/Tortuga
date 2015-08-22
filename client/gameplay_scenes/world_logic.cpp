@@ -185,13 +185,15 @@ void World::RenderFrame(SDL_Renderer* renderer) {
 	//draw UI
 	disconnectButton.DrawTo(renderer);
 	shutdownButton.DrawTo(renderer);
-	std::ostringstream msg;
-	//TODO: FPS
-//	msg << fps.GetFrameRate();
-//	font.DrawStringTo(msg.str(), screen, 0, 0);
 
 	//FPS
-	fps.Calculate();
+	fpsTextLine.DrawTo(renderer, 0, 0);
+	int fpsRet = fps.Calculate();
+	if (fpsRet != -1) {
+		std::ostringstream msg;
+		msg << "FPS: " << fpsRet;
+		fpsTextLine.SetText(renderer, font, msg.str(), {255, 255, 255, 255});
+	}
 }
 
 //-------------------------
