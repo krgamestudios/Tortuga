@@ -51,7 +51,10 @@ void ClientApplication::Init(int argc, char* argv[]) {
 	//get the config values
 	int w = config.Int("client.screen.w");
 	int h = config.Int("client.screen.h");
-	int f = config.Int("client.screen.f") ? SDL_WINDOW_FULLSCREEN : 0;
+	int f = config.Boolean("client.screen.f") ? SDL_WINDOW_FULLSCREEN : 0;
+
+	//BUG: fullscreen is disabled
+	f = 0;
 
 	//default sizes
 	w = w ? w : 800;
@@ -322,7 +325,7 @@ void ClientApplication::ProcessSceneSignal(SceneSignal signal) {
 		//add scene creation calls here
 		case SceneSignal::FIRST:
 		case SceneSignal::SPLASHSCREEN:
-			activeScene = new SplashScreen();
+			activeScene = new SplashScreen(window);
 		break;
 		case SceneSignal::MAINMENU:
 			activeScene = new MainMenu();

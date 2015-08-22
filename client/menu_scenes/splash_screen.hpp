@@ -29,7 +29,7 @@
 class SplashScreen : public BaseScene {
 public:
 	//Public access members
-	SplashScreen();
+	SplashScreen(SDL_Window*);
 	~SplashScreen();
 
 	void RenderFrame(SDL_Renderer* renderer) override;
@@ -41,4 +41,8 @@ private:
 	//members
 	std::chrono::steady_clock::time_point startTick;
 	Image logo;
+
+	//screws with the window
+	SDL_Window* window = nullptr;
+	int windowWidth, windowHeight;
 };

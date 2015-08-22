@@ -27,14 +27,23 @@
 //Public access members
 //-------------------------
 
-SplashScreen::SplashScreen() {
-	//TODO: I need a logo that isn't partially invisible
+SplashScreen::SplashScreen(SDL_Window* w) {
+	//fit the screen to the logo
+	//TODO: refactor the code for this window trick
+	window = w;
+	SDL_GetWindowSize(window, &windowWidth, &windowHeight);
+
 	logo.Load(GetRenderer(), ConfigUtility::GetSingleton()["dir.logos"] + "krstudios.png");
+
+	SDL_SetWindowSize(window, logo.GetClipW(), logo.GetClipH());
+	SDL_RenderSetLogicalSize(GetRenderer(), logo.GetClipW(), logo.GetClipH());
+
 	startTick = std::chrono::steady_clock::now();
 }
 
 SplashScreen::~SplashScreen() {
-	//
+	SDL_SetWindowSize(window, windowWidth, windowHeight);
+	SDL_RenderSetLogicalSize(GetRenderer(), windowWidth, windowHeight);
 }
 
 //-------------------------
@@ -42,7 +51,7 @@ SplashScreen::~SplashScreen() {
 //-------------------------
 
 void SplashScreen::FrameStart() {
-	if (std::chrono::steady_clock::now() - startTick > std::chrono::duration<int>(1)) {
+	if (std::chrono::steady_clock::now() - startTick > std::chrono::duration<int>(3)) {
 		SetSceneSignal(SceneSignal::MAINMENU);
 	}
 }
@@ -51,5 +60,5 @@ void SplashScreen::RenderFrame(SDL_Renderer* renderer) {
 	int w = 0, h = 0;
 	SDL_RenderGetLogicalSize(renderer, &w, &h);
 	//TODO: fix logo position
-	logo.DrawTo(renderer, (w - logo.GetClipW() / 4) / 2, (h - logo.GetClipH() / 4) / 2, .25, .25);
+	logo.DrawTo(renderer, (w - logo.GetClipW()) / 2, (h - logo.GetClipH()) / 2);
 }
