@@ -28,16 +28,21 @@ public:
 	typedef std::chrono::high_resolution_clock Clock;
 
 	FrameRate() = default;
+
+	//DOCS: for usage purposes, this returns -1 unless a new framerate value is set
 	int Calculate() {
 		frameCount++;
 		if (Clock::now() - tick >= std::chrono::duration<int>(1)) {
 			lastFrameRate = frameCount;
 			frameCount = 0;
 			tick = Clock::now();
+			return lastFrameRate;
 		}
-		return lastFrameRate;
+		return -1;
 	}
+
 	int GetFrameRate() { return lastFrameRate; }
+
 private:
 	int frameCount = 0;
 	int lastFrameRate = 0;
