@@ -85,9 +85,6 @@ void Button::SetText(SDL_Renderer* renderer, TTF_Font* font, std::string s, SDL_
 
 	//free the texture
 	SDL_DestroyTexture(text);
-
-	//DEBUG: testing
-//	image.SetClipH(image.GetClipH() * 3);
 }
 
 void Button::SetX(int x) {
