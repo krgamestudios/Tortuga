@@ -86,7 +86,7 @@ void ClientApplication::Init(int argc, char* argv[]) {
 			case SDL_SYSWM_WINDOWS:
 				//TODO: ensure that this works
 				platform = "Microsoft Windows";
-				fontPath = "C:/Windows/Fonts/arialuni.ttf";
+				fontPath = "C:/Windows/Fonts/arialbd.ttf";
 			break;
 
 			case SDL_SYSWM_X11:
@@ -97,7 +97,7 @@ void ClientApplication::Init(int argc, char* argv[]) {
 			//NOTE: OS X is currently unsupported, but it could be
 			case SDL_SYSWM_COCOA:
 				platform = "Apple OS X";
-				fontPath = "/System/Library/Fonts/arialuni.ttf";
+				fontPath = "/System/Library/Fonts/arialbd.ttf";
 			break;
 
 			default:
