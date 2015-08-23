@@ -23,6 +23,7 @@
 
 #include "channels.hpp"
 
+#include <cstring>
 #include <stdexcept>
 #include <sstream>
 
@@ -307,7 +308,7 @@ void LobbyMenu::SendLoginRequest() {
 	ClientPacket packet;
 	packet.type = SerialPacketType::LOGIN_REQUEST;
 	packet.clientIndex = clientIndex;
-	strncpy(packet.username, config["client.username"].c_str(), PACKET_STRING_SIZE);
+	strncpy(packet.username, config["client.username"].c_str(), PACKET_STRING_SIZE+1);
 
 	network.SendTo(Channels::SERVER, &packet);
 }

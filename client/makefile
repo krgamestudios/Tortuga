@@ -3,7 +3,7 @@ INCLUDES+=. client_utilities entities gameplay_scenes menu_scenes ../common/debu
 
 #libraries
 #the order of the $(LIBS) is important, at least for MinGW
-LIBS+=client.a ../common/libcommon.a -lSDL_net
+LIBS+=client.a ../common/libcommon.a -lSDL2_net
 ifeq ($(OS),Windows_NT)
 	LIBS+=-lwsock32 -liphlpapi -lmingw32
 endif
