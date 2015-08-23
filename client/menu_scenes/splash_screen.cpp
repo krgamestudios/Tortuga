@@ -51,6 +51,7 @@ SplashScreen::~SplashScreen() {
 //-------------------------
 
 void SplashScreen::FrameStart() {
+	//TODO: config flag to change the delay
 	if (std::chrono::steady_clock::now() - startTick > std::chrono::duration<int>(3)) {
 		SetSceneSignal(SceneSignal::MAINMENU);
 	}

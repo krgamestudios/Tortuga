@@ -241,6 +241,12 @@ void World::KeyDown(SDL_KeyboardEvent const& event) {
 			//TODO: (3) the escape key should actually control menus and stuff
 			SendLogoutRequest();
 		return;
+
+		case SDLK_SPACE:
+			//DEBUG: testing bug #45
+			//reset the map
+			regionPager.UnloadAll();
+		return;
 	}
 
 	//character movement

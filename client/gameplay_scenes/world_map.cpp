@@ -29,12 +29,13 @@
 //static functions
 //-------------------------
 
+//TODO: proper checksum
 static int regionChecksum(Region* const region) {
 	int sum = 0;
 	for(int i = 0; i < REGION_WIDTH; i++) {
 		for (int j = 0; j < REGION_HEIGHT; j++) {
 			for (int k = 0; k < REGION_DEPTH; k++) {
-				sum += region->GetTile(i, j, k);
+				sum |= region->GetTile(i, j, k);
 			}
 		}
 	}
