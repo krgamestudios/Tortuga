@@ -5,8 +5,9 @@
 #RM=del /S
 
 OUTDIR=out
+BINDIR=bin
 
-all: $(OUTDIR)
+all: $(OUTDIR) binary
 	$(MAKE) -C common
 	$(MAKE) -C server
 	$(MAKE) -C client
@@ -26,16 +27,21 @@ else ifeq ($(shell uname), Linux)
 	tar -C $(OUTDIR) -zcvf Tortuga-linux.tar client server ../rsc ../copyright.txt ../instructions.txt
 endif
 
+binary:
+ifeq ($(OS),Windows_NT)
+	copy /B /Y $(BINDIR) $(OUTDIR)
+endif
+
 $(OUTDIR):
 	mkdir $(OUTDIR)
 
 clean:
 ifeq ($(OS),Windows_NT)
-	$(RM) *.o *.a *.exe
+	del /s *.o *.a *.exe $(OUTDIR)\*.dll
 else ifeq ($(shell uname), Linux)
 	find . -type f -name '*.o' -exec rm -f -r -v {} \;
 	find . -type f -name '*.a' -exec rm -f -r -v {} \;
-	rm -f -v $(OUT)
+	rm -f -v $(OUTDIR)
 	find . -empty -type d -delete
 endif
 
