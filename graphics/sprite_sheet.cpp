@@ -85,7 +85,7 @@ void SpriteSheet::Update(double delta) {
 	}
 	//modify area drawn
 	clip.x = indexX * clip.w;
-	clip.y = indexX * clip.y;
+	clip.y = indexY * clip.h;
 }
 
 SDL_Texture* SpriteSheet::Load(SDL_Renderer* r, std::string fname, Uint16 cx, Uint16 cy) {
