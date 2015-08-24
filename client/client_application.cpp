@@ -84,7 +84,6 @@ void ClientApplication::Init(int argc, char* argv[]) {
 		//get the info
 		switch(windowInfo.subsystem) {
 			case SDL_SYSWM_WINDOWS:
-				//TODO: ensure that this works
 				platform = "Microsoft Windows";
 				fontPath = "C:/Windows/Fonts/arialbd.ttf";
 			break;
@@ -296,7 +295,7 @@ void ClientApplication::ProcessEvents() {
 				activeScene->KeyUp(event.key);
 			break;
 
-			//TODO: joystick and controller events
+			//TODO: (9) joystick and controller events
 
 			//window events are handled internally
 			case SDL_WINDOWEVENT:

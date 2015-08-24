@@ -63,7 +63,7 @@ MainMenu::MainMenu() {
 	//text box
 	textBox.PushLine(GetRenderer(), font, "Thanks for playing!", {255, 255, 255, 255});
 	textBox.PushLine(GetRenderer(), font, "You can get the latest version at: ", {255, 255, 255, 255});
-	textBox.PushLine(GetRenderer(), font, "krgamestudios.com", {255, 255, 255, 255}); //TODO: click to open the website/update
+	textBox.PushLine(GetRenderer(), font, "krgamestudios.com", {255, 255, 255, 255}); //TODO: (9) click to open the website/update
 
 	//debug
 	//

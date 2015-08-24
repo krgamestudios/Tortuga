@@ -223,8 +223,7 @@ std::list<BoundingBox> World::GenerateCollisionGrid(Entity* ptr, int tileWidth, 
 		//inner loop
 		wallBounds.y = snapToBase((double)wallBounds.h, ptr->GetOrigin().y);
 		while(wallBounds.y < (ptr->GetOrigin() + ptr->GetBounds()).y + ptr->GetBounds().h) {
-			//BUG: #45 this is the culprit; it's pulling regions into existance
-			//check to see if this tile is solid
+			//check to see if this tile is solid (non-existant tiles are always false)
 			if (regionPager.GetSolid(wallBounds.x / wallBounds.w, wallBounds.y / wallBounds.h)) {
 				//push onto the box set
 				boxList.push_front(wallBounds);

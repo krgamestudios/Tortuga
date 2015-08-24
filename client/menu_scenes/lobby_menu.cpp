@@ -304,7 +304,7 @@ void LobbyMenu::SendJoinRequest() {
 
 void LobbyMenu::SendLoginRequest() {
 	//NOTE: high cohesion
-	//TODO: have a separate login screen
+	//TODO: (9) have a separate login screen
 	ClientPacket packet;
 	packet.type = SerialPacketType::LOGIN_REQUEST;
 	packet.clientIndex = clientIndex;

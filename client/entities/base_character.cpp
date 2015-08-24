@@ -21,7 +21,7 @@
 */
 #include "base_character.hpp"
 
-//TODO: remove this
+//TODO: (3) remove this
 #include "config_utility.hpp"
 
 //-------------------------

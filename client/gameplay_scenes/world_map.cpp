@@ -29,7 +29,7 @@
 //static functions
 //-------------------------
 
-//TODO: proper checksum
+//TODO: (3) proper checksum
 static int regionChecksum(Region* const region) {
 	int sum = 0;
 	for(int i = 0; i < REGION_WIDTH; i++) {
@@ -104,7 +104,6 @@ void World::UpdateMap() {
 			}
 			else if (regionChecksum(region) == 0) {
 				//checksum failed
-				//BUG: #45 Regions occasionally lose their tile data; this patches the issue, but does not resolve it
 				regionPager.UnloadIf([region](Region const& ref) -> bool {
 					//remove the erroneous region
 					return region == &ref;

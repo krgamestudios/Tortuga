@@ -48,7 +48,7 @@ public:
 	virtual void KeyDown(SDL_KeyboardEvent const& event);
 	virtual void KeyUp(SDL_KeyboardEvent const& event);
 
-	//TODO: joystick and controller events
+	//TODO: (9) joystick and controller events
 
 protected:
 	//control

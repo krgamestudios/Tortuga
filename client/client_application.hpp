@@ -49,7 +49,7 @@ private:
 
 	BaseScene* activeScene = nullptr;
 
-	//TODO: build a "window" class?
+	//TODO: (9) build a "window" class?
 	SDL_Window* window = nullptr;
 	SDL_Renderer* renderer = nullptr;
 
