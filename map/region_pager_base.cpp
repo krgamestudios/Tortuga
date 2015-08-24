@@ -76,7 +76,6 @@ Region* RegionPagerBase::FindRegion(int x, int y) {
 }
 
 Region* RegionPagerBase::PushRegion(Region* const ptr) {
-	//BUG: #45 Some regions are occasionally losing their tile data
 	regionList.push_front(*ptr);
 	return &regionList.front();
 }
