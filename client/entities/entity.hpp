@@ -19,18 +19,18 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef ENTITY_HPP_
-#define ENTITY_HPP_
+#pragma once
 
 #include "bounding_box.hpp"
 #include "sprite_sheet.hpp"
 #include "vector2.hpp"
 
 //The base class for all objects in the world
+//TODO: (9) write a better hierarchy
 class Entity {
 public:
 	virtual void Update();
-	virtual void DrawTo(SDL_Surface* const, int camX, int camY);
+	virtual void DrawTo(SDL_Renderer* const, int camX, int camY);
 
 	SpriteSheet* GetSprite();
 
@@ -52,5 +52,3 @@ protected:
 	Vector2 motion;
 	BoundingBox bounds;
 };
-
-#endif

@@ -19,13 +19,10 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef SERVERUTILITY_HPP_
-#define SERVERUTILITY_HPP_
+#pragma once
 
 #include "sqlite3.h"
 
 #include <string>
 
 int runSQLScript(sqlite3* db, std::string fname, int (*callback)(void*,int,char**,char**) = nullptr, void* argPtr = nullptr);
-
-#endif

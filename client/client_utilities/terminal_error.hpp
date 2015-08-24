@@ -19,8 +19,7 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef TERMINALERROR_HPP_
-#define TERMINALERROR_HPP_
+#pragma once
 
 #include <stdexcept>
 #include <string>
@@ -30,5 +29,3 @@ public:
 	explicit terminal_error(const std::string& str): runtime_error(str) {}
 	explicit terminal_error(const char* cstr): runtime_error(cstr) {}
 };
-
-#endif

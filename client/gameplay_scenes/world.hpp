@@ -19,8 +19,7 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef INWORLD_HPP_
-#define INWORLD_HPP_
+#pragma once
 
 //maps
 #include "region_pager_base.hpp"
@@ -32,9 +31,9 @@
 
 //graphics
 #include "image.hpp"
-#include "raster_font.hpp"
 #include "button.hpp"
 #include "tile_sheet.hpp"
+#include "text_line.hpp"
 
 //common
 #include "frame_rate.hpp"
@@ -43,6 +42,10 @@
 #include "base_scene.hpp"
 #include "base_monster.hpp"
 #include "local_character.hpp"
+
+#include "SDL2/SDL.h"
+#include "SDL2/SDL_net.h"
+#include "SDL2/SDL_ttf.h"
 
 //STL
 #include <map>
@@ -55,21 +58,22 @@ public:
 	World(int* const argClientIndex, int* const argAccountIndex);
 	~World();
 
-protected:
-	//Frame loop
-	void FrameStart();
-	void Update();
-	void FrameEnd();
-	void RenderFrame();
-	void Render(SDL_Surface* const);
+	void RenderFrame(SDL_Renderer* renderer) override;
 
-	//Event handlers
+private:
+	//frame phases
+	void FrameStart() override;
+	void Update() override;
+	void FrameEnd() override;
+
+	//input events
 	void QuitEvent();
-	void MouseMotion(SDL_MouseMotionEvent const&);
-	void MouseButtonDown(SDL_MouseButtonEvent const&);
-	void MouseButtonUp(SDL_MouseButtonEvent const&);
-	void KeyDown(SDL_KeyboardEvent const&);
-	void KeyUp(SDL_KeyboardEvent const&);
+	void MouseMotion(SDL_MouseMotionEvent const& event) override;
+	void MouseButtonDown(SDL_MouseButtonEvent const& event) override;
+	void MouseButtonUp(SDL_MouseButtonEvent const& event) override;
+	void MouseWheel(SDL_MouseWheelEvent const& event) override;
+	void KeyDown(SDL_KeyboardEvent const& event) override;
+	void KeyUp(SDL_KeyboardEvent const& event) override;
 
 	//handle incoming traffic
 	void HandlePacket(SerialPacket* const);
@@ -132,17 +136,18 @@ protected:
 	int roomIndex = -1;
 
 	//graphics
-	Image buttonImage;
-	RasterFont font;
 	TileSheet tileSheet;
 
 	//map
 	RegionPagerBase regionPager;
 
 	//UI
+	Image buttonImage;
+	TTF_Font* font = nullptr;
 	Button disconnectButton;
-	Button shutDownButton;
+	Button shutdownButton;
 	FrameRate fps;
+	TextLine fpsTextLine;
 
 	//the camera structure
 	struct {
@@ -166,5 +171,3 @@ protected:
 	ConfigUtility& config = ConfigUtility::GetSingleton();
 	UDPNetworkUtility& network = UDPNetworkUtility::GetSingleton();
 };
-
-#endif

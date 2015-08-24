@@ -23,6 +23,7 @@
 
 #include "channels.hpp"
 
+#include <cstring>
 #include <stdexcept>
 #include <sstream>
 
@@ -39,33 +40,37 @@ LobbyMenu::LobbyMenu(int* const argClientIndex, int* const argAccountIndex):
 	accountIndex = -1;
 
 	//setup the utility objects
-	image.LoadSurface(config["dir.interface"] + "button_menu.bmp");
-	image.SetClipH(image.GetClipH()/3);
-	font.LoadSurface(config["dir.fonts"] + "pk_white_8.bmp");
+	buttonImage.Load(GetRenderer(), config["dir.interface"] + "button_red.png");
+	font = TTF_OpenFont(config["client.font"].c_str(), 12);
 
-	//pass the utility objects
-	search.SetImage(&image);
-	search.SetFont(&font);
-	join.SetImage(&image);
-	join.SetFont(&font);
-	back.SetImage(&image);
-	back.SetFont(&font);
+	//check that the font loaded
+	if (!font) {
+		std::ostringstream msg;
+		msg << "Failed to load a font file; " << SDL_GetError();
+		throw(std::runtime_error(msg.str()));
+	}
 
-	//set the button positions
-	search.SetX(50);
-	search.SetY(50 + image.GetClipH() * 0);
-	join.SetX(50);
-	join.SetY(50 + image.GetClipH() * 1);
-	back.SetX(50);
-	back.SetY(50 + image.GetClipH() * 2);
+	//setup the buttons
+	searchButton.SetBackgroundTexture(GetRenderer(), buttonImage.GetTexture());
+	searchButton.SetText(GetRenderer(), font, "Search", COLOR_BLUE);
+	joinButton.SetBackgroundTexture(GetRenderer(), buttonImage.GetTexture());
+	joinButton.SetText(GetRenderer(), font, "Join", COLOR_BLUE);
+	backButton.SetBackgroundTexture(GetRenderer(), buttonImage.GetTexture());
+	backButton.SetText(GetRenderer(), font, "Back", COLOR_BLUE);
 
-	//set the button texts
-	search.SetText("Search");
-	join.SetText("Join");
-	back.SetText("Back");
+	//set the button positions (assumed)
+	searchButton.SetX(50);
+	searchButton.SetY(50);
+	joinButton.SetX(50);
+	joinButton.SetY(70);
+	backButton.SetX(50);
+	backButton.SetY(90);
 
-	//set the server list's position
-	listBox = {300, 50, 200, font.GetCharH()};
+	//pseudo-list selection
+	boundingBox = {300, 50, 200, 12};
+
+	//hacked together a highlight box
+	highlightImage.Create(GetRenderer(), 300, 12, {49, 150, 5, 255});
 
 	//Eat incoming packets
 	while(network.Receive());
@@ -75,7 +80,7 @@ LobbyMenu::LobbyMenu(int* const argClientIndex, int* const argAccountIndex):
 }
 
 LobbyMenu::~LobbyMenu() {
-	//
+	TTF_CloseFont(font);
 }
 
 //-------------------------
@@ -99,39 +104,25 @@ void LobbyMenu::FrameEnd() {
 	//
 }
 
-void LobbyMenu::Render(SDL_Surface* const screen) {
+void LobbyMenu::RenderFrame(SDL_Renderer* renderer) {
 	//TODO: (2) I need a proper UI system for the entire client and the editor
 
 	//UI
-	search.DrawTo(screen);
-	join.DrawTo(screen);
-	back.DrawTo(screen);
+	searchButton.DrawTo(renderer);
+	joinButton.DrawTo(renderer);
+	backButton.DrawTo(renderer);
 
 	//TODO: (3) draw headers for the server list
 	//TODO: (3) ping/delay displayed in the server list
-	for (int i = 0; i < serverInfo.size(); i++) {
+	for (int i = 0; i < serverVector.size(); i++) {
 		//draw the selected server's highlight
-		if (selection == &serverInfo[i]) {
-			SDL_Rect r = {
-				(Sint16)listBox.x, (Sint16)listBox.y,
-				(Uint16)listBox.w, (Uint16)listBox.h
-			};
-			r.y += i * listBox.h;
-			SDL_FillRect(screen, &r, SDL_MapRGB(screen->format, 49, 150, 5));
+		if (selection == &serverVector[i]) {
+			highlightImage.DrawTo(renderer, boundingBox.x, boundingBox.y + boundingBox.h * i);
 		}
 
-		//draw the server name
-		font.DrawStringTo(serverInfo[i].name, screen, listBox.x, listBox.y + i*listBox.h);
-
-		//draw the player count
-		std::ostringstream msg;
-		msg << serverInfo[i].playerCount;
-		font.DrawStringTo(msg.str(), screen, listBox.x + listBox.w, listBox.y + i*listBox.h);
-
-		//compatible?
-		if (!serverInfo[i].compatible) {
-			font.DrawStringTo("?", screen, listBox.x - font.GetCharW(), listBox.y + i*listBox.h);
-		}
+		//draw the server's info
+		serverVector[i].nameImage.DrawTo(renderer, boundingBox.x, boundingBox.y + boundingBox.h * i);
+		serverVector[i].playerCountImage.DrawTo(renderer, boundingBox.x+300, boundingBox.y + boundingBox.h * i);
 	}
 }
 
@@ -139,49 +130,54 @@ void LobbyMenu::Render(SDL_Surface* const screen) {
 //Event handlers
 //-------------------------
 
-void LobbyMenu::MouseMotion(SDL_MouseMotionEvent const& motion) {
-	search.MouseMotion(motion);
-	join.MouseMotion(motion);
-	back.MouseMotion(motion);
+void LobbyMenu::MouseMotion(SDL_MouseMotionEvent const& event) {
+	searchButton.MouseMotion(event);
+	joinButton.MouseMotion(event);
+	backButton.MouseMotion(event);
 }
 
-void LobbyMenu::MouseButtonDown(SDL_MouseButtonEvent const& button) {
-	search.MouseButtonDown(button);
-	join.MouseButtonDown(button);
-	back.MouseButtonDown(button);
+void LobbyMenu::MouseButtonDown(SDL_MouseButtonEvent const& event) {
+	searchButton.MouseButtonDown(event);
+	joinButton.MouseButtonDown(event);
+	backButton.MouseButtonDown(event);
 }
 
-void LobbyMenu::MouseButtonUp(SDL_MouseButtonEvent const& button) {
-	if (search.MouseButtonUp(button) == Button::State::HOVER) {
+void LobbyMenu::MouseButtonUp(SDL_MouseButtonEvent const& event) {
+	if (searchButton.MouseButtonUp(event) == Button::State::RELEASED) {
 		SendBroadcastRequest();
 	}
-	else if (join.MouseButtonUp(button) == Button::State::HOVER && selection != nullptr && selection->compatible) {
+	if (joinButton.MouseButtonUp(event) == Button::State::RELEASED && selection && selection->compatible) {
 		SendJoinRequest();
 	}
-	else if (back.MouseButtonUp(button) == Button::State::HOVER) {
-		SetNextScene(SceneList::MAINMENU);
+	if (backButton.MouseButtonUp(event) == Button::State::RELEASED) {
+		SetSceneSignal(SceneSignal::MAINMENU);
 	}
 
 	//has the user selected a server on the list?
-	BoundingBox tmpBox = listBox;
-	tmpBox.h *= serverInfo.size();
-	if (tmpBox.CheckOverlap({button.x, button.y})) {
-		selection = &serverInfo[(button.y - listBox.y)/listBox.h];
+	BoundingBox tmpBox = boundingBox;
+	tmpBox.h *= serverVector.size(); //within the list bounds
+	if (tmpBox.CheckOverlap({event.x, event.y})) {
+		//NOTE: this memory trick requires a vector
+		selection = &serverVector[(event.y - boundingBox.y)/boundingBox.h];
 	}
 	else {
 		selection = nullptr;
 	}
 }
 
-void LobbyMenu::KeyDown(SDL_KeyboardEvent const& key) {
-	switch(key.keysym.sym) {
+void LobbyMenu::MouseWheel(SDL_MouseWheelEvent const& event) {
+	//
+}
+
+void LobbyMenu::KeyDown(SDL_KeyboardEvent const& event) {
+	switch(event.keysym.sym) {
 		case SDLK_ESCAPE:
-			SetNextScene(SceneList::MAINMENU);
+			SetSceneSignal(SceneSignal::MAINMENU);
 		break;
 	}
 }
 
-void LobbyMenu::KeyUp(SDL_KeyboardEvent const& key) {
+void LobbyMenu::KeyUp(SDL_KeyboardEvent const& event) {
 	//
 }
 
@@ -222,17 +218,38 @@ void LobbyMenu::HandlePacket(SerialPacket* const argPacket) {
 
 void LobbyMenu::HandleBroadcastResponse(ServerPacket* const argPacket) {
 	//extract the data
-	ServerInformation server;
-	server.address = argPacket->srcAddress;
-	server.name = argPacket->name;
-	server.playerCount = argPacket->playerCount;
-	server.version = argPacket->version;
+	ServerInfo newServer;
 
-	//Checking compatibility
-	server.compatible = server.version == NETWORK_VERSION;
+	newServer.address = argPacket->srcAddress;
+	newServer.name = argPacket->name;
+	newServer.playerCount = argPacket->playerCount;
+	newServer.version = argPacket->version;
+	newServer.compatible = newServer.version == NETWORK_VERSION;
 
 	//push
-	serverInfo.push_back(server);
+	serverVector.push_back(newServer);
+
+	//BUGFIX: since TextLine lacks the memory management of Image, I'll wait until after the line is in the vector to handle these
+
+	//fancy colors
+	SDL_Color color;
+	if (newServer.compatible) {
+		color = {255, 255, 255, 255};
+	}
+	else {
+		color = {255, 0, 0, 255};
+	}
+
+	//fancy itoa
+	auto itoa_base10 = [](int i) -> std::string {
+		char str[20];
+		sprintf(str, "%d", i);
+		return std::string(str);
+	};
+
+	//text graphics
+	serverVector.back().nameImage.SetText(GetRenderer(), font, newServer.name, color);
+	serverVector.back().playerCountImage.SetText(GetRenderer(), font, itoa_base10(newServer.playerCount), color);
 }
 
 void LobbyMenu::HandleJoinResponse(ClientPacket* const argPacket) {
@@ -249,7 +266,7 @@ void LobbyMenu::HandleLoginResponse(ClientPacket* const argPacket) {
 		throw(std::runtime_error("Client index invalid during login"));
 	}
 	accountIndex = argPacket->accountIndex;
-	SetNextScene(SceneList::WORLD);
+	SetSceneSignal(SceneSignal::WORLD);
 }
 
 void LobbyMenu::HandleJoinRejection(TextPacket* const argPacket) {
@@ -271,7 +288,7 @@ void LobbyMenu::SendBroadcastRequest() {
 		network.SendTo(config["server.host"].c_str(), config.Int("server.port"), &packet);
 
 		//reset the server list
-		serverInfo.clear();
+		serverVector.clear();
 		selection = nullptr;
 }
 
@@ -287,10 +304,11 @@ void LobbyMenu::SendJoinRequest() {
 
 void LobbyMenu::SendLoginRequest() {
 	//NOTE: high cohesion
+	//TODO: (9) have a separate login screen
 	ClientPacket packet;
 	packet.type = SerialPacketType::LOGIN_REQUEST;
 	packet.clientIndex = clientIndex;
-	strncpy(packet.username, config["client.username"].c_str(), PACKET_STRING_SIZE);
+	strncpy(packet.username, config["client.username"].c_str(), PACKET_STRING_SIZE+1);
 
 	network.SendTo(Channels::SERVER, &packet);
 }

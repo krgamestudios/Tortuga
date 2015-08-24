@@ -26,8 +26,8 @@ Instructions For Setup
 
 5. There are currently two options for 'client.avatar':
 
-* client.avatar = elliot2.bmp #male
-* client.avatar = coa2.bmp    #female
+* client.avatar = character1.png #male
+* client.avatar = character2.png #female
 
 6. When you've correctly set these values, run client.exe, and select 'Start'
 	from the main menu; this displays the list of available servers.

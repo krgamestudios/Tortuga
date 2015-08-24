@@ -69,7 +69,7 @@ void World::hCharacterCreate(CharacterPacket* const argPacket) {
 
 	//fill the character's info
 	character->SetHandle(argPacket->handle);
-	character->SetAvatar(argPacket->avatar);
+	character->SetAvatar(GetRenderer(), argPacket->avatar);
 	character->SetOwner(argPacket->accountIndex);
 	character->SetOrigin(argPacket->origin);
 	character->SetMotion(argPacket->motion);
@@ -82,8 +82,8 @@ void World::hCharacterCreate(CharacterPacket* const argPacket) {
 		localCharacter = static_cast<LocalCharacter*>(character);
 
 		//focus the camera on this character's sprite
-		camera.marginX = (camera.width / 2 - localCharacter->GetSprite()->GetImage()->GetClipW() / 2);
-		camera.marginY = (camera.height/ 2 - localCharacter->GetSprite()->GetImage()->GetClipH() / 2);
+		camera.marginX = (camera.width / 2 - localCharacter->GetSprite()->GetClipW() / 2);
+		camera.marginY = (camera.height/ 2 - localCharacter->GetSprite()->GetClipH() / 2);
 
 		//focus on this character's info
 		characterIndex = argPacket->characterIndex;
@@ -135,6 +135,7 @@ void World::hCharacterDelete(CharacterPacket* const argPacket) {
 
 void World::hQueryCharacterExists(CharacterPacket* const argPacket) {
 	//prevent a double message about this player's character
+	//TODO: why is this commented out?
 //	if (argPacket->accountIndex == accountIndex) {
 //		return;
 //	}
@@ -152,7 +153,7 @@ void World::hQueryCharacterExists(CharacterPacket* const argPacket) {
 	character->SetMotion(argPacket->motion);
 	character->SetBounds({CHARACTER_BOUNDS_X, CHARACTER_BOUNDS_Y, CHARACTER_BOUNDS_WIDTH, CHARACTER_BOUNDS_HEIGHT});
 	character->SetHandle(argPacket->handle);
-	character->SetAvatar(argPacket->avatar);
+	character->SetAvatar(GetRenderer(), argPacket->avatar);
 	character->SetOwner(argPacket->accountIndex);
 	character->CorrectSprite();
 
@@ -222,7 +223,7 @@ std::list<BoundingBox> World::GenerateCollisionGrid(Entity* ptr, int tileWidth, 
 		//inner loop
 		wallBounds.y = snapToBase((double)wallBounds.h, ptr->GetOrigin().y);
 		while(wallBounds.y < (ptr->GetOrigin() + ptr->GetBounds()).y + ptr->GetBounds().h) {
-			//check to see if this tile is solid
+			//check to see if this tile is solid (non-existant tiles are always false)
 			if (regionPager.GetSolid(wallBounds.x / wallBounds.w, wallBounds.y / wallBounds.h)) {
 				//push onto the box set
 				boxList.push_front(wallBounds);

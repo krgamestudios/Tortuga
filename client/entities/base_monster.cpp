@@ -35,9 +35,9 @@ std::string BaseMonster::GetHandle() const {
 	return handle;
 }
 
-std::string BaseMonster::SetAvatar(std::string s) {
+std::string BaseMonster::SetAvatar(SDL_Renderer* const renderer, std::string s) {
 	avatar = s;
-	sprite.LoadSurface(ConfigUtility::GetSingleton()["dir.sprites"] + avatar, 4, 1);
+	sprite.Load(renderer, ConfigUtility::GetSingleton()["dir.sprites"] + avatar, 4, 1);
 	return avatar;
 }
 

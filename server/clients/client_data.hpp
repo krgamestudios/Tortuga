@@ -19,10 +19,9 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef CLIENTDATA_HPP_
-#define CLIENTDATA_HPP_
+#pragma once
 
-#include "SDL_net.h"
+#include "SDL2/SDL_net.h"
 
 #include <chrono>
 
@@ -49,5 +48,3 @@ private:
 	Clock::time_point lastBeat = Clock::now();
 	int attemptedBeats = 0;
 };
-
-#endif

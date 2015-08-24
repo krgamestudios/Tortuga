@@ -1,16 +1,20 @@
 #include directories
-INCLUDES+=SDL . client_utilities entities gameplay_scenes menu_scenes ../common/debugging ../common/gameplay ../common/graphics ../common/map ../common/network ../common/network/packet_types ../common/ui ../common/utilities
+INCLUDES+=. client_utilities entities gameplay_scenes menu_scenes ../common/debugging ../common/gameplay ../common/graphics ../common/map ../common/network ../common/network/packet_types ../common/ui ../common/utilities
 
 #libraries
 #the order of the $(LIBS) is important, at least for MinGW
-LIBS+=client.a ../libcommon.a -lSDL_net
+LIBS+=client.a ../common/libcommon.a -lSDL2_net
 ifeq ($(OS),Windows_NT)
 	LIBS+=-lwsock32 -liphlpapi -lmingw32
 endif
-LIBS+=-lSDLmain -lSDL
+LIBS+=-lSDL2main -lSDL2 -lSDL2_image -lSDL2_ttf
 
 #flags
 CXXFLAGS+=-std=c++11 $(addprefix -I,$(INCLUDES))
+ifeq ($(shell uname), Linux)
+	#read data about the current install
+	CXXFLAGS+=$(shell sdl-config --cflags --static-libs)
+endif
 
 #source
 CXXSRC=$(wildcard *.cpp)

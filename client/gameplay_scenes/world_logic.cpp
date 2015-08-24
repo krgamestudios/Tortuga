@@ -40,29 +40,31 @@ World::World(int* const argClientIndex,	int* const argAccountIndex):
 	accountIndex(*argAccountIndex)
 {
 	//setup the utility objects
-	buttonImage.LoadSurface(config["dir.interface"] + "button_menu.bmp");
-	buttonImage.SetClipH(buttonImage.GetClipH()/3);
-	font.LoadSurface(config["dir.fonts"] + "pk_white_8.bmp");
+	buttonImage.Load(GetRenderer(), config["dir.interface"] + "button_red.png");
+	font = TTF_OpenFont(config["client.font"].c_str(), 12);
 
-	//pass the utility objects
-	disconnectButton.SetImage(&buttonImage);
-	disconnectButton.SetFont(&font);
-	shutDownButton.SetImage(&buttonImage);
-	shutDownButton.SetFont(&font);
+	//check that the font loaded
+	if (!font) {
+		std::ostringstream msg;
+		msg << "Failed to load a font file; " << SDL_GetError();
+		throw(std::runtime_error(msg.str()));
+	}
+
+	//setup the buttons
+	disconnectButton.SetBackgroundTexture(GetRenderer(), buttonImage.GetTexture());
+	disconnectButton.SetText(GetRenderer(), font, "Disconnect", COLOR_BLUE);
+	shutdownButton.SetBackgroundTexture(GetRenderer(), buttonImage.GetTexture());
+	shutdownButton.SetText(GetRenderer(), font, "Shutdown", COLOR_BLUE);
 
 	//set the button positions
 	disconnectButton.SetX(50);
-	disconnectButton.SetY(50 + buttonImage.GetClipH() * 0);
-	shutDownButton.SetX(50);
-	shutDownButton.SetY(50 + buttonImage.GetClipH() * 1);
-
-	//set the button texts
-	disconnectButton.SetText("Disconnect");
-	shutDownButton.SetText("Shut Down");
+	disconnectButton.SetY(50);
+	shutdownButton.SetX(50);
+	shutdownButton.SetY(70);
 
 	//load the tilesheet
 	//TODO: (2) Tile size and tile sheet should be loaded elsewhere
-	tileSheet.Load(config["dir.tilesets"] + "overworld.bmp", 32, 32);
+	tileSheet.Load(GetRenderer(), config["dir.tilesets"] + "overworld.png", 32, 32);
 
 	//Send the character data
 	CharacterPacket newPacket;
@@ -73,8 +75,7 @@ World::World(int* const argClientIndex,	int* const argAccountIndex):
 	network.SendTo(Channels::SERVER, &newPacket);
 
 	//set the camera's values
-	camera.width = GetScreen()->w;
-	camera.height = GetScreen()->h;
+	SDL_RenderGetLogicalSize(GetRenderer(), &camera.width, &camera.height);
 
 	//debug
 	//
@@ -82,6 +83,7 @@ World::World(int* const argClientIndex,	int* const argAccountIndex):
 
 World::~World() {
 	//unload the local data
+	TTF_CloseFont(font);
 	characterMap.clear();
 	monsterMap.clear();
 }
@@ -160,17 +162,10 @@ void World::FrameEnd() {
 	//
 }
 
-void World::RenderFrame() {
-//	SDL_FillRect(GetScreen(), 0, 0);
-	Render(GetScreen());
-	SDL_Flip(GetScreen());
-	fps.Calculate();
-}
-
-void World::Render(SDL_Surface* const screen) {
+void World::RenderFrame(SDL_Renderer* renderer) {
 	//draw the map
 	for (std::list<Region>::iterator it = regionPager.GetContainer()->begin(); it != regionPager.GetContainer()->end(); it++) {
-		tileSheet.DrawRegionTo(screen, &(*it), camera.x, camera.y);
+		tileSheet.DrawRegionTo(renderer, &(*it), camera.x, camera.y);
 
 		//debugging
 //		std::ostringstream msg;
@@ -181,18 +176,24 @@ void World::Render(SDL_Surface* const screen) {
 	//draw the entities
 	for (auto& it : characterMap) {
 		//BUG: #29 Characters (and other entities) are drawn out of order
-		it.second.DrawTo(screen, camera.x, camera.y);
+		it.second.DrawTo(renderer, camera.x, camera.y);
 	}
 	for (auto& it : monsterMap) {
-		it.second.DrawTo(screen, camera.x, camera.y);
+		it.second.DrawTo(renderer, camera.x, camera.y);
 	}
 
 	//draw UI
-	disconnectButton.DrawTo(screen);
-	shutDownButton.DrawTo(screen);
-	std::ostringstream msg;
-	msg << fps.GetFrameRate();
-	font.DrawStringTo(msg.str(), screen, 0, 0);
+	disconnectButton.DrawTo(renderer);
+	shutdownButton.DrawTo(renderer);
+
+	//FPS
+	fpsTextLine.DrawTo(renderer, 0, 0);
+	int fpsRet = fps.Calculate();
+	if (fpsRet != -1) {
+		std::ostringstream msg;
+		msg << "FPS: " << fpsRet;
+		fpsTextLine.SetText(renderer, font, msg.str(), {255, 255, 255, 255});
+	}
 }
 
 //-------------------------
@@ -202,31 +203,40 @@ void World::Render(SDL_Surface* const screen) {
 void World::QuitEvent() {
 	//two-step logout
 	SendDisconnectRequest();
-	SetNextScene(SceneList::QUIT);
+	SetSceneSignal(SceneSignal::QUIT);
 }
 
-void World::MouseMotion(SDL_MouseMotionEvent const& motion) {
-	disconnectButton.MouseMotion(motion);
-	shutDownButton.MouseMotion(motion);
+void World::MouseMotion(SDL_MouseMotionEvent const& event) {
+	disconnectButton.MouseMotion(event);
+	shutdownButton.MouseMotion(event);
 }
 
-void World::MouseButtonDown(SDL_MouseButtonEvent const& button) {
-	disconnectButton.MouseButtonDown(button);
-	shutDownButton.MouseButtonDown(button);
+void World::MouseButtonDown(SDL_MouseButtonEvent const& event) {
+	disconnectButton.MouseButtonDown(event);
+	shutdownButton.MouseButtonDown(event);
 }
 
-void World::MouseButtonUp(SDL_MouseButtonEvent const& button) {
-	if (disconnectButton.MouseButtonUp(button) == Button::State::HOVER && button.button == SDL_BUTTON_LEFT) {
+void World::MouseButtonUp(SDL_MouseButtonEvent const& event) {
+	if (disconnectButton.MouseButtonUp(event) == Button::State::RELEASED) {
 		SendLogoutRequest();
 	}
-	if (shutDownButton.MouseButtonUp(button) == Button::State::HOVER && button.button == SDL_BUTTON_LEFT) {
+	if (shutdownButton.MouseButtonUp(event) == Button::State::RELEASED) {
 		SendAdminShutdownRequest();
 	}
 }
 
-void World::KeyDown(SDL_KeyboardEvent const& key) {
+void World::MouseWheel(SDL_MouseWheelEvent const& event) {
+	//
+}
+
+void World::KeyDown(SDL_KeyboardEvent const& event) {
+	//BUGFIX: SDL2 introduced key repeats, so I need to ignore it
+	if (event.repeat) {
+		return;
+	}
+
 	//hotkeys
-	switch(key.keysym.sym) {
+	switch(event.keysym.sym) {
 		case SDLK_ESCAPE:
 			//TODO: (3) the escape key should actually control menus and stuff
 			SendLogoutRequest();
@@ -238,7 +248,7 @@ void World::KeyDown(SDL_KeyboardEvent const& key) {
 		return;
 	}
 	Vector2 motion = localCharacter->GetMotion();
-	switch(key.keysym.sym) {
+	switch(event.keysym.sym) {
 		case SDLK_w:
 			motion.y -= CHARACTER_WALKING_SPEED;
 		break;
@@ -265,13 +275,18 @@ void World::KeyDown(SDL_KeyboardEvent const& key) {
 	SendLocalCharacterMovement();
 }
 
-void World::KeyUp(SDL_KeyboardEvent const& key) {
+void World::KeyUp(SDL_KeyboardEvent const& event) {
+	//BUGFIX: SDL2 introduced key repeats, so I need to ignore it
+	if (event.repeat) {
+		return;
+	}
+
 	//character movement
 	if (!localCharacter) {
 		return;
 	}
 	Vector2 motion = localCharacter->GetMotion();
-	switch(key.keysym.sym) {
+	switch(event.keysym.sym) {
 		case SDLK_w:
 			motion.y = std::min(0.0, motion.y += CHARACTER_WALKING_SPEED);
 		break;

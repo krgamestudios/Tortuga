@@ -244,7 +244,7 @@ void CharacterManager::Unload(int uid) {
 }
 
 void CharacterManager::Delete(int uid) {
-	//TODO: when deleting a character, move it to an archive table
+	//TODO: (9) when deleting a character, move it to an archive table
 	//delete this character from the database, then remove it from memory
 	sqlite3_stmt* statement = nullptr;
 

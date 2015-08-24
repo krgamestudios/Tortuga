@@ -19,8 +19,7 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef BASEMONSTER_HPP_
-#define BASEMONSTER_HPP_
+#pragma once
 
 #include "entity.hpp"
 
@@ -33,7 +32,7 @@ public:
 
 	std::string SetHandle(std::string s);
 	std::string GetHandle() const;
-	std::string SetAvatar(std::string s);
+	std::string SetAvatar(SDL_Renderer* const, std::string s);
 	std::string GetAvatar() const;
 
 protected:
@@ -41,5 +40,3 @@ protected:
 	std::string handle;
 	std::string avatar;
 };
-
-#endif

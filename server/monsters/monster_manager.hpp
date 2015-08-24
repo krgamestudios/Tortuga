@@ -19,8 +19,7 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef MONSTERMANAGER_HPP_
-#define MONSTERMANAGER_HPP_
+#pragma once
 
 #include "monster_data.hpp"
 
@@ -61,5 +60,3 @@ private:
 	lua_State* lua = nullptr;
 	sqlite3* database = nullptr;
 };
-
-#endif

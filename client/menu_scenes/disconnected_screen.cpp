@@ -25,6 +25,7 @@
 #include "config_utility.hpp"
 #include "udp_network_utility.hpp"
 
+#include <sstream>
 #include <stdexcept>
 
 //-------------------------
@@ -35,20 +36,27 @@ DisconnectedScreen::DisconnectedScreen() {
 	ConfigUtility& config = ConfigUtility::GetSingleton();
 
 	//setup the utility objects
-	image.LoadSurface(config["dir.interface"] + "button_menu.bmp");
-	image.SetClipH(image.GetClipH()/3);
-	font.LoadSurface(config["dir.fonts"] + "pk_white_8.bmp");
+	//TODO: (1) resource tool, to prevent reloading like this
+	image.Load(GetRenderer(), config["dir.interface"] + "button_red.png");
+	font = TTF_OpenFont(config["client.font"].c_str(), 12);
 
-	//pass the utility objects
-	backButton.SetImage(&image);
-	backButton.SetFont(&font);
+	//check that the font loaded
+	if (!font) {
+		std::ostringstream msg;
+		msg << "Failed to load a font file; " << SDL_GetError();
+		throw(std::runtime_error(msg.str()));
+	}
+
+	//setup the button
+	backButton.SetBackgroundTexture(GetRenderer(), image.GetTexture());
+	backButton.SetText(GetRenderer(), font, "Back", COLOR_BLUE);
 
 	//set the button positions
 	backButton.SetX(50);
-	backButton.SetY(50 + image.GetClipH() * 0);
+	backButton.SetY(50);
 
-	//set the button texts
-	backButton.SetText("Back");
+	//set the disconnection message text
+	textLine.SetText(GetRenderer(), font, config["client.disconnectMessage"], {255, 255, 255, 255});
 
 	//full reset
 	UDPNetworkUtility::GetSingleton().Unbind(Channels::SERVER);
@@ -58,59 +66,65 @@ DisconnectedScreen::DisconnectedScreen() {
 }
 
 DisconnectedScreen::~DisconnectedScreen() {
-	//
+	TTF_CloseFont(font);
 }
 
 //-------------------------
 //Frame loop
 //-------------------------
 
+void DisconnectedScreen::FrameStart() {
+	//
+}
+
 void DisconnectedScreen::Update() {
 	if (std::chrono::steady_clock::now() - startTick > std::chrono::duration<int>(10)) {
-		SetNextScene(SceneList::MAINMENU);
+		SetSceneSignal(SceneSignal::MAINMENU);
 	}
 
 	//Eat incoming packets
 	while(UDPNetworkUtility::GetSingleton().Receive());
 }
 
-void DisconnectedScreen::Render(SDL_Surface* const screen) {
-	ConfigUtility& config = ConfigUtility::GetSingleton();
+void DisconnectedScreen::FrameEnd() {
+	//
+}
 
-	backButton.DrawTo(screen);
-	font.DrawStringTo(config["client.disconnectMessage"], screen, 50, 30);
+void DisconnectedScreen::RenderFrame(SDL_Renderer* renderer) {
+	backButton.DrawTo(renderer);
+	textLine.DrawTo(renderer, 50, 30);
 }
 
 //-------------------------
 //Event handlers
 //-------------------------
 
-void DisconnectedScreen::QuitEvent() {
-	SetNextScene(SceneList::QUIT);
+void DisconnectedScreen::MouseMotion(SDL_MouseMotionEvent const& event) {
+	backButton.MouseMotion(event);
 }
 
-void DisconnectedScreen::MouseMotion(SDL_MouseMotionEvent const& motion) {
-	backButton.MouseMotion(motion);
+void DisconnectedScreen::MouseButtonDown(SDL_MouseButtonEvent const& event) {
+	backButton.MouseButtonDown(event);
 }
 
-void DisconnectedScreen::MouseButtonDown(SDL_MouseButtonEvent const& button) {
-	backButton.MouseButtonDown(button);
-}
-
-void DisconnectedScreen::MouseButtonUp(SDL_MouseButtonEvent const& button) {
-	if (backButton.MouseButtonUp(button) == Button::State::HOVER) {
-		SetNextScene(SceneList::MAINMENU);
+void DisconnectedScreen::MouseButtonUp(SDL_MouseButtonEvent const& event) {
+	if (backButton.MouseButtonUp(event) == Button::State::RELEASED) {
+		SetSceneSignal(SceneSignal::MAINMENU);
 	}
 }
 
-void DisconnectedScreen::KeyDown(SDL_KeyboardEvent const& key) {
-	switch(key.keysym.sym) {
+void DisconnectedScreen::MouseWheel(SDL_MouseWheelEvent const& event) {
+	//
+}
+
+void DisconnectedScreen::KeyDown(SDL_KeyboardEvent const& event) {
+	switch(event.keysym.sym) {
 		case SDLK_ESCAPE:
-			SetNextScene(SceneList::MAINMENU);
+			SetSceneSignal(SceneSignal::MAINMENU);
 		break;
 	}
 }
 
-void DisconnectedScreen::KeyUp(SDL_KeyboardEvent const& key) {
+void DisconnectedScreen::KeyUp(SDL_KeyboardEvent const& event) {
 	//
 }

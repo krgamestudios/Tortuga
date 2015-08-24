@@ -52,7 +52,7 @@ void World::CheckHeartBeat() {
 		if (attemptedBeats > 2) {
 			//escape to the disconnect screen
 			SendDisconnectRequest();
-			SetNextScene(SceneList::DISCONNECTEDSCREEN);
+			SetSceneSignal(SceneSignal::DISCONNECTEDSCREEN);
 			ConfigUtility::GetSingleton()["client.disconnectMessage"] = "Error: Lost connection to the server";
 		}
 		else {
@@ -122,13 +122,13 @@ void World::hLogoutResponse(ClientPacket* const argPacket) {
 
 void World::hDisconnectResponse(ClientPacket* const argPacket) {
 	hLogoutResponse(argPacket);//shortcut
-	SetNextScene(SceneList::DISCONNECTEDSCREEN);
+	SetSceneSignal(SceneSignal::DISCONNECTEDSCREEN);
 	ConfigUtility::GetSingleton()["client.disconnectMessage"] = "You have successfully logged out";
 }
 
 void World::hAdminDisconnectForced(ClientPacket* const argPacket) {
 	hDisconnectResponse(argPacket);//shortcut
-	SetNextScene(SceneList::DISCONNECTEDSCREEN);
+	SetSceneSignal(SceneSignal::DISCONNECTEDSCREEN);
 	ConfigUtility::GetSingleton()["client.disconnectMessage"] = "You have been forcibly disconnected by the server";
 }
 

@@ -21,120 +21,85 @@
 */
 #include "base_scene.hpp"
 
-#include <stdexcept>
-
-//-------------------------
-//Static declarations
-//-------------------------
-
-SDL_Surface* BaseScene::screen = nullptr;
-
-//-------------------------
-//Public access members
-//-------------------------
+SDL_Renderer* BaseScene::rendererHandle = nullptr;
 
 BaseScene::BaseScene() {
-	//
+	//EMPTY
 }
 
 BaseScene::~BaseScene() {
-	//
+	//EMPTY
+}
+
+void BaseScene::RenderFrame(SDL_Renderer* renderer) {
+	//EMPTY
+}
+
+void BaseScene::SetRenderer(SDL_Renderer* r) {
+	rendererHandle = r;
+}
+
+SDL_Renderer* BaseScene::GetRenderer() {
+	return rendererHandle;
+}
+
+void BaseScene::SetSceneSignal(SceneSignal signal) {
+	sceneSignal = signal;
+}
+
+SceneSignal BaseScene::GetSceneSignal() {
+	return sceneSignal;
 }
 
 //-------------------------
-//Program control
+//frame phases
 //-------------------------
 
-SDL_Surface* BaseScene::SetScreen(int w, int h, int bpp, Uint32 flags) {
-	if (!bpp) {
-		bpp = SDL_GetVideoInfo()->vfmt->BitsPerPixel;
+void BaseScene::FrameStart() {
+	//EMPTY
+}
+
+void BaseScene::Update() {
+	//EMPTY
+}
+
+void BaseScene::FrameEnd() {
+	//EMPTY
+}
+
+//-------------------------
+//input events
+//-------------------------
+
+void BaseScene::QuitEvent() {
+	sceneSignal = SceneSignal::QUIT;
+}
+
+void BaseScene::MouseMotion(SDL_MouseMotionEvent const& event) {
+	//EMPTY
+}
+
+void BaseScene::MouseButtonDown(SDL_MouseButtonEvent const& event) {
+	//EMPTY
+}
+
+void BaseScene::MouseButtonUp(SDL_MouseButtonEvent const& event) {
+	//EMPTY
+}
+
+void BaseScene::MouseWheel(SDL_MouseWheelEvent const& event) {
+	//EMPTY
+}
+
+void BaseScene::KeyDown(SDL_KeyboardEvent const& event) {
+	//preference as a default
+	switch(event.keysym.sym) {
+		case SDLK_ESCAPE:
+			QuitEvent();
+		break;
 	}
-
-	screen = SDL_SetVideoMode(w, h, bpp, flags);
-
-	if (!screen) {
-		throw(std::runtime_error("Failed to create the screen surface"));
-	}
-
-	return screen;
 }
 
-SDL_Surface* BaseScene::GetScreen() {
-	return screen;
-}
-
-SceneList BaseScene::SetNextScene(SceneList sceneIndex) {
-	return nextScene = sceneIndex;
-}
-
-SceneList BaseScene::GetNextScene() const {
-	return nextScene;
-}
-
-//-------------------------
-//Frame loop
-//-------------------------
-
-void BaseScene::RunFrame() {
-	FrameStart();
-	HandleEvents();
-	Update();
-	FrameEnd();
-}
-
-void BaseScene::RenderFrame() {
-	SDL_FillRect(screen, 0, 0);
-	Render(screen);
-	SDL_Flip(screen);
-	SDL_Delay(10);
-}
-
-//-------------------------
-//Event handlers
-//-------------------------
-
-void BaseScene::HandleEvents() {
-	SDL_Event event;
-
-	while(SDL_PollEvent(&event)) {
-		switch(event.type) {
-			case SDL_QUIT:
-				QuitEvent();
-			break;
-
-			case SDL_VIDEORESIZE:
-				SetScreen(event.resize.w, event.resize.h, 0, screen->flags);
-			break;
-
-			case SDL_MOUSEMOTION:
-				MouseMotion(event.motion);
-			break;
-
-			case SDL_MOUSEBUTTONDOWN:
-				MouseButtonDown(event.button);
-			break;
-
-			case SDL_MOUSEBUTTONUP:
-				MouseButtonUp(event.button);
-			break;
-
-			case SDL_KEYDOWN:
-				KeyDown(event.key);
-			break;
-
-			case SDL_KEYUP:
-				KeyUp(event.key);
-			break;
-
-#ifdef USE_EVENT_JOYSTICK
-			//EMPTY
-#endif
-
-#ifdef USE_EVENT_UNKNOWN
-			default:
-				UnknownEvent(event);
-			break;
-#endif
-		}//switch
-	}//while
+void BaseScene::KeyUp(SDL_KeyboardEvent const& event) {
+	//EMPTY
 }

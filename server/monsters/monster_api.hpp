@@ -19,12 +19,9 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef MONSTERAPI_HPP_
-#define MONSTERAPI_HPP_
+#pragma once
 
 #include "lua.hpp"
 
 #define TORTUGA_MONSTER_API "monster"
 LUAMOD_API int openMonsterAPI(lua_State* L);
-
-#endif

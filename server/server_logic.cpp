@@ -132,24 +132,22 @@ void ServerApplication::Init(int argc, char* argv[]) {
 	//debug output
 	//-------------------------
 
-#define DEBUG_OUTPUT_VAR(x) std::cout << "\t" << #x << ": " << x << std::endl;
+#define DEBUG_INTERNAL_VAR(x) std::cout << "\t" << #x << ": " << x << std::endl;
 
-	std::cout << "Internal sizes:" << std::endl;
+std::cout << "Internal sizes:" << std::endl;
 
-	DEBUG_OUTPUT_VAR(NETWORK_VERSION);
-	DEBUG_OUTPUT_VAR(sizeof(Region::type_t));
-	DEBUG_OUTPUT_VAR(sizeof(Region));
-	DEBUG_OUTPUT_VAR(REGION_WIDTH);
-	DEBUG_OUTPUT_VAR(REGION_HEIGHT);
-	DEBUG_OUTPUT_VAR(REGION_DEPTH);
-	DEBUG_OUTPUT_VAR(REGION_TILE_FOOTPRINT);
-	DEBUG_OUTPUT_VAR(REGION_SOLID_FOOTPRINT);
-	DEBUG_OUTPUT_VAR(PACKET_STRING_SIZE);
-	DEBUG_OUTPUT_VAR(PACKET_BUFFER_SIZE);
-	DEBUG_OUTPUT_VAR(MAX_PACKET_SIZE);
-	DEBUG_OUTPUT_VAR(static_cast<int>(SerialPacketType::LAST));
-
-#undef DEBUG_OUTPUT_VAR
+	DEBUG_INTERNAL_VAR(NETWORK_VERSION);
+	DEBUG_INTERNAL_VAR(sizeof(Region::type_t));
+	DEBUG_INTERNAL_VAR(sizeof(Region));
+	DEBUG_INTERNAL_VAR(REGION_WIDTH);
+	DEBUG_INTERNAL_VAR(REGION_HEIGHT);
+	DEBUG_INTERNAL_VAR(REGION_DEPTH);
+	DEBUG_INTERNAL_VAR(REGION_TILE_FOOTPRINT);
+	DEBUG_INTERNAL_VAR(REGION_SOLID_FOOTPRINT);
+	DEBUG_INTERNAL_VAR(PACKET_STRING_SIZE);
+	DEBUG_INTERNAL_VAR(PACKET_BUFFER_SIZE);
+	DEBUG_INTERNAL_VAR(MAX_PACKET_SIZE);
+	DEBUG_INTERNAL_VAR(static_cast<int>(SerialPacketType::LAST));
 
 	//-------------------------
 	//finalize the startup

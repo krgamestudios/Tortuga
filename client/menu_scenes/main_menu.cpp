@@ -23,6 +23,9 @@
 
 #include "config_utility.hpp"
 
+#include <sstream>
+#include <stdexcept>
+
 //-------------------------
 //Public access members
 //-------------------------
@@ -31,37 +34,43 @@ MainMenu::MainMenu() {
 	ConfigUtility& config = ConfigUtility::GetSingleton();
 
 	//setup the utility objects
-	image.LoadSurface(config["dir.interface"] + "button_menu.bmp");
-	image.SetClipH(image.GetClipH()/3);
-	font.LoadSurface(config["dir.fonts"] + "pk_white_8.bmp");
+	buttonImage.Load(GetRenderer(), config["dir.interface"] + "button_red.png");
+	font = TTF_OpenFont(config["client.font"].c_str(), 12);
 
-	//pass the utility objects
-	startButton.SetImage(&image);
-	startButton.SetFont(&font);
-	optionsButton.SetImage(&image);
-	optionsButton.SetFont(&font);
-	quitButton.SetImage(&image);
-	quitButton.SetFont(&font);
+	//check that the font loaded
+	if (!font) {
+		std::ostringstream msg;
+		msg << "Failed to load a font file; " << SDL_GetError();
+		throw(std::runtime_error(msg.str()));
+	}
+
+	//setup the buttons
+	startButton.SetBackgroundTexture(GetRenderer(), buttonImage.GetTexture());
+	startButton.SetText(GetRenderer(), font, "Start", COLOR_BLUE);
+	optionsButton.SetBackgroundTexture(GetRenderer(), buttonImage.GetTexture());
+	optionsButton.SetText(GetRenderer(), font, "Options", COLOR_BLUE);
+	quitButton.SetBackgroundTexture(GetRenderer(), buttonImage.GetTexture());
+	quitButton.SetText(GetRenderer(), font, "Quit", COLOR_BLUE);
 
 	//set the button positions
 	startButton.SetX(50);
-	startButton.SetY(50 + image.GetClipH() * 0);
+	startButton.SetY(50 + 20 * 0);
 	optionsButton.SetX(50);
-	optionsButton.SetY(50 + image.GetClipH() * 1);
+	optionsButton.SetY(50 + 20 * 1);
 	quitButton.SetX(50);
-	quitButton.SetY(50 + image.GetClipH() * 2);
+	quitButton.SetY(50 + 20 * 2);
 
-	//set the button texts
-	startButton.SetText("Start");
-	optionsButton.SetText("Options");
-	quitButton.SetText("Quit");
+	//text box
+	textBox.PushLine(GetRenderer(), font, "Thanks for playing!", {255, 255, 255, 255});
+	textBox.PushLine(GetRenderer(), font, "You can get the latest version at: ", {255, 255, 255, 255});
+	textBox.PushLine(GetRenderer(), font, "krgamestudios.com", {255, 255, 255, 255}); //TODO: (9) click to open the website/update
 
 	//debug
 	//
 }
 
 MainMenu::~MainMenu() {
-	//
+	TTF_CloseFont(font);
 }
 
 //-------------------------
@@ -80,52 +89,56 @@ void MainMenu::FrameEnd() {
 	//
 }
 
-void MainMenu::Render(SDL_Surface* const screen) {
-	startButton.DrawTo(screen);
-	optionsButton.DrawTo(screen);
-	quitButton.DrawTo(screen);
+void MainMenu::RenderFrame(SDL_Renderer* renderer) {
+	startButton.DrawTo(renderer);
+	optionsButton.DrawTo(renderer);
+	quitButton.DrawTo(renderer);
 
-	//text
-	font.DrawStringTo("Thanks for playing!", screen, 50, screen->h - 50 - image.GetClipH() * 2);
-	font.DrawStringTo("You can get the latest version at: ", screen, 50, screen->h - 50 - image.GetClipH() * 1);
-	font.DrawStringTo("krgamestudios.com", screen, 50, screen->h - 50 - image.GetClipH() * 0);
+	int h = -1;
+	SDL_RenderGetLogicalSize(GetRenderer(), nullptr, &h);
+
+	textBox.DrawTo(renderer, 50, h-50, -12);
 }
 
 //-------------------------
 //Event handlers
 //-------------------------
 
-void MainMenu::MouseMotion(SDL_MouseMotionEvent const& motion) {
-	startButton.MouseMotion(motion);
-	optionsButton.MouseMotion(motion);
-	quitButton.MouseMotion(motion);
+void MainMenu::MouseMotion(SDL_MouseMotionEvent const& event) {
+	startButton.MouseMotion(event);
+	optionsButton.MouseMotion(event);
+	quitButton.MouseMotion(event);
 }
 
-void MainMenu::MouseButtonDown(SDL_MouseButtonEvent const& button) {
-	startButton.MouseButtonDown(button);
-	optionsButton.MouseButtonDown(button);
-	quitButton.MouseButtonDown(button);
+void MainMenu::MouseButtonDown(SDL_MouseButtonEvent const& event) {
+	startButton.MouseButtonDown(event);
+	optionsButton.MouseButtonDown(event);
+	quitButton.MouseButtonDown(event);
 }
 
-void MainMenu::MouseButtonUp(SDL_MouseButtonEvent const& button) {
+void MainMenu::MouseButtonUp(SDL_MouseButtonEvent const& event) {
 	//TODO: (2) Buttons should only register as "selected" when the left button is used
-	if (startButton.MouseButtonUp(button) == Button::State::HOVER) {
-		SetNextScene(SceneList::LOBBYMENU);
+	if (startButton.MouseButtonUp(event) == Button::State::RELEASED) {
+		SetSceneSignal(SceneSignal::LOBBYMENU);
 	}
-	if (optionsButton.MouseButtonUp(button) == Button::State::HOVER) {
-		SetNextScene(SceneList::OPTIONSMENU);
+	if (optionsButton.MouseButtonUp(event) == Button::State::RELEASED) {
+		SetSceneSignal(SceneSignal::OPTIONSMENU);
 	}
-	if (quitButton.MouseButtonUp(button) == Button::State::HOVER) {
+	if (quitButton.MouseButtonUp(event) == Button::State::RELEASED) {
 		QuitEvent();
 	}
 }
 
-void MainMenu::KeyDown(SDL_KeyboardEvent const& key) {
+void MainMenu::MouseWheel(SDL_MouseWheelEvent const& event) {
 	//
 }
 
-void MainMenu::KeyUp(SDL_KeyboardEvent const& key) {
-	switch(key.keysym.sym) {
+void MainMenu::KeyDown(SDL_KeyboardEvent const& event) {
+	//
+}
+
+void MainMenu::KeyUp(SDL_KeyboardEvent const& event) {
+	switch(event.keysym.sym) {
 		case SDLK_ESCAPE:
 			QuitEvent();
 		break;

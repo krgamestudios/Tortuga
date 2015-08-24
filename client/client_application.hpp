@@ -19,21 +19,19 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef CLIENTAPPLICATION_HPP_
-#define CLIENTAPPLICATION_HPP_
+#pragma once
 
-#include "scene_list.hpp"
 #include "base_scene.hpp"
-
+#include "scene_signal.hpp"
+#include "singleton.hpp"
 #include "udp_network_utility.hpp"
 
-#include "singleton.hpp"
-
-#include <map>
+#include "SDL2/SDL.h"
+#include "SDL2/SDL_net.h"
+#include "SDL2/SDL_ttf.h"
 
 class ClientApplication: public Singleton<ClientApplication> {
 public:
-	//public methods
 	void Init(int argc, char* argv[]);
 	void Proc();
 	void Quit();
@@ -44,15 +42,18 @@ private:
 	ClientApplication() = default;
 	~ClientApplication() = default;
 
-	//Private access members
-	void LoadScene(SceneList sceneIndex);
-	void UnloadScene();
+	//scene management
+	void ProcessEvents();
+	void ProcessSceneSignal(SceneSignal);
+	void ClearScene();
 
 	BaseScene* activeScene = nullptr;
+
+	//TODO: (9) build a "window" class?
+	SDL_Window* window = nullptr;
+	SDL_Renderer* renderer = nullptr;
 
 	//shared parameters
 	int clientIndex = -1;
 	int accountIndex = -1;
 };
-
-#endif

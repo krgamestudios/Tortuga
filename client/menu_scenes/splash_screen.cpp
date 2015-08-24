@@ -27,25 +27,38 @@
 //Public access members
 //-------------------------
 
-SplashScreen::SplashScreen() {
-	logo.LoadSurface(ConfigUtility::GetSingleton()["dir.logos"] + "krstudios.bmp");
+SplashScreen::SplashScreen(SDL_Window* w) {
+	//fit the screen to the logo
+	//NOTE: not using this window trick
+	window = w;
+	SDL_GetWindowSize(window, &windowWidth, &windowHeight);
+
+	logo.Load(GetRenderer(), ConfigUtility::GetSingleton()["dir.logos"] + "krstudios.png");
+
+//	SDL_SetWindowSize(window, logo.GetClipW(), logo.GetClipH());
+//	SDL_RenderSetLogicalSize(GetRenderer(), logo.GetClipW(), logo.GetClipH());
+
 	startTick = std::chrono::steady_clock::now();
 }
 
 SplashScreen::~SplashScreen() {
-	//
+//	SDL_SetWindowSize(window, windowWidth, windowHeight);
+//	SDL_RenderSetLogicalSize(GetRenderer(), windowWidth, windowHeight);
 }
 
 //-------------------------
 //Frame loop
 //-------------------------
 
-void SplashScreen::Update() {
-	if (std::chrono::steady_clock::now() - startTick > std::chrono::duration<int>(1)) {
-		SetNextScene(SceneList::MAINMENU);
+void SplashScreen::FrameStart() {
+	//TODO: (0) config flag to change the delay
+	if (std::chrono::steady_clock::now() - startTick > std::chrono::duration<int>(3)) {
+		SetSceneSignal(SceneSignal::MAINMENU);
 	}
 }
 
-void SplashScreen::Render(SDL_Surface* const screen) {
-	logo.DrawTo(screen, (screen->w - logo.GetClipW()) / 2, (screen->h - logo.GetClipH()) / 2);
+void SplashScreen::RenderFrame(SDL_Renderer* renderer) {
+	int w = 0, h = 0;
+	SDL_RenderGetLogicalSize(renderer, &w, &h);
+	logo.DrawTo(renderer, (w - logo.GetClipW()) / 2, (h - logo.GetClipH()) / 2);
 }

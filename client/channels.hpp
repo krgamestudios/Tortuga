@@ -19,11 +19,8 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef CHANNELS_HPP_
-#define CHANNELS_HPP_
+#pragma once
 
 enum Channels {
 	SERVER = 0
 };
-
-#endif

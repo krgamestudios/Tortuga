@@ -19,8 +19,7 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef CHARACTERDATA_HPP_
-#define CHARACTERDATA_HPP_
+#pragma once
 
 //components
 #include "character_defines.hpp"
@@ -47,5 +46,3 @@ private:
 	std::string handle;
 	std::string avatar;
 };
-
-#endif

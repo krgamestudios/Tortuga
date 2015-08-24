@@ -19,11 +19,9 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef SPLASHSCREEN_HPP_
-#define SPLASHSCREEN_HPP_
+#pragma once
 
 #include "base_scene.hpp"
-
 #include "image.hpp"
 
 #include <chrono>
@@ -31,17 +29,20 @@
 class SplashScreen : public BaseScene {
 public:
 	//Public access members
-	SplashScreen();
+	SplashScreen(SDL_Window*);
 	~SplashScreen();
 
-protected:
+	void RenderFrame(SDL_Renderer* renderer) override;
+
+private:
 	//Frame loop
-	void Update();
-	void Render(SDL_Surface* const);
+	void FrameStart() override;
 
 	//members
 	std::chrono::steady_clock::time_point startTick;
 	Image logo;
-};
 
-#endif
+	//screws with the window
+	SDL_Window* window = nullptr;
+	int windowWidth, windowHeight;
+};

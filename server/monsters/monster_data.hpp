@@ -19,8 +19,7 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef MONSTERDATA_HPP_
-#define MONSTERDATA_HPP_
+#pragma once
 
 #include "entity.hpp"
 
@@ -56,5 +55,3 @@ private:
 	std::string avatar;
 	int scriptRef = LUA_NOREF;
 };
-
-#endif

@@ -1,15 +1,15 @@
 #include directories
-INCLUDES+=SDL . accounts characters clients entities rooms server_utilities triggers ../common/debugging ../common/gameplay ../common/map ../common/network ../common/network/packet_types ../common/utilities
+INCLUDES+=. accounts characters clients entities rooms server_utilities triggers ../common/debugging ../common/gameplay ../common/map ../common/network ../common/network/packet_types ../common/utilities
 
 #libraries
 #the order of the $(LIBS) is important, at least for MinGW
-LIBS+=server.a ../libcommon.a -lSDL_net
+LIBS+=server.a ../common/libcommon.a -lSDL2_net
 ifeq ($(OS),Windows_NT)
 	LIBS+=-lwsock32 -liphlpapi -lmingw32
 endif
-LIBS+=-lSDLmain -lSDL -llua -lsqlite3
+LIBS+=-lSDL2main -lSDL2 -llua -lsqlite3
 ifeq ($(shell uname), Linux)
-	#I don't know what this does, but Ubuntu needs it
+	#I don't know what this does, but Ubuntu needs it (dynamic linking for lua)
 	LIBS+=-ldl
 endif
 

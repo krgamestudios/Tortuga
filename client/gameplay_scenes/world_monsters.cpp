@@ -55,7 +55,7 @@ void World::hMonsterCreate(MonsterPacket* const argPacket) {
 
 	//fill the monster's info
 	monster->SetHandle(argPacket->handle);
-	monster->SetAvatar(argPacket->avatar);
+	monster->SetAvatar(GetRenderer(), argPacket->avatar);
 	monster->SetBounds(argPacket->bounds);
 	monster->SetOrigin(argPacket->origin);
 	monster->SetMotion(argPacket->motion);
@@ -89,7 +89,7 @@ void World::hQueryMonsterExists(MonsterPacket* const argPacket) {
 
 	//fill the monster's info
 	monster->SetHandle(argPacket->handle);
-	monster->SetAvatar(argPacket->avatar);
+	monster->SetAvatar(GetRenderer(), argPacket->avatar);
 	monster->SetBounds(argPacket->bounds);
 	monster->SetOrigin(argPacket->origin);
 	monster->SetMotion(argPacket->motion);

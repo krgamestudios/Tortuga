@@ -26,8 +26,8 @@ void Entity::Update() {
 	sprite.Update(0.016);
 }
 
-void Entity::DrawTo(SDL_Surface* const dest, int camX, int camY) {
-	sprite.DrawTo(dest, origin.x - camX, origin.y - camY);
+void Entity::DrawTo(SDL_Renderer* const renderer, int camX, int camY) {
+	sprite.DrawTo(renderer, origin.x - camX, origin.y - camY);
 }
 
 SpriteSheet* Entity::GetSprite() {

@@ -1,0 +1,6 @@
+[submodule "common"]
+	path = common
+	url = https://github.com/Ratstail91/Tortuga.git
+[submodule "bin"]
+	path = bin
+	url = https://github.com/Ratstail91/Tortuga.git

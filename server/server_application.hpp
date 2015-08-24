@@ -19,8 +19,7 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef SERVERAPPLICATION_HPP_
-#define SERVERAPPLICATION_HPP_
+#pragma once
 
 //managers
 #include "account_manager.hpp"
@@ -128,5 +127,3 @@ private:
 	//misc
 	bool running = true;
 };
-
-#endif

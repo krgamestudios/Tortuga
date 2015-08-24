@@ -29,12 +29,13 @@
 //static functions
 //-------------------------
 
+//TODO: (3) proper checksum
 static int regionChecksum(Region* const region) {
 	int sum = 0;
 	for(int i = 0; i < REGION_WIDTH; i++) {
 		for (int j = 0; j < REGION_HEIGHT; j++) {
 			for (int k = 0; k < REGION_DEPTH; k++) {
-				sum += region->GetTile(i, j, k);
+				sum |= region->GetTile(i, j, k);
 			}
 		}
 	}
@@ -103,7 +104,6 @@ void World::UpdateMap() {
 			}
 			else if (regionChecksum(region) == 0) {
 				//checksum failed
-				//NOTE: this patches bug #45, but does not resolve it
 				regionPager.UnloadIf([region](Region const& ref) -> bool {
 					//remove the erroneous region
 					return region == &ref;

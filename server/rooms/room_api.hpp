@@ -19,12 +19,9 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef ROOMAPI_HPP_
-#define ROOMAPI_HPP_
+#pragma once
 
 #include "lua.hpp"
 
 #define TORTUGA_ROOM_API "room"
 LUAMOD_API int openRoomAPI(lua_State* L);
-
-#endif

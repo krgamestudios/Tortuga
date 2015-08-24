@@ -19,12 +19,9 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef NETWORKAPI_HPP_
-#define NETWORKAPI_HPP_
+#pragma once
 
 #include "lua.hpp"
 
 #define TORTUGA_NETWORK_API "network"
 LUAMOD_API int openNetworkAPI(lua_State* L);
-
-#endif

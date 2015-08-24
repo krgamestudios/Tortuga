@@ -19,14 +19,15 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef LOBBYMENU_HPP_
-#define LOBBYMENU_HPP_
+#pragma once
 
 //graphics & ui
 #include "image.hpp"
-#include "raster_font.hpp"
 #include "button.hpp"
 #include "bounding_box.hpp"
+#include "text_line.hpp"
+
+#include "SDL2/SDL_ttf.h"
 
 //utilities
 #include "config_utility.hpp"
@@ -45,19 +46,21 @@ public:
 	LobbyMenu(int* const argClientIndex, int* const argAccountIndex);
 	~LobbyMenu();
 
-protected:
-	//Frame loop
-	void FrameStart();
-	void Update();
-	void FrameEnd();
-	void Render(SDL_Surface* const);
+	void RenderFrame(SDL_Renderer* renderer) override;
 
-	//Event handlers
-	void MouseMotion(SDL_MouseMotionEvent const&);
-	void MouseButtonDown(SDL_MouseButtonEvent const&);
-	void MouseButtonUp(SDL_MouseButtonEvent const&);
-	void KeyDown(SDL_KeyboardEvent const&);
-	void KeyUp(SDL_KeyboardEvent const&);
+protected:
+	//frame phases
+	void FrameStart() override;
+	void Update() override;
+	void FrameEnd() override;
+
+	//input events
+	void MouseMotion(SDL_MouseMotionEvent const& event) override;
+	void MouseButtonDown(SDL_MouseButtonEvent const& event) override;
+	void MouseButtonUp(SDL_MouseButtonEvent const& event) override;
+	void MouseWheel(SDL_MouseWheelEvent const& event) override;
+	void KeyDown(SDL_KeyboardEvent const& event) override;
+	void KeyUp(SDL_KeyboardEvent const& event) override;
 
 	//Network handlers
 	void HandlePacket(SerialPacket* const);
@@ -78,15 +81,13 @@ protected:
 	int& clientIndex;
 	int& accountIndex;
 
-	//members
-	Image image;
-	RasterFont font;
-	Button search;
-	Button join;
-	Button back;
+	//define the list object
+	struct ServerInfo {
+		//graphics
+		TextLine nameImage;
+		TextLine playerCountImage;
 
-	//server list
-	struct ServerInformation {
+		//networking
 		IPaddress address;
 		std::string name;
 		int playerCount;
@@ -94,12 +95,16 @@ protected:
 		bool compatible;
 	};
 
-	std::vector<ServerInformation> serverInfo;
+	//members
+	Image buttonImage;
+	Image highlightImage;
+	TTF_Font* font = nullptr;
+	Button searchButton;
+	Button joinButton;
+	Button backButton;
 
-	//NOTE: a terrible hack
-	//I'd love a proper gui system for this
-	BoundingBox listBox;
-	ServerInformation* selection = nullptr;
+	std::vector<ServerInfo> serverVector;
+	ServerInfo* selection = nullptr;
+
+	BoundingBox boundingBox;
 };
-
-#endif

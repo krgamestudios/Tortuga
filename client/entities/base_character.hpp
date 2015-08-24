@@ -19,8 +19,7 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#ifndef BASECHARACTER_HPP_
-#define BASECHARACTER_HPP_
+#pragma once
 
 //components
 #include "character_defines.hpp"
@@ -42,7 +41,7 @@ public:
 	int GetOwner();
 	std::string SetHandle(std::string s);
 	std::string GetHandle() const;
-	std::string SetAvatar(std::string s);
+	std::string SetAvatar(SDL_Renderer* const, std::string s);
 	std::string GetAvatar() const;
 
 protected:
@@ -51,5 +50,3 @@ protected:
 	std::string handle;
 	std::string avatar;
 };
-
-#endif
