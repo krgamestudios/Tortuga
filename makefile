@@ -27,9 +27,9 @@ else ifeq ($(shell uname), Linux)
 	tar -C $(OUTDIR) -zcvf Tortuga-linux.tar client server ../rsc ../copyright.txt ../instructions.txt
 endif
 
-binary:
+binary: $(OUTDIR)
 ifeq ($(OS),Windows_NT)
-	copy /B /Y $(BINDIR) $(OUTDIR)
+	xcopy /Y $(BINDIR)\\*.dll $(OUTDIR)
 endif
 
 $(OUTDIR):
@@ -37,8 +37,8 @@ $(OUTDIR):
 
 clean:
 ifeq ($(OS),Windows_NT)
-	del /s *.o *.a *.exe $(OUTDIR)\*.dll
-	rmdir $(OUTDIR)
+	del /S /Q *.o *.a *.exe $(OUTDIR)\*
+	rmdir /S /Q $(OUTDIR)
 else ifeq ($(shell uname), Linux)
 	find . -type f -name '*.o' -exec rm -f -r -v {} \;
 	find . -type f -name '*.a' -exec rm -f -r -v {} \;
