@@ -22,6 +22,7 @@
 #include "application.hpp"
 
 #include <chrono>
+#include <iostream>
 #include <sstream>
 #include <stdexcept>
 
@@ -40,6 +41,9 @@ void Application::Init(int argc, char* argv[]) {
 		msg << "Failed to create the window: " << SDL_GetError();
 		throw(std::runtime_error(msg.str()));
 	}
+	else {
+		std::cout << "Created the window" << std::endl;
+	}
 
 	//create and check the renderer
 	renderer = SDL_CreateRenderer(window, -1, 0);
@@ -49,19 +53,27 @@ void Application::Init(int argc, char* argv[]) {
 		msg << "Failed to create the renderer: " << SDL_GetError();
 		throw(std::runtime_error(msg.str()));
 	}
+	else {
+		std::cout << "Created the renderer" << std::endl;
+	}
 
 	//screen scaling
 	SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "best");
-	SDL_RenderSetLogicalSize(renderer, 800, 600);
+	SDL_RenderSetLogicalSize(renderer, screenWidth, screenHeight);
 
 	//set the hook for the renderer
 	BaseScene::SetRenderer(renderer);
+
+	std::cout << "Initialized screen scaling" << std::endl;
 
 	//setting up SDL2_ttf
 	if (TTF_Init()) {
 		std::ostringstream msg;
 		msg << "Failed to initialize SDL2_ttf: " << SDL_GetError();
 		throw(std::runtime_error(msg.str()));
+	}
+	else {
+		std::cout << "Initialized SDL2_ttf" << std::endl;
 	}
 
 	//setup lua
@@ -71,8 +83,13 @@ void Application::Init(int argc, char* argv[]) {
 		msg << "Failed to create the lua state";
 		throw(std::runtime_error(msg.str()));
 	}
+	else {
+		std::cout << "Initialized lua" << std::endl;
+	}
 
 	luaL_openlibs(lua);
+
+	std::cout << "Initialization sucessful" << std::endl;
 }
 
 void Application::Proc() {
@@ -124,6 +141,7 @@ void Application::Proc() {
 }
 
 void Application::Quit() {
+	std::cout << "Closing the APIs" << std::endl;
 	lua_close(lua);
 	TTF_Quit();
 

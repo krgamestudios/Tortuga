@@ -29,13 +29,13 @@ ExampleScene::ExampleScene(lua_State* L) {
 	lua = L;
 
 	//TODO: non-hardcoded source
-	tileSheet.Load(GetRenderer(), "./rsc/terrain.bmp", 32, 32);
+	tileSheet.Load(GetRenderer(), "../rsc/terrain.png", 32, 32);
 
 	//set the pager's hook
 	regionPager.SetLuaState(lua);
 
 	//load the file as a chunk
-	luaL_loadfile(lua, "./rsc/startup.lua");
+	luaL_loadfile(lua, "../rsc/startup.lua");
 
 	//push the pager as an arg
 	lua_pushlightuserdata(lua, static_cast<void*>(&regionPager));
@@ -49,8 +49,10 @@ ExampleScene::ExampleScene(lua_State* L) {
 	camera.scale = 0.25;
 
 	//DEBUG: testing buttons
-	buttonBG.Load(GetRenderer(), "./rsc/button.png");
-	font = TTF_OpenFont("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 12);
+	buttonBG.Load(GetRenderer(), "../rsc/button.png");
+	//Ubuntu: "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"
+
+	font = TTF_OpenFont("C:\\Windows\\Fonts\\Arial.ttf", 12);
 	if (!font) {
 		std::ostringstream msg;
 		msg << "Failed to load a font: " << SDL_GetError();
@@ -70,6 +72,9 @@ ExampleScene::ExampleScene(lua_State* L) {
 
 	//
 	blankImage.Create(GetRenderer(), 256, 256);
+
+	//
+	std::cout << "Scene setup finished" << std::endl;
 }
 
 ExampleScene::~ExampleScene() {
