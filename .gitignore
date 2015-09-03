@@ -12,6 +12,7 @@ Out/
 release/
 debug/
 out/
+bin/
 
 #Project generated files
 *.db
