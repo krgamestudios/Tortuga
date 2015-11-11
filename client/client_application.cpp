@@ -45,6 +45,16 @@ void ClientApplication::Init(int argc, char* argv[]) {
 	config.Load("rsc/config.cfg", false, argc, argv);
 
 	//-------------------------
+	//Initialize SDL
+	//-------------------------
+
+	if (SDL_Init(0)) {
+		std::ostringstream msg;
+		msg << "Failed to initialize SDL: " << SDL_GetError();
+		throw(std::runtime_error(msg.str()));
+	}
+
+	//-------------------------
 	//create and check the window
 	//-------------------------
 
@@ -85,18 +95,15 @@ void ClientApplication::Init(int argc, char* argv[]) {
 		switch(windowInfo.subsystem) {
 			case SDL_SYSWM_WINDOWS:
 				platform = "Microsoft Windows";
-				fontPath = "C:/Windows/Fonts/arialbd.ttf";
 			break;
 
 			case SDL_SYSWM_X11:
 				platform = "X Window System";
-				fontPath = "/usr/share/fonts/truetype/msttcorefonts/Arial_Bold.ttf";
 			break;
 
 			//NOTE: OS X is currently unsupported, but it could be
 			case SDL_SYSWM_COCOA:
 				platform = "Apple OS X";
-				fontPath = "/System/Library/Fonts/arialbd.ttf";
 			break;
 
 			default:
@@ -109,11 +116,6 @@ void ClientApplication::Init(int argc, char* argv[]) {
 		std::cout << (int)windowInfo.version.minor << ".";
 		std::cout << (int)windowInfo.version.patch << " on ";
 		std::cout << platform << std::endl;
-
-		//handle the default font paths
-		if (config["client.font"].size() == 0) {
-			config["client.font"] = fontPath;
-		}
 	}
 	else {
 		std::ostringstream msg;
@@ -256,6 +258,7 @@ void ClientApplication::Quit() {
 	BaseScene::SetRenderer(nullptr);
 	SDL_DestroyRenderer(renderer);
 	SDL_DestroyWindow(window);
+	SDL_Quit();
 	std::cout << "Clean exit" << std::endl;
 }
 
