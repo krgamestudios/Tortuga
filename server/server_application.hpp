@@ -43,7 +43,7 @@
 #include "lua.hpp"
 #include "sqlite3.h"
 
-#include "SDL/SDL.h"
+#include "SDL2/SDL.h"
 
 //STL
 #include <map>
