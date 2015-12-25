@@ -34,7 +34,7 @@ MainMenu::MainMenu() {
 	ConfigUtility& config = ConfigUtility::GetSingleton();
 
 	//setup the utility objects
-	buttonImage.Load(GetRenderer(), config["dir.interface"] + "button_red.png");
+	buttonImage.Load(GetRenderer(), config["dir.interface"] + "button_blue.png");
 	font = TTF_OpenFont(config["client.font"].c_str(), 12);
 
 	//check that the font loaded
@@ -46,11 +46,11 @@ MainMenu::MainMenu() {
 
 	//setup the buttons
 	startButton.SetBackgroundTexture(GetRenderer(), buttonImage.GetTexture());
-	startButton.SetText(GetRenderer(), font, "Start", COLOR_BLUE);
+	startButton.SetText(GetRenderer(), font, "Start", COLOR_WHITE);
 	optionsButton.SetBackgroundTexture(GetRenderer(), buttonImage.GetTexture());
-	optionsButton.SetText(GetRenderer(), font, "Options", COLOR_BLUE);
+	optionsButton.SetText(GetRenderer(), font, "Options", COLOR_WHITE);
 	quitButton.SetBackgroundTexture(GetRenderer(), buttonImage.GetTexture());
-	quitButton.SetText(GetRenderer(), font, "Quit", COLOR_BLUE);
+	quitButton.SetText(GetRenderer(), font, "Quit", COLOR_WHITE);
 
 	//set the button positions
 	startButton.SetX(50);

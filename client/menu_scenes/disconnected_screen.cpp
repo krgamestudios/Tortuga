@@ -37,7 +37,7 @@ DisconnectedScreen::DisconnectedScreen() {
 
 	//setup the utility objects
 	//TODO: (1) resource tool, to prevent reloading like this
-	image.Load(GetRenderer(), config["dir.interface"] + "button_red.png");
+	image.Load(GetRenderer(), config["dir.interface"] + "button_blue.png");
 	font = TTF_OpenFont(config["client.font"].c_str(), 12);
 
 	//check that the font loaded
@@ -49,7 +49,7 @@ DisconnectedScreen::DisconnectedScreen() {
 
 	//setup the button
 	backButton.SetBackgroundTexture(GetRenderer(), image.GetTexture());
-	backButton.SetText(GetRenderer(), font, "Back", COLOR_BLUE);
+	backButton.SetText(GetRenderer(), font, "Back", COLOR_WHITE);
 
 	//set the button positions
 	backButton.SetX(50);

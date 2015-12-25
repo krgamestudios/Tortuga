@@ -7,7 +7,7 @@ This game is inspired by classic 2D RPGs (Final Fantasy, The Legend of Zelda), a
 ## Releases
 
 * The most recent stable build for Windows can be found [here](https://dl.dropboxusercontent.com/u/46669050/Tortuga-win.rar).
-* The most recent stable build for Linux can be found [here](https://dl.dropboxusercontent.com/u/46669050/Tortuga-linux.tar).
+* My linux PC died ;_;
 
 ## Documentation
 
@@ -28,6 +28,10 @@ This game is inspired by classic 2D RPGs (Final Fantasy, The Legend of Zelda), a
 * [WinRAR](http://www.rarlab.com/) - A free archive tool; needed for Windows distribution
 * [tar](http://www.gnu.org/software/tar/manual/) - The GNU archive tool; needed for Linux distribution
 * [Dropbox](https://www.dropbox.com/) - For hosting and distribution
+
+## Using and Including
+
+* [Coolvetica Typeface](http://typodermicfonts.com/coolvetica/)
 
 ## Copyright
 

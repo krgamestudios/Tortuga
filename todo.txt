@@ -1,5 +1,7 @@
+TODO: Resource manager
 TODO: Consistency for bounds names
-
+TODO: Cross compiler (to replace dead linux PC ;_;)
+TODO: New button graphics
 TODO: Account passwords (list)
 	* backbone account server OR
 	* social network login OR
