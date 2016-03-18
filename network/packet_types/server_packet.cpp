@@ -27,16 +27,16 @@ void serializeServer(void* buffer, ServerPacket* packet) {
 	serialCopy(&buffer, &packet->type, sizeof(SerialPacketType));
 
 	//identify the server
+	serialCopy(&buffer, &packet->version, sizeof(int));
 	serialCopy(&buffer, packet->name, PACKET_STRING_SIZE);
 	serialCopy(&buffer, &packet->playerCount, sizeof(int));
-	serialCopy(&buffer, &packet->version, sizeof(int));
 }
 
 void deserializeServer(void* buffer, ServerPacket* packet) {
 	deserialCopy(&buffer, &packet->type, sizeof(SerialPacketType));
 
 	//identify the server
+	deserialCopy(&buffer, &packet->version, sizeof(int));
 	deserialCopy(&buffer, packet->name, PACKET_STRING_SIZE);
 	deserialCopy(&buffer, &packet->playerCount, sizeof(int));
-	deserialCopy(&buffer, &packet->version, sizeof(int));
 }
