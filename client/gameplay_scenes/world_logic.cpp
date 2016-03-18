@@ -147,7 +147,10 @@ void World::Update() {
 	//get the collidable boxes
 	std::list<BoundingBox> boxList = GenerateCollisionGrid(localCharacter, tileSheet.GetTileW(), tileSheet.GetTileH());
 
+	std::cout << "Debug: " << boxList.size() << std::endl;
+
 	//process the collisions
+	//BUG: Collisions not working
 	if (localCharacter->ProcessCollisionGrid(boxList)) {
 		localCharacter->CorrectSprite();
 		SendLocalCharacterMovement();

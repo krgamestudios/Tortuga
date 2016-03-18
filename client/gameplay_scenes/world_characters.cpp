@@ -224,6 +224,7 @@ std::list<BoundingBox> World::GenerateCollisionGrid(Entity* ptr, int tileWidth, 
 		wallBounds.y = snapToBase((double)wallBounds.h, ptr->GetOrigin().y);
 		while(wallBounds.y < (ptr->GetOrigin() + ptr->GetBounds()).y + ptr->GetBounds().h) {
 			//check to see if this tile is solid (non-existant tiles are always false)
+
 			if (regionPager.GetSolid(wallBounds.x / wallBounds.w, wallBounds.y / wallBounds.h)) {
 				//push onto the box set
 				boxList.push_front(wallBounds);
