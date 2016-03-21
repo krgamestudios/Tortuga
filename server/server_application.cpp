@@ -283,22 +283,6 @@ void ServerApplication::HandlePacket(SerialPacket* const argPacket) {
 		case SerialPacketType::QUERY_CHARACTER_EXISTS:
 			hQueryCharacterExists(static_cast<CharacterPacket*>(argPacket));
 		break;
-		case SerialPacketType::QUERY_CHARACTER_STATS:
-			hQueryCharacterStats(static_cast<CharacterPacket*>(argPacket));
-		break;
-		case SerialPacketType::QUERY_CHARACTER_LOCATION:
-			hQueryCharacterLocation(static_cast<CharacterPacket*>(argPacket));
-		break;
-
-		case SerialPacketType::QUERY_MONSTER_EXISTS:
-			hQueryMonsterExists(static_cast<MonsterPacket*>(argPacket));
-		break;
-		case SerialPacketType::QUERY_MONSTER_STATS:
-			hQueryMonsterStats(static_cast<MonsterPacket*>(argPacket));
-		break;
-		case SerialPacketType::QUERY_MONSTER_LOCATION:
-			hQueryMonsterLocation(static_cast<MonsterPacket*>(argPacket));
-		break;
 
 		//character management
 		case SerialPacketType::CHARACTER_CREATE:
@@ -317,12 +301,6 @@ void ServerApplication::HandlePacket(SerialPacket* const argPacket) {
 		//character movement
 		case SerialPacketType::CHARACTER_MOVEMENT:
 			hCharacterMovement(static_cast<CharacterPacket*>(argPacket));
-		break;
-		case SerialPacketType::CHARACTER_ATTACK:
-			hCharacterAttack(static_cast<CharacterPacket*>(argPacket));
-		break;
-		case SerialPacketType::CHARACTER_DAMAGE:
-			hCharacterDamage(static_cast<CharacterPacket*>(argPacket));
 		break;
 
 		//chat
@@ -608,26 +586,6 @@ void ServerApplication::hQueryCharacterExists(CharacterPacket* const argPacket) 
 	}
 }
 
-void ServerApplication::hQueryCharacterStats(CharacterPacket* const argPacket) {
-	//TODO: (9) ServerApplication::hQueryCharacterStats()
-}
-
-void ServerApplication::hQueryCharacterLocation(CharacterPacket* const argPacket) {
-	//TODO: (9) ServerApplication::hQueryCharacterLocation()
-}
-
-void ServerApplication::hQueryMonsterExists(MonsterPacket* const argPacket) {
-	//TODO: (9) ServerApplication::hQueryMonsterExists()
-}
-
-void ServerApplication::hQueryMonsterStats(MonsterPacket* const argPacket) {
-	//TODO: (9) ServerApplication::hQueryMonsterStats()
-}
-
-void ServerApplication::hQueryMonsterLocation(MonsterPacket* const argPacket) {
-	//TODO: (9) ServerApplication::hQueryMonsterLocation()
-}
-
 //-------------------------
 //Character Management
 //-------------------------
@@ -704,7 +662,7 @@ void ServerApplication::hCharacterDelete(CharacterPacket* const argPacket) {
 	newPacket.characterIndex = characterIndex;
 	pumpPacketProximity(static_cast<SerialPacket*>(&newPacket), characterData->GetRoomIndex());
 
-	//delete the character
+	//delete the character from the database
 	characterMgr.Delete(characterIndex);
 }
 
@@ -835,14 +793,6 @@ void ServerApplication::hCharacterMovement(CharacterPacket* const argPacket) {
 		newPacket.type = SerialPacketType::CHARACTER_MOVEMENT;
 		pumpPacketProximity(&newPacket, characterData->GetRoomIndex());
 	}
-}
-
-void ServerApplication::hCharacterAttack(CharacterPacket* const argPacket) {
-	//TODO: (9) ServerApplication::hCharacterAttack()
-}
-
-void ServerApplication::hCharacterDamage(CharacterPacket* const argPacket) {
-	//TODO: (9) ServerApplication::hCharacterDamage()
 }
 
 //-------------------------

@@ -49,7 +49,10 @@
 #include <map>
 #include <string>
 
-//The main application class
+//DOCS: The main application class
+//DOCS: Please note that this is NOT a god class. Instead, it acts as the central relay for all managers.
+//DOCS: It's also the only class that prints to the screen, and it handles a number of error cases.
+
 class ServerApplication: public Singleton<ServerApplication> {
 public:
 	//public methods
@@ -86,11 +89,11 @@ private:
 	//data management
 	void hRegionRequest(RegionPacket* const);
 	void hQueryCharacterExists(CharacterPacket* const);
-	void hQueryCharacterStats(CharacterPacket* const);
-	void hQueryCharacterLocation(CharacterPacket* const);
-	void hQueryMonsterExists(MonsterPacket* const);
-	void hQueryMonsterStats(MonsterPacket* const);
-	void hQueryMonsterLocation(MonsterPacket* const);
+//	void hQueryCharacterStats(CharacterPacket* const);
+//	void hQueryCharacterLocation(CharacterPacket* const);
+//	void hQueryMonsterExists(MonsterPacket* const);
+//	void hQueryMonsterStats(MonsterPacket* const);
+//	void hQueryMonsterLocation(MonsterPacket* const);
 
 	//character management
 	void hCharacterCreate(CharacterPacket* const);
@@ -100,8 +103,8 @@ private:
 
 	//character movement
 	void hCharacterMovement(CharacterPacket* const);
-	void hCharacterAttack(CharacterPacket* const);
-	void hCharacterDamage(CharacterPacket* const);
+//	void hCharacterAttack(CharacterPacket* const);
+//	void hCharacterDamage(CharacterPacket* const);
 
 	//chat
 	void hTextBroadcast(TextPacket* const);
