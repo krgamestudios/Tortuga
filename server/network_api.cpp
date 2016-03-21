@@ -68,6 +68,9 @@ static int pumpMonsterUpdate(lua_State* L) {
 	//TODO: (0) send the info about a specific monster instance
 }
 
+//TODO: pump entity update
+//TODO: save?
+
 static const luaL_Reg networkLib[] = {
 	{"PumpCharacterUpdate", pumpCharacterUpdate},
 	{"PumpMonsterUpdate", pumpMonsterUpdate},

@@ -31,6 +31,8 @@
 #include <list>
 #include <map>
 
+//DOCS: The heartbeat system is built into ClientManager
+
 class ClientManager: public Singleton<ClientManager> {
 public:
 	//methods

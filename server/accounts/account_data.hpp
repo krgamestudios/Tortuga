@@ -36,6 +36,7 @@ public:
 	std::string GetUsername();
 
 	//database stuff
+	//TODO: rename Get* to GetIs*
 	bool GetBlackListed();
 	bool GetWhiteListed();
 	bool GetModerator();

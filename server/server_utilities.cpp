@@ -29,6 +29,16 @@
 
 #include <cstring>
 
+/*DOCS: each of these calls the next (diagram)
+	fullClientUnload()
+		-> fullAccountUnload()
+			-> fullCharacterUnload()
+				-> pumpPacketProximity()
+	
+	copyCharacterToPacket() v1
+		-> copyCharacterToPacket() v2
+*/
+
 //-------------------------
 //manager unload functions
 //-------------------------
@@ -112,12 +122,14 @@ void fullCharacterUnload(int index) {
 //-------------------------
 
 void pumpPacket(SerialPacket* const argPacket) {
+	//send a message to all clients
 	for (auto& it : *ClientManager::GetSingleton().GetContainer()) {
 		UDPNetworkUtility::GetSingleton().SendTo(it.second.GetAddress(), argPacket);
 	}
 }
 
 void pumpPacketProximity(SerialPacket* const argPacket, int roomIndex, Vector2 position, int distance) {
+	//send this packet to all characters within a certain distance of a point in a room
 	RoomData* roomData = RoomManager::GetSingleton().Get(roomIndex);
 
 	if (!roomData) {

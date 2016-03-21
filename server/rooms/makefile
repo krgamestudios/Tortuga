@@ -1,5 +1,5 @@
 #config
-INCLUDES+=. ../characters ../entities ../monsters ../server_utilities ../triggers ../../common/gameplay ../../common/map ../../common/utilities
+INCLUDES+=. .. ../characters ../entities ../monsters ../triggers ../../common/gameplay ../../common/map ../../common/utilities
 LIBS+=
 CXXFLAGS+=-std=c++11 $(addprefix -I,$(INCLUDES))
 

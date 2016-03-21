@@ -27,7 +27,7 @@
 #include <chrono>
 
 std::list<int> ClientManager::CheckConnections() {
-	//list of clients to disconnect
+	//return a list of clients to disconnect
 	std::list<int> returnList;
 
 	for (auto& it : elementMap) {
@@ -60,6 +60,7 @@ void ClientManager::HandlePong(ServerPacket* const argPacket) {
 }
 
 int ClientManager::Create(IPaddress add) {
+	//return the client's index
 	ClientData& client = elementMap[counter];
 	client.SetAddress(add);
 	return counter++;
