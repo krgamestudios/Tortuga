@@ -47,6 +47,7 @@ public:
 	int SetScriptReference(int i);
 	int GetScriptReference();
 
+	//NOTE: exclusion list is currently used for entities that have already "fired" the trigger
 	std::list<Entity*>* GetExclusionList();
 
 private:

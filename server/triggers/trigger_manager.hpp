@@ -37,7 +37,7 @@ public:
 	~TriggerManager();
 
 	//common public methods
-	int Create(std::string handle);
+	int Create(std::string handle); //TODO: return the Trigger itself?
 	void Unload(int uid);
 
 	void UnloadAll();

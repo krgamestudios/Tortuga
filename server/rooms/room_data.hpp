@@ -31,6 +31,8 @@
 #include <list>
 #include <string>
 
+//DOCS: rooms are designed to collate all parts of the game that should be able to interact with each other
+
 class RoomData {
 public:
 	RoomData() = default;
