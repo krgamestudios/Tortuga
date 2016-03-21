@@ -40,7 +40,7 @@
 
 //client
 #include "base_scene.hpp"
-#include "base_monster.hpp"
+#include "base_creature.hpp"
 #include "local_character.hpp"
 
 #include "SDL2/SDL.h"
@@ -102,25 +102,18 @@ private:
 	//character management
 	void hCharacterUpdate(CharacterPacket* const);
 	void hCharacterCreate(CharacterPacket* const);
-	void hCharacterDelete(CharacterPacket* const);
+	void hCharacterUnload(CharacterPacket* const);
 	void hQueryCharacterExists(CharacterPacket* const);
-	void hQueryCharacterStats(CharacterPacket* const);
-	void hQueryCharacterLocation(CharacterPacket* const);
 	void hCharacterMovement(CharacterPacket* const);
-	void hCharacterAttack(CharacterPacket* const);
-	void hCharacterDamage(CharacterPacket* const);
 
-	//monster management
-	void hMonsterCreate(MonsterPacket* const);
-	void hMonsterDelete(MonsterPacket* const);
-	void hQueryMonsterExists(MonsterPacket* const);
-	void hQueryMonsterStats(MonsterPacket* const);
-	void hQueryMonsterLocation(MonsterPacket* const);
-	void hMonsterMovement(MonsterPacket* const);
-	void hMonsterAttack(MonsterPacket* const);
-	void hMonsterDamage(MonsterPacket* const);
+	//creature management
+	void hCreatureCreate(CreaturePacket* const);
+	void hCreatureUnload(CreaturePacket* const);
+	void hQueryCreatureExists(CreaturePacket* const);
+	void hCreatureMovement(CreaturePacket* const);
 
 	//chat
+	//TODO: ui chat engine
 	void hTextBroadcast(TextPacket* const);
 	void hTextSpeech(TextPacket* const);
 	void hTextWhisper(TextPacket* const);
@@ -158,7 +151,7 @@ private:
 
 	//entities
 	std::map<int, BaseCharacter> characterMap;
-	std::map<int, BaseMonster> monsterMap;
+	std::map<int, BaseCreature> creatureMap;
 	LocalCharacter* localCharacter = nullptr;
 
 	//heartbeat

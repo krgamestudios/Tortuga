@@ -136,6 +136,7 @@ void ServerApplication::Init(int argc, char* argv[]) {
 
 std::cout << "Internal sizes:" << std::endl;
 
+	DEBUG_INTERNAL_VAR(config["server.name"]);
 	DEBUG_INTERNAL_VAR(NETWORK_VERSION);
 	DEBUG_INTERNAL_VAR(sizeof(Region::type_t));
 	DEBUG_INTERNAL_VAR(sizeof(Region));
@@ -301,6 +302,10 @@ void ServerApplication::HandlePacket(SerialPacket* const argPacket) {
 		//character movement
 		case SerialPacketType::CHARACTER_MOVEMENT:
 			hCharacterMovement(static_cast<CharacterPacket*>(argPacket));
+		break;
+
+		case SerialPacketType::QUERY_CREATURE_EXISTS:
+			//TODO: creature queries
 		break;
 
 		//chat
@@ -656,9 +661,9 @@ void ServerApplication::hCharacterDelete(CharacterPacket* const argPacket) {
 	CharacterData* characterData = characterMgr.Get(characterIndex);
 	roomMgr.PopCharacter(characterData);
 
-	//pump character delete
+	//pump character unload
 	CharacterPacket newPacket;
-	newPacket.type = SerialPacketType::CHARACTER_DELETE;
+	newPacket.type = SerialPacketType::CHARACTER_UNLOAD;
 	newPacket.characterIndex = characterIndex;
 	pumpPacketProximity(static_cast<SerialPacket*>(&newPacket), characterData->GetRoomIndex());
 
@@ -728,7 +733,7 @@ void ServerApplication::hCharacterUnload(CharacterPacket* const argPacket) {
 
 	//pump character delete
 	CharacterPacket newPacket;
-	newPacket.type = SerialPacketType::CHARACTER_DELETE;
+	newPacket.type = SerialPacketType::CHARACTER_UNLOAD;
 	newPacket.characterIndex = argPacket->characterIndex;
 	pumpPacketProximity(static_cast<SerialPacket*>(&newPacket), characterData->GetRoomIndex());
 

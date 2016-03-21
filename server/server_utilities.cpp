@@ -105,7 +105,7 @@ void fullCharacterUnload(int index) {
 
 		//pump character unload
 		CharacterPacket newPacket;
-		newPacket.type = SerialPacketType::CHARACTER_DELETE;
+		newPacket.type = SerialPacketType::CHARACTER_UNLOAD;
 		newPacket.characterIndex = characterPair.first;
 		//NOTE: more character info as needed
 
@@ -182,7 +182,7 @@ void pumpAndChangeRooms(CharacterData* const characterData, int newRoomIndex, in
 	//delete from the old room
 	CharacterPacket newPacket;
 	copyCharacterToPacket(&newPacket, characterData, characterIndex);
-	newPacket.type = SerialPacketType::CHARACTER_DELETE;
+	newPacket.type = SerialPacketType::CHARACTER_UNLOAD;
 	pumpPacketProximity(&newPacket, characterData->GetRoomIndex());
 
 	//move the character between rooms

@@ -19,28 +19,24 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#include "base_monster.hpp"
+#pragma once
 
-#include "config_utility.hpp"
+#include "entity.hpp"
 
-void BaseMonster::CorrectSprite() {
-	//TODO: (9) BaseMonster::CorrectSprite()
-}
+class BaseCreature: public Entity {
+public:
+	BaseCreature() = default;
+	virtual ~BaseCreature() = default;
 
-std::string BaseMonster::SetHandle(std::string s) {
-	return handle = s;
-}
+	void CorrectSprite();
 
-std::string BaseMonster::GetHandle() const {
-	return handle;
-}
+	std::string SetHandle(std::string s);
+	std::string GetHandle() const;
+	std::string SetAvatar(SDL_Renderer* const, std::string s);
+	std::string GetAvatar() const;
 
-std::string BaseMonster::SetAvatar(SDL_Renderer* const renderer, std::string s) {
-	avatar = s;
-	sprite.Load(renderer, ConfigUtility::GetSingleton()["dir.sprites"] + avatar, 4, 1);
-	return avatar;
-}
-
-std::string BaseMonster::GetAvatar() const {
-	return avatar;
-}
+protected:
+	//metadata
+	std::string handle;
+	std::string avatar;
+};

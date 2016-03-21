@@ -122,7 +122,7 @@ void LobbyMenu::RenderFrame(SDL_Renderer* renderer) {
 
 		//draw the server's info
 		serverVector[i].nameImage.DrawTo(renderer, boundingBox.x, boundingBox.y + boundingBox.h * i);
-		serverVector[i].playerCountImage.DrawTo(renderer, boundingBox.x+300, boundingBox.y + boundingBox.h * i);
+		serverVector[i].playerCountImage.DrawTo(renderer, boundingBox.x+276, boundingBox.y + boundingBox.h * i);
 	}
 }
 

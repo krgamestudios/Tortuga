@@ -134,8 +134,11 @@ enum class SerialPacketType {
 	CREATURE_CREATE = 502,
 	CREATURE_UNLOAD = 503,
 
+	//find out info from the server
+	QUERY_CREATURE_EXISTS = 504,
+
 	//actions taken
-	CREATURE_MOVEMENT = 504,
+	CREATURE_MOVEMENT = 505,
 
 	FORMAT_END_CREATURE = 599,
 

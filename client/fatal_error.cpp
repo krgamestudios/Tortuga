@@ -19,6 +19,6 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#include "terminal_error.hpp"
+#include "fatal_error.hpp"
 
 //DOCS: This empty file is used to force an object file

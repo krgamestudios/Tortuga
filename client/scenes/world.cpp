@@ -23,7 +23,7 @@
 
 #include "channels.hpp"
 #include "ip_operators.hpp"
-#include "terminal_error.hpp"
+#include "fatal_error.hpp"
 
 #include <algorithm>
 #include <chrono>
@@ -32,6 +32,7 @@
 #include <iostream>
 #include <sstream>
 #include <stdexcept>
+
 //-------------------------
 //static functions
 //-------------------------
@@ -103,7 +104,7 @@ World::~World() {
 	//unload the local data
 	TTF_CloseFont(font);
 	characterMap.clear();
-	monsterMap.clear();
+	creatureMap.clear();
 }
 
 //-------------------------
@@ -125,7 +126,7 @@ void World::Update() {
 			HandlePacket(packetBuffer);
 		}
 	}
-	catch(terminal_error& e) {
+	catch(fatal_error& e) {
 		throw(e);
 	}
 	catch(std::exception& e) {
@@ -142,7 +143,7 @@ void World::Update() {
 	for (auto& it : characterMap) {
 		it.second.Update();
 	}
-	for (auto& it : monsterMap) {
+	for (auto& it : creatureMap) {
 		it.second.Update();
 	}
 
@@ -150,7 +151,7 @@ void World::Update() {
 		//update the map
 		UpdateMap();
 	}
-	catch(terminal_error& e) {
+	catch(fatal_error& e) {
 		throw(e);
 	}
 	catch(std::exception& e) {
@@ -164,8 +165,6 @@ void World::Update() {
 
 	//get the collidable boxes
 	std::list<BoundingBox> boxList = GenerateCollisionGrid(localCharacter, tileSheet.GetTileW(), tileSheet.GetTileH());
-
-	std::cout << "Debug: " << boxList.size() << std::endl;
 
 	//process the collisions
 	//BUG: Collisions not working
@@ -199,7 +198,7 @@ void World::RenderFrame(SDL_Renderer* renderer) {
 		//BUG: #29 Characters (and other entities) are drawn out of order
 		it.second.DrawTo(renderer, camera.x, camera.y);
 	}
-	for (auto& it : monsterMap) {
+	for (auto& it : creatureMap) {
 		it.second.DrawTo(renderer, camera.x, camera.y);
 	}
 
@@ -381,55 +380,36 @@ void World::HandlePacket(SerialPacket* const argPacket) {
 		case SerialPacketType::CHARACTER_UPDATE:
 			hCharacterUpdate(static_cast<CharacterPacket*>(argPacket));
 		break;
+
 		case SerialPacketType::CHARACTER_CREATE:
 			hCharacterCreate(static_cast<CharacterPacket*>(argPacket));
 		break;
-		case SerialPacketType::CHARACTER_DELETE:
-			hCharacterDelete(static_cast<CharacterPacket*>(argPacket));
+		case SerialPacketType::CHARACTER_UNLOAD:
+			hCharacterUnload(static_cast<CharacterPacket*>(argPacket));
 		break;
+
 		case SerialPacketType::QUERY_CHARACTER_EXISTS:
 			hQueryCharacterExists(static_cast<CharacterPacket*>(argPacket));
 		break;
-		case SerialPacketType::QUERY_CHARACTER_STATS:
-			hQueryCharacterStats(static_cast<CharacterPacket*>(argPacket));
-		break;
-		case SerialPacketType::QUERY_CHARACTER_LOCATION:
-			hQueryCharacterLocation(static_cast<CharacterPacket*>(argPacket));
-		break;
+
 		case SerialPacketType::CHARACTER_MOVEMENT:
 			hCharacterMovement(static_cast<CharacterPacket*>(argPacket));
 		break;
-		case SerialPacketType::CHARACTER_ATTACK:
-			hCharacterAttack(static_cast<CharacterPacket*>(argPacket));
+
+		//creature management
+		case SerialPacketType::CREATURE_CREATE:
+			hCreatureCreate(static_cast<CreaturePacket*>(argPacket));
 		break;
-		case SerialPacketType::CHARACTER_DAMAGE:
-			hCharacterDamage(static_cast<CharacterPacket*>(argPacket));
+		case SerialPacketType::CREATURE_UNLOAD:
+			hCreatureUnload(static_cast<CreaturePacket*>(argPacket));
 		break;
 
-		//monster management
-		case SerialPacketType::MONSTER_CREATE:
-			hMonsterCreate(static_cast<MonsterPacket*>(argPacket));
+		case SerialPacketType::QUERY_CREATURE_EXISTS:
+			hQueryCreatureExists(static_cast<CreaturePacket*>(argPacket));
 		break;
-		case SerialPacketType::MONSTER_DELETE:
-			hMonsterDelete(static_cast<MonsterPacket*>(argPacket));
-		break;
-		case SerialPacketType::QUERY_MONSTER_EXISTS:
-			hQueryMonsterExists(static_cast<MonsterPacket*>(argPacket));
-		break;
-		case SerialPacketType::QUERY_MONSTER_STATS:
-			hQueryMonsterStats(static_cast<MonsterPacket*>(argPacket));
-		break;
-		case SerialPacketType::QUERY_MONSTER_LOCATION:
-			hQueryMonsterLocation(static_cast<MonsterPacket*>(argPacket));
-		break;
-		case SerialPacketType::MONSTER_MOVEMENT:
-			hMonsterMovement(static_cast<MonsterPacket*>(argPacket));
-		break;
-		case SerialPacketType::MONSTER_ATTACK:
-			hMonsterAttack(static_cast<MonsterPacket*>(argPacket));
-		break;
-		case SerialPacketType::MONSTER_DAMAGE:
-			hMonsterDamage(static_cast<MonsterPacket*>(argPacket));
+
+		case SerialPacketType::CREATURE_MOVEMENT:
+			hCreatureMovement(static_cast<CreaturePacket*>(argPacket));
 		break;
 
 		//chat
@@ -447,7 +427,7 @@ void World::HandlePacket(SerialPacket* const argPacket) {
 		case SerialPacketType::REGION_REJECTION:
 		case SerialPacketType::CHARACTER_REJECTION:
 		case SerialPacketType::QUERY_REJECTION:
-			throw(terminal_error(static_cast<TextPacket*>(argPacket)->text));
+			throw(fatal_error(static_cast<TextPacket*>(argPacket)->text));
 		break;
 		case SerialPacketType::SHUTDOWN_REJECTION:
 			throw(std::runtime_error(static_cast<TextPacket*>(argPacket)->text));
@@ -709,7 +689,7 @@ void World::hCharacterCreate(CharacterPacket* const argPacket) {
 		newPacket.type = SerialPacketType::QUERY_CHARACTER_EXISTS;
 		newPacket.roomIndex = roomIndex;
 		network.SendTo(Channels::SERVER, &newPacket);
-		newPacket.type = SerialPacketType::QUERY_MONSTER_EXISTS;
+		newPacket.type = SerialPacketType::QUERY_CREATURE_EXISTS;
 		network.SendTo(Channels::SERVER, &newPacket);
 	}
 
@@ -717,7 +697,7 @@ void World::hCharacterCreate(CharacterPacket* const argPacket) {
 	std::cout << "Character Create, total: " << characterMap.size() << std::endl;
 }
 
-void World::hCharacterDelete(CharacterPacket* const argPacket) {
+void World::hCharacterUnload(CharacterPacket* const argPacket) {
 	//ignore if this character doesn't exist
 	std::map<int, BaseCharacter>::iterator characterIt = characterMap.find(argPacket->characterIndex);
 	if (characterIt == characterMap.end()) {
@@ -736,7 +716,7 @@ void World::hCharacterDelete(CharacterPacket* const argPacket) {
 		roomIndex = -1;
 		regionPager.UnloadAll();
 		characterMap.clear();
-		monsterMap.clear();
+		creatureMap.clear();
 	}
 	else {
 		//remove this character
@@ -744,7 +724,7 @@ void World::hCharacterDelete(CharacterPacket* const argPacket) {
 	}
 
 	//debug
-	std::cout << "Character Delete, total: " << characterMap.size() << std::endl;
+	std::cout << "Character Unload, total: " << characterMap.size() << std::endl;
 }
 
 void World::hQueryCharacterExists(CharacterPacket* const argPacket) {
@@ -775,14 +755,6 @@ void World::hQueryCharacterExists(CharacterPacket* const argPacket) {
 	std::cout << "Character Query, total: " << characterMap.size() << std::endl;
 }
 
-void World::hQueryCharacterStats(CharacterPacket* const argPacket) {
-	//TODO: (9) World::hQueryCharacterStats()
-}
-
-void World::hQueryCharacterLocation(CharacterPacket* const argPacket) {
-	//TODO: (9) World::hQueryCharacterLocation()
-}
-
 void World::hCharacterMovement(CharacterPacket* const argPacket) {
 	//TODO: (1) Authentication
 	if (argPacket->characterIndex == characterIndex) {
@@ -799,110 +771,86 @@ void World::hCharacterMovement(CharacterPacket* const argPacket) {
 	}
 }
 
-void World::hCharacterAttack(CharacterPacket* const argPacket) {
-	//TODO: (9) World::hCharacterAttack()
-}
-
-void World::hCharacterDamage(CharacterPacket* const argPacket) {
-	//TODO: (9) World::hCharacterDamage()
-}
-
 //-------------------------
-//monster management
+//creature management
 //-------------------------
 
-void World::hMonsterCreate(MonsterPacket* const argPacket) {
+void World::hCreatureCreate(CreaturePacket* const argPacket) {
 	//check for logic errors
-	if (monsterMap.find(argPacket->monsterIndex) != monsterMap.end()) {
+	if (creatureMap.find(argPacket->creatureIndex) != creatureMap.end()) {
 		std::ostringstream msg;
-		msg << "Double monster creation event; ";
-		msg << "Index: " << argPacket->monsterIndex << "; ";
+		msg << "Double creature creation event; ";
+		msg << "Index: " << argPacket->creatureIndex << "; ";
 		msg << "Handle: " << argPacket->handle;
 		throw(std::runtime_error(msg.str()));
 	}
 
-	//ignore monsters from other rooms
+	//ignore creatures from other rooms
 	if (roomIndex != argPacket->roomIndex) {
 		//temporary error checking
 		std::ostringstream msg;
-		msg << "Monster from the wrong room received: ";
-		msg << "monsterIndex: " << argPacket->monsterIndex << ", roomIndex: " << argPacket->roomIndex;
+		msg << "Creature from the wrong room received: ";
+		msg << "creatureIndex: " << argPacket->creatureIndex << ", roomIndex: " << argPacket->roomIndex;
 		throw(std::runtime_error(msg.str()));
 	}
 
 	//implicitly create the element
-	BaseMonster* monster = &monsterMap[argPacket->monsterIndex];
+	BaseCreature* creature = &creatureMap[argPacket->creatureIndex];
 
-	//fill the monster's info
-	monster->SetHandle(argPacket->handle);
-	monster->SetAvatar(GetRenderer(), argPacket->avatar);
-	monster->SetBounds(argPacket->bounds);
-	monster->SetOrigin(argPacket->origin);
-	monster->SetMotion(argPacket->motion);
+	//fill the creature's info
+	creature->SetHandle(argPacket->handle);
+	creature->SetAvatar(GetRenderer(), argPacket->avatar);
+	creature->SetBounds(argPacket->bounds);
+	creature->SetOrigin(argPacket->origin);
+	creature->SetMotion(argPacket->motion);
 
 	//debug
-	std::cout << "Monster Create, total: " << monsterMap.size() << std::endl;
+	std::cout << "Creature Create, total: " << creatureMap.size() << std::endl;
 }
 
-void World::hMonsterDelete(MonsterPacket* const argPacket) {
-	//ignore if this monster doesn't exist
-	std::map<int, BaseMonster>::iterator monsterIt = monsterMap.find(argPacket->monsterIndex);
-	if (monsterIt == monsterMap.end()) {
+void World::hCreatureUnload(CreaturePacket* const argPacket) {
+	//ignore if this creature doesn't exist
+	std::map<int, BaseCreature>::iterator creatureIt = creatureMap.find(argPacket->creatureIndex);
+	if (creatureIt == creatureMap.end()) {
 		return;
 	}
 
-	//remove this monster
-	monsterMap.erase(monsterIt);
+	//remove this creature
+	creatureMap.erase(creatureIt);
 
 	//debug
-	std::cout << "Monster Delete, total: " << monsterMap.size() << std::endl;
+	std::cout << "Creature Unload, total: " << creatureMap.size() << std::endl;
 }
 
-void World::hQueryMonsterExists(MonsterPacket* const argPacket) {
-	//ignore monsters in a different room (sub-optimal)
+void World::hQueryCreatureExists(CreaturePacket* const argPacket) {
+	//ignore creatures in a different room (sub-optimal)
 	if (argPacket->roomIndex != roomIndex) {
 		return;
 	}
 
 	//implicitly create the element
-	BaseMonster* monster = &monsterMap[argPacket->monsterIndex];
+	BaseCreature* creature = &creatureMap[argPacket->creatureIndex];
 
-	//fill the monster's info
-	monster->SetHandle(argPacket->handle);
-	monster->SetAvatar(GetRenderer(), argPacket->avatar);
-	monster->SetBounds(argPacket->bounds);
-	monster->SetOrigin(argPacket->origin);
-	monster->SetMotion(argPacket->motion);
+	//fill the creature's info
+	creature->SetHandle(argPacket->handle);
+	creature->SetAvatar(GetRenderer(), argPacket->avatar);
+	creature->SetBounds(argPacket->bounds);
+	creature->SetOrigin(argPacket->origin);
+	creature->SetMotion(argPacket->motion);
 
 	//debug
-	std::cout << "Monster Query, total: " << monsterMap.size() << std::endl;
+	std::cout << "Creature Query, total: " << creatureMap.size() << std::endl;
 }
 
-void World::hQueryMonsterStats(MonsterPacket* const argPacket) {
-	//TODO: (9) World::hQueryMonsterStats()
-}
-
-void World::hQueryMonsterLocation(MonsterPacket* const argPacket) {
-	//TODO: (9) World::hQueryMonsterLocation()
-}
-
-void World::hMonsterMovement(MonsterPacket* const argPacket) {
-	//ignore if this monster doesn't exist
-	std::map<int, BaseMonster>::iterator monsterIt = monsterMap.find(argPacket->monsterIndex);
-	if (monsterIt == monsterMap.end()) {
+void World::hCreatureMovement(CreaturePacket* const argPacket) {
+	//ignore if this creature doesn't exist
+	std::map<int, BaseCreature>::iterator creatureIt = creatureMap.find(argPacket->creatureIndex);
+	if (creatureIt == creatureMap.end()) {
 		return;
 	}
 
-	monsterIt->second.SetOrigin(argPacket->origin);
-	monsterIt->second.SetOrigin(argPacket->motion);
-}
-
-void World::hMonsterAttack(MonsterPacket* const argPacket) {
-	//TODO: (9) World::hMonsterAttack()
-}
-
-void World::hMonsterDamage(MonsterPacket* const argPacket) {
-	//TODO: (9) World::hMonsterDamage()
+	creatureIt->second.SetOrigin(argPacket->origin);
+	creatureIt->second.SetMotion(argPacket->motion);
 }
 
 //-------------------------
