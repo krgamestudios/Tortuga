@@ -250,6 +250,7 @@ void World::MouseWheel(SDL_MouseWheelEvent const& event) {
 }
 
 void World::KeyDown(SDL_KeyboardEvent const& event) {
+	//TODO: Sliding against walls controls
 	//BUGFIX: SDL2 introduced key repeats, so I need to ignore it
 	if (event.repeat) {
 		return;
