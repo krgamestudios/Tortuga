@@ -26,6 +26,8 @@ local region = require("region")
 
 local mapSaver = {}
 
+--TODO: save and load trigger, creatures
+
 function mapSaver.Load(r)
 	--empty
 --	io.write("map_saver:Load(", region.GetX(r), ", ", region.GetY(r), ")\n")

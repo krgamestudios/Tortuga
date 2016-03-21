@@ -58,4 +58,4 @@ local underworld, uidTwo = roomManagerAPI.CreateRoom("underworld", "overworld.bm
 roomAPI.Initialize(underworld, mapSaver.Load, mapSaver.Save, mapMaker.DebugGrassland, mapSaver.Save)
 
 --call the monstrosity
-doorUtility.createDoorPair("pair 1", overworld, -64, -64, underworld, 64, 64)
+doorUtility.CreateDoorPair("pair 1", overworld, -64, -64, underworld, 64, 64)

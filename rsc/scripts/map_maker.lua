@@ -109,7 +109,7 @@ function mapMaker.DebugIsland(r)
 		end
 	end
 
-	--examples of the smoothing function NOT working correctly
+	--examples of the smoothing function NOT working correctly TODO: fix the smoothing system
 	--[[
 	for j = 1, regionAPI.GetHeight(r) do
 		regionAPI.SetTile(r, 3, j, 1, mapMaker.dirt)
@@ -127,10 +127,19 @@ function mapMaker.DebugGrassland(r)
 	--debug
 	io.write("map_maker:DebugGrassland(", regionAPI.GetX(r), ", ", regionAPI.GetY(r), ")\n")
 
-	--all dirt
+	--all grass, ring of water
 	for i = 1, regionAPI.GetWidth(r) do
 		for j = 1, regionAPI.GetHeight(r) do
-			regionAPI.SetTile(r, i, j, 1, mapMaker.grass)
+			local dist = mapMaker.Dist(0, 0, i + regionAPI.GetX(r) -1, j + regionAPI.GetY(r) -1)
+
+			if dist < 50 then
+				regionAPI.SetTile(r, i, j, 1, mapMaker.grass)
+			elseif dist < 55 then
+				regionAPI.SetTile(r, i, j, 1, mapMaker.water)
+				regionAPI.SetSolid(r, i, j, true)
+			else
+				regionAPI.SetTile(r, i, j, 1, mapMaker.grass)
+			end
 		end
 	end
 

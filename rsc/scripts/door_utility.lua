@@ -37,7 +37,7 @@ characterAPI = require("character")
 
 networkAPI = require("network")
 
-function doorUtility.createTrigger(handle, room, x, y, script)
+function doorUtility.CreateTrigger(handle, room, x, y, script)
 	local pager = roomAPI.GetPager(room)
 
 	--place the indicator tile
@@ -53,7 +53,7 @@ function doorUtility.createTrigger(handle, room, x, y, script)
 		)
 end
 
-function doorUtility.createDoorPair(handle, roomOne, Xone, Yone, roomTwo, Xtwo, Ytwo)
+function doorUtility.CreateDoorPair(handle, roomOne, Xone, Yone, roomTwo, Xtwo, Ytwo)
 	--create the scripts
 	local function scriptOne(entity)
 		if entityAPI.GetType(entity) ~= "character" then return end
@@ -82,8 +82,8 @@ function doorUtility.createDoorPair(handle, roomOne, Xone, Yone, roomTwo, Xtwo, 
 	end
 
 	--create the triggers proper
-	doorUtility.createTrigger(handle, roomOne, Xone, Yone, scriptOne)
-	doorUtility.createTrigger(handle, roomTwo, Xtwo, Ytwo, scriptTwo)
+	doorUtility.CreateTrigger(handle, roomOne, Xone, Yone, scriptOne)
+	doorUtility.CreateTrigger(handle, roomTwo, Xtwo, Ytwo, scriptTwo)
 end
 
 return doorUtility
