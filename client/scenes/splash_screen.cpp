@@ -35,15 +35,11 @@ SplashScreen::SplashScreen(SDL_Window* w) {
 
 	logo.Load(GetRenderer(), ConfigUtility::GetSingleton()["dir.logos"] + "krstudios.png");
 
-//	SDL_SetWindowSize(window, logo.GetClipW(), logo.GetClipH());
-//	SDL_RenderSetLogicalSize(GetRenderer(), logo.GetClipW(), logo.GetClipH());
-
 	startTick = std::chrono::steady_clock::now();
 }
 
 SplashScreen::~SplashScreen() {
-//	SDL_SetWindowSize(window, windowWidth, windowHeight);
-//	SDL_RenderSetLogicalSize(GetRenderer(), windowWidth, windowHeight);
+	//
 }
 
 //-------------------------
@@ -58,6 +54,7 @@ void SplashScreen::FrameStart() {
 }
 
 void SplashScreen::RenderFrame(SDL_Renderer* renderer) {
+	//TODO: version information
 	int w = 0, h = 0;
 	SDL_RenderGetLogicalSize(renderer, &w, &h);
 	logo.DrawTo(renderer, (w - logo.GetClipW()) / 2, (h - logo.GetClipH()) / 2);

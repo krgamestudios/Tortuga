@@ -120,7 +120,7 @@ void ClientApplication::Init(int argc, char* argv[]) {
 	else {
 		std::ostringstream msg;
 		msg << "Failed to retrieve window info: " << SDL_GetError();
-		throw(msg.str());
+		throw(std::runtime_error(msg.str()));
 	}
 
 	//-------------------------

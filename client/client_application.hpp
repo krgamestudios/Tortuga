@@ -53,7 +53,7 @@ private:
 	SDL_Window* window = nullptr;
 	SDL_Renderer* renderer = nullptr;
 
-	//shared parameters
+	//global scene parameters
 	int clientIndex = -1;
 	int accountIndex = -1;
 };

@@ -21,3 +21,4 @@
 */
 #include "terminal_error.hpp"
 
+//DOCS: This empty file is used to force an object file

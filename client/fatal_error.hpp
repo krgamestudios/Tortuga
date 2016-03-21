@@ -24,8 +24,8 @@
 #include <stdexcept>
 #include <string>
 
-class terminal_error: public std::runtime_error {
+class fatal_error: public std::runtime_error {
 public:
-	explicit terminal_error(const std::string& str): runtime_error(str) {}
-	explicit terminal_error(const char* cstr): runtime_error(cstr) {}
+	explicit fatal_error(const std::string& str): runtime_error(str) {}
+	explicit fatal_error(const char* cstr): runtime_error(cstr) {}
 };
