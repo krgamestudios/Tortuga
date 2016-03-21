@@ -34,10 +34,7 @@ Region::type_t RegionPagerBase::SetTile(int x, int y, int z, Region::type_t v) {
 }
 
 Region::type_t RegionPagerBase::GetTile(int x, int y, int z) {
-	Region* ptr = FindRegion(x, y);
-	if (!ptr) {
-		return 0;
-	}
+	Region* ptr = GetRegion(x, y);
 	return ptr->GetTile(x - ptr->GetX(), y - ptr->GetY(), z);
 }
 
@@ -47,10 +44,7 @@ bool RegionPagerBase::SetSolid(int x, int y, int b) {
 }
 
 bool RegionPagerBase::GetSolid(int x, int y) {
-	Region* ptr = FindRegion(x, y);
-	if (!ptr) {
-		return 0;
-	}
+	Region* ptr = GetRegion(x, y);
 	return ptr->GetSolid(x - ptr->GetX(), y - ptr->GetY());
 }
 

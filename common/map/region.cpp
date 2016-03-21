@@ -62,7 +62,7 @@ bool Region::SetSolid(int x, int y, bool b) {
 	return solid[x * REGION_WIDTH + y] = b;
 }
 
-bool Region::GetSolid(int x, int y) {
+bool Region::GetSolid(int x, int y) const {
 	if (x < 0 || y < 0 || x >= REGION_WIDTH || y >= REGION_HEIGHT) {
 		throw(std::out_of_range("Region::GetSolid() argument out of range"));
 	}

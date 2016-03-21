@@ -44,7 +44,7 @@ public:
 	type_t GetTile(int x, int y, int z);
 
 	bool SetSolid(int x, int y, bool b);
-	bool GetSolid(int x, int y);
+	bool GetSolid(int x, int y) const;
 
 	//accessors
 	int GetX() const;

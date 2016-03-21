@@ -563,7 +563,14 @@ void ServerApplication::hRegionRequest(RegionPacket* const argPacket) {
 		std::cerr << "Error message sent: " << newPacket.text << std::endl;
 		return;
 	}
-	Region* region = room->GetPager()->GetRegion(argPacket->x, argPacket->y);
+
+	//A strange reoccurance of #45 caused this
+	Region* region = room->GetPager()->FindRegion(argPacket->x, argPacket->y);
+	//TODO: (0) load regions
+	if (region == nullptr) {
+		region = room->GetPager()->CreateRegion(argPacket->x, argPacket->y);
+		std::cout << "Summoned a room" << std::endl;
+	}
 
 	//send the content
 	RegionPacket newPacket;

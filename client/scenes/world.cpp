@@ -573,7 +573,14 @@ void World::hRegionContent(RegionPacket* const argPacket) {
 
 	//replace existing regions
 	regionPager.UnloadIf([&](Region const& region) -> bool {
-		return region.GetX() == argPacket->x && region.GetY() == argPacket->y;
+		if (region.GetX() == argPacket->x && region.GetY() == argPacket->y) {
+			std::cout << "Region Overwrite: " << region.GetX() << ", " << region.GetY();
+			std::cout << "\t" << region.GetSolid(1,1) << "\t" << argPacket->region->GetSolid(1,1) << std::endl;
+			return true;
+		}
+		else {
+			return false;
+		}
 	});
 	regionPager.PushRegion(argPacket->region);
 

@@ -40,6 +40,7 @@ public:
 	virtual bool GetSolid(int x, int y);
 
 	//region manipulation
+	__attribute__ ((deprecated))
 	virtual Region* GetRegion(int x, int y);
 	virtual Region* FindRegion(int x, int y);
 	virtual Region* PushRegion(Region* const);
