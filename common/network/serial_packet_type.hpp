@@ -29,66 +29,66 @@
 
 enum class SerialPacketType {
 	//default: there is something wrong
-	NONE,
+	NONE = 0,
 
 	//-------------------------
 	//ServerPacket
 	//  name, player count, version
 	//-------------------------
 
-	FORMAT_SERVER,
+	FORMAT_SERVER = 100,
 
 	//heartbeat
-	PING,
-	PONG,
+	PING = 101,
+	PONG = 102,
 
 	//Used for finding available servers
-	BROADCAST_REQUEST,
-	BROADCAST_RESPONSE,
+	BROADCAST_REQUEST = 103,
+	BROADCAST_RESPONSE = 104,
 
-	FORMAT_END_SERVER,
+	FORMAT_END_SERVER = 199,
 
 	//-------------------------
 	//ClientPacket
 	//  client index, account index, username
 	//-------------------------
 
-	FORMAT_CLIENT,
+	FORMAT_CLIENT = 200,
 
 	//Connecting to a server as a client
-	JOIN_REQUEST,
-	JOIN_RESPONSE,
+	JOIN_REQUEST = 201,
+	JOIN_RESPONSE = 202,
 
 	//disconnect from the server
-	DISCONNECT_REQUEST,
-	DISCONNECT_RESPONSE,
-	ADMIN_DISCONNECT_FORCED,
+	DISCONNECT_REQUEST = 203,
+	DISCONNECT_RESPONSE = 204,
+	ADMIN_DISCONNECT_FORCED = 205,
 
 	//load the account
-	LOGIN_REQUEST,
-	LOGIN_RESPONSE,
+	LOGIN_REQUEST = 206,
+	LOGIN_RESPONSE = 207,
 
 	//unload the account
-	LOGOUT_REQUEST,
-	LOGOUT_RESPONSE,
+	LOGOUT_REQUEST = 208,
+	LOGOUT_RESPONSE = 209,
 
 	//shut down the server
-	ADMIN_SHUTDOWN_REQUEST,
+	ADMIN_SHUTDOWN_REQUEST = 210,
 
-	FORMAT_END_CLIENT,
+	FORMAT_END_CLIENT = 299,
 
 	//-------------------------
 	//RegionPacket
 	//  room index, x, y, raw data
 	//-------------------------
 
-	FORMAT_REGION,
+	FORMAT_REGION = 300,
 
 	//map data
-	REGION_REQUEST,
-	REGION_CONTENT,
+	REGION_REQUEST = 301,
+	REGION_CONTENT = 302,
 
-	FORMAT_END_REGION,
+	FORMAT_END_REGION = 399,
 
 	//-------------------------
 	//CharacterPacket
@@ -98,87 +98,73 @@ enum class SerialPacketType {
 	//  room index, origin, motion
 	//-------------------------
 
-	FORMAT_CHARACTER,
+	FORMAT_CHARACTER = 400,
 
 	//full data update
-	CHARACTER_UPDATE,
+	CHARACTER_UPDATE = 401,
 
 	//character management
-	CHARACTER_CREATE,
-	CHARACTER_DELETE,
-	CHARACTER_LOAD,
-	CHARACTER_UNLOAD,
+	CHARACTER_CREATE = 402,
+	CHARACTER_DELETE = 403,
+	CHARACTER_LOAD = 404,
+	CHARACTER_UNLOAD = 405,
 
 	//find out info from the server
-	QUERY_CHARACTER_EXISTS,
-	QUERY_CHARACTER_STATS,
-	QUERY_CHARACTER_LOCATION,
+	QUERY_CHARACTER_EXISTS = 406,
 
 	//actions taken
-	CHARACTER_MOVEMENT,
-	CHARACTER_ATTACK,
-	CHARACTER_DAMAGE,
+	CHARACTER_MOVEMENT = 407,
 
-	//admin control
-//	ADMIN_SET_CHARACTER_ORIGIN,
-
-	FORMAT_END_CHARACTER,
+	FORMAT_END_CHARACTER = 499,
 
 	//-------------------------
-	//MonsterPacket
-	//  monster index,
+	//CreaturePacket
+	//  creature index,
 	//  handle, avatar
 	//  bounds
 	//  room index, origin, motion
 	//-------------------------
 
-	FORMAT_MONSTER,
+	FORMAT_CREATURE = 500,
 
 	//full data update
-	MONSTER_UPDATE,
+	CREATURE_UPDATE = 501,
 
 	//character management
-	MONSTER_CREATE,
-	MONSTER_DELETE,
-
-	//find out info from the server
-	QUERY_MONSTER_EXISTS,
-	QUERY_MONSTER_STATS,
-	QUERY_MONSTER_LOCATION,
+	CREATURE_CREATE = 502,
+	CREATURE_UNLOAD = 503,
 
 	//actions taken
-	MONSTER_MOVEMENT,
-	MONSTER_ATTACK,
-	MONSTER_DAMAGE,
+	CREATURE_MOVEMENT = 504,
 
-	FORMAT_END_MONSTER,
+	FORMAT_END_CREATURE = 599,
 
 	//-------------------------
 	//TextPacket
 	//  name, text
 	//-------------------------
 
-	FORMAT_TEXT,
+	FORMAT_TEXT = 600,
 
 	//general speech
-	TEXT_BROADCAST,
-	TEXT_SPEECH,
-	TEXT_WHISPER,
+	TEXT_BROADCAST = 601,
+	TEXT_SPEECH = 602,
+	TEXT_WHISPER = 603,
 
 	//rejection/error messages
-	JOIN_REJECTION,
-	LOGIN_REJECTION,
-	REGION_REJECTION,
-	CHARACTER_REJECTION,
-	MONSTER_REJECTION,
-	SHUTDOWN_REJECTION,
-	QUERY_REJECTION,
+	JOIN_REJECTION = 604,
+	LOGIN_REJECTION = 605,
+	REGION_REJECTION = 606,
+	CHARACTER_REJECTION = 607,
+	CREATURE_REJECTION = 608,
+	SHUTDOWN_REJECTION = 609,
+	QUERY_REJECTION = 610,
 
-	FORMAT_END_TEXT,
+	FORMAT_END_TEXT = 699,
 
 	//-------------------------
 	//not used
 	//-------------------------
 
-	LAST
+	LAST = 700
 };

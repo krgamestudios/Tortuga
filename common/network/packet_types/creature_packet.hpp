@@ -26,9 +26,9 @@
 #include "bounding_box.hpp"
 #include "vector2.hpp"
 
-struct MonsterPacket : SerialPacketBase {
-	//identify the monster
-	int monsterIndex;
+struct CreaturePacket : SerialPacketBase {
+	//identify the creature
+	int creatureIndex;
 	char handle[PACKET_STRING_SIZE];
 	char avatar[PACKET_STRING_SIZE];
 	BoundingBox bounds;
@@ -39,5 +39,5 @@ struct MonsterPacket : SerialPacketBase {
 	Vector2 motion;
 };
 
-void serializeMonster(void* buffer, MonsterPacket* packet);
-void deserializeMonster(void* buffer, MonsterPacket* packet);
+void serializeCreature(void* buffer, CreaturePacket* packet);
+void deserializeCreature(void* buffer, CreaturePacket* packet);

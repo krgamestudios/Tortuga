@@ -24,7 +24,7 @@
 #include "serial_packet_base.hpp"
 #include "character_packet.hpp"
 #include "client_packet.hpp"
-#include "monster_packet.hpp"
+#include "creature_packet.hpp"
 #include "region_packet.hpp"
 #include "server_packet.hpp"
 #include "text_packet.hpp"
@@ -33,12 +33,12 @@
 typedef SerialPacketBase SerialPacket;
 
 //DOCS: NETWORK_VERSION is used to discern compatible servers and clients
-constexpr int NETWORK_VERSION = 20160316;
+constexpr int NETWORK_VERSION = 20160321;
 
 union MaxPacket {
 	CharacterPacket a;
 	ClientPacket b;
-	MonsterPacket c;
+	CreaturePacket c;
 	RegionPacket d;
 	ServerPacket e;
 	TextPacket f;

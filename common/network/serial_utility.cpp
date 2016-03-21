@@ -24,7 +24,7 @@
 //packet types
 #include "character_packet.hpp"
 #include "client_packet.hpp"
-#include "monster_packet.hpp"
+#include "creature_packet.hpp"
 #include "region_packet.hpp"
 #include "server_packet.hpp"
 #include "text_packet.hpp"
@@ -65,8 +65,8 @@ void serializePacket(void* buffer, SerialPacketBase* packet) {
 		serializeCharacter(buffer, static_cast<CharacterPacket*>(packet));
 	}
 
-	if (BOUNDS(packet->type, SerialPacketType::FORMAT_MONSTER, SerialPacketType::FORMAT_END_MONSTER)) {
-		serializeMonster(buffer, static_cast<MonsterPacket*>(packet));
+	if (BOUNDS(packet->type, SerialPacketType::FORMAT_CREATURE, SerialPacketType::FORMAT_END_CREATURE)) {
+		serializeCreature(buffer, static_cast<CreaturePacket*>(packet));
 	}
 
 	if (BOUNDS(packet->type, SerialPacketType::FORMAT_TEXT, SerialPacketType::FORMAT_END_TEXT)) {
@@ -95,8 +95,8 @@ void deserializePacket(void* buffer, SerialPacketBase* packet) {
 		deserializeCharacter(buffer, static_cast<CharacterPacket*>(packet));
 	}
 
-	if (BOUNDS(type, SerialPacketType::FORMAT_MONSTER, SerialPacketType::FORMAT_END_MONSTER)) {
-		deserializeMonster(buffer, static_cast<MonsterPacket*>(packet));
+	if (BOUNDS(type, SerialPacketType::FORMAT_CREATURE, SerialPacketType::FORMAT_END_CREATURE)) {
+		deserializeCreature(buffer, static_cast<CreaturePacket*>(packet));
 	}
 
 	if (BOUNDS(type, SerialPacketType::FORMAT_TEXT, SerialPacketType::FORMAT_END_TEXT)) {

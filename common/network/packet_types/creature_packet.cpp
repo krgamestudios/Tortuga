@@ -19,15 +19,15 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#include "monster_packet.hpp"
+#include "creature_packet.hpp"
 
 #include "serial_utility.hpp"
 
-void serializeMonster(void* buffer, MonsterPacket* packet) {
+void serializeCreature(void* buffer, CreaturePacket* packet) {
 	serialCopy(&buffer, &packet->type, sizeof(SerialPacketType));
 
-	//identify the monster
-	serialCopy(&buffer, &packet->monsterIndex, sizeof(int));
+	//identify the creature
+	serialCopy(&buffer, &packet->creatureIndex, sizeof(int));
 	serialCopy(&buffer, packet->handle, PACKET_STRING_SIZE);
 	serialCopy(&buffer, packet->avatar, PACKET_STRING_SIZE);
 
@@ -46,11 +46,11 @@ void serializeMonster(void* buffer, MonsterPacket* packet) {
 	serialCopy(&buffer, &packet->motion.y, sizeof(double));
 }
 
-void deserializeMonster(void* buffer, MonsterPacket* packet) {
+void deserializeCreature(void* buffer, CreaturePacket* packet) {
 	deserialCopy(&buffer, &packet->type, sizeof(SerialPacketType));
 
-	//identify the monster
-	deserialCopy(&buffer, &packet->monsterIndex, sizeof(int));
+	//identify the creature
+	deserialCopy(&buffer, &packet->creatureIndex, sizeof(int));
 	deserialCopy(&buffer, packet->handle, PACKET_STRING_SIZE);
 	deserialCopy(&buffer, packet->avatar, PACKET_STRING_SIZE);
 
