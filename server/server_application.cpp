@@ -569,7 +569,6 @@ void ServerApplication::hRegionRequest(RegionPacket* const argPacket) {
 	//TODO: (0) load regions
 	if (region == nullptr) {
 		region = room->GetPager()->CreateRegion(argPacket->x, argPacket->y);
-		std::cout << "Summoned a room" << std::endl;
 	}
 
 	//send the content
