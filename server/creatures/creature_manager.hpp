@@ -21,7 +21,7 @@
 */
 #pragma once
 
-#include "monster_data.hpp"
+#include "creature_data.hpp"
 
 #include "lua.hpp"
 #include "sqlite3.h"
@@ -30,22 +30,22 @@
 #include <map>
 #include <string>
 
-class MonsterManager {
+class CreatureManager {
 public:
-	MonsterManager();
-	~MonsterManager();
+	CreatureManager();
+	~CreatureManager();
 
 	//common public methods
 	int Create(std::string avatar, int scriptRef);
 	void Unload(int uid);
 
 	void UnloadAll();
-	void UnloadIf(std::function<bool(std::pair<const int, MonsterData const&>)> fn);
+	void UnloadIf(std::function<bool(std::pair<const int, CreatureData const&>)> fn);
 
 	//accessors & mutators
-	MonsterData* Get(int uid);
+	CreatureData* Get(int uid);
 	int GetLoadedCount();
-	std::map<int, MonsterData>* GetContainer();
+	std::map<int, CreatureData>* GetContainer();
 
 	//hooks
 	lua_State* SetLuaState(lua_State* L);
@@ -55,7 +55,7 @@ public:
 
 private:
 	//members
-	std::map<int, MonsterData> elementMap;
+	std::map<int, CreatureData> elementMap;
 	int counter = 0;
 	lua_State* lua = nullptr;
 	sqlite3* database = nullptr;

@@ -19,17 +19,17 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#include "monster_data.hpp"
+#include "creature_data.hpp"
 
-MonsterData::MonsterData(std::string _avatar, int _scriptRef):
-	Entity("monster"),
+CreatureData::CreatureData(std::string _avatar, int _scriptRef):
+	Entity("creature"),
 	avatar(_avatar),
 	scriptRef(_scriptRef)
 {
 	//EMPTY
 }
 
-void MonsterData::Update() {
+void CreatureData::Update() {
 	Entity::Update();
 	//TODO: (0) call the script reference
 }
@@ -38,18 +38,18 @@ void MonsterData::Update() {
 //accessors & mutators
 //-------------------------
 
-std::string MonsterData::SetAvatar(std::string s) {
+std::string CreatureData::SetAvatar(std::string s) {
 	return avatar = s;
 }
 
-std::string MonsterData::GetAvatar() {
+std::string CreatureData::GetAvatar() {
 	return avatar;
 }
 
-int MonsterData::SetScriptReference(int i) {
+int CreatureData::SetScriptReference(int i) {
 	return scriptRef = i;
 }
 
-int MonsterData::GetScriptReference() {
+int CreatureData::GetScriptReference() {
 	return scriptRef;
 }

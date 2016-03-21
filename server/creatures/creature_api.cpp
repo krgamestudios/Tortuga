@@ -19,40 +19,40 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#include "monster_api.hpp"
+#include "creature_api.hpp"
 
-#include "monster_data.hpp"
+#include "creature_data.hpp"
 
 #include "entity_api.hpp"
 
 static int setAvatar(lua_State* L) {
-	MonsterData* monster = static_cast<MonsterData*>(lua_touserdata(L, 1));
-	monster->SetAvatar(lua_tostring(L, 2));
+	CreatureData* creature = static_cast<CreatureData*>(lua_touserdata(L, 1));
+	creature->SetAvatar(lua_tostring(L, 2));
 	//TODO: (1) send an update to the clients?
 	return 0;
 }
 
 static int getAvatar(lua_State* L) {
-	MonsterData* monster = static_cast<MonsterData*>(lua_touserdata(L, 1));
-	lua_pushstring(L, monster->GetAvatar().c_str());
+	CreatureData* creature = static_cast<CreatureData*>(lua_touserdata(L, 1));
+	lua_pushstring(L, creature->GetAvatar().c_str());
 	return 1;
 }
 
 static int setScript(lua_State* L) {
-	MonsterData* monster = static_cast<MonsterData*>(lua_touserdata(L, 1));
-	luaL_unref(L, LUA_REGISTRYINDEX, monster->GetScriptReference());
-	monster->SetScriptReference(luaL_ref(L, LUA_REGISTRYINDEX));
+	CreatureData* creature = static_cast<CreatureData*>(lua_touserdata(L, 1));
+	luaL_unref(L, LUA_REGISTRYINDEX, creature->GetScriptReference());
+	creature->SetScriptReference(luaL_ref(L, LUA_REGISTRYINDEX));
 	return 0;
 }
 
 static int getScript(lua_State* L) {
-	MonsterData* monster = static_cast<MonsterData*>(lua_touserdata(L, 1));
-	lua_pushinteger(L, monster->GetScriptReference());
+	CreatureData* creature = static_cast<CreatureData*>(lua_touserdata(L, 1));
+	lua_pushinteger(L, creature->GetScriptReference());
 	lua_gettable(L, LUA_REGISTRYINDEX);
 	return 1;
 }
 
-static const luaL_Reg monsterLib[] = {
+static const luaL_Reg creatureLib[] = {
 	{"SetAvatar", setAvatar},
 	{"GetAvatar", getAvatar},
 	{"SetScript", setScript},
@@ -60,12 +60,12 @@ static const luaL_Reg monsterLib[] = {
 	{nullptr, nullptr}
 };
 
-LUAMOD_API int openMonsterAPI(lua_State* L) {
+LUAMOD_API int openCreatureAPI(lua_State* L) {
 	//get the parent table
 	luaL_requiref(L, TORTUGA_ENTITY_API, openEntityAPI, false);
 
 	//the local table
-	luaL_newlib(L, monsterLib);
+	luaL_newlib(L, creatureLib);
 
 	//merge the local table into the parent table
 	lua_pushnil(L);	//first key

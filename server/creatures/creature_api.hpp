@@ -23,5 +23,5 @@
 
 #include "lua.hpp"
 
-#define TORTUGA_MONSTER_API "monster"
-LUAMOD_API int openMonsterAPI(lua_State* L);
+#define TORTUGA_CREATURE_API "creature"
+LUAMOD_API int openCreatureAPI(lua_State* L);

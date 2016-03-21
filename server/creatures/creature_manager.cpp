@@ -19,36 +19,36 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#include "monster_manager.hpp"
+#include "creature_manager.hpp"
 
-MonsterManager::MonsterManager() {
+CreatureManager::CreatureManager() {
 	//EMPTY
 }
 
-MonsterManager::~MonsterManager() {
+CreatureManager::~CreatureManager() {
 	UnloadAll();
 }
 
-int MonsterManager::Create(std::string avatar, int scriptRef) {
+int CreatureManager::Create(std::string avatar, int scriptRef) {
 	//implicitly create the new
-	elementMap.emplace(counter, MonsterData(avatar, scriptRef));
+	elementMap.emplace(counter, CreatureData(avatar, scriptRef));
 
 	//TODO: do various things like saving to the database
 	return counter++;
 }
 
-//TODO: (1) monster load, save
+//TODO: (1) creature load, save
 
-void MonsterManager::Unload(int uid) {
+void CreatureManager::Unload(int uid) {
 	elementMap.erase(uid);
 }
 
-void MonsterManager::UnloadAll() {
+void CreatureManager::UnloadAll() {
 	elementMap.clear();
 }
 
-void MonsterManager::UnloadIf(std::function<bool(std::pair<const int, MonsterData const&>)> fn) {
-	std::map<int, MonsterData>::iterator it = elementMap.begin();
+void CreatureManager::UnloadIf(std::function<bool(std::pair<const int, CreatureData const&>)> fn) {
+	std::map<int, CreatureData>::iterator it = elementMap.begin();
 	while (it != elementMap.end()) {
 		if (fn(*it)) {
 			it = elementMap.erase(it);
@@ -59,8 +59,8 @@ void MonsterManager::UnloadIf(std::function<bool(std::pair<const int, MonsterDat
 	}
 }
 
-MonsterData* MonsterManager::Get(int uid) {
-	std::map<int, MonsterData>::iterator it = elementMap.find(uid);
+CreatureData* CreatureManager::Get(int uid) {
+	std::map<int, CreatureData>::iterator it = elementMap.find(uid);
 
 	if (it == elementMap.end()) {
 		return nullptr;
@@ -69,26 +69,26 @@ MonsterData* MonsterManager::Get(int uid) {
 	return &it->second;
 }
 
-int MonsterManager::GetLoadedCount() {
+int CreatureManager::GetLoadedCount() {
 	return elementMap.size();
 }
 
-std::map<int, MonsterData>* MonsterManager::GetContainer() {
+std::map<int, CreatureData>* CreatureManager::GetContainer() {
 	return &elementMap;
 }
 
-lua_State* MonsterManager::SetLuaState(lua_State* L) {
+lua_State* CreatureManager::SetLuaState(lua_State* L) {
 	return lua = L;
 }
 
-lua_State* MonsterManager::GetLuaState() {
+lua_State* CreatureManager::GetLuaState() {
 	return lua;
 }
 
-sqlite3* MonsterManager::SetDatabase(sqlite3* db) {
+sqlite3* CreatureManager::SetDatabase(sqlite3* db) {
 	return database = db;
 }
 
-sqlite3* MonsterManager::GetDatabase() {
+sqlite3* CreatureManager::GetDatabase() {
 	return database;
 }

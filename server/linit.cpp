@@ -41,8 +41,8 @@
 #include "character_manager_api.hpp"
 #include "region_api.hpp"
 #include "region_pager_api.hpp"
-//#include "monster_api.hpp"
-//#include "monster_manager_api.hpp"
+#include "creature_api.hpp"
+#include "creature_manager_api.hpp"
 #include "network_api.hpp"
 #include "room_api.hpp"
 #include "room_manager_api.hpp"
@@ -70,8 +70,8 @@ static const luaL_Reg preloadedlibs[] = {
 	{TORTUGA_ENTITY_API, openEntityAPI}, //required by derived classes
 	{TORTUGA_CHARACTER_API, openCharacterAPI},
 	{TORTUGA_CHARACTER_MANAGER_API, openCharacterManagerAPI},
-//	{TORTUGA_MONSTER_API, openMonsterAPI},
-//	{TORTUGA_MONSTER_MANAGER_API, openMonsterManagerAPI},
+	{TORTUGA_CREATURE_API, openCreatureAPI},
+	{TORTUGA_CREATURE_MANAGER_API, openCreatureManagerAPI},
 	{TORTUGA_NETWORK_API, openNetworkAPI},
 	{TORTUGA_REGION_API, openRegionAPI},
 	{TORTUGA_REGION_PAGER_API, openRegionPagerAPI},

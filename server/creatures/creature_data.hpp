@@ -27,17 +27,17 @@
 
 #include <string>
 
-/* DOCS: Monster attributes, read more
+/* DOCS: Creature attributes, read more
  *  species (avatar, script)
  *  level
  *  health/mana
  *  permadeath/respawn
 */
 
-class MonsterData: public Entity {
+class CreatureData: public Entity {
 public:
-	MonsterData(std::string avatar, int scriptRef);
-	~MonsterData() = default;
+	CreatureData(std::string avatar, int scriptRef);
+	~CreatureData() = default;
 
 	virtual void Update();
 
@@ -50,7 +50,7 @@ public:
 	int GetScriptReference();
 
 private:
-	friend class MonsterManager;
+	friend class CreatureManager;
 
 	std::string avatar;
 	int scriptRef = LUA_NOREF;

@@ -19,52 +19,52 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#include "monster_manager_api.hpp"
+#include "creature_manager_api.hpp"
 
-#include "monster_manager.hpp"
+#include "creature_manager.hpp"
 
 static int create(lua_State* L) {
-	MonsterManager* mgr = static_cast<MonsterManager* const>(lua_touserdata(L, 1));
+	CreatureManager* mgr = static_cast<CreatureManager* const>(lua_touserdata(L, 1));
 	int index = mgr->Create(lua_tostring(L, 2), lua_tointeger(L, 3));
-	MonsterData* monster = mgr->Get(index);
-	lua_pushlightuserdata(L, static_cast<void*>(monster));
+	CreatureData* creature = mgr->Get(index);
+	lua_pushlightuserdata(L, static_cast<void*>(creature));
 	lua_pushinteger(L, index);
 	return 2;
 }
 
 //TOOD: this needs to take the userdata as a parameter too
 static int unload(lua_State* L) {
-	MonsterManager* mgr = static_cast<MonsterManager* const>(lua_touserdata(L, 1));
+	CreatureManager* mgr = static_cast<CreatureManager* const>(lua_touserdata(L, 1));
 	mgr->Unload(lua_tointeger(L, 2));
 	return 0;
 }
 
 static int unloadAll(lua_State* L) {
-	MonsterManager* mgr = static_cast<MonsterManager* const>(lua_touserdata(L, 1));
+	CreatureManager* mgr = static_cast<CreatureManager* const>(lua_touserdata(L, 1));
 	mgr->UnloadAll();
 	return 0;
 }
 
 static int unloadIf(lua_State* L) {
-	MonsterManager* mgr = static_cast<MonsterManager* const>(lua_touserdata(L, 1));
+	CreatureManager* mgr = static_cast<CreatureManager* const>(lua_touserdata(L, 1));
 	//TODO: unloadIf
 	return 0;
 }
 
 static int get(lua_State* L) {
-	MonsterManager* mgr = static_cast<MonsterManager* const>(lua_touserdata(L, 1));
-	MonsterData* monster = mgr->Get(lua_tointeger(L, 2));
-	lua_pushlightuserdata(L, static_cast<void*>(monster));
+	CreatureManager* mgr = static_cast<CreatureManager* const>(lua_touserdata(L, 1));
+	CreatureData* creature = mgr->Get(lua_tointeger(L, 2));
+	lua_pushlightuserdata(L, static_cast<void*>(creature));
 	return 1;
 }
 
 static int getLoadedCount(lua_State* L) {
-	MonsterManager* mgr = static_cast<MonsterManager* const>(lua_touserdata(L, 1));
+	CreatureManager* mgr = static_cast<CreatureManager* const>(lua_touserdata(L, 1));
 	lua_pushinteger(L, mgr->GetLoadedCount());
 	return 1;
 }
 
-static const luaL_Reg monsterManagerLib[] = {
+static const luaL_Reg creatureManagerLib[] = {
 	{"Create", create},
 	{"Unload", unload},
 	{"UnloadAll", unloadAll},
@@ -74,7 +74,7 @@ static const luaL_Reg monsterManagerLib[] = {
 	{nullptr, nullptr}
 };
 
-LUAMOD_API int openMonsterManagerAPI(lua_State* L) {
-	luaL_newlib(L, monsterManagerLib);
+LUAMOD_API int openCreatureManagerAPI(lua_State* L) {
+	luaL_newlib(L, creatureManagerLib);
 	return 1;
 }
