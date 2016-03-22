@@ -1,4 +1,4 @@
-/* $Id: linit.c,v 1.32, modified
+/* Copyright: (c) Kayne Ruse 2013-2016
  * Initialization of libraries for lua.c and other clients
  * See Copyright Notice in lua.h
  * 
