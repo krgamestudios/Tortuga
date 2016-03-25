@@ -35,12 +35,21 @@ mapSaver = require("map_saver")
 
 doorUtility = require("door_utility")
 
+creatureAPI = require("creature")
+creatureManagerAPI = require("creature_manager")
+
 --test the room hooks
 roomManagerAPI.SetOnCreate(function(room, index)
 	print("", "Creating room: ", roomAPI.GetName(room), index)
 
+	creatureManagerAPI.Create(roomAPI.GetCreatureMgr(room), "anibunny.png", function() --[[]] end)
+
 	roomAPI.SetOnTick(room, function(room)
 		roomAPI.ForEachCharacter(room, function(character)
+			--
+		end)
+
+		roomAPI.ForEachCreature(room, function(creature)
 			--
 		end)
 	end)

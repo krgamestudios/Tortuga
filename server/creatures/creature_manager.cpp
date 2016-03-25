@@ -37,7 +37,7 @@ void CreatureManager::Update() {
 
 int CreatureManager::Create(std::string avatar, int scriptRef) {
 	//implicitly create the new object
-	elementMap.emplace(counter, CreatureData(avatar, scriptRef));
+	elementMap.emplace( std::pair<int, CreatureData>(counter, CreatureData(avatar, scriptRef)) );
 
 	//TODO: do various things like saving to the database
 	return counter++;

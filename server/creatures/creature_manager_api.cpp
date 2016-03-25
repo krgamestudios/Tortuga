@@ -23,6 +23,7 @@
 
 #include "creature_manager.hpp"
 
+//args: mgr, avatar, script
 static int create(lua_State* L) {
 	CreatureManager* mgr = static_cast<CreatureManager* const>(lua_touserdata(L, 1));
 	int index = mgr->Create(lua_tostring(L, 2), lua_tointeger(L, 3));
