@@ -22,6 +22,7 @@
 #pragma once
 
 #include "character_data.hpp"
+#include "creature_manager.hpp"
 #include "region_pager_lua.hpp"
 #include "trigger_manager.hpp"
 
@@ -47,9 +48,10 @@ public:
 	std::string SetTileset(std::string);
 	std::string GetTileset();
 
+	std::list<CharacterData*>* GetCharacterList();
+	CreatureManager* GetCreatureMgr();
 	RegionPagerLua* GetPager();
 	TriggerManager* GetTriggerMgr();
-	std::list<CharacterData*>* GetCharacterList();
 
 	//API interfaces
 	lua_State* SetLuaState(lua_State* L);
@@ -68,9 +70,10 @@ private:
 	std::string tilesetName;
 
 	//members
+	std::list<CharacterData*> characterList;
+	CreatureManager creatureMgr;
 	RegionPagerLua pager;
 	TriggerManager triggerMgr;
-	std::list<CharacterData*> characterList;
 
 	//API
 	lua_State* lua = nullptr;

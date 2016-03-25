@@ -29,8 +29,14 @@ CreatureManager::~CreatureManager() {
 	UnloadAll();
 }
 
+void CreatureManager::Update() {
+	for (auto& it : elementMap) {
+		it.second.Update();
+	}
+}
+
 int CreatureManager::Create(std::string avatar, int scriptRef) {
-	//implicitly create the new
+	//implicitly create the new object
 	elementMap.emplace(counter, CreatureData(avatar, scriptRef));
 
 	//TODO: do various things like saving to the database

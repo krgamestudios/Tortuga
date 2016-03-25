@@ -36,6 +36,8 @@ public:
 	~CreatureManager();
 
 	//common public methods
+	void Update();
+
 	int Create(std::string avatar, int scriptRef);
 	void Unload(int uid);
 

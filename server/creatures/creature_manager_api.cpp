@@ -32,7 +32,7 @@ static int create(lua_State* L) {
 	return 2;
 }
 
-//TOOD: this needs to take the userdata as a parameter too
+//TOOD: overload this to take the userdata as a parameter
 static int unload(lua_State* L) {
 	CreatureManager* mgr = static_cast<CreatureManager* const>(lua_touserdata(L, 1));
 	mgr->Unload(lua_tointeger(L, 2));

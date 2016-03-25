@@ -43,10 +43,10 @@ void RoomData::RunFrame() {
 	}
 
 	//update the entities in the room
+	creatureMgr.Update();
 	for (auto& it : characterList) {
 		it->Update();
 	}
-	//TODO: (3) iterate through the monster map
 	//TODO: (3) trigger script for monsters
 
 	//build a list of game entities
@@ -100,6 +100,8 @@ void RoomData::RunFrame() {
 		//next
 		entityStack.pop();
 	}
+
+	//TODO: creature/character collisions
 }
 
 std::string RoomData::SetName(std::string s) {
@@ -118,16 +120,20 @@ std::string RoomData::GetTileset() {
 	return tilesetName;
 }
 
+std::list<CharacterData*>* RoomData::GetCharacterList() {
+	return &characterList;
+}
+
+CreatureManager* RoomData::GetCreatureMgr() {
+	return &creatureMgr;
+}
+
 RegionPagerLua* RoomData::GetPager() {
 	return &pager;
 }
 
 TriggerManager* RoomData::GetTriggerMgr() {
 	return &triggerMgr;
-}
-
-std::list<CharacterData*>* RoomData::GetCharacterList() {
-	return &characterList;
 }
 
 lua_State* RoomData::SetLuaState(lua_State* L) {

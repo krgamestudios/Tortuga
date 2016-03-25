@@ -50,19 +50,17 @@ static int getTilesetName(lua_State* L) {
 	return 1;
 }
 
+static int getCreatureMgr(lua_State* L) {
+	RoomData* room = reinterpret_cast<RoomData*>(lua_touserdata(L, 1));
+	lua_pushlightuserdata(L, reinterpret_cast<void*>(room->GetCreatureMgr()) );
+	return 1;
+}
+
 static int getPager(lua_State* L) {
 	RoomData* room = reinterpret_cast<RoomData*>(lua_touserdata(L, 1));
 	lua_pushlightuserdata(L, reinterpret_cast<void*>(room->GetPager()) );
 	return 1;
 }
-
-/*
-static int getMonsterMgr(lua_State* L) {
-	RoomData* room = reinterpret_cast<RoomData*>(lua_touserdata(L, 1));
-	lua_pushlightuserdata(L, reinterpret_cast<void*>(room->GetMonsterMgr()) );
-	return 1;
-}
-*/
 
 static int getTriggerMgr(lua_State* L) {
 	RoomData* room = reinterpret_cast<RoomData*>(lua_touserdata(L, 1));
@@ -87,12 +85,11 @@ static int forEachCharacter(lua_State* L) {
 	return 0;
 }
 
-/*
-static int forEachMonster(lua_State* L) {
+static int forEachCreature(lua_State* L) {
 	RoomData* room = reinterpret_cast<RoomData*>(lua_touserdata(L, 1));
-	MonsterManager* monsterMgr = room->GetMonsterMgr();
-	//pass each monster to the given function
-	for (auto& it : *monsterMgr->GetContainer()) {
+	CreatureManager* creatureMgr = room->GetCreatureMgr();
+	//pass each creature to the given function
+	for (auto& it : *creatureMgr->GetContainer()) {
 		lua_pushvalue(L, -1);
 		lua_pushlightuserdata(L, static_cast<void*>(&it.second));
 		//call each iteration, throwing an exception if something happened
@@ -105,7 +102,6 @@ static int forEachMonster(lua_State* L) {
 	}
 	return 0;
 }
-*/
 
 static int setOnTick(lua_State* L) {
 	RoomData* room = reinterpret_cast<RoomData*>(lua_touserdata(L, 1));
@@ -139,12 +135,12 @@ static const luaL_Reg roomLib[] = {
 	{"SetTileset", setTilesetName},
 	{"GetTileset", getTilesetName},
 
+	{"GetCreatureMgr",getCreatureMgr},
 	{"GetPager",getPager},
-//	{"GetMonsterMgr",getMonsterMgr},
 	{"GetTriggerMgr",getTriggerMgr},
 
 	{"ForEachCharacter", forEachCharacter},
-//	{"ForEachMonster", forEachMonster},
+	{"ForEachCreature", forEachCreature},
 
 	{"SetOnTick", setOnTick},
 	{"GetOnTick", getOnTick},
