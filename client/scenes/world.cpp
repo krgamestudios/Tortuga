@@ -38,12 +38,12 @@
 //-------------------------
 
 //TODO: (3) proper checksum
-static int regionChecksum(Region* const region) {
+static int regionContentCheck(Region const* region) {
 	int sum = 0;
 	for(int i = 0; i < REGION_WIDTH; i++) {
 		for (int j = 0; j < REGION_HEIGHT; j++) {
 			for (int k = 0; k < REGION_DEPTH; k++) {
-				sum |= region->GetTile(i, j, k);
+				sum += region->GetTile(i, j, k);
 			}
 		}
 	}
@@ -565,18 +565,11 @@ void World::SendRegionRequest(int roomIndex, int x, int y) {
 }
 
 void World::hRegionContent(RegionPacket* const argPacket) {
-	//checksum
-	if (regionChecksum(argPacket->region) == 0) {
-		std::ostringstream msg;
-		msg << "Received region checksum failed: " << argPacket->x << ", " << argPacket->y;
-		throw(std::runtime_error(msg.str()));
-	}
-
 	//replace existing regions
 	regionPager.UnloadIf([&](Region const& region) -> bool {
 		if (region.GetX() == argPacket->x && region.GetY() == argPacket->y) {
 			std::cout << "Region Overwrite: " << region.GetX() << ", " << region.GetY();
-			std::cout << "\t" << region.GetSolid(1,1) << "\t" << argPacket->region->GetSolid(1,1) << std::endl;
+			std::cout << "\t" << regionContentCheck(&region) << "\t" << regionContentCheck(argPacket->region) << std::endl;
 			return true;
 		}
 		else {
@@ -615,7 +608,7 @@ void World::UpdateMap() {
 				//request absent region
 				SendRegionRequest(roomIndex, i, j);
 			}
-			else if (regionChecksum(region) == 0) {
+			else if (regionContentCheck(region) == 0) {
 				//checksum failed
 				regionPager.UnloadIf([region](Region const& ref) -> bool {
 					//remove the erroneous region
@@ -623,7 +616,7 @@ void World::UpdateMap() {
 				});
 				SendRegionRequest(roomIndex, i, j);
 				std::ostringstream msg;
-				msg << "Existing region checksum failed: " << roomIndex << ", " << i << ", " << j;
+				msg << "Existing region blank: " << roomIndex << ", " << i << ", " << j;
 				throw(std::runtime_error(msg.str()));
 			}
 		}

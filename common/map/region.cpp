@@ -48,7 +48,7 @@ Region::type_t Region::SetTile(int x, int y, int z, type_t v) {
 	return tiles[x][y][z] = v;
 }
 
-Region::type_t Region::GetTile(int x, int y, int z) {
+Region::type_t Region::GetTile(int x, int y, int z) const {
 	if (x < 0 || y < 0 || z < 0 || x >= REGION_WIDTH || y >= REGION_HEIGHT || z >= REGION_DEPTH) {
 		throw(std::out_of_range("Region::GetTile() argument out of range"));
 	}

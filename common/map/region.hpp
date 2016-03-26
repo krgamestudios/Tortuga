@@ -41,7 +41,7 @@ public:
 	~Region() = default;
 
 	type_t SetTile(int x, int y, int z, type_t v);
-	type_t GetTile(int x, int y, int z);
+	type_t GetTile(int x, int y, int z) const;
 
 	bool SetSolid(int x, int y, bool b);
 	bool GetSolid(int x, int y) const;
