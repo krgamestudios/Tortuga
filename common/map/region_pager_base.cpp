@@ -33,6 +33,7 @@ Region::type_t RegionPagerBase::SetTile(int x, int y, int z, Region::type_t v) {
 	return ptr->SetTile(x - ptr->GetX(), y - ptr->GetY(), z, v);
 }
 
+//Bug Origin?
 Region::type_t RegionPagerBase::GetTile(int x, int y, int z) {
 	Region* ptr = GetRegion(x, y);
 	return ptr->GetTile(x - ptr->GetX(), y - ptr->GetY(), z);
