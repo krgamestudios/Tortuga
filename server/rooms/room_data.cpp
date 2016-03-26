@@ -43,20 +43,17 @@ void RoomData::RunFrame() {
 	}
 
 	//update the entities in the room
-	creatureMgr.Update();
 	for (auto& it : characterList) {
 		it->Update();
 	}
-	//TODO: (3) trigger script for monsters
 
-	//build a list of game entities
+	//build a list of characters for use with the triggers
 	std::stack<Entity*> entityStack;
 	for (auto& it : characterList) {
 		entityStack.push(it);
 	}
-	//TODO: (3) push the monster entities
 
-	//compare the triggers to the entities, using their real hitboxes
+	//Compare the triggers to the entities, using their real hitboxes
 	//NOTE: this stack solution should prevent problems when modifying the various lists
 	while(entityStack.size()) {
 		//get the entity & hitbox
@@ -101,6 +98,12 @@ void RoomData::RunFrame() {
 		entityStack.pop();
 	}
 
+	//a list of creatures that need to be updated client-side
+	std::list<CreatureData*> creatureList;
+	creatureMgr.Update(&creatureList);
+
+	//TODO: (0) send the updates
+
 	//TODO: creature/character collisions
 }
 
@@ -138,6 +141,7 @@ TriggerManager* RoomData::GetTriggerMgr() {
 
 lua_State* RoomData::SetLuaState(lua_State* L) {
 	lua = L;
+	creatureMgr.SetLuaState(lua);
 	pager.SetLuaState(lua);
 	triggerMgr.SetLuaState(lua);
 	return lua;

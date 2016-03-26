@@ -21,6 +21,9 @@
 */
 #include "creature_data.hpp"
 
+#include <sstream>
+#include <stdexcept>
+
 CreatureData::CreatureData(std::string _avatar, int _scriptRef):
 	Entity("creature"),
 	avatar(_avatar),
@@ -29,9 +32,29 @@ CreatureData::CreatureData(std::string _avatar, int _scriptRef):
 	//EMPTY
 }
 
-void CreatureData::Update() {
-	Entity::Update();
-	//TODO: (0) call the script reference
+int CreatureData::Update(lua_State* L) {
+	int ret = 0;
+
+	if (scriptRef != 0) {
+		//Call the script reference
+		lua_pushinteger(L, scriptRef);
+		lua_gettable(L, LUA_REGISTRYINDEX);
+		lua_pushlightuserdata(L, reinterpret_cast<void*>(this));
+
+		//check for errors
+		if(lua_pcall(L, 1, 1, 0) != LUA_OK) {
+			std::ostringstream msg;
+			msg << "Error running creature script: " << lua_tostring(L, -1);
+			lua_pop(L, 1);
+			throw(std::runtime_error(msg.str()));
+		}
+
+		ret += lua_tonumber(L, -1);
+	}
+
+	ret += Entity::Update();
+
+	return ret;
 }
 
 //-------------------------

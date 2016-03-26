@@ -39,7 +39,7 @@ public:
 	CreatureData(std::string avatar, int scriptRef);
 	~CreatureData() = default;
 
-	virtual void Update();
+	virtual int Update(lua_State*);
 
 	//accessors & mutators
 

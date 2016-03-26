@@ -27,6 +27,7 @@
 #include "sqlite3.h"
 
 #include <functional>
+#include <list>
 #include <map>
 #include <string>
 
@@ -36,7 +37,7 @@ public:
 	~CreatureManager();
 
 	//common public methods
-	void Update();
+	int Update(std::list<CreatureData*>* creatureList);
 
 	int Create(std::string avatar, int scriptRef);
 	void Unload(int uid);

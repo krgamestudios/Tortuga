@@ -25,8 +25,10 @@ Entity::Entity(const char* _type): type(_type) {
 	//EMPTY
 }
 
-void Entity::Update() {
+int Entity::Update() {
 	origin += motion;
+
+	return motion != 0;
 }
 
 int Entity::SetRoomIndex(int i) {
