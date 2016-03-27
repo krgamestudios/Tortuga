@@ -107,6 +107,7 @@ private:
 	void hCharacterMovement(CharacterPacket* const);
 
 	//creature management
+	void hCreatureUpdate(CreaturePacket* const);
 	void hCreatureCreate(CreaturePacket* const);
 	void hCreatureUnload(CreaturePacket* const);
 	void hQueryCreatureExists(CreaturePacket* const);

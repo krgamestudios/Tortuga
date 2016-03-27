@@ -48,6 +48,9 @@ public:
 	std::string SetTileset(std::string);
 	std::string GetTileset();
 
+	int SetRoomIndex(int i);
+	int GetRoomIndex();
+
 	std::list<CharacterData*>* GetCharacterList();
 	CreatureManager* GetCreatureMgr();
 	RegionPagerLua* GetPager();
@@ -70,6 +73,7 @@ private:
 	std::string tilesetName;
 
 	//members
+	int roomIndex = 0;
 	std::list<CharacterData*> characterList;
 	CreatureManager creatureMgr;
 	RegionPagerLua pager;

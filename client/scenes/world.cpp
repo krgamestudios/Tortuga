@@ -186,11 +186,6 @@ void World::RenderFrame(SDL_Renderer* renderer) {
 	//draw the map
 	for (std::list<Region>::iterator it = regionPager.GetContainer()->begin(); it != regionPager.GetContainer()->end(); it++) {
 		tileSheet.DrawRegionTo(renderer, &(*it), camera.x, camera.y);
-
-		//debugging
-//		std::ostringstream msg;
-//		msg << it->GetX() << ", " << it->GetY();
-//		font.DrawStringTo(msg.str(), screen, it->GetX() * tileSheet.GetImage()->GetClipW() - camera.x, it->GetY() * tileSheet.GetImage()->GetClipH() - camera.y);
 	}
 
 	//draw the entities
@@ -398,6 +393,10 @@ void World::HandlePacket(SerialPacket* const argPacket) {
 		break;
 
 		//creature management
+		case SerialPacketType::CREATURE_UPDATE:
+			hCreatureUpdate(static_cast<CreaturePacket*>(argPacket));
+		break;
+
 		case SerialPacketType::CREATURE_CREATE:
 			hCreatureCreate(static_cast<CreaturePacket*>(argPacket));
 		break;
@@ -776,6 +775,26 @@ void World::hCharacterMovement(CharacterPacket* const argPacket) {
 //creature management
 //-------------------------
 
+void World::hCreatureUpdate(CreaturePacket* const argPacket) {
+	//TODO: (1) Authentication
+
+	//check that this character exists
+	std::map<int, BaseCreature>::iterator creatureIt = creatureMap.find(argPacket->creatureIndex);
+	if (creatureIt != creatureMap.end()) {
+		//update the origin and motion, if there's a difference
+		if (creatureIt->second.GetOrigin() != argPacket->origin) {
+			creatureIt->second.SetOrigin(argPacket->origin);
+		}
+		if (creatureIt->second.GetMotion() != argPacket->motion) {
+			creatureIt->second.SetMotion(argPacket->motion);
+			creatureIt->second.CorrectSprite(); //only correct the sprite if the motion changes
+		}
+	}
+	else {
+		hCreatureCreate(argPacket);
+	}
+}
+
 void World::hCreatureCreate(CreaturePacket* const argPacket) {
 	//check for logic errors
 	if (creatureMap.find(argPacket->creatureIndex) != creatureMap.end()) {
@@ -786,14 +805,14 @@ void World::hCreatureCreate(CreaturePacket* const argPacket) {
 		throw(std::runtime_error(msg.str()));
 	}
 
-	//ignore creatures from other rooms
-	if (roomIndex != argPacket->roomIndex) {
-		//temporary error checking
-		std::ostringstream msg;
-		msg << "Creature from the wrong room received: ";
-		msg << "creatureIndex: " << argPacket->creatureIndex << ", roomIndex: " << argPacket->roomIndex;
-		throw(std::runtime_error(msg.str()));
-	}
+//	//ignore creatures from other rooms
+//	if (roomIndex != argPacket->roomIndex) {
+//		//temporary error checking
+//		std::ostringstream msg;
+//		msg << "Creature from the wrong room received: ";
+//		msg << "creatureIndex: " << argPacket->creatureIndex << ", roomIndex: " << argPacket->roomIndex;
+//		throw(std::runtime_error(msg.str()));
+//	}
 
 	//implicitly create the element
 	BaseCreature* creature = &creatureMap[argPacket->creatureIndex];

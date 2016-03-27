@@ -34,6 +34,7 @@ int RoomManager::Create(std::string roomName, std::string tileset) {
 	RoomData* newRoom = &elementMap[counter]; //implicitly constructs the element
 	newRoom->SetName(roomName);
 	newRoom->SetTileset(tileset);
+	newRoom->SetRoomIndex(counter);
 
 	newRoom->SetLuaState(lua);
 	newRoom->SetDatabase(database);

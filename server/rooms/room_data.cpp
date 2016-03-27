@@ -109,7 +109,8 @@ void RoomData::RunFrame() {
 	for (auto& it : creatureList) {
 		CreaturePacket packet;
 		copyCreatureToPacket(&packet, it.second, it.first);
-		//TODO: send
+		packet.type = SerialPacketType::CREATURE_UPDATE;
+		pumpPacketProximity(reinterpret_cast<SerialPacket*>(&packet), roomIndex, it.second->GetOrigin(), 320);
 	}
 
 	//TODO: creature/character collisions
@@ -129,6 +130,14 @@ std::string RoomData::SetTileset(std::string s) {
 
 std::string RoomData::GetTileset() {
 	return tilesetName;
+}
+
+int RoomData::SetRoomIndex(int i) {
+	return roomIndex = i;
+}
+
+int RoomData::GetRoomIndex() {
+	return roomIndex;
 }
 
 std::list<CharacterData*>* RoomData::GetCharacterList() {

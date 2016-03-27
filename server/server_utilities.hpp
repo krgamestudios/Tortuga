@@ -40,3 +40,5 @@ void copyCreatureToPacket(CreaturePacket* const packet, CreatureData* const crea
 
 void pumpAndChangeRooms(int characterIndex, int newRoomIndex);
 void pumpAndChangeRooms(CharacterData* const characterData, int newRoomIndex, int characterIndex);
+
+double distance(Vector2 lhs, Vector2 rhs);

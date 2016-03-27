@@ -187,7 +187,7 @@ void pumpAndChangeRooms(int characterIndex, int newRoomIndex) {
 
 //TODO: (0) refactor this
 void pumpAndChangeRooms(CharacterData* const characterData, int newRoomIndex, int characterIndex) {
-	//delete from the old room
+	//delete the character from the old room
 	CharacterPacket newPacket;
 	copyCharacterToPacket(&newPacket, characterData, characterIndex);
 	newPacket.type = SerialPacketType::CHARACTER_UNLOAD;
@@ -198,8 +198,12 @@ void pumpAndChangeRooms(CharacterData* const characterData, int newRoomIndex, in
 	characterData->SetRoomIndex(newRoomIndex);
 	RoomManager::GetSingleton().PushCharacter(characterData);
 
-	//create in the new room
+	//create character in the new room
 	copyCharacterToPacket(&newPacket, characterData, characterIndex);
 	newPacket.type = SerialPacketType::CHARACTER_CREATE;
 	pumpPacketProximity(&newPacket, characterData->GetRoomIndex());
+}
+
+double distance(Vector2 lhs, Vector2 rhs) {
+	return abs((lhs - rhs).Length());
 }

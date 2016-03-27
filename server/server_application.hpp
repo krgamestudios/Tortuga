@@ -88,23 +88,17 @@ private:
 
 	//data management
 	void hRegionRequest(RegionPacket* const);
-	void hQueryCharacterExists(CharacterPacket* const);
-//	void hQueryCharacterStats(CharacterPacket* const);
-//	void hQueryCharacterLocation(CharacterPacket* const);
-//	void hQueryMonsterExists(MonsterPacket* const);
-//	void hQueryMonsterStats(MonsterPacket* const);
-//	void hQueryMonsterLocation(MonsterPacket* const);
 
 	//character management
+	void hQueryCharacterExists(CharacterPacket* const);
 	void hCharacterCreate(CharacterPacket* const);
 	void hCharacterDelete(CharacterPacket* const);
 	void hCharacterLoad(CharacterPacket* const);
 	void hCharacterUnload(CharacterPacket* const);
-
-	//character movement
 	void hCharacterMovement(CharacterPacket* const);
-//	void hCharacterAttack(CharacterPacket* const);
-//	void hCharacterDamage(CharacterPacket* const);
+
+	//creature management
+	void hQueryCreatureExists(CreaturePacket* const);
 
 	//chat
 	void hTextBroadcast(TextPacket* const);

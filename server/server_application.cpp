@@ -281,11 +281,11 @@ void ServerApplication::HandlePacket(SerialPacket* const argPacket) {
 		case SerialPacketType::REGION_REQUEST:
 			hRegionRequest(static_cast<RegionPacket*>(argPacket));
 		break;
+
+		//character management
 		case SerialPacketType::QUERY_CHARACTER_EXISTS:
 			hQueryCharacterExists(static_cast<CharacterPacket*>(argPacket));
 		break;
-
-		//character management
 		case SerialPacketType::CHARACTER_CREATE:
 			hCharacterCreate(static_cast<CharacterPacket*>(argPacket));
 		break;
@@ -298,14 +298,13 @@ void ServerApplication::HandlePacket(SerialPacket* const argPacket) {
 		case SerialPacketType::CHARACTER_UNLOAD:
 			hCharacterUnload(static_cast<CharacterPacket*>(argPacket));
 		break;
-
-		//character movement
 		case SerialPacketType::CHARACTER_MOVEMENT:
 			hCharacterMovement(static_cast<CharacterPacket*>(argPacket));
 		break;
 
+		//creature management
 		case SerialPacketType::QUERY_CREATURE_EXISTS:
-			//TODO: creature queries
+			hQueryCreatureExists(static_cast<CreaturePacket*>(argPacket));
 		break;
 
 		//chat
@@ -583,6 +582,10 @@ void ServerApplication::hRegionRequest(RegionPacket* const argPacket) {
 	network.SendTo(argPacket->srcAddress, static_cast<SerialPacket*>(&newPacket));
 }
 
+//-------------------------
+//Character Management
+//-------------------------
+
 void ServerApplication::hQueryCharacterExists(CharacterPacket* const argPacket) {
 	//respond with all character data
 	CharacterPacket newPacket;
@@ -596,10 +599,6 @@ void ServerApplication::hQueryCharacterExists(CharacterPacket* const argPacket) 
 		network.SendTo(argPacket->srcAddress, static_cast<SerialPacket*>(&newPacket));
 	}
 }
-
-//-------------------------
-//Character Management
-//-------------------------
 
 void ServerApplication::hCharacterCreate(CharacterPacket* const argPacket) {
 	int characterIndex = characterMgr.Create(argPacket->accountIndex, argPacket->handle, argPacket->avatar);
@@ -747,12 +746,6 @@ void ServerApplication::hCharacterUnload(CharacterPacket* const argPacket) {
 	characterMgr.Unload(argPacket->characterIndex);
 }
 
-//-------------------------
-//character movement
-//-------------------------
-
-//TODO: (2) Could replace this verbosity with a "verify" method, taking a client, account and character ptr as arguments
-
 void ServerApplication::hCharacterMovement(CharacterPacket* const argPacket) {
 	//get the specified objects
 	AccountData* accountData = accountMgr.Get(argPacket->accountIndex);
@@ -803,6 +796,25 @@ void ServerApplication::hCharacterMovement(CharacterPacket* const argPacket) {
 		copyCharacterToPacket(&newPacket, argPacket->characterIndex);
 		newPacket.type = SerialPacketType::CHARACTER_MOVEMENT;
 		pumpPacketProximity(&newPacket, characterData->GetRoomIndex());
+	}
+}
+
+//-------------------------
+//creature management
+//-------------------------
+
+//TODO: On creature create, etc.
+
+void ServerApplication::hQueryCreatureExists(CreaturePacket* const argPacket) {
+	CreatureManager* creatureMgr = roomMgr.Get(argPacket->roomIndex)->GetCreatureMgr();
+
+	CreaturePacket newPacket;
+	for ( auto& it : *(creatureMgr->GetContainer()) ) {
+		if (distance(argPacket->origin, it.second.GetOrigin()) < 1000) {
+			copyCreatureToPacket(&newPacket, &(it.second), it.first);
+			newPacket.type = SerialPacketType::QUERY_CREATURE_EXISTS;
+			network.SendTo(argPacket->srcAddress, reinterpret_cast<void*>(&newPacket), MAX_PACKET_SIZE);
+		}
 	}
 }
 
