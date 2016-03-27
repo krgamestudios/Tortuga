@@ -22,6 +22,7 @@
 #pragma once
 
 #include "character_data.hpp"
+#include "creature_data.hpp"
 #include "serial_packet.hpp"
 #include "vector2.hpp"
 
@@ -34,5 +35,8 @@ void pumpPacketProximity(SerialPacket* const argPacket, int roomIndex, Vector2 p
 
 void copyCharacterToPacket(CharacterPacket* const packet, int characterIndex);
 void copyCharacterToPacket(CharacterPacket* const packet, CharacterData* const characterData, int characterIndex);
+
+void copyCreatureToPacket(CreaturePacket* const packet, CreatureData* const creatureData, int creatureIndex);
+
 void pumpAndChangeRooms(int characterIndex, int newRoomIndex);
 void pumpAndChangeRooms(CharacterData* const characterData, int newRoomIndex, int characterIndex);

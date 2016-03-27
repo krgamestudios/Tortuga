@@ -21,6 +21,9 @@
 */
 #include "room_data.hpp"
 
+#include "serial_packet.hpp"
+#include "server_utilities.hpp"
+
 #include <algorithm>
 #include <iostream>
 #include <stack>
@@ -99,10 +102,15 @@ void RoomData::RunFrame() {
 	}
 
 	//a list of creatures that need to be updated client-side
-	std::list<CreatureData*> creatureList;
+	std::list< std::pair<const int, CreatureData*>> creatureList;
 	creatureMgr.Update(&creatureList);
 
-	//TODO: (0) send the updates
+	//send the updates
+	for (auto& it : creatureList) {
+		CreaturePacket packet;
+		copyCreatureToPacket(&packet, it.second, it.first);
+		//TODO: send
+	}
 
 	//TODO: creature/character collisions
 }

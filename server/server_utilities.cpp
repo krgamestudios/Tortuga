@@ -169,6 +169,14 @@ void copyCharacterToPacket(CharacterPacket* const packet, CharacterData* const c
 	packet->bounds = characterData->GetBounds();
 }
 
+void copyCreatureToPacket(CreaturePacket* const packet, CreatureData* const creatureData, int creatureIndex) {
+	packet->creatureIndex = creatureIndex;
+	strncpy(packet->avatar, creatureData->GetAvatar().c_str(), PACKET_STRING_SIZE);
+	packet->origin = creatureData->GetOrigin();
+	packet->motion = creatureData->GetMotion();
+	packet->bounds = creatureData->GetBounds();
+}
+
 void pumpAndChangeRooms(int characterIndex, int newRoomIndex) {
 	//get the character object
 	CharacterData* character = CharacterManager::GetSingleton().Get(characterIndex);

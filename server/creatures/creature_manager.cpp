@@ -30,12 +30,12 @@ CreatureManager::~CreatureManager() {
 }
 
 //arg: a list of creatures to be updated in the clients
-int CreatureManager::Update(std::list<CreatureData*>* creatureList) {
+int CreatureManager::Update(std::list<std::pair<const int, CreatureData*>>* creatureList) {
 	int ret;
 	for (auto& it : elementMap) {
 		ret = it.second.Update(lua);
 		if (ret) {
-			creatureList->push_back(&it.second);
+			creatureList->push_back(std::pair<const int, CreatureData*>(it.first, &it.second));
 		}
 	}
 }
