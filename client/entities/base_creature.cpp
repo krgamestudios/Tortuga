@@ -37,7 +37,7 @@ std::string BaseCreature::GetHandle() const {
 
 std::string BaseCreature::SetAvatar(SDL_Renderer* const renderer, std::string s) {
 	avatar = s;
-	sprite.Load(renderer, ConfigUtility::GetSingleton()["dir.sprites"] + avatar, 4, 1);
+	sprite.Load(renderer, ConfigUtility::GetSingleton()["dir.sprites"] + avatar, 4, 4);
 	return avatar;
 }
 

@@ -142,6 +142,7 @@ void RoomManager::PopCharacter(CharacterData const* character) {
 	});
 }
 
+//TODO: rename these functions from Get to Find
 RoomData* RoomManager::Get(int uid) {
 	std::map<int, RoomData>::iterator it = elementMap.find(uid);
 

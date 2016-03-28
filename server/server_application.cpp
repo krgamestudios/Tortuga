@@ -806,15 +806,16 @@ void ServerApplication::hCharacterMovement(CharacterPacket* const argPacket) {
 //TODO: On creature create, etc.
 
 void ServerApplication::hQueryCreatureExists(CreaturePacket* const argPacket) {
+	//respond with all creature data
+	CreaturePacket newPacket;
+
 	CreatureManager* creatureMgr = roomMgr.Get(argPacket->roomIndex)->GetCreatureMgr();
 
-	CreaturePacket newPacket;
-	for ( auto& it : *(creatureMgr->GetContainer()) ) {
-		if (distance(argPacket->origin, it.second.GetOrigin()) < 1000) {
-			copyCreatureToPacket(&newPacket, &(it.second), it.first);
-			newPacket.type = SerialPacketType::QUERY_CREATURE_EXISTS;
-			network.SendTo(argPacket->srcAddress, reinterpret_cast<void*>(&newPacket), MAX_PACKET_SIZE);
-		}
+	//TODO: move this into the room class
+	for (auto& it : *(creatureMgr->GetContainer()) ) {
+		copyCreatureToPacket(&newPacket, &(it.second), it.first);
+		newPacket.type = SerialPacketType::QUERY_CREATURE_EXISTS;
+		network.SendTo(argPacket->srcAddress, static_cast<SerialPacket*>(&newPacket));
 	}
 }
 

@@ -684,13 +684,16 @@ void World::hCharacterCreate(CharacterPacket* const argPacket) {
 		roomIndex = argPacket->roomIndex;
 
 		//query the world state (room)
-		CharacterPacket newPacket;
-		memset(&newPacket, 0, MAX_PACKET_SIZE);
-		newPacket.type = SerialPacketType::QUERY_CHARACTER_EXISTS;
-		newPacket.roomIndex = roomIndex;
-		network.SendTo(Channels::SERVER, &newPacket);
-		newPacket.type = SerialPacketType::QUERY_CREATURE_EXISTS;
-		network.SendTo(Channels::SERVER, &newPacket);
+		CharacterPacket characterPacket;
+		memset(&characterPacket, 0, MAX_PACKET_SIZE);
+		characterPacket.type = SerialPacketType::QUERY_CHARACTER_EXISTS;
+		characterPacket.roomIndex = roomIndex;
+		network.SendTo(Channels::SERVER, &characterPacket);
+
+		CreaturePacket creaturePacket;
+		creaturePacket.type = SerialPacketType::QUERY_CREATURE_EXISTS;
+		creaturePacket.roomIndex = roomIndex;
+		network.SendTo(Channels::SERVER, &creaturePacket);
 	}
 
 	//debug
@@ -805,14 +808,14 @@ void World::hCreatureCreate(CreaturePacket* const argPacket) {
 		throw(std::runtime_error(msg.str()));
 	}
 
-//	//ignore creatures from other rooms
-//	if (roomIndex != argPacket->roomIndex) {
-//		//temporary error checking
-//		std::ostringstream msg;
-//		msg << "Creature from the wrong room received: ";
-//		msg << "creatureIndex: " << argPacket->creatureIndex << ", roomIndex: " << argPacket->roomIndex;
-//		throw(std::runtime_error(msg.str()));
-//	}
+	//ignore creatures from other rooms
+	if (roomIndex != argPacket->roomIndex) {
+		//temporary error checking
+		std::ostringstream msg;
+		msg << "Creature from the wrong room received: ";
+		msg << "creatureIndex: " << argPacket->creatureIndex << ", roomIndex: " << argPacket->roomIndex;
+		throw(std::runtime_error(msg.str()));
+	}
 
 	//implicitly create the element
 	BaseCreature* creature = &creatureMap[argPacket->creatureIndex];
@@ -843,6 +846,8 @@ void World::hCreatureUnload(CreaturePacket* const argPacket) {
 }
 
 void World::hQueryCreatureExists(CreaturePacket* const argPacket) {
+	std::cout << "Creature Query" << std::endl;
+
 	//ignore creatures in a different room (sub-optimal)
 	if (argPacket->roomIndex != roomIndex) {
 		return;
