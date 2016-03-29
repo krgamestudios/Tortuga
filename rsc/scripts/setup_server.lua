@@ -38,11 +38,49 @@ doorUtility = require("door_utility")
 creatureAPI = require("creature")
 creatureManagerAPI = require("creature_manager")
 
+--testing creature tags
+local function bunnySquare(creature)
+	--return value
+	local ret = 0
+
+	--these tags are strings
+	local direction = creatureAPI.GetTag(creature, "direction")
+	local timestamp = creatureAPI.GetTag(creature, "timestamp")
+
+	--has this creature been set up yet?
+	if string.len(direction) == 0 then
+		direction = "south"
+		timestamp = tostring(os.time())
+		creatureAPI.SetMotion(creature, 0, 1)
+	end
+
+
+
+	--is it time to change direction?
+	if os.time() - tonumber(timestamp) > 3 then
+--		print("changing directions")
+
+		if string.match("south", direction) then
+			direction = "north"
+			creatureAPI.SetMotion(creature, 0, -1)
+		else
+			direction = "south"
+			creatureAPI.SetMotion(creature, 0, 1)
+		end
+		timestamp = tostring(os.time())
+		ret = 1
+	end
+
+	creatureAPI.SetTag(creature, "direction", direction)
+	creatureAPI.SetTag(creature, "timestamp", timestamp)
+	return ret
+end
+
 --test the room hooks
 roomManagerAPI.SetOnCreate(function(room, index)
 	print("", "Creating room: ", roomAPI.GetName(room), index)
 
-	creatureManagerAPI.Create(roomAPI.GetCreatureMgr(room), "anibunny.png", function() --[[]] end)
+	creatureManagerAPI.Create(roomAPI.GetCreatureMgr(room), "anibunny.png", bunnySquare)
 
 	roomAPI.SetOnTick(room, function(room)
 		roomAPI.ForEachCharacter(room, function(character)

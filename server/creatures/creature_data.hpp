@@ -25,6 +25,7 @@
 
 #include "lua.hpp"
 
+#include <map>
 #include <string>
 
 /* DOCS: Creature attributes, read more
@@ -49,9 +50,13 @@ public:
 	int SetScriptReference(int);
 	int GetScriptReference();
 
+	std::string SetTag(std::string key, std::string value);
+	std::string GetTag(std::string key);
+
 private:
 	friend class CreatureManager;
 
 	std::string avatar;
 	int scriptRef = LUA_NOREF;
+	std::map<std::string, std::string> tags;
 };

@@ -52,11 +52,26 @@ static int getScript(lua_State* L) {
 	return 1;
 }
 
+//TODO: autogen docs
+static int setTag(lua_State* L) {
+	CreatureData* creature = static_cast<CreatureData*>(lua_touserdata(L, 1));
+	creature->SetTag(lua_tostring(L, 2), lua_tostring(L, 3));
+	return 0;
+}
+
+static int getTag(lua_State* L) {
+	CreatureData* creature = static_cast<CreatureData*>(lua_touserdata(L, 1));
+	lua_pushstring(L, creature->GetTag(lua_tostring(L, 2)).c_str());
+	return 1;
+}
+
 static const luaL_Reg creatureLib[] = {
 	{"SetAvatar", setAvatar},
 	{"GetAvatar", getAvatar},
 	{"SetScript", setScript},
 	{"GetScript", getScript},
+	{"SetTag", setTag},
+	{"GetTag", getTag},
 	{nullptr, nullptr}
 };
 

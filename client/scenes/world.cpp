@@ -779,6 +779,7 @@ void World::hCharacterMovement(CharacterPacket* const argPacket) {
 //-------------------------
 
 void World::hCreatureUpdate(CreaturePacket* const argPacket) {
+	std::cout << "hCreatureUpdate" << std::endl;
 	//TODO: (1) Authentication
 
 	//check that this character exists
@@ -868,6 +869,8 @@ void World::hQueryCreatureExists(CreaturePacket* const argPacket) {
 }
 
 void World::hCreatureMovement(CreaturePacket* const argPacket) {
+	std::cout << "hCreatureMovement" << std::endl;
+
 	//ignore if this creature doesn't exist
 	std::map<int, BaseCreature>::iterator creatureIt = creatureMap.find(argPacket->creatureIndex);
 	if (creatureIt == creatureMap.end()) {

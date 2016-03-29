@@ -52,7 +52,7 @@ int CreatureData::Update(lua_State* L) {
 		ret += lua_tonumber(L, -1);
 	}
 
-	ret += Entity::Update();
+	Entity::Update();
 
 	return ret;
 }
@@ -75,4 +75,12 @@ int CreatureData::SetScriptReference(int i) {
 
 int CreatureData::GetScriptReference() {
 	return scriptRef;
+}
+
+std::string CreatureData::SetTag(std::string key, std::string value) {
+	return tags[key] = value;
+}
+
+std::string CreatureData::GetTag(std::string key) {
+	return tags[key];
 }

@@ -37,7 +37,7 @@ public:
 	~CreatureManager();
 
 	//common public methods
-	int Update(std::list<std::pair<const int, CreatureData*>>* creatureList);
+	void Update(std::list<std::pair<const int, CreatureData*>>* creatureList);
 
 	int Create(std::string avatar, int scriptRef);
 	void Unload(int uid);

@@ -25,8 +25,12 @@
 
 //args: mgr, avatar, script
 static int create(lua_State* L) {
+	//register the function at the top of the stack
+	lua_pushinteger(L, luaL_ref(L, LUA_REGISTRYINDEX));
+
+	//create the actual creature
 	CreatureManager* mgr = static_cast<CreatureManager* const>(lua_touserdata(L, 1));
-	int index = mgr->Create(lua_tostring(L, 2), lua_tointeger(L, 3));
+	int index = mgr->Create(lua_tostring(L, 2), lua_tointeger(L, 3)); //3 should be the unique reference within LUA_REGISTRYINDEX
 	CreatureData* creature = mgr->Get(index);
 	lua_pushlightuserdata(L, static_cast<void*>(creature));
 	lua_pushinteger(L, index);
