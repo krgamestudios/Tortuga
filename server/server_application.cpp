@@ -815,6 +815,7 @@ void ServerApplication::hQueryCreatureExists(CreaturePacket* const argPacket) {
 	for (auto& it : *(creatureMgr->GetContainer()) ) {
 		copyCreatureToPacket(&newPacket, &(it.second), it.first);
 		newPacket.type = SerialPacketType::QUERY_CREATURE_EXISTS;
+		newPacket.roomIndex = argPacket->roomIndex;
 		network.SendTo(argPacket->srcAddress, static_cast<SerialPacket*>(&newPacket));
 	}
 }
