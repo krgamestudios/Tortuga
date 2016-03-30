@@ -21,6 +21,7 @@
 */
 #include "room_data.hpp"
 
+#include "culling_defines.hpp"
 #include "serial_packet.hpp"
 #include "server_utilities.hpp"
 
@@ -110,7 +111,8 @@ void RoomData::RunFrame() {
 		CreaturePacket packet;
 		copyCreatureToPacket(&packet, it.second, it.first);
 		packet.type = SerialPacketType::CREATURE_UPDATE;
-		pumpPacketProximity(reinterpret_cast<SerialPacket*>(&packet), roomIndex, it.second->GetOrigin(), 320);
+		packet.roomIndex = roomIndex;
+		pumpPacketProximity(reinterpret_cast<SerialPacket*>(&packet), roomIndex, it.second->GetOrigin(), INFLUENCE_RADIUS);
 	}
 
 	//TODO: creature/character collisions

@@ -21,34 +21,4 @@
 */
 #pragma once
 
-#include "bounding_box.hpp"
-#include "sprite_sheet.hpp"
-#include "vector2.hpp"
-
-//The base class for all objects in the world
-//TODO: (9) write a better hierarchy
-class Entity {
-public:
-	virtual void Update();
-	virtual void DrawTo(SDL_Renderer* const, int camX, int camY);
-
-	SpriteSheet* GetSprite();
-
-	//accessors & mutators
-	Vector2 SetOrigin(Vector2 v);
-	Vector2 SetMotion(Vector2 v);
-	BoundingBox SetBounds(BoundingBox b);
-
-	Vector2 GetOrigin() const;
-	Vector2 GetMotion() const;
-	BoundingBox GetBounds() const;
-
-protected:
-	Entity() = default;
-	virtual ~Entity() = default;
-
-	SpriteSheet sprite;
-	Vector2 origin;
-	Vector2 motion;
-	BoundingBox bounds;
-};
+constexpr int INFLUENCE_RADIUS = 1000;

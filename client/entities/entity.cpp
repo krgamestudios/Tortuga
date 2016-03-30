@@ -50,14 +50,14 @@ BoundingBox Entity::SetBounds(BoundingBox b) {
 	return bounds = b;
 }
 
-Vector2 Entity::GetOrigin() {
+Vector2 Entity::GetOrigin() const {
 	return origin;
 }
 
-Vector2 Entity::GetMotion() {
+Vector2 Entity::GetMotion() const {
 	return motion;
 }
 
-BoundingBox Entity::GetBounds() {
+BoundingBox Entity::GetBounds() const {
 	return bounds;
 }

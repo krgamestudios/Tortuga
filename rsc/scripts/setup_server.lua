@@ -57,7 +57,7 @@ local function bunnySquare(creature)
 
 
 	--is it time to change direction?
-	if os.time() - tonumber(timestamp) > 3 then
+	if os.time() - tonumber(timestamp) >= 1 then
 --		print("changing directions")
 
 		if string.match("south", direction) then

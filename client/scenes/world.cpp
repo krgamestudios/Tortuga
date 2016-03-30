@@ -22,6 +22,7 @@
 #include "world.hpp"
 
 #include "channels.hpp"
+#include "culling_defines.hpp"
 #include "ip_operators.hpp"
 #include "fatal_error.hpp"
 
@@ -161,6 +162,17 @@ void World::Update() {
 	//skip the rest without a local character
 	if (!localCharacter) {
 		return;
+	}
+
+	//TODO: (1) regular query interval
+	//cull creatures
+	for (std::map<int, BaseCreature>::iterator it = creatureMap.begin(); it != creatureMap.end(); /* */) {
+		if ( (localCharacter->GetOrigin() - it->second.GetOrigin()).Length() > INFLUENCE_RADIUS) {
+			creatureMap.erase(it++);
+		}
+		else {
+			it++;
+		}
 	}
 
 	//get the collidable boxes
@@ -779,10 +791,15 @@ void World::hCharacterMovement(CharacterPacket* const argPacket) {
 //-------------------------
 
 void World::hCreatureUpdate(CreaturePacket* const argPacket) {
-	std::cout << "hCreatureUpdate" << std::endl;
-	//TODO: (1) Authentication
+	//Cull creatures that are too far away
+	if ( (localCharacter->GetOrigin() - argPacket->origin).Length() > INFLUENCE_RADIUS) {
+		//ignore beyond 1000 units
+		return;
+	}
 
-	//check that this character exists
+	std::cout << "hCreatureUpdate" << std::endl;
+
+	//check if this creature exists
 	std::map<int, BaseCreature>::iterator creatureIt = creatureMap.find(argPacket->creatureIndex);
 	if (creatureIt != creatureMap.end()) {
 		//update the origin and motion, if there's a difference
