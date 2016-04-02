@@ -59,7 +59,7 @@ void TriggerManager::UnloadIf(std::function<bool(std::pair<const int, TriggerDat
 	}
 }
 
-TriggerData* TriggerManager::Get(int uid) {
+TriggerData* TriggerManager::Find(int uid) {
 	std::map<int, TriggerData>::iterator it = elementMap.find(uid);
 
 	if (it == elementMap.end()) {
@@ -69,7 +69,7 @@ TriggerData* TriggerManager::Get(int uid) {
 	return &it->second;
 }
 
-TriggerData* TriggerManager::Get(std::string handle) {
+TriggerData* TriggerManager::Find(std::string handle) {
 	for (std::map<int, TriggerData>::iterator it = elementMap.begin(); it != elementMap.end(); ++it) {
 		if (it->second.GetHandle() == handle) {
 			return &it->second;

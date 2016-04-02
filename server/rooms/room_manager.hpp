@@ -43,8 +43,8 @@ public:
 	void PopCharacter(CharacterData const* character);
 
 	//accessors and mutators
-	RoomData* Get(int uid);
-	RoomData* Get(std::string name);
+	RoomData* Find(int uid);
+	RoomData* Find(std::string name);
 	int GetLoadedCount();
 	std::map<int, RoomData>* GetContainer();
 

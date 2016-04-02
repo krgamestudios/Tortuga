@@ -44,8 +44,8 @@ public:
 	void UnloadIf(std::function<bool(std::pair<const int, TriggerData const&>)> fn);
 
 	//accessors & mutators
-	TriggerData* Get(int uid);
-	TriggerData* Get(std::string handle);
+	TriggerData* Find(int uid);
+	TriggerData* Find(std::string handle);
 	int GetLoadedCount();
 	std::map<int, TriggerData>* GetContainer();
 

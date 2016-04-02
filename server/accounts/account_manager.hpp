@@ -42,7 +42,7 @@ public:
 	void UnloadIf(std::function<bool(std::pair<const int, AccountData const&>)> fn);
 
 	//accessors and mutators
-	AccountData* Get(int uid);
+	AccountData* Find(int uid);
 	int GetLoadedCount();
 	int GetTotalCount();
 	std::map<int, AccountData>* GetContainer();

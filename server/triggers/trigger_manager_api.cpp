@@ -31,7 +31,7 @@ static int create(lua_State* L) {
 
 	//create the trigger
 	int index = mgr->Create(lua_tostring(L, 2));
-	TriggerData* triggerData = mgr->Get(index);
+	TriggerData* triggerData = mgr->Find(index);
 
 	//origin
 	if (lua_gettop(L) >= 4) {
@@ -101,16 +101,16 @@ static int unload(lua_State* L) {
 	return 1;
 }
 
-static int getTrigger(lua_State* L) {
+static int findTrigger(lua_State* L) {
 	TriggerManager* mgr = static_cast<TriggerManager*>(lua_touserdata(L, 1));
 	TriggerData* triggerData = nullptr;
 
 	switch(lua_type(L, 2)) {
 		case LUA_TNUMBER:
-			triggerData = mgr->Get(lua_tointeger(L, 2));
+			triggerData = mgr->Find(lua_tointeger(L, 2));
 		break;
 		case LUA_TSTRING:
-			triggerData = mgr->Get(lua_tostring(L, 2));
+			triggerData = mgr->Find(lua_tostring(L, 2));
 		break;
 	}
 
@@ -137,7 +137,7 @@ static int getLoadedCount(lua_State* L) {
 static const luaL_Reg triggerManagerLib[] = {
 	{"Create",create},
 	{"Unload",unload},
-	{"GetTrigger",getTrigger},
+	{"FindTrigger",findTrigger},
 	{"GetCount",getLoadedCount},
 	{nullptr, nullptr}
 };

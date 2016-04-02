@@ -234,7 +234,7 @@ void AccountManager::UnloadIf(std::function<bool(std::pair<const int, AccountDat
 //Define the accessors and mutators
 //-------------------------
 
-AccountData* AccountManager::Get(int uid) {
+AccountData* AccountManager::Find(int uid) {
 	std::map<int, AccountData>::iterator it = elementMap.find(uid);
 
 	if (it == elementMap.end()) {

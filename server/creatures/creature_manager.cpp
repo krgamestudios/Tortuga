@@ -70,7 +70,7 @@ void CreatureManager::UnloadIf(std::function<bool(std::pair<const int, CreatureD
 	}
 }
 
-CreatureData* CreatureManager::Get(int uid) {
+CreatureData* CreatureManager::Find(int uid) {
 	std::map<int, CreatureData>::iterator it = elementMap.find(uid);
 
 	if (it == elementMap.end()) {

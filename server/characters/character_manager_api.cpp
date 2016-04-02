@@ -55,11 +55,11 @@ static int getCharacter(lua_State* L) {
 
 	switch(lua_type(L, 1)) {
 		case LUA_TNUMBER:
-			characterData = characterMgr.Get(lua_tointeger(L, 1));
+			characterData = characterMgr.Find(lua_tointeger(L, 1));
 		break;
 		case LUA_TSTRING:
 			//access characters via their handles
-			characterData = characterMgr.Get(lua_tostring(L, 1));
+			characterData = characterMgr.Find(lua_tostring(L, 1));
 		break;
 	}
 

@@ -42,8 +42,8 @@ public:
 	void UnloadIf(std::function<bool(std::pair<const int, CharacterData const&>)> fn);
 
 	//accessors and mutators
-	CharacterData* Get(int uid);
-	CharacterData* Get(std::string handle);
+	CharacterData* Find(int uid);
+	CharacterData* Find(std::string handle);
 	int GetLoadedCount();
 	int GetTotalCount();
 	std::map<int, CharacterData>* GetContainer();

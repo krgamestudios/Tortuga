@@ -130,7 +130,7 @@ void pumpPacket(SerialPacket* const argPacket) {
 
 void pumpPacketProximity(SerialPacket* const argPacket, int roomIndex, Vector2 position, int distance) {
 	//send this packet to all characters within a certain distance of a point in a room
-	RoomData* roomData = RoomManager::GetSingleton().Get(roomIndex);
+	RoomData* roomData = RoomManager::GetSingleton().Find(roomIndex);
 
 	if (!roomData) {
 		throw(std::runtime_error("Failed to pump to a non-existant room"));
@@ -141,15 +141,15 @@ void pumpPacketProximity(SerialPacket* const argPacket, int roomIndex, Vector2 p
 
 	for (auto& characterIt : *roomData->GetCharacterList()) {
 		if (distance == -1 || (characterIt->GetOrigin() - position).Length() <= distance) {
-			accountData = AccountManager::GetSingleton().Get(characterIt->GetOwner());
-			clientData = ClientManager::GetSingleton().Get(accountData->GetClientIndex());
+			accountData = AccountManager::GetSingleton().Find(characterIt->GetOwner());
+			clientData = ClientManager::GetSingleton().Find(accountData->GetClientIndex());
 			UDPNetworkUtility::GetSingleton().SendTo(clientData->GetAddress(), argPacket);
 		}
 	}
 }
 
 void copyCharacterToPacket(CharacterPacket* const packet, int characterIndex) {
-	CharacterData* characterData = CharacterManager::GetSingleton().Get(characterIndex);
+	CharacterData* characterData = CharacterManager::GetSingleton().Find(characterIndex);
 	if (!characterData) {
 		throw(std::runtime_error("Failed to copy a character to a packet"));
 	}
@@ -179,7 +179,7 @@ void copyCreatureToPacket(CreaturePacket* const packet, CreatureData* const crea
 
 void pumpAndChangeRooms(int characterIndex, int newRoomIndex) {
 	//get the character object
-	CharacterData* character = CharacterManager::GetSingleton().Get(characterIndex);
+	CharacterData* character = CharacterManager::GetSingleton().Find(characterIndex);
 
 	//pass ownwards
 	pumpAndChangeRooms(character, newRoomIndex, characterIndex);

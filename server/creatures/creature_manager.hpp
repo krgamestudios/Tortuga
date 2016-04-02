@@ -46,7 +46,7 @@ public:
 	void UnloadIf(std::function<bool(std::pair<const int, CreatureData const&>)> fn);
 
 	//accessors & mutators
-	CreatureData* Get(int uid);
+	CreatureData* Find(int uid);
 	int GetLoadedCount();
 	std::map<int, CreatureData>* GetContainer();
 

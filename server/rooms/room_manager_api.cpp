@@ -27,7 +27,7 @@ int createRoom(lua_State* L) {
 	//create & get the room
 	RoomManager& roomMgr = RoomManager::GetSingleton();
 	int uid = roomMgr.Create(lua_tostring(L, 1), lua_tostring(L, 2));
-	RoomData* room = roomMgr.Get(uid);
+	RoomData* room = roomMgr.Find(uid);
 
 	//TODO: initialization parameters here?
 
@@ -70,7 +70,7 @@ int unloadRoom(lua_State* L) {
 	return 0;
 }
 
-int getRoom(lua_State* L) {
+int findRoom(lua_State* L) {
 	//integer vs name for getRoom()
 	RoomManager& roomMgr = RoomManager::GetSingleton();
 	RoomData* room = nullptr;
@@ -78,11 +78,11 @@ int getRoom(lua_State* L) {
 	switch(lua_type(L, 1)) {
 		case LUA_TNUMBER:
 			//number
-			room = roomMgr.Get(lua_tointeger(L, 1));
+			room = roomMgr.Find(lua_tointeger(L, 1));
 		break;
 		case LUA_TSTRING:
 			//name
-			room = roomMgr.Get(lua_tostring(L, 1));
+			room = roomMgr.Find(lua_tostring(L, 1));
 		break;
 	}
 
@@ -113,7 +113,7 @@ static int setOnUnload(lua_State* L) {
 static const luaL_Reg roomManagerLib[] = {
 	{"CreateRoom", createRoom},
 	{"UnloadRoom", unloadRoom},
-	{"GetRoom", getRoom},
+	{"FindRoom", findRoom},
 	{"SetOnCreate", setOnCreate},
 	{"SetOnUnload", setOnUnload},
 	{nullptr, nullptr}

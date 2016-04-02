@@ -31,7 +31,7 @@ static int create(lua_State* L) {
 	//create the actual creature
 	CreatureManager* mgr = static_cast<CreatureManager* const>(lua_touserdata(L, 1));
 	int index = mgr->Create(lua_tostring(L, 2), lua_tointeger(L, 3)); //3 should be the unique reference within LUA_REGISTRYINDEX
-	CreatureData* creature = mgr->Get(index);
+	CreatureData* creature = mgr->Find(index);
 	lua_pushlightuserdata(L, static_cast<void*>(creature));
 	lua_pushinteger(L, index);
 	return 2;
@@ -56,9 +56,9 @@ static int unloadIf(lua_State* L) {
 	return 0;
 }
 
-static int get(lua_State* L) {
+static int find(lua_State* L) {
 	CreatureManager* mgr = static_cast<CreatureManager* const>(lua_touserdata(L, 1));
-	CreatureData* creature = mgr->Get(lua_tointeger(L, 2));
+	CreatureData* creature = mgr->Find(lua_tointeger(L, 2));
 	lua_pushlightuserdata(L, static_cast<void*>(creature));
 	return 1;
 }
@@ -74,7 +74,7 @@ static const luaL_Reg creatureManagerLib[] = {
 	{"Unload", unload},
 	{"UnloadAll", unloadAll},
 //	{"UnloadIf", unloadIf},
-	{"Get", get},
+	{"Find", find},
 	{"GetLoadedCount", getLoadedCount},
 	{nullptr, nullptr}
 };

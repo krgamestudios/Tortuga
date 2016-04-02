@@ -294,7 +294,7 @@ void CharacterManager::UnloadIf(std::function<bool(std::pair<const int, Characte
 //Define the accessors and mutators
 //-------------------------
 
-CharacterData* CharacterManager::Get(int uid) {
+CharacterData* CharacterManager::Find(int uid) {
 	std::map<int, CharacterData>::iterator it = elementMap.find(uid);
 
 	if (it == elementMap.end()) {
@@ -304,7 +304,7 @@ CharacterData* CharacterManager::Get(int uid) {
 	return &it->second;
 }
 
-CharacterData* CharacterManager::Get(std::string handle) {
+CharacterData* CharacterManager::Find(std::string handle) {
 	for (std::map<int, CharacterData>::iterator it = elementMap.begin(); it != elementMap.end(); ++it) {
 		if (it->second.GetHandle() == handle) {
 			return &it->second;

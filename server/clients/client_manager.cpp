@@ -86,7 +86,7 @@ void ClientManager::UnloadIf(std::function<bool(std::pair<const int, ClientData 
 	}
 }
 
-ClientData* ClientManager::Get(int uid) {
+ClientData* ClientManager::Find(int uid) {
 	std::map<int, ClientData>::iterator it = elementMap.find(uid);
 
 	if (it == elementMap.end()) {

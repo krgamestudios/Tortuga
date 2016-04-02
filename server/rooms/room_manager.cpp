@@ -116,7 +116,7 @@ void RoomManager::PushCharacter(CharacterData* character) {
 		throw(std::runtime_error("Failed to push a null character to a room"));
 	}
 
-	RoomData* room = Get(character->GetRoomIndex());
+	RoomData* room = Find(character->GetRoomIndex());
 
 	if (!room) {
 		throw(std::runtime_error("Failed to push an character to a non-existant room"));
@@ -131,7 +131,7 @@ void RoomManager::PopCharacter(CharacterData const* character) {
 		throw(std::runtime_error("Failed to pop a null character to a room"));
 	}
 
-	RoomData* room = Get(character->GetRoomIndex());
+	RoomData* room = Find(character->GetRoomIndex());
 
 	if (!room) {
 		throw(std::runtime_error("Failed to pop an character to a non-existant room"));
@@ -143,7 +143,7 @@ void RoomManager::PopCharacter(CharacterData const* character) {
 }
 
 //TODO: rename these functions from Get to Find
-RoomData* RoomManager::Get(int uid) {
+RoomData* RoomManager::Find(int uid) {
 	std::map<int, RoomData>::iterator it = elementMap.find(uid);
 
 	if (it == elementMap.end()) {
@@ -153,7 +153,7 @@ RoomData* RoomManager::Get(int uid) {
 	return &it->second;
 }
 
-RoomData* RoomManager::Get(std::string name) {
+RoomData* RoomManager::Find(std::string name) {
 	for (std::map<int, RoomData>::iterator it = elementMap.begin(); it != elementMap.end(); ++it) {
 		if (it->second.GetName() == name) {
 			return &it->second;

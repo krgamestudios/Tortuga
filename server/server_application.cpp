@@ -376,7 +376,7 @@ void ServerApplication::hJoinRequest(ClientPacket* const argPacket) {
 
 void ServerApplication::hLoginRequest(ClientPacket* const argPacket) {
 	//get the client data
-	ClientData* clientData = clientMgr.Get(argPacket->clientIndex);
+	ClientData* clientData = clientMgr.Find(argPacket->clientIndex);
 
 	if (clientData == nullptr || clientData->GetAddress() != argPacket->srcAddress) {
 		std::cerr << "Falsified client index detected: " << argPacket->clientIndex << std::endl;
@@ -421,12 +421,12 @@ void ServerApplication::hLoginRequest(ClientPacket* const argPacket) {
 
 void ServerApplication::hLogoutRequest(ClientPacket* const argPacket) {
 	//get the account and client data
-	AccountData* accountData = accountMgr.Get(argPacket->accountIndex);
+	AccountData* accountData = accountMgr.Find(argPacket->accountIndex);
 	if (!accountData) {
 		return;
 	}
 
-	ClientData* clientData = clientMgr.Get(accountData->GetClientIndex());
+	ClientData* clientData = clientMgr.Find(accountData->GetClientIndex());
 	if (!clientData) {
 		std::ostringstream msg;
 		msg << "No client found for an account: " << accountData->GetUsername();
@@ -455,7 +455,7 @@ void ServerApplication::hLogoutRequest(ClientPacket* const argPacket) {
 
 void ServerApplication::hDisconnectRequest(ClientPacket* const argPacket) {
 	//get the client data
-	ClientData* clientData = clientMgr.Get(argPacket->clientIndex);
+	ClientData* clientData = clientMgr.Find(argPacket->clientIndex);
 	if (!clientData) {
 		return;
 	}
@@ -490,11 +490,11 @@ void ServerApplication::hAdminDisconnectForced(ClientPacket* const argPacket) {
 
 void ServerApplication::hAdminShutdownRequest(ClientPacket* const argPacket) {
 	//get the account and client data
-	AccountData* accountData = accountMgr.Get(argPacket->accountIndex);
+	AccountData* accountData = accountMgr.Find(argPacket->accountIndex);
 	if (!accountData) {
 		return;
 	}
-	ClientData* clientData = clientMgr.Get(accountData->GetClientIndex());
+	ClientData* clientData = clientMgr.Find(accountData->GetClientIndex());
 	if (!clientData) {
 		std::ostringstream msg;
 		msg << "No client found for an account: " << accountData->GetUsername();
@@ -545,7 +545,7 @@ void ServerApplication::hAdminShutdownRequest(ClientPacket* const argPacket) {
 
 void ServerApplication::hRegionRequest(RegionPacket* const argPacket) {
 	//get the region object, send a rejection on error
-	RoomData* room = roomMgr.Get(argPacket->roomIndex);
+	RoomData* room = roomMgr.Find(argPacket->roomIndex);
 	if (!room) {
 		//build the error message
 		std::ostringstream msg;
@@ -618,7 +618,7 @@ void ServerApplication::hCharacterCreate(CharacterPacket* const argPacket) {
 	}
 
 	//push to the rooms
-	CharacterData* characterData = characterMgr.Get(characterIndex);
+	CharacterData* characterData = characterMgr.Find(characterIndex);
 	roomMgr.PushCharacter(characterData);
 
 	//pump this character to all clients
@@ -630,11 +630,11 @@ void ServerApplication::hCharacterCreate(CharacterPacket* const argPacket) {
 
 void ServerApplication::hCharacterDelete(CharacterPacket* const argPacket) {
 	//get the user's data
-	AccountData* accountData = accountMgr.Get(argPacket->accountIndex);
+	AccountData* accountData = accountMgr.Find(argPacket->accountIndex);
 	if (!accountData) {
 		return;
 	}
-	ClientData* clientData = clientMgr.Get(accountData->GetClientIndex());
+	ClientData* clientData = clientMgr.Find(accountData->GetClientIndex());
 	if (!clientData) {
 		return;
 	}
@@ -663,7 +663,7 @@ void ServerApplication::hCharacterDelete(CharacterPacket* const argPacket) {
 	}
 
 	//pop from the rooms
-	CharacterData* characterData = characterMgr.Get(characterIndex);
+	CharacterData* characterData = characterMgr.Find(characterIndex);
 	roomMgr.PopCharacter(characterData);
 
 	//pump character unload
@@ -700,7 +700,7 @@ void ServerApplication::hCharacterLoad(CharacterPacket* const argPacket) {
 	}
 
 	//push to the rooms
-	CharacterData* characterData = characterMgr.Get(characterIndex);
+	CharacterData* characterData = characterMgr.Find(characterIndex);
 	roomMgr.PushCharacter(characterData);
 
 	//pump this character to all clients
@@ -712,17 +712,17 @@ void ServerApplication::hCharacterLoad(CharacterPacket* const argPacket) {
 
 void ServerApplication::hCharacterUnload(CharacterPacket* const argPacket) {
 	//get the entries
-	CharacterData* characterData = characterMgr.Get(argPacket->characterIndex);
+	CharacterData* characterData = characterMgr.Find(argPacket->characterIndex);
 	if (!characterData) {
 		return;
 	}
 
-	AccountData* accountData = accountMgr.Get(characterData->GetOwner());
+	AccountData* accountData = accountMgr.Find(characterData->GetOwner());
 	if (!accountData) {
 		return;
 	}
 
-	ClientData* clientData = clientMgr.Get(accountData->GetClientIndex());
+	ClientData* clientData = clientMgr.Find(accountData->GetClientIndex());
 	if (!clientData) {
 		return;
 	}
@@ -748,20 +748,20 @@ void ServerApplication::hCharacterUnload(CharacterPacket* const argPacket) {
 
 void ServerApplication::hCharacterMovement(CharacterPacket* const argPacket) {
 	//get the specified objects
-	AccountData* accountData = accountMgr.Get(argPacket->accountIndex);
+	AccountData* accountData = accountMgr.Find(argPacket->accountIndex);
 
 	if (!accountData) {
 		throw(std::runtime_error("Failed to move a character, missing account"));
 	}
 
-	CharacterData* characterData = characterMgr.Get(argPacket->characterIndex);
+	CharacterData* characterData = characterMgr.Find(argPacket->characterIndex);
 
 	if (!characterData) {
 		throw(std::runtime_error("Failed to move a character, missing character"));
 	}
 
 	//get this account's client
-	ClientData* clientData = clientMgr.Get(accountData->GetClientIndex());
+	ClientData* clientData = clientMgr.Find(accountData->GetClientIndex());
 
 	//check for fraud
 	if (clientData->GetAddress() != argPacket->srcAddress) {
@@ -809,9 +809,9 @@ void ServerApplication::hQueryCreatureExists(CreaturePacket* const argPacket) {
 	//respond with all creature data
 	CreaturePacket newPacket;
 
-	CreatureManager* creatureMgr = roomMgr.Get(argPacket->roomIndex)->GetCreatureMgr();
+	CreatureManager* creatureMgr = roomMgr.Find(argPacket->roomIndex)->GetCreatureMgr();
 
-	//TODO: move this into the room class
+	//TODO: (0) move this into the room class
 	for (auto& it : *(creatureMgr->GetContainer()) ) {
 		copyCreatureToPacket(&newPacket, &(it.second), it.first);
 		newPacket.type = SerialPacketType::QUERY_CREATURE_EXISTS;
