@@ -40,6 +40,7 @@
 
 //client
 #include "base_scene.hpp"
+#include "base_barrier.hpp"
 #include "base_creature.hpp"
 #include "local_character.hpp"
 
@@ -113,6 +114,12 @@ private:
 	void hQueryCreatureExists(CreaturePacket* const);
 	void hCreatureMovement(CreaturePacket* const);
 
+	//barrier management
+	void hBarrierUpdate(BarrierPacket* const);
+	void hBarrierCreate(BarrierPacket* const);
+	void hBarrierUnload(BarrierPacket* const);
+	void hQueryBarrierExists(BarrierPacket* const);
+
 	//chat
 	//TODO: ui chat engine
 	void hTextBroadcast(TextPacket* const);
@@ -151,6 +158,7 @@ private:
 	} camera;
 
 	//entities
+	std::map<int, BaseBarrier> barrierMap;
 	std::map<int, BaseCharacter> characterMap;
 	std::map<int, BaseCreature> creatureMap;
 	LocalCharacter* localCharacter = nullptr;

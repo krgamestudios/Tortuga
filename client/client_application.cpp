@@ -318,6 +318,7 @@ void ClientApplication::ProcessEvents() {
 #include "options_menu.hpp"
 #include "lobby_menu.hpp"
 #include "world.hpp"
+#include "combat.hpp"
 #include "disconnected_screen.hpp"
 
 void ClientApplication::ProcessSceneSignal(SceneSignal signal) {
@@ -340,6 +341,9 @@ void ClientApplication::ProcessSceneSignal(SceneSignal signal) {
 		break;
 		case SceneSignal::WORLD:
 			activeScene = new World(&clientIndex, &accountIndex);
+		break;
+		case SceneSignal::COMBAT:
+			activeScene = new Combat(&clientIndex, &accountIndex);
 		break;
 		case SceneSignal::DISCONNECTEDSCREEN:
 			activeScene = new DisconnectedScreen();

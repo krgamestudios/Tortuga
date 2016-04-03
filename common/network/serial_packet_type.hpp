@@ -154,6 +154,11 @@ enum class SerialPacketType {
 
 	BARRIER_UPDATE = 701,
 
+	BARRIER_CREATE = 702,
+	BARRIER_UNLOAD = 703,
+
+	QUERY_BARRIER_EXISTS = 704,
+
 	FORMAT_END_COMBAT = 799,
 
 	//-------------------------

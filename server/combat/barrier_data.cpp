@@ -27,6 +27,7 @@
 BarrierData::BarrierData(int i):
 	Entity::Entity("barrier")
 {
+	instanceIndex = i;
 	memcpy(status, 0, sizeof(int) * 8);
 }
 

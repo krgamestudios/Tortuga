@@ -19,46 +19,35 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#pragma once
+#include "base_barrier.hpp"
 
-#include "bounding_box.hpp"
-#include "vector2.hpp"
-#include "trigger_data.hpp"
+#include "config_utility.hpp"
 
-#include "lua.hpp"
+#include <cstring>
 
-#include <functional>
-#include <map>
-#include <stack>
-#include <string>
+void BaseBarrier::CorrectSprite() {
+	//TODO: (9) BaseBarrier::CorrectSprite()
+}
 
-class TriggerManager {
-public:
-	TriggerManager();
-	~TriggerManager();
+int BaseBarrier::SetStatus(int k, int v) {
+	if (k >= 8 || k < 0) {
+		return -1;
+	}
+	return status[k] = v;
+}
 
-	void Compare(std::stack<Entity*> entityStack);
+int BaseBarrier::FindStatus(int k) {
+	if (k >= 8 || k < 0) {
+		return -1;
+	}
+	return status[k];
+}
 
-	//common public methods
-	int Create(std::string handle); //TODO: return the Trigger itself?
-	void Unload(int uid);
+int* BaseBarrier::SetStatusArray(int* ptr) {
+	memcpy(status, ptr, sizeof(int) * 8);
+	return status;
+}
 
-	void UnloadAll();
-	void UnloadIf(std::function<bool(std::pair<const int, TriggerData const&>)> fn);
-
-	//accessors & mutators
-	TriggerData* Find(int uid);
-	TriggerData* Find(std::string handle);
-	int GetLoadedCount();
-	std::map<int, TriggerData>* GetContainer();
-
-	//hooks
-	lua_State* SetLuaState(lua_State* L);
-	lua_State* GetLuaState();
-
-private:
-	//members
-	std::map<int, TriggerData> elementMap;
-	lua_State* lua = nullptr;
-	int counter = 0;
-};
+int* BaseBarrier::GetStatusArray() {
+	return status;
+}

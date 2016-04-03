@@ -424,6 +424,22 @@ void World::HandlePacket(SerialPacket* const argPacket) {
 			hCreatureMovement(static_cast<CreaturePacket*>(argPacket));
 		break;
 
+		//barrier management
+		case SerialPacketType::BARRIER_UPDATE:
+			hBarrierUpdate(static_cast<BarrierPacket*>(argPacket));
+		break;
+
+		case SerialPacketType::BARRIER_CREATE:
+			hBarrierCreate(static_cast<BarrierPacket*>(argPacket));
+		break;
+		case SerialPacketType::BARRIER_UNLOAD:
+			hBarrierUnload(static_cast<BarrierPacket*>(argPacket));
+		break;
+
+		case SerialPacketType::QUERY_BARRIER_EXISTS:
+			hQueryBarrierExists(static_cast<BarrierPacket*>(argPacket));
+		break;
+
 		//chat
 		case SerialPacketType::TEXT_BROADCAST:
 			hTextBroadcast(static_cast<TextPacket*>(argPacket));
@@ -797,8 +813,6 @@ void World::hCreatureUpdate(CreaturePacket* const argPacket) {
 		return;
 	}
 
-	std::cout << "hCreatureUpdate" << std::endl;
-
 	//check if this creature exists
 	std::map<int, BaseCreature>::iterator creatureIt = creatureMap.find(argPacket->creatureIndex);
 	if (creatureIt != creatureMap.end()) {
@@ -896,6 +910,94 @@ void World::hCreatureMovement(CreaturePacket* const argPacket) {
 
 	creatureIt->second.SetOrigin(argPacket->origin);
 	creatureIt->second.SetMotion(argPacket->motion);
+}
+
+//-------------------------
+//barrier management
+//-------------------------
+
+void World::hBarrierUpdate(BarrierPacket* const argPacket) {
+	//Cull barriers that are too far away
+	if ( (localCharacter->GetOrigin() - argPacket->origin).Length() > INFLUENCE_RADIUS) {
+		//ignore beyond 1000 units
+		return;
+	}
+
+	//check if this barrier exists
+	std::map<int, BaseBarrier>::iterator barrierIt = barrierMap.find(argPacket->barrierIndex);
+	if (barrierIt != barrierMap.end()) {
+		//update the origin and motion, if there's a difference
+		if (barrierIt->second.GetOrigin() != argPacket->origin) {
+			barrierIt->second.SetOrigin(argPacket->origin);
+		}
+	}
+	else {
+		hBarrierCreate(argPacket);
+	}
+}
+
+void World::hBarrierCreate(BarrierPacket* const argPacket) {
+	//check for logic errors
+	if (barrierMap.find(argPacket->barrierIndex) != barrierMap.end()) {
+		std::ostringstream msg;
+		msg << "Double barrier creation event; ";
+		msg << "Index: " << argPacket->barrierIndex;
+		throw(std::runtime_error(msg.str()));
+	}
+
+	//ignore barriers from other rooms
+	if (roomIndex != argPacket->roomIndex) {
+		//temporary error checking
+		std::ostringstream msg;
+		msg << "Barrier from the wrong room received: ";
+		msg << "barrierIndex: " << argPacket->barrierIndex << ", roomIndex: " << argPacket->roomIndex;
+		throw(std::runtime_error(msg.str()));
+	}
+
+	//implicitly create the element
+	BaseBarrier* barrier = &barrierMap[argPacket->barrierIndex];
+
+	//fill the barrier's info
+	barrier->SetBounds(argPacket->bounds);
+	barrier->SetOrigin(argPacket->origin);
+	barrier->SetStatusArray(argPacket->status);
+
+	//debug
+	std::cout << "Barrier Create, total: " << barrierMap.size() << std::endl;
+}
+
+void World::hBarrierUnload(BarrierPacket* const argPacket) {
+	//ignore if this barrier doesn't exist
+	std::map<int, BaseBarrier>::iterator barrierIt = barrierMap.find(argPacket->barrierIndex);
+	if (barrierIt == barrierMap.end()) {
+		return;
+	}
+
+	//remove this barrier
+	barrierMap.erase(barrierIt);
+
+	//debug
+	std::cout << "Barrier Unload, total: " << barrierMap.size() << std::endl;
+}
+
+void World::hQueryBarrierExists(BarrierPacket* const argPacket) {
+	std::cout << "Barrier Query" << std::endl;
+
+	//ignore barriers in a different room (sub-optimal)
+	if (argPacket->roomIndex != roomIndex) {
+		return;
+	}
+
+	//implicitly create the element
+	BaseBarrier* barrier = &barrierMap[argPacket->barrierIndex];
+
+	//fill the barrier's info
+	barrier->SetBounds(argPacket->bounds);
+	barrier->SetOrigin(argPacket->origin);
+	barrier->SetStatusArray(argPacket->status);
+
+	//debug
+	std::cout << "Barrier Query, total: " << barrierMap.size() << std::endl;
 }
 
 //-------------------------

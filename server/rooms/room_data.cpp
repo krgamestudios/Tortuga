@@ -46,67 +46,27 @@ void RoomData::RunFrame() {
 		lua_pop(lua, 1);
 	}
 
+	//lists of non-character entities that need updating client-side
+	std::list<std::pair<const int, CreatureData*>> creatureList;
+	std::list<std::pair<const int, BarrierData*>> barrierList;
+
 	//update the entities in the room
 	for (auto& it : characterList) {
 		it->Update();
 	}
+	creatureMgr.Update(&creatureList);
+	barrierMgr.Update(&barrierList);
 
-	//build a list of characters for use with the triggers
+	//build a list of entities for use with the triggers
 	std::stack<Entity*> entityStack;
 	for (auto& it : characterList) {
 		entityStack.push(it);
 	}
 
 	//Compare the triggers to the entities, using their real hitboxes
-	//NOTE: this stack solution should prevent problems when modifying the various lists
-	while(entityStack.size()) {
-		//get the entity & hitbox
-		Entity* entity = entityStack.top();
-		BoundingBox entityBox = entity->GetBounds() + entity->GetOrigin();
+	triggerMgr.Compare(entityStack);
 
-		//get the trigger pair & hitbox
-		for (auto& triggerPair : *triggerMgr.GetContainer()) {
-			BoundingBox triggerBox = triggerPair.second.GetBoundingBox() + triggerPair.second.GetOrigin();
-
-			//find all collisions
-			if (entityBox.CheckOverlap(triggerBox)) {
-				//skip members of the exclusion list
-				if (std::any_of(triggerPair.second.GetExclusionList()->begin(), triggerPair.second.GetExclusionList()->end(), [entity](Entity* ptr) -> bool {
-					return entity == ptr;
-				})) {
-					continue;
-				}
-
-				//run the trigger script
-				lua_rawgeti(lua, LUA_REGISTRYINDEX, triggerPair.second.GetScriptReference());
-				lua_pushlightuserdata(lua, entity);
-
-				if (lua_pcall(lua, 1, 0, 0) != LUA_OK) {
-					//error
-					throw(std::runtime_error(std::string() + "Lua error: " + lua_tostring(lua, -1) ));
-				}
-
-				//push to the exclusion list
-				triggerPair.second.GetExclusionList()->push_back(entity);
-			}
-			else {
-				//remove members of the exclusion list
-				//NOTE: characters in different rooms won't be removed, but that shouldn't be a problem
-				triggerPair.second.GetExclusionList()->remove_if([entity](Entity* ptr) -> bool {
-					return entity == ptr;
-				});
-			}
-		}
-
-		//next
-		entityStack.pop();
-	}
-
-	//a list of creatures that need to be updated client-side
-	std::list< std::pair<const int, CreatureData*>> creatureList;
-	creatureMgr.Update(&creatureList);
-
-	//send the updates
+	//set the creature updates
 	for (auto& it : creatureList) {
 		CreaturePacket packet;
 		copyCreatureToPacket(&packet, it.second, it.first);
@@ -114,10 +74,6 @@ void RoomData::RunFrame() {
 		packet.roomIndex = roomIndex;
 		pumpPacketProximity(reinterpret_cast<SerialPacket*>(&packet), roomIndex, it.second->GetOrigin(), INFLUENCE_RADIUS);
 	}
-
-	//a list of barriers that need to be updated client-side
-	std::list< std::pair<const int, BarrierData*>> barrierList;
-	barrierMgr.Update(&barrierList);
 
 	//send the updates
 	for (auto& it : barrierList) {
@@ -128,7 +84,7 @@ void RoomData::RunFrame() {
 		pumpPacketProximity(reinterpret_cast<SerialPacket*>(&packet), roomIndex, it.second->GetOrigin(), INFLUENCE_RADIUS);
 	}
 
-	//TODO: creature/character collisions
+	//TODO: (0) creature/character collisions
 }
 
 std::string RoomData::SetName(std::string s) {

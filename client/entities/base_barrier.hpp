@@ -21,44 +21,23 @@
 */
 #pragma once
 
-#include "bounding_box.hpp"
-#include "vector2.hpp"
-#include "trigger_data.hpp"
+#include "entity.hpp"
 
-#include "lua.hpp"
-
-#include <functional>
-#include <map>
-#include <stack>
-#include <string>
-
-class TriggerManager {
+class BaseBarrier: public Entity {
 public:
-	TriggerManager();
-	~TriggerManager();
+	BaseBarrier() = default;
+	virtual ~BaseBarrier() = default;
 
-	void Compare(std::stack<Entity*> entityStack);
+	void CorrectSprite();
 
-	//common public methods
-	int Create(std::string handle); //TODO: return the Trigger itself?
-	void Unload(int uid);
+	int SetStatus(int, int);
+	int FindStatus(int);
 
-	void UnloadAll();
-	void UnloadIf(std::function<bool(std::pair<const int, TriggerData const&>)> fn);
+	int* SetStatusArray(int*);
+	int* GetStatusArray();
 
-	//accessors & mutators
-	TriggerData* Find(int uid);
-	TriggerData* Find(std::string handle);
-	int GetLoadedCount();
-	std::map<int, TriggerData>* GetContainer();
 
-	//hooks
-	lua_State* SetLuaState(lua_State* L);
-	lua_State* GetLuaState();
-
-private:
-	//members
-	std::map<int, TriggerData> elementMap;
-	lua_State* lua = nullptr;
-	int counter = 0;
+protected:
+	//metadata
+	int status[8];
 };

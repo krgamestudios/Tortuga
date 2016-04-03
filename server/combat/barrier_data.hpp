@@ -50,7 +50,7 @@ private:
 	int scriptRef = LUA_NOREF;
 	std::map<std::string, std::string> tags;
 
-	int instanceIndex = -1;
+	int instanceIndex;
 
 	int status[8];
 };
