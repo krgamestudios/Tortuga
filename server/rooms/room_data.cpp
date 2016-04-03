@@ -115,6 +115,19 @@ void RoomData::RunFrame() {
 		pumpPacketProximity(reinterpret_cast<SerialPacket*>(&packet), roomIndex, it.second->GetOrigin(), INFLUENCE_RADIUS);
 	}
 
+	//a list of barriers that need to be updated client-side
+	std::list< std::pair<const int, BarrierData*>> barrierList;
+	barrierMgr.Update(&barrierList);
+
+	//send the updates
+	for (auto& it : barrierList) {
+		BarrierPacket packet;
+		copyBarrierToPacket(&packet, it.second, it.first);
+		packet.type = SerialPacketType::BARRIER_UPDATE;
+		packet.roomIndex = roomIndex;
+		pumpPacketProximity(reinterpret_cast<SerialPacket*>(&packet), roomIndex, it.second->GetOrigin(), INFLUENCE_RADIUS);
+	}
+
 	//TODO: creature/character collisions
 }
 

@@ -143,6 +143,20 @@ enum class SerialPacketType {
 	FORMAT_END_CREATURE = 599,
 
 	//-------------------------
+	//BarrierPacket
+	//  barrier index,
+	//  bounds,
+	//  roomIndex, origin, motion
+	//  status
+	//-------------------------
+
+	FORMAT_COMBAT = 700,
+
+	BARRIER_UPDATE = 701,
+
+	FORMAT_END_COMBAT = 799,
+
+	//-------------------------
 	//TextPacket
 	//  name, text
 	//-------------------------
@@ -169,5 +183,5 @@ enum class SerialPacketType {
 	//not used
 	//-------------------------
 
-	LAST = 700
+	LAST = 800
 };

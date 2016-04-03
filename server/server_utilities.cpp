@@ -177,6 +177,16 @@ void copyCreatureToPacket(CreaturePacket* const packet, CreatureData* const crea
 	packet->bounds = creatureData->GetBounds();
 }
 
+void copyBarrierToPacket(BarrierPacket* const packet, BarrierData* const barrierData, int barrierIndex) {
+	packet->barrierIndex = barrierIndex;
+	packet->roomIndex = barrierData->GetRoomIndex();
+	packet->origin = barrierData->GetOrigin();
+	packet->motion = barrierData->GetMotion();
+	packet->bounds = barrierData->GetBounds();
+
+	memcpy(barrierData->GetStatusArray(), &packet->status, sizeof(int) * 8);
+}
+
 void pumpAndChangeRooms(int characterIndex, int newRoomIndex) {
 	//get the character object
 	CharacterData* character = CharacterManager::GetSingleton().Find(characterIndex);

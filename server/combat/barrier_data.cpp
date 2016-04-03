@@ -21,12 +21,13 @@
 */
 #include "barrier_data.hpp"
 
+#include <cstring>
 #include <sstream>
 
 BarrierData::BarrierData(int i):
 	Entity::Entity("barrier")
 {
-	//
+	memcpy(status, 0, sizeof(int) * 8);
 }
 
 BarrierData::~BarrierData() {
@@ -80,4 +81,8 @@ int BarrierData::SetInstanceIndex(int i) {
 
 int BarrierData::GetInstanceIndex() const {
 	return instanceIndex;
+}
+
+int* BarrierData::GetStatusArray() {
+	return status;
 }

@@ -22,6 +22,7 @@
 #include "serial_utility.hpp"
 
 //packet types
+#include "barrier_packet.hpp"
 #include "character_packet.hpp"
 #include "client_packet.hpp"
 #include "creature_packet.hpp"
@@ -69,6 +70,10 @@ void serializePacket(void* buffer, SerialPacketBase* packet) {
 		serializeCreature(buffer, static_cast<CreaturePacket*>(packet));
 	}
 
+	if (BOUNDS(packet->type, SerialPacketType::FORMAT_COMBAT, SerialPacketType::FORMAT_END_COMBAT)) {
+		serializeBarrier(buffer, static_cast<BarrierPacket*>(packet));
+	}
+
 	if (BOUNDS(packet->type, SerialPacketType::FORMAT_TEXT, SerialPacketType::FORMAT_END_TEXT)) {
 		serializeText(buffer, static_cast<TextPacket*>(packet));
 	}
@@ -97,6 +102,10 @@ void deserializePacket(void* buffer, SerialPacketBase* packet) {
 
 	if (BOUNDS(type, SerialPacketType::FORMAT_CREATURE, SerialPacketType::FORMAT_END_CREATURE)) {
 		deserializeCreature(buffer, static_cast<CreaturePacket*>(packet));
+	}
+
+	if (BOUNDS(type, SerialPacketType::FORMAT_COMBAT, SerialPacketType::FORMAT_END_COMBAT)) {
+		deserializeBarrier(buffer, static_cast<BarrierPacket*>(packet));
 	}
 
 	if (BOUNDS(type, SerialPacketType::FORMAT_TEXT, SerialPacketType::FORMAT_END_TEXT)) {

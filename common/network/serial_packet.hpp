@@ -22,6 +22,7 @@
 #pragma once
 
 #include "serial_packet_base.hpp"
+#include "barrier_packet.hpp"
 #include "character_packet.hpp"
 #include "client_packet.hpp"
 #include "creature_packet.hpp"

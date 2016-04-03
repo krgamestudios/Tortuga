@@ -21,6 +21,7 @@
 */
 #pragma once
 
+#include "barrier_data.hpp"
 #include "character_data.hpp"
 #include "creature_data.hpp"
 #include "serial_packet.hpp"
@@ -37,6 +38,8 @@ void copyCharacterToPacket(CharacterPacket* const packet, int characterIndex);
 void copyCharacterToPacket(CharacterPacket* const packet, CharacterData* const characterData, int characterIndex);
 
 void copyCreatureToPacket(CreaturePacket* const packet, CreatureData* const creatureData, int creatureIndex);
+
+void copyBarrierToPacket(BarrierPacket* const packet, BarrierData* const barrierData, int barrierIndex);
 
 void pumpAndChangeRooms(int characterIndex, int newRoomIndex);
 void pumpAndChangeRooms(CharacterData* const characterData, int newRoomIndex, int characterIndex);

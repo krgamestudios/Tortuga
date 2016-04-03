@@ -21,36 +21,24 @@
 */
 #pragma once
 
-#include "entity.hpp"
+#include "serial_packet_base.hpp"
 
-#include "lua.hpp"
+#include "bounding_box.hpp"
+#include "vector2.hpp"
 
-#include <map>
-#include <string>
+struct BarrierPacket : SerialPacketBase {
+	//identify the barrier
+	int barrierIndex;
+	BoundingBox bounds;
 
-class BarrierData: public Entity {
-public:
-	BarrierData(int instanceIndex);
-	~BarrierData();
+	//location
+	int roomIndex;
+	Vector2 origin;
+	Vector2 motion;
 
-	int Update(lua_State*);
-
-	int SetScriptReference(int);
-	int GetScriptReference();
-
-	std::string SetTag(std::string key, std::string value);
-	std::string GetTag(std::string key);
-
-	int SetInstanceIndex(int i);
-	int GetInstanceIndex() const;
-
-	int* GetStatusArray();
-
-private:
-	int scriptRef = LUA_NOREF;
-	std::map<std::string, std::string> tags;
-
-	int instanceIndex = -1;
-
+	//graphical data: 0 blank, 1 green, 2 red
 	int status[8];
 };
+
+void serializeBarrier(void* buffer, BarrierPacket* packet);
+void deserializeBarrier(void* buffer, BarrierPacket* packet);
