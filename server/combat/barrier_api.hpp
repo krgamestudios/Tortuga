@@ -21,44 +21,7 @@
 */
 #pragma once
 
-#include "barrier_data.hpp"
-
 #include "lua.hpp"
-#include "sqlite3.h"
 
-#include <algorithm>
-#include <list>
-#include <map>
-
-class BarrierManager {
-public:
-	BarrierManager();
-	~BarrierManager();
-
-	//common public methods
-	void Update(std::list<std::pair<const int, BarrierData*>>* barrierList);
-
-	int Create(int instanceIndex);
-	void Unload(int uid);
-
-	void UnloadAll();
-	void UnloadIf(std::function<bool(std::pair<const int, BarrierData const&>)> fn);
-
-	//accessors & mutators
-	BarrierData* Find(int uid);
-	int GetLoadedCount();
-	std::map<int, BarrierData>* GetContainer();
-
-	//hooks
-	lua_State* SetLuaState(lua_State* L);
-	lua_State* GetLuaState();
-	sqlite3* SetDatabase(sqlite3* db);
-	sqlite3* GetDatabase();
-
-private:
-	//members
-	std::map<int, BarrierData> elementMap;
-	int counter = 0;
-	lua_State* lua = nullptr;
-	sqlite3* database = nullptr;
-};
+#define TORTUGA_BARRIER_API "barrier"
+LUAMOD_API int openBarrierAPI(lua_State* L);

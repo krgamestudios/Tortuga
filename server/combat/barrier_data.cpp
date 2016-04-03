@@ -21,10 +21,63 @@
 */
 #include "barrier_data.hpp"
 
-BarrierData::BarrierData(int i): Entity::Entity("barrier") {
-	instanceIndex = 0;
+#include <sstream>
+
+BarrierData::BarrierData(int i):
+	Entity::Entity("barrier")
+{
+	//
 }
 
 BarrierData::~BarrierData() {
 	//
+}
+
+int BarrierData::Update(lua_State* L) {
+	int ret = 0;
+
+	if (scriptRef != 0) {
+		//Call the script reference
+		lua_pushinteger(L, scriptRef);
+		lua_gettable(L, LUA_REGISTRYINDEX);
+		lua_pushlightuserdata(L, reinterpret_cast<void*>(this));
+
+		//check for errors
+		if(lua_pcall(L, 1, 1, 0) != LUA_OK) {
+			std::ostringstream msg;
+			msg << "Error running creature script: " << lua_tostring(L, -1);
+			lua_pop(L, 1);
+			throw(std::runtime_error(msg.str()));
+		}
+
+		ret += lua_tonumber(L, -1);
+	}
+
+	Entity::Update();
+
+	return ret;
+}
+
+int BarrierData::SetScriptReference(int i) {
+	return scriptRef = i;
+}
+
+int BarrierData::GetScriptReference() {
+	return scriptRef;
+}
+
+std::string BarrierData::SetTag(std::string key, std::string value) {
+	return tags[key] = value;
+}
+
+std::string BarrierData::GetTag(std::string key) {
+	return tags[key];
+}
+
+int BarrierData::SetInstanceIndex(int i) {
+	return instanceIndex = i;
+}
+
+int BarrierData::GetInstanceIndex() const {
+	return instanceIndex;
 }

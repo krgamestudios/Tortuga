@@ -29,13 +29,20 @@ BarrierManager::~BarrierManager() {
 	UnloadAll();
 }
 
-void BarrierManager::Update() {
-	//
+//arg: a list of barriers to be updated in the clients
+void BarrierManager::Update(std::list<std::pair<const int, BarrierData*>>* barrierList) {
+	int ret;
+	for (auto& it : elementMap) {
+		ret = it.second.Update(lua);
+		if (ret) {
+			barrierList->push_back(std::pair<const int, BarrierData*>(it.first, &it.second));
+		}
+	}
 }
 
-int BarrierManager::Create() {
+int BarrierManager::Create(int instanceIndex) {
 	//implicitly create the new object
-	elementMap.emplace( std::pair<int, BarrierData>(counter, BarrierData(-1)) );
+	elementMap.emplace( std::pair<int, BarrierData>(counter, BarrierData(instanceIndex)) );
 
 	//TODO: do various things like saving to the database
 	return counter++;

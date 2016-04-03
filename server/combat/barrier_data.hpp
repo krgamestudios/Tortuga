@@ -23,14 +23,30 @@
 
 #include "entity.hpp"
 
+#include "lua.hpp"
+
+#include <map>
+#include <string>
+
 class BarrierData: public Entity {
 public:
 	BarrierData(int instanceIndex);
 	~BarrierData();
 
-private:
-	int instanceIndex = -1;
+	int Update(lua_State*);
 
-	//for displaying the status of combatants: 0 empty, 1 green, 2 red
-	int slotData[8];
+	int SetScriptReference(int);
+	int GetScriptReference();
+
+	std::string SetTag(std::string key, std::string value);
+	std::string GetTag(std::string key);
+
+	int SetInstanceIndex(int i);
+	int GetInstanceIndex() const;
+
+private:
+	int scriptRef = LUA_NOREF;
+	std::map<std::string, std::string> tags;
+
+	int instanceIndex = -1;
 };
