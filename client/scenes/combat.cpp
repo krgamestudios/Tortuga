@@ -19,20 +19,59 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#pragma once
+#include "combat.hpp"
 
-enum SceneSignal {
-	//reserved members for internal use
-	QUIT = -1,
-	CONTINUE = 0,
-	FIRST = 1,
+//Public access members
+Combat::Combat(int* const argClientIndex, int* const argAccountIndex) {
+	//
+}
 
-	//custom scenes
-	SPLASHSCREEN,
-	MAINMENU,
-	OPTIONSMENU,
-	LOBBYMENU,
-	WORLD,
-	COMBAT,
-	DISCONNECTEDSCREEN,
-};
+Combat::~Combat() {
+	//
+}
+
+void Combat::RenderFrame(SDL_Renderer* renderer) {
+	//
+}
+
+//frame phases
+void Combat::FrameStart() {
+	//
+}
+
+void Combat::Update() {
+	//
+}
+
+void Combat::FrameEnd() {
+	//
+}
+
+//input events
+void Combat::QuitEvent() {
+	//
+}
+
+void Combat::MouseMotion(SDL_MouseMotionEvent const& event) {
+	//
+}
+
+void Combat::MouseButtonDown(SDL_MouseButtonEvent const& event) {
+	//
+}
+
+void Combat::MouseButtonUp(SDL_MouseButtonEvent const& event) {
+	//
+}
+
+void Combat::MouseWheel(SDL_MouseWheelEvent const& event) {
+	//
+}
+
+void Combat::KeyDown(SDL_KeyboardEvent const& event) {
+	//
+}
+
+void Combat::KeyUp(SDL_KeyboardEvent const& event) {
+	//
+}

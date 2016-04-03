@@ -21,18 +21,28 @@
 */
 #pragma once
 
-enum SceneSignal {
-	//reserved members for internal use
-	QUIT = -1,
-	CONTINUE = 0,
-	FIRST = 1,
+#include "base_scene.hpp"
 
-	//custom scenes
-	SPLASHSCREEN,
-	MAINMENU,
-	OPTIONSMENU,
-	LOBBYMENU,
-	WORLD,
-	COMBAT,
-	DISCONNECTEDSCREEN,
+class Combat: public BaseScene {
+public:
+	//Public access members
+	Combat(int* const argClientIndex, int* const argAccountIndex);
+	~Combat();
+
+	void RenderFrame(SDL_Renderer* renderer) override;
+
+private:
+	//frame phases
+	void FrameStart() override;
+	void Update() override;
+	void FrameEnd() override;
+
+	//input events
+	void QuitEvent();
+	void MouseMotion(SDL_MouseMotionEvent const& event) override;
+	void MouseButtonDown(SDL_MouseButtonEvent const& event) override;
+	void MouseButtonUp(SDL_MouseButtonEvent const& event) override;
+	void MouseWheel(SDL_MouseWheelEvent const& event) override;
+	void KeyDown(SDL_KeyboardEvent const& event) override;
+	void KeyUp(SDL_KeyboardEvent const& event) override;
 };
