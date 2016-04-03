@@ -21,3 +21,81 @@
 */
 #include "combat_instance_manager.hpp"
 
+CombatInstanceManager::CombatInstanceManager() {
+	//EMPTY
+}
+
+CombatInstanceManager::~CombatInstanceManager() {
+	UnloadAll();
+}
+
+//arg: a list of combats to be updated in the clients
+void CombatInstanceManager::Update() {
+	for (auto& it : elementMap) {
+		it.second.Update();
+	}
+}
+
+int CombatInstanceManager::Create() {
+	//implicitly create the new object
+	elementMap.emplace( std::pair<int, CombatInstance>(counter, CombatInstance()) );
+
+	//TODO: do various things like saving to the database
+	return counter++;
+}
+
+//TODO: (1) combat load, save
+
+void CombatInstanceManager::Unload(int uid) {
+	elementMap.erase(uid);
+}
+
+void CombatInstanceManager::UnloadAll() {
+	elementMap.clear();
+}
+
+void CombatInstanceManager::UnloadIf(std::function<bool(std::pair<const int, CombatInstance const&>)> fn) {
+	std::map<int, CombatInstance>::iterator it = elementMap.begin();
+	while (it != elementMap.end()) {
+		if (fn(*it)) {
+			it = elementMap.erase(it);
+		}
+		else {
+			++it;
+		}
+	}
+}
+
+CombatInstance* CombatInstanceManager::Find(int uid) {
+	std::map<int, CombatInstance>::iterator it = elementMap.find(uid);
+
+	if (it == elementMap.end()) {
+		return nullptr;
+	}
+
+	return &it->second;
+}
+
+int CombatInstanceManager::GetLoadedCount() {
+	return elementMap.size();
+}
+
+std::map<int, CombatInstance>* CombatInstanceManager::GetContainer() {
+	return &elementMap;
+}
+
+lua_State* CombatInstanceManager::SetLuaState(lua_State* L) {
+	return lua = L;
+}
+
+lua_State* CombatInstanceManager::GetLuaState() {
+	return lua;
+}
+
+sqlite3* CombatInstanceManager::SetDatabase(sqlite3* db) {
+	return database = db;
+}
+
+sqlite3* CombatInstanceManager::GetDatabase() {
+	return database;
+}

@@ -19,12 +19,26 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
+#pragma once
+
+#include "character_data.hpp"
+#include "creature_data.hpp"
 
 class CombatInstance {
 public:
-	CombatInstance() = default;
-	~CombatInstance() = default;
+	CombatInstance();
+	~CombatInstance();
+
+	void Update();
+
+	//accessors and mutators
+	void PushCharacter(CharacterData* const characterData);
+	void PopCharacter(CharacterData* const characterData);
+
+	void PushCreature(CreatureData* const creatureData);
+	void PopCreature(CreatureData* const creatureData);
 
 private:
-	//
+	std::array<CharacterData*, 8> characterArray;
+	std::array<CreatureData*, 8> creatureArray;
 };

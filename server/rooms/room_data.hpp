@@ -21,7 +21,9 @@
 */
 #pragma once
 
+#include "barrier_manager.hpp"
 #include "character_data.hpp"
+#include "combat_instance_manager.hpp"
 #include "creature_manager.hpp"
 #include "region_pager_lua.hpp"
 #include "trigger_manager.hpp"
@@ -74,7 +76,9 @@ private:
 
 	//members
 	int roomIndex = 0;
+	BarrierManager barrierMgr;
 	std::list<CharacterData*> characterList;
+	CombatInstanceManager CombatInstanceMgr;
 	CreatureManager creatureMgr;
 	RegionPagerLua pager;
 	TriggerManager triggerMgr;

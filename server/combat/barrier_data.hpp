@@ -19,13 +19,18 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
+#pragma once
+
 #include "entity.hpp"
 
 class BarrierData: public Entity {
 public:
-	BarrierData() = default;
-	~BarrierData() = default;
+	BarrierData(int instanceIndex);
+	~BarrierData();
 
 private:
-	//
+	int instanceIndex = -1;
+
+	//for displaying the status of combatants: 0 empty, 1 green, 2 red
+	int slotData[8];
 };

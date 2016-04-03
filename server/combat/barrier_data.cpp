@@ -21,3 +21,10 @@
 */
 #include "barrier_data.hpp"
 
+BarrierData::BarrierData(int i): Entity::Entity("barrier") {
+	instanceIndex = 0;
+}
+
+BarrierData::~BarrierData() {
+	//
+}

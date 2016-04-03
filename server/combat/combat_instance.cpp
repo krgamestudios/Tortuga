@@ -21,3 +21,31 @@
 */
 #include "combat_instance.hpp"
 
+CombatInstance::CombatInstance() {
+	//
+}
+
+CombatInstance::~CombatInstance() {
+	//
+}
+
+void CombatInstance::Update() {
+	//
+}
+
+//accessors and mutators
+void CombatInstance::PushCharacter(CharacterData* const characterData) {
+	//
+}
+
+void CombatInstance::PopCharacter(CharacterData* const characterData) {
+	//
+}
+
+void CombatInstance::PushCreature(CreatureData* const creatureData) {
+	//
+}
+
+void CombatInstance::PopCreature(CreatureData* const creatureData) {
+	//
+}
