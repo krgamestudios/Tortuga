@@ -66,7 +66,28 @@ void RoomData::RunFrame() {
 	//Compare the triggers to the entities, using their real hitboxes
 	triggerMgr.Compare(entityStack);
 
-	//set the creature updates
+	//Creature/character collisions, O(m*n)
+	for (auto characterIt : characterList) {
+		BoundingBox characterBox = characterIt->GetBounds() + characterIt->GetOrigin();
+
+		for (auto creatureIt : *creatureMgr.GetContainer()) {
+			BoundingBox creatureBox = creatureIt.second.GetBounds() + creatureIt.second.GetOrigin();
+
+			if (characterBox.CheckOverlap(creatureBox)) {
+				int barrierIndex = barrierMgr.Create(-1);
+				BarrierData* barrierData = barrierMgr.Find(barrierIndex);
+				barrierData->SetRoomIndex(roomIndex);
+
+				BarrierPacket barrierPacket;
+				barrierPacket.type = SerialPacketType::BARRIER_CREATE;
+				copyBarrierToPacket(&barrierPacket, barrierData, barrierIndex);
+
+				pumpPacketProximity(reinterpret_cast<SerialPacket*>(&barrierPacket), roomIndex, characterIt->GetOrigin(), INFLUENCE_RADIUS);
+			}
+		}
+	}
+
+	//send the creature updates
 	for (auto& it : creatureList) {
 		CreaturePacket packet;
 		copyCreatureToPacket(&packet, it.second, it.first);
@@ -75,7 +96,7 @@ void RoomData::RunFrame() {
 		pumpPacketProximity(reinterpret_cast<SerialPacket*>(&packet), roomIndex, it.second->GetOrigin(), INFLUENCE_RADIUS);
 	}
 
-	//send the updates
+	//send the barrier updates
 	for (auto& it : barrierList) {
 		BarrierPacket packet;
 		copyBarrierToPacket(&packet, it.second, it.first);
@@ -83,8 +104,6 @@ void RoomData::RunFrame() {
 		packet.roomIndex = roomIndex;
 		pumpPacketProximity(reinterpret_cast<SerialPacket*>(&packet), roomIndex, it.second->GetOrigin(), INFLUENCE_RADIUS);
 	}
-
-	//TODO: (0) creature/character collisions
 }
 
 std::string RoomData::SetName(std::string s) {

@@ -22,7 +22,12 @@
 #include "character_data.hpp"
 
 CharacterData::CharacterData(): Entity("character") {
-	//EMPTY
+	SetBounds({
+		CHARACTER_BOUNDS_X,
+		CHARACTER_BOUNDS_Y,
+		CHARACTER_BOUNDS_WIDTH,
+		CHARACTER_BOUNDS_HEIGHT
+	});
 }
 
 int CharacterData::GetOwner() {

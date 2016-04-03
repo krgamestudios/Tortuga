@@ -21,43 +21,19 @@
 */
 #pragma once
 
-#include "creature_defines.hpp"
-#include "entity.hpp"
+#include <cmath>
 
-#include "lua.hpp"
+//the speeds that the characters move
+constexpr double CREATURE_WALKING_SPEED = 1.0;
+constexpr double CREATURE_WALKING_MOD = 1.0/sqrt(2.0);
+constexpr double CREATURE_WALKING_NEGATIVE_MOD = 1.0 - CREATURE_WALKING_MOD;
 
-#include <map>
-#include <string>
+//the bounds for the character objects, mapped to the default sprites
+constexpr int CREATURE_BOUNDS_X = 0;
+constexpr int CREATURE_BOUNDS_Y = 0;
+constexpr int CREATURE_BOUNDS_WIDTH = 32;
+constexpr int CREATURE_BOUNDS_HEIGHT = 32;
 
-/* DOCS: Creature attributes, read more
- *  species (avatar, script)
- *  level
- *  health/mana
- *  permadeath/respawn
-*/
-
-class CreatureData: public Entity {
-public:
-	CreatureData(std::string avatar, int scriptRef);
-	~CreatureData() = default;
-
-	virtual int Update(lua_State*);
-
-	//accessors & mutators
-
-	std::string SetAvatar(std::string);
-	std::string GetAvatar();
-
-	int SetScriptReference(int);
-	int GetScriptReference();
-
-	std::string SetTag(std::string key, std::string value);
-	std::string GetTag(std::string key);
-
-private:
-	friend class CreatureManager;
-
-	std::string avatar;
-	int scriptRef = LUA_NOREF;
-	std::map<std::string, std::string> tags;
-};
+//the character's sprite format
+constexpr int CREATURE_CELLS_X = 4;
+constexpr int CREATURE_CELLS_Y = 4;

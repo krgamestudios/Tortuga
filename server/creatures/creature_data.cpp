@@ -29,7 +29,12 @@ CreatureData::CreatureData(std::string _avatar, int _scriptRef):
 	avatar(_avatar),
 	scriptRef(_scriptRef)
 {
-	//EMPTY
+	SetBounds({
+		CREATURE_BOUNDS_X,
+		CREATURE_BOUNDS_Y,
+		CREATURE_BOUNDS_WIDTH,
+		CREATURE_BOUNDS_HEIGHT
+	});
 }
 
 int CreatureData::Update(lua_State* L) {

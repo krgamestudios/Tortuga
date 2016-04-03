@@ -722,6 +722,11 @@ void World::hCharacterCreate(CharacterPacket* const argPacket) {
 		creaturePacket.type = SerialPacketType::QUERY_CREATURE_EXISTS;
 		creaturePacket.roomIndex = roomIndex;
 		network.SendTo(Channels::SERVER, &creaturePacket);
+
+		BarrierPacket barrierPacket;
+		barrierPacket.type = SerialPacketType::QUERY_BARRIER_EXISTS;
+		barrierPacket.roomIndex = roomIndex;
+		network.SendTo(Channels::SERVER, &barrierPacket);
 	}
 
 	//debug
@@ -743,9 +748,10 @@ void World::hCharacterUnload(CharacterPacket* const argPacket) {
 		camera.marginX = 0;
 		camera.marginY = 0;
 
-		//clear the room
+		//clear/reset the room
 		roomIndex = -1;
 		regionPager.UnloadAll();
+		barrierMap.clear();
 		characterMap.clear();
 		creatureMap.clear();
 	}

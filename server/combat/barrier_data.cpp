@@ -28,7 +28,7 @@ BarrierData::BarrierData(int i):
 	Entity::Entity("barrier")
 {
 	instanceIndex = i;
-	memcpy(status, 0, sizeof(int) * 8);
+	memset(status, 0, sizeof(int) * 8);
 }
 
 BarrierData::~BarrierData() {
@@ -38,7 +38,7 @@ BarrierData::~BarrierData() {
 int BarrierData::Update(lua_State* L) {
 	int ret = 0;
 
-	if (scriptRef != 0) {
+	if (scriptRef != LUA_NOREF) {
 		//Call the script reference
 		lua_pushinteger(L, scriptRef);
 		lua_gettable(L, LUA_REGISTRYINDEX);
