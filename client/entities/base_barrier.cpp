@@ -25,8 +25,17 @@
 
 #include <cstring>
 
+BaseBarrier::BaseBarrier(Image argBaseImage, std::map<std::string, Image>& templateImages) {
+	baseImage = argBaseImage;
+	composite.SetImageTextures(templateImages);
+}
+
+BaseBarrier::~BaseBarrier() {
+	//
+}
+
 void BaseBarrier::CorrectSprite() {
-	//TODO: (9) BaseBarrier::CorrectSprite()
+	//TODO: link status to sprite
 }
 
 int BaseBarrier::SetStatus(int k, int v) {
@@ -50,4 +59,8 @@ int* BaseBarrier::SetStatusArray(int* ptr) {
 
 int* BaseBarrier::GetStatusArray() {
 	return status;
+}
+
+CompositeImage<>* BaseBarrier::GetComposite() {
+	return &composite;
 }

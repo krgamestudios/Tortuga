@@ -23,10 +23,13 @@
 
 #include "entity.hpp"
 
+#include "composite_image.hpp"
+
 class BaseBarrier: public Entity {
 public:
-	BaseBarrier() = default;
-	virtual ~BaseBarrier() = default;
+	BaseBarrier() = delete;
+	BaseBarrier(Image baseImage, std::map<std::string, Image>& templateImages);
+	virtual ~BaseBarrier();
 
 	void CorrectSprite();
 
@@ -36,8 +39,12 @@ public:
 	int* SetStatusArray(int*);
 	int* GetStatusArray();
 
+	CompositeImage<>* GetComposite();
 
 protected:
 	//metadata
 	int status[8];
+
+	Image baseImage;
+	CompositeImage<> composite;
 };
