@@ -57,16 +57,24 @@ local function bunnySquare(creature)
 
 
 	--is it time to change direction?
-	if os.time() - tonumber(timestamp) >= 1 then
+	if os.time() - tonumber(timestamp) >= 4 then
 --		print("changing directions")
 
 		if string.match("south", direction) then
+			direction = "east"
+			creatureAPI.SetMotion(creature, 1, 0)
+		else
+		if string.match("east", direction) then
 			direction = "north"
 			creatureAPI.SetMotion(creature, 0, -1)
 		else
+		if string.match("north", direction) then
+			direction = "west"
+			creatureAPI.SetMotion(creature, -1, 0)
+		else --south is a default
 			direction = "south"
 			creatureAPI.SetMotion(creature, 0, 1)
-		end
+		end end end
 		timestamp = tostring(os.time())
 		ret = 1
 	end
