@@ -302,9 +302,15 @@ void ServerApplication::HandlePacket(SerialPacket* const argPacket) {
 			hCharacterMovement(static_cast<CharacterPacket*>(argPacket));
 		break;
 
+		//TODO: (1) merge character, creature & barrier queries & updates together?
 		//creature management
 		case SerialPacketType::QUERY_CREATURE_EXISTS:
 			hQueryCreatureExists(static_cast<CreaturePacket*>(argPacket));
+		break;
+
+		//barrier management
+		case SerialPacketType::QUERY_BARRIER_EXISTS:
+			hQueryBarrierExists(static_cast<BarrierPacket*>(argPacket));
 		break;
 
 		//chat
@@ -815,6 +821,27 @@ void ServerApplication::hQueryCreatureExists(CreaturePacket* const argPacket) {
 	for (auto& it : *(creatureMgr->GetContainer()) ) {
 		copyCreatureToPacket(&newPacket, &(it.second), it.first);
 		newPacket.type = SerialPacketType::QUERY_CREATURE_EXISTS;
+		newPacket.roomIndex = argPacket->roomIndex;
+		network.SendTo(argPacket->srcAddress, static_cast<SerialPacket*>(&newPacket));
+	}
+}
+
+//-------------------------
+//barrier management
+//-------------------------
+
+//TODO: On barrier create, etc.
+
+void ServerApplication::hQueryBarrierExists(BarrierPacket* const argPacket) {
+	//respond with all barrier data
+	BarrierPacket newPacket;
+
+	BarrierManager* barrierMgr = roomMgr.Find(argPacket->roomIndex)->GetBarrierMgr();
+
+	//TODO: (0) move this into the room class
+	for (auto& it : *(barrierMgr->GetContainer()) ) {
+		copyBarrierToPacket(&newPacket, &(it.second), it.first);
+		newPacket.type = SerialPacketType::QUERY_BARRIER_EXISTS;
 		newPacket.roomIndex = argPacket->roomIndex;
 		network.SendTo(argPacket->srcAddress, static_cast<SerialPacket*>(&newPacket));
 	}

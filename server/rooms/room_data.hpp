@@ -53,6 +53,7 @@ public:
 	int SetRoomIndex(int i);
 	int GetRoomIndex();
 
+	BarrierManager* GetBarrierMgr();
 	std::list<CharacterData*>* GetCharacterList();
 	CreatureManager* GetCreatureMgr();
 	RegionPagerLua* GetPager();

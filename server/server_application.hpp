@@ -100,6 +100,9 @@ private:
 	//creature management
 	void hQueryCreatureExists(CreaturePacket* const);
 
+	//barrier management
+	void hQueryBarrierExists(BarrierPacket* const);
+
 	//chat
 	void hTextBroadcast(TextPacket* const);
 	void hTextSpeech(TextPacket* const);

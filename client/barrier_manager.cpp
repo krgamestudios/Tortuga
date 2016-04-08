@@ -21,7 +21,6 @@
 */
 #include "barrier_manager.hpp"
 
-#include <iostream>
 void BarrierManager::DrawTo(SDL_Renderer* const dest, Sint16 x, Sint16 y, double scaleX, double scaleY) {
 	for (auto& it : barrierMap) {
 		it.second.DrawTo(dest, x, y);
@@ -38,7 +37,6 @@ void BarrierManager::UnloadBaseImage() {
 
 void BarrierManager::LoadTemplateImages(SDL_Renderer* renderer, std::list<std::string> names) {
 	for (auto& it : names) {
-		//TODO: check the state of the local flag
 		templateImages.emplace(it, Image(renderer, it));
 	}
 }
@@ -49,8 +47,6 @@ void BarrierManager::UnloadTemplateImages() {
 
 BaseBarrier* BarrierManager::Create(int index) {
 	barrierMap.emplace( index, BaseBarrier(baseImage, templateImages) );
-
-	//DEBUG: debugging
 	return &barrierMap[index];
 }
 

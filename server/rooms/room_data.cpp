@@ -130,6 +130,10 @@ int RoomData::GetRoomIndex() {
 	return roomIndex;
 }
 
+BarrierManager* RoomData::GetBarrierMgr() {
+	return &barrierMgr;
+}
+
 std::list<CharacterData*>* RoomData::GetCharacterList() {
 	return &characterList;
 }
