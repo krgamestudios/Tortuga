@@ -27,8 +27,8 @@
 
 class BaseBarrier: public Entity {
 public:
-	BaseBarrier() = delete;
-	BaseBarrier(Image baseImage, std::map<std::string, Image>& templateImages);
+	BaseBarrier() = default;
+	BaseBarrier(Image& baseImage, std::map<std::string, Image>& templateImages);
 	virtual ~BaseBarrier();
 
 	void CorrectSprite();

@@ -98,7 +98,18 @@ World::World(int* const argClientIndex,	int* const argAccountIndex):
 	SDL_RenderGetLogicalSize(GetRenderer(), &camera.width, &camera.height);
 
 	//debug
-	//
+	barrierMgr.LoadTemplateImages(GetRenderer(),
+		std::list<std::string>{
+			config["dir.sprites"] + "/barrier/slot 1 green.png",
+			config["dir.sprites"] + "/barrier/slot 2 green.png",
+			config["dir.sprites"] + "/barrier/slot 3 green.png",
+			config["dir.sprites"] + "/barrier/slot 4 green.png",
+			config["dir.sprites"] + "/barrier/slot 5 green.png",
+			config["dir.sprites"] + "/barrier/slot 6 green.png",
+			config["dir.sprites"] + "/barrier/slot 7 green.png",
+			config["dir.sprites"] + "/barrier/slot 8 green.png"
+		}
+	);
 }
 
 World::~World() {
@@ -174,6 +185,8 @@ void World::Update() {
 			it++;
 		}
 	}
+
+	//TODO: cull barriers
 
 	//get the collidable boxes
 	std::list<BoundingBox> boxList = GenerateCollisionGrid(localCharacter, tileSheet.GetTileW(), tileSheet.GetTileH());
@@ -751,7 +764,7 @@ void World::hCharacterUnload(CharacterPacket* const argPacket) {
 		//clear/reset the room
 		roomIndex = -1;
 		regionPager.UnloadAll();
-		barrierMap.clear();
+		barrierMgr.UnloadAll();
 		characterMap.clear();
 		creatureMap.clear();
 	}
@@ -930,26 +943,24 @@ void World::hBarrierUpdate(BarrierPacket* const argPacket) {
 	}
 
 	//check if this barrier exists
-	std::map<int, BaseBarrier>::iterator barrierIt = barrierMap.find(argPacket->barrierIndex);
-	if (barrierIt != barrierMap.end()) {
-		//update the origin and motion, if there's a difference
-		if (barrierIt->second.GetOrigin() != argPacket->origin) {
-			barrierIt->second.SetOrigin(argPacket->origin);
-		}
-	}
-	else {
+	BaseBarrier* barrier = barrierMgr.Find(argPacket->barrierIndex);
+
+	if (!barrier) {
 		hBarrierCreate(argPacket);
+		return;
 	}
+
+	//update the origin and motion, if there's a difference
+	if (barrier->GetOrigin() != argPacket->origin) {
+		barrier->SetOrigin(argPacket->origin);
+	}
+	barrier->SetStatusArray(argPacket->status);
+	barrier->CorrectSprite();
+
 }
 
 void World::hBarrierCreate(BarrierPacket* const argPacket) {
 	//check for logic errors
-	if (barrierMap.find(argPacket->barrierIndex) != barrierMap.end()) {
-		std::ostringstream msg;
-		msg << "Double barrier creation event; ";
-		msg << "Index: " << argPacket->barrierIndex;
-		throw(std::runtime_error(msg.str()));
-	}
 
 	//ignore barriers from other rooms
 	if (roomIndex != argPacket->roomIndex) {
@@ -960,30 +971,33 @@ void World::hBarrierCreate(BarrierPacket* const argPacket) {
 		throw(std::runtime_error(msg.str()));
 	}
 
-	//implicitly create the element
-	BaseBarrier* barrier = &barrierMap[argPacket->barrierIndex];
+	BaseBarrier* barrier = barrierMgr.Find(argPacket->barrierIndex);
+
+	if (barrier) {
+		std::ostringstream msg;
+		msg << "Double barrier creation event; ";
+		msg << "Index: " << argPacket->barrierIndex;
+		throw(std::runtime_error(msg.str()));
+	}
+
+	barrier = barrierMgr.Create(argPacket->barrierIndex);
 
 	//fill the barrier's info
 	barrier->SetBounds(argPacket->bounds);
 	barrier->SetOrigin(argPacket->origin);
 	barrier->SetStatusArray(argPacket->status);
+	barrier->CorrectSprite();
 
 	//debug
-	std::cout << "Barrier Create, total: " << barrierMap.size() << std::endl;
+	std::cout << "Barrier Create, total: " << barrierMgr.Size() << std::endl;
 }
 
 void World::hBarrierUnload(BarrierPacket* const argPacket) {
 	//ignore if this barrier doesn't exist
-	std::map<int, BaseBarrier>::iterator barrierIt = barrierMap.find(argPacket->barrierIndex);
-	if (barrierIt == barrierMap.end()) {
-		return;
-	}
-
-	//remove this barrier
-	barrierMap.erase(barrierIt);
+	barrierMgr.Unload(argPacket->barrierIndex);
 
 	//debug
-	std::cout << "Barrier Unload, total: " << barrierMap.size() << std::endl;
+	std::cout << "Barrier Unload, total: " << barrierMgr.Size() << std::endl;
 }
 
 void World::hQueryBarrierExists(BarrierPacket* const argPacket) {
@@ -995,15 +1009,20 @@ void World::hQueryBarrierExists(BarrierPacket* const argPacket) {
 	}
 
 	//implicitly create the element
-	BaseBarrier* barrier = &barrierMap[argPacket->barrierIndex];
+	BaseBarrier* barrier = barrierMgr.Find(argPacket->barrierIndex);
+
+	if (!barrier) {
+		barrier = barrierMgr.Create(argPacket->barrierIndex);
+	}
 
 	//fill the barrier's info
 	barrier->SetBounds(argPacket->bounds);
 	barrier->SetOrigin(argPacket->origin);
 	barrier->SetStatusArray(argPacket->status);
+	barrier->CorrectSprite();
 
 	//debug
-	std::cout << "Barrier Query, total: " << barrierMap.size() << std::endl;
+	std::cout << "Barrier Query, total: " << barrierMgr.Size() << std::endl;
 }
 
 //-------------------------

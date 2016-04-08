@@ -39,6 +39,7 @@
 #include "frame_rate.hpp"
 
 //client
+#include "barrier_manager.hpp"
 #include "base_scene.hpp"
 #include "base_barrier.hpp"
 #include "base_creature.hpp"
@@ -158,7 +159,7 @@ private:
 	} camera;
 
 	//entities
-	std::map<int, BaseBarrier> barrierMap;
+	BarrierManager barrierMgr;
 	std::map<int, BaseCharacter> characterMap;
 	std::map<int, BaseCreature> creatureMap;
 	LocalCharacter* localCharacter = nullptr;

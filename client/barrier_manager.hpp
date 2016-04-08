@@ -19,48 +19,37 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
+#pragma once
+
 #include "base_barrier.hpp"
 
-#include "config_utility.hpp"
+#include <list>
+#include <string>
 
-#include <cstring>
+class BarrierManager {
+public:
+	BarrierManager() = default;
+	~BarrierManager() = default;
 
-BaseBarrier::BaseBarrier(Image& argBaseImage, std::map<std::string, Image>& templateImages) {
-	baseImage = argBaseImage;
-	composite.SetImageTextures(templateImages);
-}
+	void DrawTo(SDL_Renderer* const, Sint16 x, Sint16 y, double scaleX = 1.0, double scaleY = 1.0);
 
-BaseBarrier::~BaseBarrier() {
-	//
-}
+	//NOTE: don't use these while you have barriers loaded
+	void LoadBaseImage(SDL_Renderer* renderer, std::string fname);
+	void UnloadBaseImage();
+	void LoadTemplateImages(SDL_Renderer* renderer, std::list<std::string> names);
+	void UnloadTemplateImages();
 
-void BaseBarrier::CorrectSprite() {
-	//TODO: (0) link status to sprite
-}
+	BaseBarrier* Create(int index);
+	void Unload(int i);
+	void UnloadAll();
 
-int BaseBarrier::SetStatus(int k, int v) {
-	if (k >= 8 || k < 0) {
-		return -1;
-	}
-	return status[k] = v;
-}
+	int Size();
 
-int BaseBarrier::FindStatus(int k) {
-	if (k >= 8 || k < 0) {
-		return -1;
-	}
-	return status[k];
-}
+	BaseBarrier* Find(int i);
+	std::map<int, BaseBarrier>* GetContainer();
 
-int* BaseBarrier::SetStatusArray(int* ptr) {
-	memcpy(status, ptr, sizeof(int) * 8);
-	return status;
-}
-
-int* BaseBarrier::GetStatusArray() {
-	return status;
-}
-
-CompositeImage<>* BaseBarrier::GetComposite() {
-	return &composite;
-}
+private:
+	Image baseImage;
+	std::map<std::string, Image> templateImages;
+	std::map<int, BaseBarrier> barrierMap;
+};
