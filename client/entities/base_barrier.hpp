@@ -32,6 +32,8 @@ public:
 	virtual ~BaseBarrier();
 
 	void CorrectSprite();
+	void Update();
+	void DrawTo(SDL_Renderer* const, int camX, int camY);
 
 	int SetStatus(int, int);
 	int FindStatus(int);

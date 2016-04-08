@@ -47,6 +47,7 @@ public:
 
 	BaseBarrier* Find(int i);
 	std::map<int, BaseBarrier>* GetContainer();
+	std::map<std::string, Image>* GetTemplateContainer();
 
 private:
 	Image baseImage;

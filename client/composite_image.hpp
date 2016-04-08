@@ -77,8 +77,8 @@ template<typename T>
 void CompositeImage<T>::DrawTo(SDL_Renderer* const dest, Sint16 x, Sint16 y, double scaleX, double scaleY) {
 	//draw all members, regardless of internal ordering
 	for (auto& it : imageMap) {
-		if (it.first) {
-			it.second.DrawTo(dest, x, y, scaleX, scaleY);
+		if (it.second.first) {
+			it.second.second.DrawTo(dest, x, y, scaleX, scaleY);
 		}
 	}
 }

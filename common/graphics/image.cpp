@@ -161,7 +161,7 @@ SDL_Texture* Image::SetTexture(SDL_Texture* ptr) {
 	clip.y = 0;
 	if (SDL_QueryTexture(texture, nullptr, nullptr, &clip.w, &clip.h)) {
 		std::ostringstream msg;
-		msg << "Failed to record metadata for a newly image image";
+		msg << "Failed to record metadata for a newly set image";
 		msg << "; " << SDL_GetError();
 		throw(std::runtime_error(msg.str()));
 	}

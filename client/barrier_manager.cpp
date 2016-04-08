@@ -46,7 +46,7 @@ void BarrierManager::UnloadTemplateImages() {
 }
 
 BaseBarrier* BarrierManager::Create(int index) {
-	barrierMap.emplace( index, BaseBarrier(baseImage, templateImages) );
+	barrierMap.emplace(index, BaseBarrier(baseImage, templateImages));
 	return &barrierMap[index];
 }
 
@@ -74,4 +74,8 @@ BaseBarrier* BarrierManager::Find(int i) {
 
 std::map<int, BaseBarrier>* BarrierManager::GetContainer() {
 	return &barrierMap;
+}
+
+std::map<std::string, Image>* BarrierManager::GetTemplateContainer() {
+	return &templateImages;
 }

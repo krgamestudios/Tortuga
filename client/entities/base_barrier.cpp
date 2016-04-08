@@ -26,7 +26,7 @@
 #include <cstring>
 
 BaseBarrier::BaseBarrier(Image& argBaseImage, std::map<std::string, Image>& templateImages) {
-	baseImage = argBaseImage;
+	baseImage.SetTexture(argBaseImage.GetTexture());
 	composite.SetImageTextures(templateImages);
 }
 
@@ -36,6 +36,16 @@ BaseBarrier::~BaseBarrier() {
 
 void BaseBarrier::CorrectSprite() {
 	//TODO: (0) link status to sprite
+}
+
+void BaseBarrier::Update() {
+	//
+}
+
+void BaseBarrier::DrawTo(SDL_Renderer* const dest, int camX, int camY) {
+	//ignore the default sprite for now
+	baseImage.DrawTo(dest, origin.x - camX, origin.y - camY);
+	composite.DrawTo(dest, origin.x - camX, origin.y - camY);
 }
 
 int BaseBarrier::SetStatus(int k, int v) {

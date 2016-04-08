@@ -98,6 +98,7 @@ World::World(int* const argClientIndex,	int* const argAccountIndex):
 	SDL_RenderGetLogicalSize(GetRenderer(), &camera.width, &camera.height);
 
 	//debug
+	barrierMgr.LoadBaseImage(GetRenderer(), config["dir.sprites"] + "/barrier/base.png");
 	barrierMgr.LoadTemplateImages(GetRenderer(),
 		std::list<std::string>{
 			config["dir.sprites"] + "/barrier/slot 1 green.png",
@@ -110,6 +111,8 @@ World::World(int* const argClientIndex,	int* const argAccountIndex):
 			config["dir.sprites"] + "/barrier/slot 8 green.png"
 		}
 	);
+
+	std::cout << "Templates loaded: " << barrierMgr.GetTemplateContainer()->size() << std::endl;
 }
 
 World::~World() {
@@ -221,6 +224,7 @@ void World::RenderFrame(SDL_Renderer* renderer) {
 	for (auto& it : creatureMap) {
 		it.second.DrawTo(renderer, camera.x, camera.y);
 	}
+	barrierMgr.DrawTo(renderer, camera.x, camera.y);
 
 	//draw UI
 	disconnectButton.DrawTo(renderer);
