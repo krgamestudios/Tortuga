@@ -21,6 +21,7 @@
 */
 #include "room_data.hpp"
 
+#include "barrier_defines.hpp"
 #include "culling_defines.hpp"
 #include "serial_packet.hpp"
 #include "server_utilities.hpp"
@@ -77,6 +78,10 @@ void RoomData::RunFrame() {
 				int barrierIndex = barrierMgr.Create(-1);
 				BarrierData* barrierData = barrierMgr.Find(barrierIndex);
 				barrierData->SetRoomIndex(roomIndex);
+				barrierData->SetOrigin({
+					(CREATURE_BOUNDS_WIDTH - BARRIER_BOUNDS_WIDTH) / 2 + creatureBox.x,
+					(CREATURE_BOUNDS_HEIGHT - BARRIER_BOUNDS_HEIGHT) / 2 + creatureBox.y,
+				});
 
 				BarrierPacket barrierPacket;
 				barrierPacket.type = SerialPacketType::BARRIER_CREATE;
