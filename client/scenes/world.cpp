@@ -98,19 +98,26 @@ World::World(int* const argClientIndex,	int* const argAccountIndex):
 	SDL_RenderGetLogicalSize(GetRenderer(), &camera.width, &camera.height);
 
 	//debug
+	std::list<std::string> slotNames = {
+			"slot 1 green.png",
+			"slot 2 green.png",
+			"slot 3 green.png",
+			"slot 4 green.png",
+			"slot 5 green.png",
+			"slot 6 green.png",
+			"slot 7 green.png",
+			"slot 8 green.png",
+			"slot 1 red.png",
+			"slot 2 red.png",
+			"slot 3 red.png",
+			"slot 4 red.png",
+			"slot 5 red.png",
+			"slot 6 red.png",
+			"slot 7 red.png",
+			"slot 8 red.png"
+		};
 	barrierMgr.LoadBaseImage(GetRenderer(), config["dir.sprites"] + "/barrier/base.png");
-	barrierMgr.LoadTemplateImages(GetRenderer(),
-		std::list<std::string>{
-			config["dir.sprites"] + "/barrier/slot 1 green.png",
-			config["dir.sprites"] + "/barrier/slot 2 green.png",
-			config["dir.sprites"] + "/barrier/slot 3 green.png",
-			config["dir.sprites"] + "/barrier/slot 4 green.png",
-			config["dir.sprites"] + "/barrier/slot 5 green.png",
-			config["dir.sprites"] + "/barrier/slot 6 green.png",
-			config["dir.sprites"] + "/barrier/slot 7 green.png",
-			config["dir.sprites"] + "/barrier/slot 8 green.png"
-		}
-	);
+	barrierMgr.LoadTemplateImages(GetRenderer(), config["dir.sprites"] + "/barrier/", slotNames);
 
 	std::cout << "Templates loaded: " << barrierMgr.GetTemplateContainer()->size() << std::endl;
 }

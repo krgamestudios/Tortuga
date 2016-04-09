@@ -36,7 +36,7 @@ public:
 	//NOTE: don't use these while you have barriers loaded
 	void LoadBaseImage(SDL_Renderer* renderer, std::string fname);
 	void UnloadBaseImage();
-	void LoadTemplateImages(SDL_Renderer* renderer, std::list<std::string> names);
+	void LoadTemplateImages(SDL_Renderer* renderer, std::string spriteDir, std::list<std::string> names);
 	void UnloadTemplateImages();
 
 	BaseBarrier* Create(int index);

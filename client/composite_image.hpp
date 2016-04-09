@@ -33,8 +33,8 @@ public:
 	CompositeImage() = default;
 	~CompositeImage() = default;
 
-	void Load(std::string spriteDir, std::list<std::string> nameList);
-	void SetImageTextures(std::map<std::string, Image>& templateImages);
+	void Load(SDL_Renderer* const, std::string spriteDir, std::list<std::string> nameList);
+	void SetTextures(std::map<std::string, Image>& templateImages);
 	void Free();
 
 	void DrawTo(SDL_Renderer* const, Sint16 x, Sint16 y, double scaleX = 1.0, double scaleY = 1.0);
@@ -47,21 +47,23 @@ public:
 	void EnableAll();
 	void DisableAll();
 
+	std::map<std::string, std::pair<bool, T>>* GetTemplateImages();
+
 private:
-	std::map<std::string, std::pair<bool, T> > imageMap;
+	std::map<std::string, std::pair<bool, T>> imageMap;
 };
 
 
 template<typename T>
-void CompositeImage<T>::Load(std::string spriteDir, std::list<std::string> nameList) {
+void CompositeImage<T>::Load(SDL_Renderer* const renderer, std::string spriteDir, std::list<std::string> nameList) {
 	for (auto& it : nameList) {
 		imageMap[it].first = true;
-		imageMap[it].second.Load(spriteDir + it);
+		imageMap[it].second.Load(renderer, spriteDir + it);
 	}
 }
 
 template<typename T>
-void CompositeImage<T>::SetImageTextures(std::map<std::string, Image>& templateImages) {
+void CompositeImage<T>::SetTextures(std::map<std::string, Image>& templateImages) {
 	for (auto& it : templateImages) {
 		imageMap[it.first].first = true;
 		imageMap[it.first].second.SetTexture(it.second.GetTexture());
@@ -95,7 +97,7 @@ T* CompositeImage<T>::Find(std::string name) {
 		return nullptr;
 	}
 	else {
-		return &it.second;
+		return &it->second.second;
 	}
 }
 
@@ -126,13 +128,18 @@ bool CompositeImage<T>::Disable(std::string name) {
 template<typename T>
 void CompositeImage<T>::EnableAll() {
 	for (auto& it : imageMap) {
-		it.first = true;
+		it.second.first = true;
 	}
 }
 
 template<typename T>
 void CompositeImage<T>::DisableAll() {
 	for (auto& it : imageMap) {
-		it.first = false;
+		it.second.first = false;
 	}
+}
+
+template<typename T>
+std::map<std::string, std::pair<bool, T>>* CompositeImage<T>::GetTemplateImages() {
+	return &imageMap;
 }

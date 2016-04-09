@@ -35,9 +35,10 @@ void BarrierManager::UnloadBaseImage() {
 	baseImage.Free();
 }
 
-void BarrierManager::LoadTemplateImages(SDL_Renderer* renderer, std::list<std::string> names) {
+void BarrierManager::LoadTemplateImages(SDL_Renderer* renderer, std::string spriteDir, std::list<std::string> names) {
+	//sprite names are file names only
 	for (auto& it : names) {
-		templateImages.emplace(it, Image(renderer, it));
+		templateImages.emplace(it, Image(renderer, spriteDir + it));
 	}
 }
 

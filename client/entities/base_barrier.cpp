@@ -24,10 +24,14 @@
 #include "config_utility.hpp"
 
 #include <cstring>
+#include <sstream>
+#include <stdexcept>
 
 BaseBarrier::BaseBarrier(Image& argBaseImage, std::map<std::string, Image>& templateImages) {
 	baseImage.SetTexture(argBaseImage.GetTexture());
-	composite.SetImageTextures(templateImages);
+	composite.SetTextures(templateImages);
+	memset(status, 0, sizeof(int) * 8);
+	CorrectSprite();
 }
 
 BaseBarrier::~BaseBarrier() {
@@ -35,7 +39,32 @@ BaseBarrier::~BaseBarrier() {
 }
 
 void BaseBarrier::CorrectSprite() {
-	//TODO: (0) link status to sprite
+	//TODO: link status to sprite
+	for (int i = 0; i < 8; i++) {
+		//setup the name
+		std::ostringstream os;
+		os << "slot " << i+1;
+
+		switch(status[i]) {
+			case 0:
+				composite.Disable(os.str() + " green.png");
+				composite.Disable(os.str() + " red.png");
+			break;
+			case 1:
+				composite.Enable(os.str() + " green.png");
+				composite.Disable(os.str() + " red.png");
+			break;
+			case 2:
+				composite.Disable(os.str() + " green.png");
+				composite.Enable(os.str() + " red.png");
+			break;
+			default: {
+				std::ostringstream os;
+				os << "index " << i << ", value " << status[i] << std::endl;
+				throw(std::runtime_error("Unknown graphical status in barrier; " + os.str()));
+			}
+		}
+	}
 }
 
 void BaseBarrier::Update() {
