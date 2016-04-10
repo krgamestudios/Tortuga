@@ -44,9 +44,7 @@ void serializeBarrier(void* buffer, BarrierPacket* packet) {
 	serialCopy(&buffer, &packet->motion.y, sizeof(double));
 
 	//graphical data
-	for (int i = 0; i < 8; i++) {
-		serialCopy(&buffer, &packet->status[i], sizeof(int));
-	}
+	serialCopy(&buffer, packet->status, sizeof(int) * 8);
 }
 
 void deserializeBarrier(void* buffer, BarrierPacket* packet) {
@@ -70,7 +68,5 @@ void deserializeBarrier(void* buffer, BarrierPacket* packet) {
 	deserialCopy(&buffer, &packet->motion.y, sizeof(double));
 
 	//graphical data
-	for (int i = 0; i < 8; i++) {
-		deserialCopy(&buffer, &packet->status[i], sizeof(int));
-	}
+	deserialCopy(&buffer, packet->status, sizeof(int) * 8);
 }

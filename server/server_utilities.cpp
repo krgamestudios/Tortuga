@@ -184,7 +184,7 @@ void copyBarrierToPacket(BarrierPacket* const packet, BarrierData* const barrier
 	packet->motion = barrierData->GetMotion();
 	packet->bounds = barrierData->GetBounds();
 
-	memcpy(barrierData->GetStatusArray(), &packet->status, sizeof(int) * 8);
+	memcpy(packet->status, barrierData->GetStatusArray(), sizeof(int) * 8);
 }
 
 void pumpAndChangeRooms(int characterIndex, int newRoomIndex) {
