@@ -947,6 +947,7 @@ void World::hCreatureMovement(CreaturePacket* const argPacket) {
 //-------------------------
 
 void World::hBarrierUpdate(BarrierPacket* const argPacket) {
+	std::cout << "Barrier Update" << std::endl;
 	//Cull barriers that are too far away
 	if ( (localCharacter->GetOrigin() - argPacket->origin).Length() > INFLUENCE_RADIUS) {
 		//ignore beyond 1000 units
@@ -967,7 +968,6 @@ void World::hBarrierUpdate(BarrierPacket* const argPacket) {
 	}
 	barrier->SetStatusArray(argPacket->status);
 	barrier->CorrectSprite();
-
 }
 
 void World::hBarrierCreate(BarrierPacket* const argPacket) {

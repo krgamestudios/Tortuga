@@ -43,6 +43,8 @@ doorUtility = require("door_utility")
 
 creatureAPI = require("creature")
 creatureManagerAPI = require("creature_manager")
+barrierAPI = require("barrier")
+barrierManagerAPI = require("barrier_manager")
 
 --testing creature tags
 local function bunnySquare(creature)
@@ -59,8 +61,6 @@ local function bunnySquare(creature)
 		timestamp = tostring(os.time())
 		creatureAPI.SetMotion(creature, 0, 1)
 	end
-
-
 
 	--is it time to change direction?
 	if os.time() - tonumber(timestamp) >= 4 then
@@ -90,11 +90,50 @@ local function bunnySquare(creature)
 	return ret
 end
 
+local function barrierTick(barrier)
+	--load from the object
+	local statusTable = {}
+	for i = 1, 8 do
+		statusTable[i] = barrierAPI.GetStatus(barrier, i)
+	end
+
+	--binary tick
+	for i = 1, 8, 0 do
+		if status[i] == 0 then
+			status[i] = 1
+			break
+		else
+			status[i] = 0
+			i = i + 1
+		end
+	end
+
+	--save to the object
+	for i = 1, 8 do
+		barrierAPI.GetStatus(barrier, i, statusTable[i])
+	end
+end
+
 --test the room hooks
 roomManagerAPI.SetOnCreate(function(room, index)
 	print("", "Creating room: ", roomAPI.GetName(room), index)
 
+	--TODO: (0) creatureManager with SetOnCreate
+	creatureManagerAPI.SetOnCreate(roomAPI.GetCreatureMgr(room), function(creature, index)
+		print ("making creature: ", index)
+	end)
+	print("Here it comes...")
+
 	creatureManagerAPI.Create(roomAPI.GetCreatureMgr(room), "anibunny.png", bunnySquare)
+
+	creatureManagerAPI.SetOnUnload(roomAPI.GetCreatureMgr(room), function(creature)
+		print("unloading creature...")
+	end)
+
+	--TODO: (0) barrierManager with Create
+	barrierManagerAPI.SetOnCreate(roomAPI.GetBarrierMgr(room), function(barrier)
+		barrierAPI.SetScript(barrier, barrierTick)
+	end)
 
 	roomAPI.SetOnTick(room, function(room)
 		roomAPI.ForEachCharacter(room, function(character)

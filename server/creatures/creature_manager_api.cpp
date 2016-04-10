@@ -52,7 +52,32 @@ static int unloadAll(lua_State* L) {
 
 static int unloadIf(lua_State* L) {
 	CreatureManager* mgr = static_cast<CreatureManager* const>(lua_touserdata(L, 1));
-	//TODO: unloadIf
+
+	//list of stuff to unload (don't invalidate iterators)
+	std::list<int> unloadList;
+
+	//unloadIf
+	for (auto it : *mgr->GetContainer()) {
+		//copy the function at the top
+		lua_pushvalue(L, -1);
+
+		//index & object as function parameters
+		lua_pushinteger(L, it.first);
+		lua_pushlightuserdata(L, &it.second);
+
+		//call
+		lua_pcall(L, 2, 1, 0);
+
+		//unload-ish
+		if (lua_toboolean(L, -1)) {
+			unloadList.push_back(it.first);
+		}
+	}
+
+	//actually unload
+	for (auto& it : unloadList) {
+		mgr->Unload(it);
+	}
 	return 0;
 }
 
@@ -69,13 +94,27 @@ static int getLoadedCount(lua_State* L) {
 	return 1;
 }
 
+static int setOnCreate(lua_State* L) {
+	CreatureManager* mgr = static_cast<CreatureManager*>(lua_touserdata(L, 1));
+	mgr->SetCreateReference(luaL_ref(L, LUA_REGISTRYINDEX));
+	return 0;
+}
+
+static int setOnUnload(lua_State* L) {
+	CreatureManager* mgr = static_cast<CreatureManager*>(lua_touserdata(L, 1));
+	mgr->SetUnloadReference(luaL_ref(L, LUA_REGISTRYINDEX));
+	return 0;
+}
+
 static const luaL_Reg creatureManagerLib[] = {
 	{"Create", create},
 	{"Unload", unload},
 	{"UnloadAll", unloadAll},
-//	{"UnloadIf", unloadIf},
+	{"UnloadIf", unloadIf},
 	{"Find", find},
 	{"GetLoadedCount", getLoadedCount},
+	{"SetOnCreate", setOnCreate},
+	{"SetOnUnload", setOnUnload},
 	{nullptr, nullptr}
 };
 

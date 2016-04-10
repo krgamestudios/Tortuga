@@ -21,6 +21,8 @@
 */
 #include "creature_manager.hpp"
 
+#include "lua_utilities.hpp"
+
 CreatureManager::CreatureManager() {
 	//EMPTY
 }
@@ -44,6 +46,8 @@ int CreatureManager::Create(std::string avatar, int scriptRef) {
 	//implicitly create the new object
 	elementMap.emplace( std::pair<int, CreatureData>(counter, CreatureData(avatar, scriptRef)) );
 
+	runHook(lua, createRef, &elementMap.find(counter)->second, counter);
+
 	//TODO: do various things like saving to the database
 	return counter++;
 }
@@ -51,10 +55,14 @@ int CreatureManager::Create(std::string avatar, int scriptRef) {
 //TODO: (1) creature load, save
 
 void CreatureManager::Unload(int uid) {
+	runHook(lua, unloadRef, &elementMap.find(uid)->second, uid);
 	elementMap.erase(uid);
 }
 
 void CreatureManager::UnloadAll() {
+	for (std::map<int, CreatureData>::iterator it = elementMap.begin(); it != elementMap.end(); it++) {
+		runHook(lua, unloadRef, &it->second, it->first);
+	}
 	elementMap.clear();
 }
 
@@ -62,6 +70,7 @@ void CreatureManager::UnloadIf(std::function<bool(std::pair<const int, CreatureD
 	std::map<int, CreatureData>::iterator it = elementMap.begin();
 	while (it != elementMap.end()) {
 		if (fn(*it)) {
+			runHook(lua, unloadRef, &it->second, it->first);
 			it = elementMap.erase(it);
 		}
 		else {
@@ -102,4 +111,20 @@ sqlite3* CreatureManager::SetDatabase(sqlite3* db) {
 
 sqlite3* CreatureManager::GetDatabase() {
 	return database;
+}
+
+int CreatureManager::SetCreateReference(int i) {
+	return createRef = i;
+}
+
+int CreatureManager::SetUnloadReference(int i) {
+	return unloadRef = i;
+}
+
+int CreatureManager::GetCreateReference() {
+	return createRef;
+}
+
+int CreatureManager::GetUnloadReference() {
+	return unloadRef;
 }

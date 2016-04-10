@@ -23,19 +23,96 @@
 
 #include "barrier_manager.hpp"
 
+//args: mgr, avatar, script
+static int create(lua_State* L) {
+	//register the function at the top of the stack
+	lua_pushinteger(L, luaL_ref(L, LUA_REGISTRYINDEX));
+
+	//create the actual barrier
+	BarrierManager* mgr = static_cast<BarrierManager* const>(lua_touserdata(L, 1));
+	int index = mgr->Create(-1);
+	BarrierData* barrier = mgr->Find(index);
+	lua_pushlightuserdata(L, static_cast<void*>(barrier));
+	lua_pushinteger(L, index);
+	return 2;
+}
+
+//TOOD: overload this to take the userdata as a parameter
+static int unload(lua_State* L) {
+	BarrierManager* mgr = static_cast<BarrierManager* const>(lua_touserdata(L, 1));
+	mgr->Unload(lua_tointeger(L, 2));
+	return 0;
+}
+
+static int unloadAll(lua_State* L) {
+	BarrierManager* mgr = static_cast<BarrierManager* const>(lua_touserdata(L, 1));
+	mgr->UnloadAll();
+	return 0;
+}
+
+static int unloadIf(lua_State* L) {
+	BarrierManager* mgr = static_cast<BarrierManager* const>(lua_touserdata(L, 1));
+
+	//list of stuff to unload (don't invalidate iterators)
+	std::list<int> unloadList;
+
+	//unloadIf
+	for (auto it : *mgr->GetContainer()) {
+		//copy the function at the top
+		lua_pushvalue(L, -1);
+
+		//index & object as function parameters
+		lua_pushinteger(L, it.first);
+		lua_pushlightuserdata(L, &it.second);
+
+		//call
+		lua_pcall(L, 2, 1, 0);
+
+		//unload-ish
+		if (lua_toboolean(L, -1)) {
+			unloadList.push_back(it.first);
+		}
+	}
+
+	//actually unload
+	for (auto& it : unloadList) {
+		mgr->Unload(it);
+	}
+	return 0;
+}
+
+static int find(lua_State* L) {
+	BarrierManager* mgr = static_cast<BarrierManager* const>(lua_touserdata(L, 1));
+	BarrierData* barrier = mgr->Find(lua_tointeger(L, 2));
+	lua_pushlightuserdata(L, static_cast<void*>(barrier));
+	return 1;
+}
+
+static int getLoadedCount(lua_State* L) {
+	BarrierManager* mgr = static_cast<BarrierManager* const>(lua_touserdata(L, 1));
+	lua_pushinteger(L, mgr->GetLoadedCount());
+	return 1;
+}
+
 static int setOnCreate(lua_State* L) {
-	BarrierManager* barrierMgr = static_cast<BarrierManager*>(lua_touserdata(L, 1));
-	barrierMgr->SetCreateReference(luaL_ref(L, LUA_REGISTRYINDEX));
+	BarrierManager* mgr = static_cast<BarrierManager*>(lua_touserdata(L, 1));
+	mgr->SetCreateReference(luaL_ref(L, LUA_REGISTRYINDEX));
 	return 0;
 }
 
 static int setOnUnload(lua_State* L) {
-	BarrierManager* barrierMgr = static_cast<BarrierManager*>(lua_touserdata(L, 1));
-	barrierMgr->SetUnloadReference(luaL_ref(L, LUA_REGISTRYINDEX));
+	BarrierManager* mgr = static_cast<BarrierManager*>(lua_touserdata(L, 1));
+	mgr->SetUnloadReference(luaL_ref(L, LUA_REGISTRYINDEX));
 	return 0;
 }
 
 static const luaL_Reg barrierManagerLib[] = {
+	{"Create", create},
+	{"Unload", unload},
+	{"UnloadAll", unloadAll},
+	{"UnloadIf", unloadIf},
+	{"Find", find},
+	{"GetLoadedCount", getLoadedCount},
 	{"SetOnCreate", setOnCreate},
 	{"SetOnUnload", setOnUnload},
 	{nullptr, nullptr}

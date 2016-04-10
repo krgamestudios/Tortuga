@@ -21,6 +21,8 @@
 */
 #include "barrier_manager.hpp"
 
+#include "lua_utilities.hpp"
+
 BarrierManager::BarrierManager() {
 	//EMPTY
 }
@@ -44,8 +46,7 @@ int BarrierManager::Create(int instanceIndex) {
 	//implicitly create the new object
 	elementMap.emplace( std::pair<int, BarrierData>(counter, BarrierData(instanceIndex)) );
 
-	//set the script
-	//TODO: (0)
+	runHook(lua, createRef, &elementMap.find(counter)->second, counter);
 
 	//TODO: do various things like saving to the database
 	return counter++;
@@ -54,10 +55,14 @@ int BarrierManager::Create(int instanceIndex) {
 //TODO: (1) combat load, save
 
 void BarrierManager::Unload(int uid) {
+	runHook(lua, unloadRef, &elementMap.find(uid)->second, uid);
 	elementMap.erase(uid);
 }
 
 void BarrierManager::UnloadAll() {
+	for (std::map<int, BarrierData>::iterator it = elementMap.begin(); it != elementMap.end(); it++) {
+		runHook(lua, unloadRef, &it->second, it->first);
+	}
 	elementMap.clear();
 }
 
@@ -65,6 +70,7 @@ void BarrierManager::UnloadIf(std::function<bool(std::pair<const int, BarrierDat
 	std::map<int, BarrierData>::iterator it = elementMap.begin();
 	while (it != elementMap.end()) {
 		if (fn(*it)) {
+			runHook(lua, unloadRef, &it->second, it->first);
 			it = elementMap.erase(it);
 		}
 		else {
@@ -122,4 +128,3 @@ int BarrierManager::GetCreateReference() {
 int BarrierManager::GetUnloadReference() {
 	return unloadRef;
 }
-

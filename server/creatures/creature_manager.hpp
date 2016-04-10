@@ -56,10 +56,18 @@ public:
 	sqlite3* SetDatabase(sqlite3* db);
 	sqlite3* GetDatabase();
 
+	int SetCreateReference(int i);
+	int SetUnloadReference(int i);
+
+	int GetCreateReference();
+	int GetUnloadReference();
+
 private:
 	//members
 	std::map<int, CreatureData> elementMap;
 	int counter = 0;
 	lua_State* lua = nullptr;
 	sqlite3* database = nullptr;
+	int createRef = LUA_NOREF;
+	int unloadRef = LUA_NOREF;
 };

@@ -157,6 +157,7 @@ TriggerManager* RoomData::GetTriggerMgr() {
 
 lua_State* RoomData::SetLuaState(lua_State* L) {
 	lua = L;
+	barrierMgr.SetLuaState(lua);
 	creatureMgr.SetLuaState(lua);
 	pager.SetLuaState(lua);
 	triggerMgr.SetLuaState(lua);
@@ -168,6 +169,7 @@ lua_State* RoomData::GetLuaState() {
 }
 
 sqlite3* RoomData::SetDatabase(sqlite3* db) {
+	//TODO: (1) set database here
 	database = db;
 	return database;
 }
