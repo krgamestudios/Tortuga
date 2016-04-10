@@ -26,6 +26,12 @@
 
 print("Lua script check")
 
+entityAPI = require("entity")
+
+for k, v in pairs(entityAPI) do
+	print(k, v)
+end
+
 --requirements
 roomManagerAPI = require("room_manager")
 roomAPI = require("room")
@@ -114,3 +120,4 @@ roomAPI.Initialize(underworld, mapSaver.Load, mapSaver.Save, mapMaker.DebugGrass
 
 --call the monstrosity
 doorUtility.CreateDoorPair("pair 1", overworld, -64, -64, underworld, 64, 64)
+
