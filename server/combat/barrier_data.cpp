@@ -84,6 +84,20 @@ int BarrierData::GetInstanceIndex() const {
 	return instanceIndex;
 }
 
+int BarrierData::SetStatus(int k, int v) {
+	if (k < 0 || k >= 8) {
+		return -1;
+	}
+	return status[k] = v;
+}
+
+int BarrierData::GetStatus(int k) {
+	if (k < 0 || k >= 8) {
+		return -1;
+	}
+	return status[k];
+}
+
 int* BarrierData::GetStatusArray() {
 	return status;
 }

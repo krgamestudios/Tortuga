@@ -19,41 +19,29 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#pragma once
+#include "barrier_manager_api.hpp"
 
-#include "entity.hpp"
+#include "barrier_manager.hpp"
 
-#include "lua.hpp"
+static int setOnCreate(lua_State* L) {
+	BarrierManager* barrierMgr = static_cast<BarrierManager*>(lua_touserdata(L, 1));
+	barrierMgr->SetCreateReference(luaL_ref(L, LUA_REGISTRYINDEX));
+	return 0;
+}
 
-#include <map>
-#include <string>
+static int setOnUnload(lua_State* L) {
+	BarrierManager* barrierMgr = static_cast<BarrierManager*>(lua_touserdata(L, 1));
+	barrierMgr->SetUnloadReference(luaL_ref(L, LUA_REGISTRYINDEX));
+	return 0;
+}
 
-class BarrierData: public Entity {
-public:
-	BarrierData(int instanceIndex);
-	~BarrierData();
-
-	int Update(lua_State*);
-
-	int SetScriptReference(int);
-	int GetScriptReference();
-
-	std::string SetTag(std::string key, std::string value);
-	std::string GetTag(std::string key);
-
-	int SetInstanceIndex(int i);
-	int GetInstanceIndex() const;
-
-	int SetStatus(int k, int v);
-	int GetStatus(int k);
-
-	int* GetStatusArray();
-
-private:
-	int scriptRef = LUA_NOREF;
-	std::map<std::string, std::string> tags;
-
-	int instanceIndex;
-
-	int status[8];
+static const luaL_Reg barrierManagerLib[] = {
+	{"SetOnCreate", setOnCreate},
+	{"SetOnUnload", setOnUnload},
+	{nullptr, nullptr}
 };
+
+LUAMOD_API int openBarrierManagerAPI(lua_State* L) {
+	luaL_newlib(L, barrierManagerLib);
+	return 1;
+}

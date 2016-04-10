@@ -21,39 +21,7 @@
 */
 #pragma once
 
-#include "entity.hpp"
-
 #include "lua.hpp"
 
-#include <map>
-#include <string>
-
-class BarrierData: public Entity {
-public:
-	BarrierData(int instanceIndex);
-	~BarrierData();
-
-	int Update(lua_State*);
-
-	int SetScriptReference(int);
-	int GetScriptReference();
-
-	std::string SetTag(std::string key, std::string value);
-	std::string GetTag(std::string key);
-
-	int SetInstanceIndex(int i);
-	int GetInstanceIndex() const;
-
-	int SetStatus(int k, int v);
-	int GetStatus(int k);
-
-	int* GetStatusArray();
-
-private:
-	int scriptRef = LUA_NOREF;
-	std::map<std::string, std::string> tags;
-
-	int instanceIndex;
-
-	int status[8];
-};
+#define TORTUGA_BARRIER_MANAGER_API "barrier_manager"
+LUAMOD_API int openBarrierManagerAPI(lua_State* L);

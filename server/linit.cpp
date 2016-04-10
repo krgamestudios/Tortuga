@@ -38,6 +38,7 @@
 
 #include "entity_api.hpp"
 #include "barrier_api.hpp"
+#include "barrier_manager_api.hpp"
 #include "character_api.hpp"
 #include "character_manager_api.hpp"
 #include "region_api.hpp"
@@ -70,6 +71,7 @@ static const luaL_Reg loadedlibs[] = {
 static const luaL_Reg preloadedlibs[] = {
 	{TORTUGA_ENTITY_API, openEntityAPI}, //required by derived classes
 	{TORTUGA_BARRIER_API, openBarrierAPI},
+	{TORTUGA_BARRIER_MANAGER_API, openBarrierManagerAPI},
 	{TORTUGA_CHARACTER_API, openCharacterAPI},
 	{TORTUGA_CHARACTER_MANAGER_API, openCharacterManagerAPI},
 	{TORTUGA_CREATURE_API, openCreatureAPI},

@@ -64,6 +64,18 @@ static int getInstance(lua_State* L) {
 	return 1;
 }
 
+static int setStatus(lua_State* L) {
+	BarrierData* barrier = static_cast<BarrierData*>(lua_touserdata(L, 1));
+	barrier->SetStatus(lua_tointeger(L, 2), lua_tointeger(L, 3));
+	return 0;
+}
+
+static int getStatus(lua_State* L) {
+	BarrierData* barrier = static_cast<BarrierData*>(lua_touserdata(L, 1));
+	lua_pushinteger(L, barrier->GetStatus(lua_tointeger(L, 2)) );
+	return 1;
+}
+
 static const luaL_Reg barrierLib[] = {
 	{"SetScript", setScript},
 	{"GetScript", getScript},
@@ -71,6 +83,8 @@ static const luaL_Reg barrierLib[] = {
 	{"GetTag", getTag},
 	{"SetInstance", setInstance},
 	{"GetInstance", getInstance},
+	{"SetStatus", setStatus},
+	{"GetStatus", getStatus},
 	{nullptr, nullptr}
 };
 

@@ -44,6 +44,9 @@ int BarrierManager::Create(int instanceIndex) {
 	//implicitly create the new object
 	elementMap.emplace( std::pair<int, BarrierData>(counter, BarrierData(instanceIndex)) );
 
+	//set the script
+	//TODO: (0)
+
 	//TODO: do various things like saving to the database
 	return counter++;
 }
@@ -103,3 +106,20 @@ sqlite3* BarrierManager::SetDatabase(sqlite3* db) {
 sqlite3* BarrierManager::GetDatabase() {
 	return database;
 }
+
+int BarrierManager::SetCreateReference(int i) {
+	return createRef = i;
+}
+
+int BarrierManager::SetUnloadReference(int i) {
+	return unloadRef = i;
+}
+
+int BarrierManager::GetCreateReference() {
+	return createRef;
+}
+
+int BarrierManager::GetUnloadReference() {
+	return unloadRef;
+}
+

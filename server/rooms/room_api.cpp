@@ -50,6 +50,12 @@ static int getTilesetName(lua_State* L) {
 	return 1;
 }
 
+static int getBarrierMgr(lua_State* L) {
+	RoomData* room = reinterpret_cast<RoomData*>(lua_touserdata(L, 1));
+	lua_pushlightuserdata(L, reinterpret_cast<void*>(room->GetBarrierMgr()) );
+	return 1;
+}
+
 static int getCreatureMgr(lua_State* L) {
 	RoomData* room = reinterpret_cast<RoomData*>(lua_touserdata(L, 1));
 	lua_pushlightuserdata(L, reinterpret_cast<void*>(room->GetCreatureMgr()) );
@@ -135,6 +141,7 @@ static const luaL_Reg roomLib[] = {
 	{"SetTileset", setTilesetName},
 	{"GetTileset", getTilesetName},
 
+	{"GetBarrierMgr", getBarrierMgr},
 	{"GetCreatureMgr",getCreatureMgr},
 	{"GetPager",getPager},
 	{"GetTriggerMgr",getTriggerMgr},
