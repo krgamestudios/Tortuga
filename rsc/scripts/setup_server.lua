@@ -64,8 +64,6 @@ local function bunnySquare(creature)
 
 	--is it time to change direction?
 	if os.time() - tonumber(timestamp) >= 4 then
---		print("changing directions")
-
 		if string.match("south", direction) then
 			direction = "east"
 			creatureAPI.SetMotion(creature, 1, 0)
@@ -91,44 +89,48 @@ local function bunnySquare(creature)
 end
 
 local function barrierTick(barrier)
-	--load from the object
-	local statusTable = {}
-	for i = 1, 8 do
-		statusTable[i] = barrierAPI.GetStatus(barrier, i)
+	local timestamp = barrierAPI.GetTag(barrier, "timestamp")
+
+	--initialize the timestamp
+	if string.len(timestamp) == 0 then
+		timestamp = tostring(os.time())
+		barrierAPI.SetTag(barrier, "timestamp", timestamp)
+	end
+
+	--is it time to change the display?
+	if os.time() - tonumber(timestamp) < 1 then
+		return 0
+	else
+		timestamp = tostring(os.time())
+		barrierAPI.SetTag(barrier, "timestamp", timestamp)
 	end
 
 	--binary tick
-	for i = 1, 8, 0 do
-		if status[i] == 0 then
-			status[i] = 1
-			break
+	for i = 1, 8 do
+		if barrierAPI.GetStatus(barrier, i) == 0 then
+			barrierAPI.SetStatus(barrier, i, 1)
+			return 1
 		else
-			status[i] = 0
-			i = i + 1
+			barrierAPI.SetStatus(barrier, i, 0)
 		end
 	end
-
-	--save to the object
-	for i = 1, 8 do
-		barrierAPI.GetStatus(barrier, i, statusTable[i])
-	end
+	return 0
 end
 
 --test the room hooks
 roomManagerAPI.SetOnCreate(function(room, index)
 	print("", "Creating room: ", roomAPI.GetName(room), index)
 
-	--TODO: (0) creatureManager with SetOnCreate
+	--TODO:creatureManager with SetOnCreate, SetOnUnload & create
 	creatureManagerAPI.SetOnCreate(roomAPI.GetCreatureMgr(room), function(creature, index)
-		print ("making creature: ", index)
+		--
 	end)
-	print("Here it comes...")
-
-	creatureManagerAPI.Create(roomAPI.GetCreatureMgr(room), "anibunny.png", bunnySquare)
 
 	creatureManagerAPI.SetOnUnload(roomAPI.GetCreatureMgr(room), function(creature)
-		print("unloading creature...")
+		--
 	end)
+
+	creatureManagerAPI.Create(roomAPI.GetCreatureMgr(room), "anibunny.png", bunnySquare)
 
 	--TODO: (0) barrierManager with Create
 	barrierManagerAPI.SetOnCreate(roomAPI.GetBarrierMgr(room), function(barrier)
@@ -143,6 +145,8 @@ roomManagerAPI.SetOnCreate(function(room, index)
 		roomAPI.ForEachCreature(room, function(creature)
 			--
 		end)
+
+		--TODO: for each barrier
 	end)
 end)
 

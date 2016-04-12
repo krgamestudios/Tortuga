@@ -23,6 +23,7 @@
 
 #include <cstring>
 #include <sstream>
+#include <stdexcept>
 
 BarrierData::BarrierData(int i):
 	Entity::Entity("barrier")
@@ -47,7 +48,7 @@ int BarrierData::Update(lua_State* L) {
 		//check for errors
 		if(lua_pcall(L, 1, 1, 0) != LUA_OK) {
 			std::ostringstream msg;
-			msg << "Error running creature script: " << lua_tostring(L, -1);
+			msg << "Error running barrier script: " << lua_tostring(L, -1);
 			lua_pop(L, 1);
 			throw(std::runtime_error(msg.str()));
 		}
@@ -86,14 +87,14 @@ int BarrierData::GetInstanceIndex() const {
 
 int BarrierData::SetStatus(int k, int v) {
 	if (k < 0 || k >= 8) {
-		return -1;
+		throw(std::runtime_error("Failed to set status"));
 	}
 	return status[k] = v;
 }
 
 int BarrierData::GetStatus(int k) {
 	if (k < 0 || k >= 8) {
-		return -1;
+		throw(std::runtime_error("Failed to get status"));
 	}
 	return status[k];
 }

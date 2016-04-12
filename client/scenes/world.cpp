@@ -837,6 +837,11 @@ void World::hCharacterMovement(CharacterPacket* const argPacket) {
 //-------------------------
 
 void World::hCreatureUpdate(CreaturePacket* const argPacket) {
+	//BUGFIX: Sometimes crash on exit
+	if (!localCharacter) {
+		return;
+	}
+
 	//Cull creatures that are too far away
 	if ( (localCharacter->GetOrigin() - argPacket->origin).Length() > INFLUENCE_RADIUS) {
 		//ignore beyond 1000 units
@@ -947,7 +952,11 @@ void World::hCreatureMovement(CreaturePacket* const argPacket) {
 //-------------------------
 
 void World::hBarrierUpdate(BarrierPacket* const argPacket) {
-	std::cout << "Barrier Update" << std::endl;
+	//BUGFIX: Sometimes crash on exit
+	if (!localCharacter) {
+		return;
+	}
+
 	//Cull barriers that are too far away
 	if ( (localCharacter->GetOrigin() - argPacket->origin).Length() > INFLUENCE_RADIUS) {
 		//ignore beyond 1000 units
@@ -1057,6 +1066,11 @@ void World::hTextWhisper(TextPacket* const argPacket) {
 //-------------------------
 
 void World::SendLocalCharacterMovement() {
+	//BUGFIX: Sometimes crash on exit
+	if (!localCharacter) {
+		return;
+	}
+
 	CharacterPacket newPacket;
 	newPacket.type = SerialPacketType::CHARACTER_MOVEMENT;
 

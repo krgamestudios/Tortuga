@@ -66,13 +66,13 @@ static int getInstance(lua_State* L) {
 
 static int setStatus(lua_State* L) {
 	BarrierData* barrier = static_cast<BarrierData*>(lua_touserdata(L, 1));
-	barrier->SetStatus(lua_tointeger(L, 2), lua_tointeger(L, 3));
+	barrier->SetStatus(lua_tointeger(L, 2) - 1, lua_tointeger(L, 3));
 	return 0;
 }
 
 static int getStatus(lua_State* L) {
 	BarrierData* barrier = static_cast<BarrierData*>(lua_touserdata(L, 1));
-	lua_pushinteger(L, barrier->GetStatus(lua_tointeger(L, 2)) );
+	lua_pushinteger(L, barrier->GetStatus(lua_tointeger(L, 2) - 1));
 	return 1;
 }
 
