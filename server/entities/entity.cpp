@@ -63,6 +63,10 @@ BoundingBox Entity::GetBounds() const {
 	return bounds;
 }
 
+BoundingBox Entity::GetRealBounds() const {
+	return bounds + origin;
+}
+
 const char* Entity::GetType() const {
 	return type;
 }

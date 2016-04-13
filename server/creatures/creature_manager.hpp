@@ -21,6 +21,7 @@
 */
 #pragma once
 
+#include "character_data.hpp"
 #include "creature_data.hpp"
 
 #include "lua.hpp"
@@ -30,6 +31,7 @@
 #include <list>
 #include <map>
 #include <string>
+#include <tuple>
 
 class CreatureManager {
 public:
@@ -37,7 +39,11 @@ public:
 	~CreatureManager();
 
 	//common public methods
-	void Update(std::list<std::pair<const int, CreatureData*>>* creatureList);
+	void Update(
+		std::list<std::tuple<const int, CreatureData*, int>>* creatureList,
+		std::list<CharacterData*>* characterList
+	);
+	void Cleanup(std::list<std::tuple<const int, CreatureData*, int>>* creatureList);
 
 	int Create(std::string avatar, int scriptRef);
 	void Unload(int uid);

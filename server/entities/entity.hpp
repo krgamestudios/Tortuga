@@ -41,6 +41,7 @@ public:
 	Vector2 GetOrigin() const;
 	Vector2 GetMotion() const;
 	BoundingBox GetBounds() const;
+	BoundingBox GetRealBounds() const;
 
 	const char* GetType() const;
 

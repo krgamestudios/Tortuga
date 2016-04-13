@@ -32,12 +32,39 @@ CreatureManager::~CreatureManager() {
 }
 
 //arg: a list of creatures to be updated in the clients
-void CreatureManager::Update(std::list<std::pair<const int, CreatureData*>>* creatureList) {
-	int ret;
+void CreatureManager::Update(
+		std::list<std::tuple<const int, CreatureData*, int>>* creatureList,
+		std::list<CharacterData*>* characterList
+	)
+{
+	//for each creature
+	int ret; //0 = no action, ret&1 = update clients, ret&2 = unload during cleanup step
 	for (auto& it : elementMap) {
-		ret = it.second.Update(lua);
+		//normal update
+		ret = it.second.Update(lua) ? 1 : 0;
+
+		//check for collision with a character
+		BoundingBox creatureBox = it.second.GetRealBounds();
+		for (auto& it : *characterList) {
+			if (creatureBox.CheckOverlap(it->GetRealBounds())) {
+				//this will need updating
+				ret += 2;
+				break;
+			}
+		}
+
 		if (ret) {
-			creatureList->push_back(std::pair<const int, CreatureData*>(it.first, &it.second));
+			//push to the return list
+			creatureList->push_back(std::make_tuple(it.first, &it.second, ret));
+		}
+	}
+}
+
+void CreatureManager::Cleanup(std::list<std::tuple<const int, CreatureData*, int>>* creatureList) {
+	//unload the given creature objects
+	for (auto& it : *creatureList) {
+		if (std::get<2>(it) & 2) {
+//			Unload(std::get<0>(it));
 		}
 	}
 }
