@@ -38,7 +38,7 @@ void CreatureManager::Update(
 	)
 {
 	//for each creature
-	int ret; //0 = no action, ret&1 = update clients, ret&2 = unload during cleanup step
+	int ret; //0 = no action, ret&1 = update clients, ret&2 = collision detected
 	for (auto& it : elementMap) {
 		//normal update
 		ret = it.second.Update(lua) ? 1 : 0;
@@ -48,7 +48,7 @@ void CreatureManager::Update(
 		for (auto& it : *characterList) {
 			if (creatureBox.CheckOverlap(it->GetRealBounds())) {
 				//this will need updating
-				ret += 2;
+				ret |= 2;
 				break;
 			}
 		}
@@ -64,7 +64,7 @@ void CreatureManager::Cleanup(std::list<std::tuple<const int, CreatureData*, int
 	//unload the given creature objects
 	for (auto& it : *creatureList) {
 		if (std::get<2>(it) & 2) {
-//			Unload(std::get<0>(it));
+			Unload(std::get<0>(it));
 		}
 	}
 }

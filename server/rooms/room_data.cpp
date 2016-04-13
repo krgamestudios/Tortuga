@@ -30,6 +30,7 @@
 #include <iostream>
 #include <stack>
 #include <stdexcept>
+#include <tuple>
 
 //TODO: (9) character collisions should be preformed client-side
 void RoomData::RunFrame() {
@@ -48,15 +49,38 @@ void RoomData::RunFrame() {
 	}
 
 	//lists of non-character entities that need updating client-side
-	std::list<std::pair<const int, CreatureData*>> creatureList;
-	std::list<std::pair<const int, BarrierData*>> barrierList;
+	//types are index, ptr, action (0 = update, 1 = unload)
+	std::list<std::tuple<const int, CreatureData*, int>> creatureList;
+	std::list<std::tuple<const int, BarrierData*, int>> barrierList;
 
 	//update the entities in the room
 	for (auto& it : characterList) {
 		it->Update();
 	}
-	creatureMgr.Update(&creatureList);
-	barrierMgr.Update(&barrierList);
+	creatureMgr.Update(&creatureList, &characterList);
+	barrierMgr.Update(&barrierList, &creatureList, &characterList);
+
+	//send the creature updates
+	for (auto& it : creatureList) {
+		CreaturePacket packet;
+		copyCreatureToPacket(&packet, std::get<1>(it), std::get<0>(it));
+		packet.type = std::get<2>(it) != 0 ? SerialPacketType::CREATURE_UPDATE : SerialPacketType::CREATURE_UNLOAD;
+		packet.roomIndex = roomIndex;
+		pumpPacketProximity(reinterpret_cast<SerialPacket*>(&packet), roomIndex, std::get<1>(it)->GetOrigin(), INFLUENCE_RADIUS);
+	}
+
+	//send the barrier updates
+	for (auto& it : barrierList) {
+		BarrierPacket packet;
+		copyBarrierToPacket(&packet, std::get<1>(it), std::get<0>(it));
+		packet.type = std::get<2>(it) != 0 ? SerialPacketType::BARRIER_UPDATE : SerialPacketType::BARRIER_UNLOAD;
+		packet.roomIndex = roomIndex;
+		pumpPacketProximity(reinterpret_cast<SerialPacket*>(&packet), roomIndex, std::get<1>(it)->GetOrigin(), INFLUENCE_RADIUS);
+	}
+
+	//cleanup the lists
+	creatureMgr.Cleanup(&creatureList);
+	barrierMgr.Cleanup(&barrierList);
 
 	//build a list of entities for use with the triggers
 	std::stack<Entity*> entityStack;
@@ -66,49 +90,6 @@ void RoomData::RunFrame() {
 
 	//Compare the triggers to the entities, using their real hitboxes
 	triggerMgr.Compare(entityStack);
-
-	//Creature/character collisions, O(m*n)
-	for (auto characterIt : characterList) {
-		BoundingBox characterBox = characterIt->GetBounds() + characterIt->GetOrigin();
-
-		for (auto creatureIt : *creatureMgr.GetContainer()) {
-			BoundingBox creatureBox = creatureIt.second.GetBounds() + creatureIt.second.GetOrigin();
-
-			if (characterBox.CheckOverlap(creatureBox)) {
-				int barrierIndex = barrierMgr.Create(-1);
-				BarrierData* barrierData = barrierMgr.Find(barrierIndex);
-				barrierData->SetRoomIndex(roomIndex);
-				barrierData->SetOrigin({
-					(CREATURE_BOUNDS_WIDTH - BARRIER_BOUNDS_WIDTH) / 2 + creatureBox.x,
-					(CREATURE_BOUNDS_HEIGHT - BARRIER_BOUNDS_HEIGHT) / 2 + creatureBox.y,
-				});
-
-				BarrierPacket barrierPacket;
-				barrierPacket.type = SerialPacketType::BARRIER_CREATE;
-				copyBarrierToPacket(&barrierPacket, barrierData, barrierIndex);
-
-				pumpPacketProximity(reinterpret_cast<SerialPacket*>(&barrierPacket), roomIndex, characterIt->GetOrigin(), INFLUENCE_RADIUS);
-			}
-		}
-	}
-
-	//send the creature updates
-	for (auto& it : creatureList) {
-		CreaturePacket packet;
-		copyCreatureToPacket(&packet, it.second, it.first);
-		packet.type = SerialPacketType::CREATURE_UPDATE;
-		packet.roomIndex = roomIndex;
-		pumpPacketProximity(reinterpret_cast<SerialPacket*>(&packet), roomIndex, it.second->GetOrigin(), INFLUENCE_RADIUS);
-	}
-
-	//send the barrier updates
-	for (auto& it : barrierList) {
-		BarrierPacket packet;
-		copyBarrierToPacket(&packet, it.second, it.first);
-		packet.type = SerialPacketType::BARRIER_UPDATE;
-		packet.roomIndex = roomIndex;
-		pumpPacketProximity(reinterpret_cast<SerialPacket*>(&packet), roomIndex, it.second->GetOrigin(), INFLUENCE_RADIUS);
-	}
 }
 
 std::string RoomData::SetName(std::string s) {

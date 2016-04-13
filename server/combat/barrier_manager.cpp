@@ -32,12 +32,52 @@ BarrierManager::~BarrierManager() {
 }
 
 //arg: a list of barriers to be updated in the clients
-void BarrierManager::Update(std::list<std::pair<const int, BarrierData*>>* barrierList) {
-	int ret;
+void BarrierManager::Update(
+		std::list<std::tuple<const int, BarrierData*, int>>* barrierList,
+		std::list<std::tuple<const int, CreatureData*, int>>* creatureList,
+		std::list<CharacterData*>* characterList
+	)
+{
+	//for each given creature, if a collision was detected, make a new barrier
+	for (auto& it : *creatureList) {
+		if (std::get<2>(it) & 2) {
+			Create(-1); //instance from creature index?
+		}
+	}
+
+	//TODO: merge barriers
+	//TODO: absorb creatures into existing barriers
+
+	//update the barriers
+	//TODO: how to delete the barriers?
+	int ret; //0 = no action, ret&1 = update clients, ret&2 = collision detected
 	for (auto& it : elementMap) {
-		ret = it.second.Update(lua);
+		//normal update
+		ret = it.second.Update(lua) ? 1 : 0;
+
+		//check for collision with a character
+		BoundingBox barrierBox = it.second.GetRealBounds();
+		for (auto& it : *characterList) {
+			if (barrierBox.CheckOverlap(it->GetRealBounds())) {
+				//this will need updating
+				ret |= 2;
+			}
+
+			//TODO: absorb characters
+		}
+
 		if (ret) {
-			barrierList->push_back(std::pair<const int, BarrierData*>(it.first, &it.second));
+			//push to the return list
+			barrierList->push_back(std::make_tuple(it.first, &it.second, ret));
+		}
+	}
+}
+
+void BarrierManager::Cleanup(std::list<std::tuple<const int, BarrierData*, int>>* barrierList) {
+	//unload the given barrier objects
+	for (auto& it : *barrierList) {
+		if (std::get<2>(it) & 2) {
+			Unload(std::get<0>(it));
 		}
 	}
 }

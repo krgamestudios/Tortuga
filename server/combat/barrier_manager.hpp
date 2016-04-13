@@ -22,6 +22,8 @@
 #pragma once
 
 #include "barrier_data.hpp"
+#include "character_data.hpp"
+#include "creature_data.hpp"
 
 #include "lua.hpp"
 #include "sqlite3.h"
@@ -29,6 +31,7 @@
 #include <algorithm>
 #include <list>
 #include <map>
+#include <tuple>
 
 class BarrierManager {
 public:
@@ -36,7 +39,12 @@ public:
 	~BarrierManager();
 
 	//common public methods
-	void Update(std::list<std::pair<const int, BarrierData*>>* barrierList);
+	void Update(
+		std::list<std::tuple<const int, BarrierData*, int>>* barrierList,
+		std::list<std::tuple<const int, CreatureData*, int>>* creatureList,
+		std::list<CharacterData*>* characterList
+	);
+	void Cleanup(std::list<std::tuple<const int, BarrierData*, int>>* barrierList);
 
 	int Create(int instanceIndex);
 	void Unload(int uid);
