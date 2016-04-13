@@ -121,7 +121,7 @@ end
 roomManagerAPI.SetOnCreate(function(room, index)
 	print("", "Creating room: ", roomAPI.GetName(room), index)
 
-	--TODO:creatureManager with SetOnCreate, SetOnUnload & create
+	--creatureManager with SetOnCreate, SetOnUnload & create & unload
 	creatureManagerAPI.SetOnCreate(roomAPI.GetCreatureMgr(room), function(creature, index)
 		--
 	end)
@@ -132,7 +132,7 @@ roomManagerAPI.SetOnCreate(function(room, index)
 
 	creatureManagerAPI.Create(roomAPI.GetCreatureMgr(room), "anibunny.png", bunnySquare)
 
-	--TODO: (0) barrierManager with Create
+	--creatureManager with SetOnCreate, SetOnUnload & create & unload
 	barrierManagerAPI.SetOnCreate(roomAPI.GetBarrierMgr(room), function(barrier)
 		barrierAPI.SetScript(barrier, barrierTick)
 	end)

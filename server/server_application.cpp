@@ -817,7 +817,7 @@ void ServerApplication::hQueryCreatureExists(CreaturePacket* const argPacket) {
 
 	CreatureManager* creatureMgr = roomMgr.Find(argPacket->roomIndex)->GetCreatureMgr();
 
-	//TODO: (0) move this into the room class
+	//TODO: (0) move this into the room class?
 	for (auto& it : *(creatureMgr->GetContainer()) ) {
 		copyCreatureToPacket(&newPacket, &(it.second), it.first);
 		newPacket.type = SerialPacketType::QUERY_CREATURE_EXISTS;
@@ -838,7 +838,7 @@ void ServerApplication::hQueryBarrierExists(BarrierPacket* const argPacket) {
 
 	BarrierManager* barrierMgr = roomMgr.Find(argPacket->roomIndex)->GetBarrierMgr();
 
-	//TODO: (0) move this into the room class
+	//TODO: (0) move this into the room class?
 	for (auto& it : *(barrierMgr->GetContainer()) ) {
 		copyBarrierToPacket(&newPacket, &(it.second), it.first);
 		newPacket.type = SerialPacketType::QUERY_BARRIER_EXISTS;
