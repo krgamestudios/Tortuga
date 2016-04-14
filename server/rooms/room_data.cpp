@@ -71,6 +71,8 @@ void RoomData::RunFrame() {
 	for (auto characterIt : characterList) {
 		BoundingBox characterBox = characterIt->GetBounds() + characterIt->GetOrigin();
 
+		std::list<int> creatureUnloadList;
+
 		for (auto creatureIt : *creatureMgr.GetContainer()) {
 			BoundingBox creatureBox = creatureIt.second.GetBounds() + creatureIt.second.GetOrigin();
 
@@ -88,7 +90,23 @@ void RoomData::RunFrame() {
 				copyBarrierToPacket(&barrierPacket, barrierData, barrierIndex);
 
 				pumpPacketProximity(reinterpret_cast<SerialPacket*>(&barrierPacket), roomIndex, characterIt->GetOrigin(), INFLUENCE_RADIUS);
+
+				//delete this creature
+				creatureUnloadList.push_back(creatureIt.first);
 			}
+		}
+
+		//actually unload these creatures
+		for (auto& it : creatureUnloadList) {
+			CreatureData* creatureData = creatureMgr.Find(it);
+
+			CreaturePacket creaturePacket;
+			creaturePacket.type = SerialPacketType::CREATURE_UNLOAD;
+			copyCreatureToPacket(&creaturePacket, creatureData, it);
+
+			pumpPacketProximity(reinterpret_cast<SerialPacket*>(&creaturePacket), roomIndex, creatureData->GetOrigin(), INFLUENCE_RADIUS);
+
+			creatureMgr.Unload(it);
 		}
 	}
 
