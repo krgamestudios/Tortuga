@@ -152,7 +152,7 @@ roomManagerAPI.SetOnCreate(function(room, index)
 
 		--respawn a new rabbit when needed
 		if creatureManagerAPI.GetLoadedCount(roomAPI.GetCreatureMgr(room)) < 1 and
-			barrierManagerAPI.GetLoadedCount(roomAPI.GetCreatureMgr(room)) < 2
+			barrierManagerAPI.GetLoadedCount(roomAPI.GetBarrierMgr(room)) < 2
 		then
 			--make a new creature
 			creatureManagerAPI.Create(roomAPI.GetCreatureMgr(room), "anibunny.png", bunnySquare)
