@@ -116,8 +116,8 @@ World::World(int* const argClientIndex,	int* const argAccountIndex):
 			"slot 7 red.png",
 			"slot 8 red.png"
 		};
-	barrierMgr.LoadBaseImage(GetRenderer(), config["dir.sprites"] + "/barrier/base.png");
-	barrierMgr.LoadTemplateImages(GetRenderer(), config["dir.sprites"] + "/barrier/", slotNames);
+	barrierMgr.LoadBaseImage(GetRenderer(), config["dir.sprites"] + "barrier/base.png");
+	barrierMgr.LoadTemplateImages(GetRenderer(), config["dir.sprites"] + "barrier/", slotNames);
 
 	std::cout << "Templates loaded: " << barrierMgr.GetTemplateContainer()->size() << std::endl;
 }
