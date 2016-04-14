@@ -79,7 +79,7 @@ private:
 	int roomIndex = 0;
 	BarrierManager barrierMgr;
 	std::list<CharacterData*> characterList;
-	CombatInstanceManager CombatInstanceMgr;
+	CombatInstanceManager combatInstanceMgr;
 	CreatureManager creatureMgr;
 	RegionPagerLua pager;
 	TriggerManager triggerMgr;

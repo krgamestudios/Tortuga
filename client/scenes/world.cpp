@@ -740,16 +740,19 @@ void World::hCharacterCreate(CharacterPacket* const argPacket) {
 		memset(&characterPacket, 0, MAX_PACKET_SIZE);
 		characterPacket.type = SerialPacketType::QUERY_CHARACTER_EXISTS;
 		characterPacket.roomIndex = roomIndex;
+		characterPacket.origin = localCharacter->GetOrigin();
 		network.SendTo(Channels::SERVER, &characterPacket);
 
 		CreaturePacket creaturePacket;
 		creaturePacket.type = SerialPacketType::QUERY_CREATURE_EXISTS;
 		creaturePacket.roomIndex = roomIndex;
+		creaturePacket.origin = localCharacter->GetOrigin();
 		network.SendTo(Channels::SERVER, &creaturePacket);
 
 		BarrierPacket barrierPacket;
 		barrierPacket.type = SerialPacketType::QUERY_BARRIER_EXISTS;
 		barrierPacket.roomIndex = roomIndex;
+		barrierPacket.origin = localCharacter->GetOrigin();
 		network.SendTo(Channels::SERVER, &barrierPacket);
 	}
 

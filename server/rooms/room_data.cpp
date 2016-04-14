@@ -64,7 +64,15 @@ void RoomData::RunFrame() {
 	for (auto& it : creatureList) {
 		CreaturePacket packet;
 		copyCreatureToPacket(&packet, std::get<1>(it), std::get<0>(it));
-		packet.type = std::get<2>(it) != 0 ? SerialPacketType::CREATURE_UPDATE : SerialPacketType::CREATURE_UNLOAD;
+
+		//interpret the event
+		if (std::get<2>(it) & 1) {
+			packet.type = SerialPacketType::CREATURE_UPDATE;
+		}
+		if (std::get<2>(it) & 2) {
+			packet.type = SerialPacketType::CREATURE_UNLOAD;
+		}
+
 		packet.roomIndex = roomIndex;
 		pumpPacketProximity(reinterpret_cast<SerialPacket*>(&packet), roomIndex, std::get<1>(it)->GetOrigin(), INFLUENCE_RADIUS);
 	}
@@ -73,7 +81,12 @@ void RoomData::RunFrame() {
 	for (auto& it : barrierList) {
 		BarrierPacket packet;
 		copyBarrierToPacket(&packet, std::get<1>(it), std::get<0>(it));
-		packet.type = std::get<2>(it) != 0 ? SerialPacketType::BARRIER_UPDATE : SerialPacketType::BARRIER_UNLOAD;
+
+		//interpret the event
+		if (std::get<2>(it) & 1 || std::get<2>(it) & 2) {
+			packet.type = SerialPacketType::BARRIER_UPDATE;
+		}
+
 		packet.roomIndex = roomIndex;
 		pumpPacketProximity(reinterpret_cast<SerialPacket*>(&packet), roomIndex, std::get<1>(it)->GetOrigin(), INFLUENCE_RADIUS);
 	}

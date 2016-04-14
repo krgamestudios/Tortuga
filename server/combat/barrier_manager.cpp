@@ -23,6 +23,8 @@
 
 #include "lua_utilities.hpp"
 
+#include "barrier_defines.hpp"
+
 BarrierManager::BarrierManager() {
 	//EMPTY
 }
@@ -41,7 +43,12 @@ void BarrierManager::Update(
 	//for each given creature, if a collision was detected, make a new barrier
 	for (auto& it : *creatureList) {
 		if (std::get<2>(it) & 2) {
-			Create(-1); //instance from creature index?
+			int index = Create(-1); //instance from creature index?
+			BarrierData* barrierData = Find(index);
+			barrierData->SetOrigin({
+				(CREATURE_BOUNDS_WIDTH - BARRIER_BOUNDS_WIDTH) / 2 + std::get<1>(it)->GetOrigin().x,
+ 				(CREATURE_BOUNDS_HEIGHT - BARRIER_BOUNDS_HEIGHT) / 2 + std::get<1>(it)->GetOrigin().y
+		});
 		}
 	}
 
@@ -76,7 +83,7 @@ void BarrierManager::Update(
 void BarrierManager::Cleanup(std::list<std::tuple<const int, BarrierData*, int>>* barrierList) {
 	//unload the given barrier objects
 	for (auto& it : *barrierList) {
-		if (std::get<2>(it) & 2) {
+		if (std::get<2>(it) & 4) {
 			Unload(std::get<0>(it));
 		}
 	}
