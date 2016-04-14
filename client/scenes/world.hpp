@@ -168,6 +168,7 @@ private:
 	//TODO: (2) Heartbeat needs it's own utility
 	typedef std::chrono::steady_clock Clock;
 	Clock::time_point lastBeat = Clock::now();
+	Clock::time_point queryTime = Clock::now() - std::chrono::seconds(4); //back 4 seconds to trigger automatically
 	int attemptedBeats = 0;
 
 	//ugly references; I hate this

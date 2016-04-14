@@ -22,7 +22,7 @@
 #include "barrier_manager.hpp"
 
 void BarrierManager::DrawTo(SDL_Renderer* const dest, Sint16 x, Sint16 y, double scaleX, double scaleY) {
-	for (auto& it : barrierMap) {
+	for (auto& it : elementMap) {
 		it.second.DrawTo(dest, x, y);
 	}
 }
@@ -47,26 +47,38 @@ void BarrierManager::UnloadTemplateImages() {
 }
 
 BaseBarrier* BarrierManager::Create(int index) {
-	barrierMap.emplace(index, BaseBarrier(baseImage, templateImages));
-	return &barrierMap[index];
+	elementMap.emplace(index, BaseBarrier(baseImage, templateImages));
+	return &elementMap[index];
 }
 
 void BarrierManager::Unload(int i) {
-	barrierMap.erase(i);
+	elementMap.erase(i);
 }
 
 void BarrierManager::UnloadAll() {
-	barrierMap.clear();
+	elementMap.clear();
+}
+
+void BarrierManager::UnloadIf(std::function<bool(std::pair<const int, BaseBarrier const&>)> fn) {
+	std::map<int, BaseBarrier>::iterator it = elementMap.begin();
+	while (it != elementMap.end()) {
+		if (fn(*it)) {
+			it = elementMap.erase(it);
+		}
+		else {
+			++it;
+		}
+	}
 }
 
 int BarrierManager::Size() {
-	return barrierMap.size();
+	return elementMap.size();
 }
 
 BaseBarrier* BarrierManager::Find(int i) {
-	std::map<int, BaseBarrier>::iterator it = barrierMap.find(i);
+	std::map<int, BaseBarrier>::iterator it = elementMap.find(i);
 
-	if (it == barrierMap.end()) {
+	if (it == elementMap.end()) {
 		return nullptr;
 	}
 
@@ -74,7 +86,7 @@ BaseBarrier* BarrierManager::Find(int i) {
 }
 
 std::map<int, BaseBarrier>* BarrierManager::GetContainer() {
-	return &barrierMap;
+	return &elementMap;
 }
 
 std::map<std::string, Image>* BarrierManager::GetTemplateContainer() {

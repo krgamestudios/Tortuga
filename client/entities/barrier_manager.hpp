@@ -42,6 +42,7 @@ public:
 	BaseBarrier* Create(int index);
 	void Unload(int i);
 	void UnloadAll();
+	void UnloadIf(std::function<bool(std::pair<const int, BaseBarrier const&>)> fn);
 
 	int Size();
 
@@ -52,5 +53,5 @@ public:
 private:
 	Image baseImage;
 	std::map<std::string, Image> templateImages;
-	std::map<int, BaseBarrier> barrierMap;
+	std::map<int, BaseBarrier> elementMap;
 };

@@ -185,7 +185,27 @@ void World::Update() {
 		return;
 	}
 
-	//TODO: (1) regular query interval
+	//TODO: (0) regular query interval
+	if (Clock::now() - queryTime > std::chrono::seconds(3)) {
+		queryTime = Clock::now();
+		//query the world state (room)
+		CharacterPacket characterPacket;
+		memset(&characterPacket, 0, MAX_PACKET_SIZE);
+		characterPacket.type = SerialPacketType::QUERY_CHARACTER_EXISTS;
+		characterPacket.roomIndex = roomIndex;
+		network.SendTo(Channels::SERVER, &characterPacket);
+
+		CreaturePacket creaturePacket;
+		creaturePacket.type = SerialPacketType::QUERY_CREATURE_EXISTS;
+		creaturePacket.roomIndex = roomIndex;
+		network.SendTo(Channels::SERVER, &creaturePacket);
+
+		BarrierPacket barrierPacket;
+		barrierPacket.type = SerialPacketType::QUERY_BARRIER_EXISTS;
+		barrierPacket.roomIndex = roomIndex;
+		network.SendTo(Channels::SERVER, &barrierPacket);
+	}
+
 	//cull creatures
 	for (std::map<int, BaseCreature>::iterator it = creatureMap.begin(); it != creatureMap.end(); /* */) {
 		if ( (localCharacter->GetOrigin() - it->second.GetOrigin()).Length() > INFLUENCE_RADIUS) {
@@ -196,7 +216,10 @@ void World::Update() {
 		}
 	}
 
-	//TODO: cull barriers
+	//cull barriers
+	barrierMgr.UnloadIf([&](std::pair<const int, BaseBarrier const&> barrierIt) -> bool {
+		return (localCharacter->GetOrigin() - barrierIt.second.GetOrigin()).Length() > INFLUENCE_RADIUS;
+	});
 
 	//get the collidable boxes
 	std::list<BoundingBox> boxList = GenerateCollisionGrid(localCharacter, tileSheet.GetTileW(), tileSheet.GetTileH());
@@ -727,6 +750,9 @@ void World::hCharacterCreate(CharacterPacket* const argPacket) {
 	if (character->GetOwner() == accountIndex) {
 		localCharacter = static_cast<LocalCharacter*>(character);
 
+		//reset queries
+		queryTime = Clock::now() - std::chrono::seconds(4); //back 4 seconds to trigger automatically
+
 		//focus the camera on this character's sprite
 		camera.marginX = (camera.width / 2 - localCharacter->GetSprite()->GetClipW() / 2);
 		camera.marginY = (camera.height/ 2 - localCharacter->GetSprite()->GetClipH() / 2);
@@ -734,23 +760,6 @@ void World::hCharacterCreate(CharacterPacket* const argPacket) {
 		//focus on this character's info
 		characterIndex = argPacket->characterIndex;
 		roomIndex = argPacket->roomIndex;
-
-		//query the world state (room)
-		CharacterPacket characterPacket;
-		memset(&characterPacket, 0, MAX_PACKET_SIZE);
-		characterPacket.type = SerialPacketType::QUERY_CHARACTER_EXISTS;
-		characterPacket.roomIndex = roomIndex;
-		network.SendTo(Channels::SERVER, &characterPacket);
-
-		CreaturePacket creaturePacket;
-		creaturePacket.type = SerialPacketType::QUERY_CREATURE_EXISTS;
-		creaturePacket.roomIndex = roomIndex;
-		network.SendTo(Channels::SERVER, &creaturePacket);
-
-		BarrierPacket barrierPacket;
-		barrierPacket.type = SerialPacketType::QUERY_BARRIER_EXISTS;
-		barrierPacket.roomIndex = roomIndex;
-		network.SendTo(Channels::SERVER, &barrierPacket);
 	}
 
 	//debug
@@ -791,12 +800,12 @@ void World::hCharacterUnload(CharacterPacket* const argPacket) {
 void World::hQueryCharacterExists(CharacterPacket* const argPacket) {
 	//prevent a double message about this player's character
 	//TODO: why is this commented out?
-//	if (argPacket->accountIndex == accountIndex) {
-//		return;
-//	}
+	if (argPacket->accountIndex == accountIndex) {
+		return;
+	}
 
 	//ignore characters in a different room (sub-optimal)
-	if (argPacket->roomIndex != roomIndex) {
+	if (argPacket->roomIndex != roomIndex || (localCharacter->GetOrigin() - argPacket->origin).Length() > INFLUENCE_RADIUS) {
 		return;
 	}
 
@@ -913,10 +922,12 @@ void World::hCreatureUnload(CreaturePacket* const argPacket) {
 }
 
 void World::hQueryCreatureExists(CreaturePacket* const argPacket) {
-	std::cout << "Creature Query" << std::endl;
+	if (!localCharacter) {
+		return;
+	}
 
 	//ignore creatures in a different room (sub-optimal)
-	if (argPacket->roomIndex != roomIndex) {
+	if (argPacket->roomIndex != roomIndex || (localCharacter->GetOrigin() - argPacket->origin).Length() > INFLUENCE_RADIUS) {
 		return;
 	}
 
@@ -1021,10 +1032,12 @@ void World::hBarrierUnload(BarrierPacket* const argPacket) {
 }
 
 void World::hQueryBarrierExists(BarrierPacket* const argPacket) {
-	std::cout << "Barrier Query" << std::endl;
+	if (!localCharacter) {
+		return;
+	}
 
 	//ignore barriers in a different room (sub-optimal)
-	if (argPacket->roomIndex != roomIndex) {
+	if (argPacket->roomIndex != roomIndex || (localCharacter->GetOrigin() - argPacket->origin).Length() > INFLUENCE_RADIUS) {
 		return;
 	}
 
