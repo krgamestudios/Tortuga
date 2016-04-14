@@ -32,11 +32,11 @@ BarrierManager::~BarrierManager() {
 }
 
 //arg: a list of barriers to be updated in the clients
-void BarrierManager::Update(std::list<std::pair<const int, BarrierData*>>* barrierList) {
+void BarrierManager::Update(std::list<std::pair<const int, BarrierData*>>* barrierList, bool updateAll) {
 	int ret;
 	for (auto& it : elementMap) {
 		ret = it.second.Update(lua);
-		if (ret) {
+		if (ret || updateAll) {
 			barrierList->push_back(std::pair<const int, BarrierData*>(it.first, &it.second));
 		}
 	}

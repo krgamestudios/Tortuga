@@ -130,14 +130,14 @@ roomManagerAPI.SetOnCreate(function(room, index)
 		--
 	end)
 
-	creatureManagerAPI.Create(roomAPI.GetCreatureMgr(room), "anibunny.png", bunnySquare)
-
 	--creatureManager with SetOnCreate, SetOnUnload & create & unload
 	barrierManagerAPI.SetOnCreate(roomAPI.GetBarrierMgr(room), function(barrier)
 		barrierAPI.SetScript(barrier, barrierTick)
 	end)
 
 	roomAPI.SetOnTick(room, function(room)
+		ret = 0
+		--placeholders
 		roomAPI.ForEachCharacter(room, function(character)
 			--
 		end)
@@ -146,7 +146,19 @@ roomManagerAPI.SetOnCreate(function(room, index)
 			--
 		end)
 
-		--TODO: for each barrier
+		roomAPI.ForEachBarrier(room, function(creature)
+			--
+		end)
+
+		--respawn a new rabbit when needed
+		if creatureManagerAPI.GetLoadedCount(roomAPI.GetCreatureMgr(room)) < 1 and
+			barrierManagerAPI.GetLoadedCount(roomAPI.GetCreatureMgr(room)) < 2
+		then
+			--make a new creature
+			creatureManagerAPI.Create(roomAPI.GetCreatureMgr(room), "anibunny.png", bunnySquare)
+			ret = 1
+		end
+		return ret
 	end)
 end)
 

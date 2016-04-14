@@ -36,12 +36,21 @@ void RoomData::RunFrame() {
 	//get the hook
 	lua_rawgeti(lua, LUA_REGISTRYINDEX, tickRef);
 
+	//returning 1 means pump all
+	bool updateAll = false;
 	if (!lua_isnil(lua, -1)) {
 		//call the tick function, with this as a parameter
 		lua_pushlightuserdata(lua, this);
-		if (lua_pcall(lua, 1, 0, 0) != LUA_OK) {
+		if (lua_pcall(lua, 1, 1, 0) != LUA_OK) {
 			throw(std::runtime_error(std::string() + "Lua error: " + lua_tostring(lua, -1) ));
 		}
+
+		//pump creatures & barriers
+		if (lua_tonumber(lua, -1)) {
+			updateAll = true;
+		}
+
+		lua_pop(lua, 1);
 	}
 	else {
 		lua_pop(lua, 1);
@@ -55,8 +64,8 @@ void RoomData::RunFrame() {
 	for (auto& it : characterList) {
 		it->Update();
 	}
-	creatureMgr.Update(&creatureList);
-	barrierMgr.Update(&barrierList);
+	creatureMgr.Update(&creatureList, updateAll);
+	barrierMgr.Update(&barrierList, updateAll);
 
 	//build a list of entities for use with the triggers
 	std::stack<Entity*> entityStack;
@@ -202,4 +211,12 @@ int RoomData::SetTickReference(int i) {
 
 int RoomData::GetTickReference() {
 	return tickRef;
+}
+
+std::string RoomData::SetTag(std::string key, std::string value) {
+	return tags[key] = value;
+}
+
+std::string RoomData::GetTag(std::string key) {
+	return tags[key];
 }

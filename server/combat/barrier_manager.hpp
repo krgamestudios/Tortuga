@@ -36,7 +36,7 @@ public:
 	~BarrierManager();
 
 	//common public methods
-	void Update(std::list<std::pair<const int, BarrierData*>>* barrierList);
+	void Update(std::list<std::pair<const int, BarrierData*>>* barrierList, bool updateAll);
 
 	int Create(int instanceIndex);
 	void Unload(int uid);

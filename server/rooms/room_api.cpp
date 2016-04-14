@@ -109,6 +109,24 @@ static int forEachCreature(lua_State* L) {
 	return 0;
 }
 
+static int forEachBarrier(lua_State* L) {
+	RoomData* room = reinterpret_cast<RoomData*>(lua_touserdata(L, 1));
+	BarrierManager* barrierMgr = room->GetBarrierMgr();
+	//pass each barrier to the given function
+	for (auto& it : *barrierMgr->GetContainer()) {
+		lua_pushvalue(L, -1);
+		lua_pushlightuserdata(L, static_cast<void*>(&it.second));
+		//call each iteration, throwing an exception if something happened
+		if (lua_pcall(L, 1, 0, 0) != LUA_OK) {
+			std::ostringstream os;
+			os << "Lua error: ";
+			os << lua_tostring(L, -1);
+			throw(std::runtime_error(os.str()));
+		}
+	}
+	return 0;
+}
+
 static int setOnTick(lua_State* L) {
 	RoomData* room = reinterpret_cast<RoomData*>(lua_touserdata(L, 1));
 	luaL_unref(L, LUA_REGISTRYINDEX, room->GetTickReference());
@@ -119,6 +137,19 @@ static int setOnTick(lua_State* L) {
 static int getOnTick(lua_State* L) {
 	RoomData* room = reinterpret_cast<RoomData*>(lua_touserdata(L, 1));
 	lua_rawgeti(L, LUA_REGISTRYINDEX, room->GetTickReference());
+	return 1;
+}
+
+//TODO: autogen docs
+static int setTag(lua_State* L) {
+	RoomData* room = static_cast<RoomData*>(lua_touserdata(L, 1));
+	room->SetTag(lua_tostring(L, 2), lua_tostring(L, 3));
+	return 0;
+}
+
+static int getTag(lua_State* L) {
+	RoomData* room = static_cast<RoomData*>(lua_touserdata(L, 1));
+	lua_pushstring(L, room->GetTag(lua_tostring(L, 2)).c_str());
 	return 1;
 }
 
@@ -148,9 +179,13 @@ static const luaL_Reg roomLib[] = {
 
 	{"ForEachCharacter", forEachCharacter},
 	{"ForEachCreature", forEachCreature},
+	{"ForEachBarrier", forEachBarrier},
 
 	{"SetOnTick", setOnTick},
 	{"GetOnTick", getOnTick},
+
+	{"SetTag", setTag},
+	{"GetTag", getTag},
 
 	{"Initialize", initialize},
 	{nullptr, nullptr}

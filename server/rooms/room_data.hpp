@@ -70,6 +70,9 @@ public:
 	int GetTickReference();
 	//TODO: other triggers like player entry & exit, etc.
 
+	std::string SetTag(std::string key, std::string value);
+	std::string GetTag(std::string key);
+
 private:
 	//metadata
 	std::string roomName;
@@ -90,4 +93,5 @@ private:
 
 	//hooks
 	int tickRef = LUA_NOREF;
+	std::map<std::string, std::string> tags;
 };
