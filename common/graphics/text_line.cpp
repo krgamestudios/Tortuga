@@ -21,50 +21,58 @@
 */
 #include "text_line.hpp"
 
+#include "render_text_texture.hpp"
+
 #include <stdexcept>
-
-SDL_Texture* renderTextTexture(SDL_Renderer* renderer, TTF_Font* font, std::string str, SDL_Color color) {
-	//make the surface (from SDL_ttf)
-	SDL_Surface* surface = TTF_RenderText_Solid(font, str.c_str(), color);
-	if (!surface) {
-		throw(std::runtime_error("Failed to create a TTF surface"));
-	}
-
-	//convert to texture
-	SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
-
-	//cleanup
-	SDL_FreeSurface(surface);
-
-	//check
-	if (!texture) {
-		throw(std::runtime_error("Failed to create a TTF texture"));
-	}
-
-	//NOTE: free the texture yourself
-	return texture;
-}
 
 TextLine::TextLine() {
 	//
+}
+
+TextLine::TextLine(SDL_Renderer* renderer, TTF_Font* font, SDL_Color color, std::string str, int x, int y) {
+	SetText(renderer, font, color, str);
+	posX = x;
+	posY = y;
 }
 
 TextLine::~TextLine() {
 	ClearText();
 }
 
-void TextLine::DrawTo(SDL_Renderer* renderer, int posX, int posY) {
+void TextLine::DrawTo(SDL_Renderer* renderer) {
 	SDL_Rect dclip = {posX, posY, 0, 0};
 	SDL_QueryTexture(texture, nullptr, nullptr, &dclip.w, &dclip.h);
 	SDL_RenderCopy(renderer, texture, nullptr, &dclip);
 }
 
-void TextLine::SetText(SDL_Renderer* renderer, TTF_Font* font, std::string str, SDL_Color color) {
+void TextLine::SetText(SDL_Renderer* renderer, TTF_Font* font, SDL_Color color, std::string str) {
 	//just use the above global function
 	SDL_DestroyTexture(texture);
-	texture = renderTextTexture(renderer, font, str, color);
+	texture = renderTextTexture(renderer, font, color, str);
+	pointHeight = TTF_FontHeight(font);
 }
 
 void TextLine::ClearText() {
 	SDL_DestroyTexture(texture);
+	pointHeight = 0;
+}
+
+int TextLine::SetX(int i) {
+	return posX = i;
+}
+
+int TextLine::SetY(int i) {
+	return posY = i;
+}
+
+int TextLine::GetX() const {
+	return posX;
+}
+
+int TextLine::GetY() const {
+	return posY;
+}
+
+int TextLine::GetPointHeight() {
+	return pointHeight;
 }

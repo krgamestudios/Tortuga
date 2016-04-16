@@ -19,33 +19,28 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#pragma once
+#include "render_text_texture.hpp"
 
-#include "text_line.hpp"
+#include <stdexcept>
 
-#include "SDL2/SDL.h"
-#include "SDL2/SDL_ttf.h"
+SDL_Texture* renderTextTexture(SDL_Renderer* renderer, TTF_Font* font, SDL_Color color, std::string str) {
+	//make the surface (from SDL_ttf)
+	SDL_Surface* surface = TTF_RenderText_Solid(font, str.c_str(), color);
+	if (!surface) {
+		throw(std::runtime_error("Failed to create a TTF surface"));
+	}
 
-#include <string>
-#include <list>
+	//convert to texture
+	SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
 
-class TextBox {
-public:
-	TextBox();
-	~TextBox();
+	//cleanup
+	SDL_FreeSurface(surface);
 
-	void DrawTo(SDL_Renderer*);
+	//check
+	if (!texture) {
+		throw(std::runtime_error("Failed to create a TTF texture"));
+	}
 
-	void PushLine(SDL_Renderer*, TTF_Font*, SDL_Color color, std::string);
-	void PopLine(int num = 1);
-	void ClearLines();
-
-	int SetX(int i);
-	int SetY(int i);
-	int GetX() const;
-	int GetY() const;
-
-private:
-	std::list<TextLine> lineList;
-	int posX = 0, posY = 0;
-};
+	//NOTE: free the texture yourself
+	return texture;
+}

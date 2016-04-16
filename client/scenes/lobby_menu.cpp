@@ -27,6 +27,8 @@
 #include <stdexcept>
 #include <sstream>
 
+constexpr SDL_Color WHITE = {255, 255, 255, 255};
+
 //-------------------------
 //Public access members
 //-------------------------
@@ -52,11 +54,11 @@ LobbyMenu::LobbyMenu(int* const argClientIndex, int* const argAccountIndex):
 
 	//setup the buttons
 	searchButton.SetBackgroundTexture(GetRenderer(), buttonImage.GetTexture());
-	searchButton.SetText(GetRenderer(), font, "Search", COLOR_WHITE);
+	searchButton.SetText(GetRenderer(), font, WHITE, "Search");
 	joinButton.SetBackgroundTexture(GetRenderer(), buttonImage.GetTexture());
-	joinButton.SetText(GetRenderer(), font, "Join", COLOR_WHITE);
+	joinButton.SetText(GetRenderer(), font, WHITE, "Join");
 	backButton.SetBackgroundTexture(GetRenderer(), buttonImage.GetTexture());
-	backButton.SetText(GetRenderer(), font, "Back", COLOR_WHITE);
+	backButton.SetText(GetRenderer(), font, WHITE, "Back");
 
 	//set the button positions (assumed)
 	searchButton.SetX(50);
@@ -67,6 +69,7 @@ LobbyMenu::LobbyMenu(int* const argClientIndex, int* const argAccountIndex):
 	backButton.SetY(90);
 
 	//pseudo-list selection
+	//TODO: move this into the UI library?
 	boundingBox = {300, 50, 200, 12};
 
 	//hacked together a highlight box
@@ -121,8 +124,13 @@ void LobbyMenu::RenderFrame(SDL_Renderer* renderer) {
 		}
 
 		//draw the server's info
-		serverVector[i].nameImage.DrawTo(renderer, boundingBox.x, boundingBox.y + boundingBox.h * i);
-		serverVector[i].playerCountImage.DrawTo(renderer, boundingBox.x+276, boundingBox.y + boundingBox.h * i);
+		serverVector[i].nameImage.SetX(boundingBox.x);
+		serverVector[i].nameImage.SetY(boundingBox.y + boundingBox.h * i);
+		serverVector[i].nameImage.DrawTo(renderer);
+
+		serverVector[i].playerCountImage.SetX(boundingBox.x+276);
+		serverVector[i].playerCountImage.SetY(boundingBox.y + boundingBox.h * i);
+		serverVector[i].playerCountImage.DrawTo(renderer);
 	}
 }
 
@@ -248,8 +256,8 @@ void LobbyMenu::HandleBroadcastResponse(ServerPacket* const argPacket) {
 	};
 
 	//text graphics
-	serverVector.back().nameImage.SetText(GetRenderer(), font, newServer.name, color);
-	serverVector.back().playerCountImage.SetText(GetRenderer(), font, itoa_base10(newServer.playerCount), color);
+	serverVector.back().nameImage.SetText(GetRenderer(), font, color, newServer.name);
+	serverVector.back().playerCountImage.SetText(GetRenderer(), font, color, itoa_base10(newServer.playerCount));
 }
 
 void LobbyMenu::HandleJoinResponse(ClientPacket* const argPacket) {

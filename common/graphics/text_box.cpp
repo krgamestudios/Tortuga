@@ -31,15 +31,18 @@ TextBox::~TextBox() {
 	//
 }
 
-void TextBox::DrawTo(SDL_Renderer* renderer, int posX, int posY, int pointSize) {
+void TextBox::DrawTo(SDL_Renderer* renderer) {
+	int renderY = posY;
 	for (std::list<TextLine>::iterator it = lineList.begin(); it != lineList.end(); it++) {
-		it->DrawTo(renderer, posX, posY);
-		posY += pointSize;
+		it->SetX(posX);
+		it->SetY(renderY);
+		it->DrawTo(renderer);
+		renderY += it->GetPointHeight();
 	}
 }
 
-void TextBox::PushLine(SDL_Renderer* renderer, TTF_Font* font, std::string str, SDL_Color color) {
-	lineList.emplace_front(renderer, font, str, color);
+void TextBox::PushLine(SDL_Renderer* renderer, TTF_Font* font, SDL_Color color, std::string str) {
+	lineList.emplace_back(renderer, font, color, str, 0, 0);
 }
 
 void TextBox::PopLine(int num) {
@@ -47,10 +50,26 @@ void TextBox::PopLine(int num) {
 	num < lineList.size() ? num : lineList.size();
 
 	for (int i = 0; i < num; ++i) {
-		lineList.pop_back();
+		lineList.pop_front();
 	}
 }
 
 void TextBox::ClearLines() {
 	lineList.clear();
+}
+
+int TextBox::SetX(int i) {
+	return posX = i;
+}
+
+int TextBox::SetY(int i) {
+	return posY = i;
+}
+
+int TextBox::GetX() const {
+	return posX;
+}
+
+int TextBox::GetY() const {
+	return posY;
 }

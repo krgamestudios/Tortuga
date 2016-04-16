@@ -21,31 +21,45 @@
 */
 #pragma once
 
-#include "text_line.hpp"
+#include "bounding_box.hpp"
 
 #include "SDL2/SDL.h"
 #include "SDL2/SDL_ttf.h"
 
 #include <string>
-#include <list>
 
-class TextBox {
+class TextField {
 public:
-	TextBox();
-	~TextBox();
+	TextField();
+	~TextField();
 
 	void DrawTo(SDL_Renderer*);
 
-	void PushLine(SDL_Renderer*, TTF_Font*, SDL_Color color, std::string);
-	void PopLine(int num = 1);
-	void ClearLines();
+	//input
+	std::string PushText(SDL_Renderer*, TTF_Font*, SDL_Color color, std::string);
+	std::string SetText(SDL_Renderer*, TTF_Font*, SDL_Color color, std::string);
+	std::string PopChars(SDL_Renderer*, TTF_Font*, SDL_Color color, int i);
 
+	std::string GetText();
+
+	bool MouseButtonDown(SDL_MouseButtonEvent const& event);
+
+	BoundingBox SetBounds(BoundingBox b);
+	BoundingBox GetBounds();
+
+	bool SetFocus(bool b);
+	bool GetFocus();
+
+	//accessors & mutators
 	int SetX(int i);
 	int SetY(int i);
 	int GetX() const;
 	int GetY() const;
 
 private:
-	std::list<TextLine> lineList;
+	SDL_Texture* texture = nullptr;
+	std::string text;
+	BoundingBox bounds;
+	bool focus = false;
 	int posX = 0, posY = 0;
 };

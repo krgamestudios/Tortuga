@@ -21,6 +21,8 @@
 */
 #include "button.hpp"
 
+#include "render_text_texture.hpp"
+
 #include <stdexcept>
 
 void Button::DrawTo(SDL_Renderer* renderer) {
@@ -51,19 +53,9 @@ void Button::SetBackgroundTexture(SDL_Renderer* renderer, SDL_Texture* texture) 
 	image.SetClipH(image.GetClipH() / 3);
 }
 
-void Button::SetText(SDL_Renderer* renderer, TTF_Font* font, std::string s, SDL_Color color) {
-	//make the surface (from SDL_ttf)
-	SDL_Surface* surf = TTF_RenderText_Solid(font, s.c_str(), color);
-	if (!surf) {
-		throw(std::runtime_error("Failed to create a TTF surface"));
-	}
-
+void Button::SetText(SDL_Renderer* renderer, TTF_Font* font, SDL_Color color, std::string s) {
 	//convert to texture
-	SDL_Texture* text = SDL_CreateTextureFromSurface(renderer, surf);
-	SDL_FreeSurface(surf);
-	if (!text) {
-		throw(std::runtime_error("Failed to create a TTF texture"));
-	}
+	SDL_Texture* text = renderTextTexture(renderer, font, color, s);
 
 	//get the dimensions & rects
 	int x, y, w, h;
@@ -85,14 +77,6 @@ void Button::SetText(SDL_Renderer* renderer, TTF_Font* font, std::string s, SDL_
 
 	//free the texture
 	SDL_DestroyTexture(text);
-}
-
-void Button::SetX(int x) {
-	posX = x;
-}
-
-void Button::SetY(int y) {
-	posY = y;
 }
 
 Button::State Button::MouseMotion(SDL_MouseMotionEvent const& event) {
@@ -154,6 +138,22 @@ void Button::SetState(State s) {
 
 Button::State Button::GetState() {
 	return state;
+}
+
+int Button::SetX(int i) {
+	return posX = i;
+}
+
+int Button::SetY(int i) {
+	return posY = i;
+}
+
+int Button::GetX() const {
+	return posX;
+}
+
+int Button::GetY() const {
+	return posY;
 }
 
 bool Button::CheckBounds(int x, int y) {

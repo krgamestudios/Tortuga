@@ -26,20 +26,28 @@
 
 #include <string>
 
-SDL_Texture* renderTextTexture(SDL_Renderer*, TTF_Font*, std::string, SDL_Color color);
-
 class TextLine {
 public:
 	TextLine();
-	TextLine(SDL_Renderer* r, TTF_Font* f, std::string s, SDL_Color c)
-		{ SetText(r, f, s, c); }
+	TextLine(SDL_Renderer*, TTF_Font*, SDL_Color, std::string, int x, int y);
 	virtual ~TextLine();
 
-	void DrawTo(SDL_Renderer*, int posX, int posY);
+	void DrawTo(SDL_Renderer*);
 
-	void SetText(SDL_Renderer*, TTF_Font*, std::string, SDL_Color color);
+	void SetText(SDL_Renderer*, TTF_Font*, SDL_Color, std::string);
 	void ClearText();
+
+	//accessors & mutators
+	int SetX(int i);
+	int SetY(int i);
+	int GetX() const;
+	int GetY() const;
+
+	//utility
+	int GetPointHeight();
 
 protected:
 	SDL_Texture* texture = nullptr;
+	int posX = 0, posY = 0;
+	int pointHeight = 0; //internal use for TextBox
 };

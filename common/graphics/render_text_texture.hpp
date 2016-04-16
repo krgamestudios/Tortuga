@@ -21,31 +21,9 @@
 */
 #pragma once
 
-#include "text_line.hpp"
-
 #include "SDL2/SDL.h"
 #include "SDL2/SDL_ttf.h"
 
 #include <string>
-#include <list>
 
-class TextBox {
-public:
-	TextBox();
-	~TextBox();
-
-	void DrawTo(SDL_Renderer*);
-
-	void PushLine(SDL_Renderer*, TTF_Font*, SDL_Color color, std::string);
-	void PopLine(int num = 1);
-	void ClearLines();
-
-	int SetX(int i);
-	int SetY(int i);
-	int GetX() const;
-	int GetY() const;
-
-private:
-	std::list<TextLine> lineList;
-	int posX = 0, posY = 0;
-};
+SDL_Texture* renderTextTexture(SDL_Renderer*, TTF_Font*, SDL_Color color, std::string);

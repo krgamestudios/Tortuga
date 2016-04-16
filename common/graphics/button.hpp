@@ -27,11 +27,6 @@
 
 #include <string>
 
-constexpr SDL_Color COLOR_WHITE = {255, 255, 255, 255};
-constexpr SDL_Color COLOR_RED = {255, 0, 0, 255};
-constexpr SDL_Color COLOR_ORANGE = {255, 127, 0, 255};
-constexpr SDL_Color COLOR_BLUE = {0, 0, 255, 255};
-
 class Button {
 public:
 	enum State {
@@ -46,9 +41,7 @@ public:
 
 	//setup
 	void SetBackgroundTexture(SDL_Renderer*, SDL_Texture*);
-	void SetText(SDL_Renderer*, TTF_Font*, std::string, SDL_Color);
-	void SetX(int x);
-	void SetY(int y);
+	void SetText(SDL_Renderer*, TTF_Font*, SDL_Color, std::string);
 
 	//capture input
 	State MouseMotion(SDL_MouseMotionEvent const&);
@@ -59,10 +52,16 @@ public:
 	void SetState(State); //TODO: idle, busy or disabled
 	State GetState();
 
+	//accessors & mutators
+	int SetX(int x);
+	int SetY(int y);
+	int GetX() const;
+	int GetY() const;
+
 protected:
 	bool CheckBounds(int x, int y);
 
 	Image image;
-	int posX = 0, posY = 0;
 	State state = State::IDLE;
+	int posX = 0, posY = 0;
 };

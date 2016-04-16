@@ -26,6 +26,8 @@
 #include <sstream>
 #include <stdexcept>
 
+constexpr SDL_Color WHITE = {255, 255, 255, 255};
+
 //-------------------------
 //Public access members
 //-------------------------
@@ -46,14 +48,16 @@ OptionsMenu::OptionsMenu() {
 
 	//setup the button
 	backButton.SetBackgroundTexture(GetRenderer(), buttonImage.GetTexture());
-	backButton.SetText(GetRenderer(), font, "Back", COLOR_WHITE);
+	backButton.SetText(GetRenderer(), font, WHITE, "Back");
 
 	//set the button positions
 	backButton.SetX(50);
 	backButton.SetY(50);
 
 	//text line
-	textLine.SetText(GetRenderer(), font, "This code is fucking hard to refactor.", {255, 255, 255, 255});
+	textLine.SetX(50);
+	textLine.SetY(30);
+	textLine.SetText(GetRenderer(), font, WHITE, "Am I making any progress?");
 }
 
 OptionsMenu::~OptionsMenu() {
@@ -78,7 +82,7 @@ void OptionsMenu::FrameEnd() {
 
 void OptionsMenu::RenderFrame(SDL_Renderer* renderer) {
 	backButton.DrawTo(renderer);
-	textLine.DrawTo(renderer, 50, 30);
+	textLine.DrawTo(renderer);
 }
 
 //-------------------------

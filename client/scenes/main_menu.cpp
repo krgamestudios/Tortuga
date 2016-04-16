@@ -26,6 +26,8 @@
 #include <sstream>
 #include <stdexcept>
 
+constexpr SDL_Color WHITE = {255, 255, 255, 255};
+
 //-------------------------
 //Public access members
 //-------------------------
@@ -46,11 +48,11 @@ MainMenu::MainMenu() {
 
 	//setup the buttons
 	startButton.SetBackgroundTexture(GetRenderer(), buttonImage.GetTexture());
-	startButton.SetText(GetRenderer(), font, "Start", COLOR_WHITE);
+	startButton.SetText(GetRenderer(), font, WHITE, "Start");
 	optionsButton.SetBackgroundTexture(GetRenderer(), buttonImage.GetTexture());
-	optionsButton.SetText(GetRenderer(), font, "Options", COLOR_WHITE);
+	optionsButton.SetText(GetRenderer(), font, WHITE, "Options");
 	quitButton.SetBackgroundTexture(GetRenderer(), buttonImage.GetTexture());
-	quitButton.SetText(GetRenderer(), font, "Quit", COLOR_WHITE);
+	quitButton.SetText(GetRenderer(), font, WHITE, "Quit");
 
 	//set the button positions
 	startButton.SetX(50);
@@ -61,9 +63,15 @@ MainMenu::MainMenu() {
 	quitButton.SetY(50 + 20 * 2);
 
 	//text box
-	textBox.PushLine(GetRenderer(), font, "Thanks for playing!", {255, 255, 255, 255});
-	textBox.PushLine(GetRenderer(), font, "You can get the latest version at: ", {255, 255, 255, 255});
-	textBox.PushLine(GetRenderer(), font, "krgamestudios.com", {255, 255, 255, 255}); //TODO: (9) click to open the website/update
+	int h = -1;
+	SDL_RenderGetLogicalSize(GetRenderer(), nullptr, &h);
+
+	textBox.SetX(50);
+	textBox.SetY(h-100);
+
+	textBox.PushLine(GetRenderer(), font, WHITE, "Thanks for playing!");
+	textBox.PushLine(GetRenderer(), font, WHITE, "You can get the latest version at: ");
+	textBox.PushLine(GetRenderer(), font, WHITE, "krgamestudios.com"); //TODO: (9) click to open the website/update
 
 	//debug
 	//
@@ -93,11 +101,7 @@ void MainMenu::RenderFrame(SDL_Renderer* renderer) {
 	startButton.DrawTo(renderer);
 	optionsButton.DrawTo(renderer);
 	quitButton.DrawTo(renderer);
-
-	int h = -1;
-	SDL_RenderGetLogicalSize(GetRenderer(), nullptr, &h);
-
-	textBox.DrawTo(renderer, 50, h-50, -12);
+	textBox.DrawTo(renderer);
 }
 
 //-------------------------

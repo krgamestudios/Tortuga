@@ -34,6 +34,8 @@
 #include <sstream>
 #include <stdexcept>
 
+constexpr SDL_Color WHITE = {255, 255, 255, 255};
+
 //-------------------------
 //static functions
 //-------------------------
@@ -72,9 +74,9 @@ World::World(int* const argClientIndex,	int* const argAccountIndex):
 
 	//setup the buttons
 	disconnectButton.SetBackgroundTexture(GetRenderer(), buttonImage.GetTexture());
-	disconnectButton.SetText(GetRenderer(), font, "Disconnect", COLOR_WHITE);
+	disconnectButton.SetText(GetRenderer(), font, WHITE, "Disconnect");
 	shutdownButton.SetBackgroundTexture(GetRenderer(), buttonImage.GetTexture());
-	shutdownButton.SetText(GetRenderer(), font, "Shutdown", COLOR_WHITE);
+	shutdownButton.SetText(GetRenderer(), font, WHITE, "Shutdown");
 
 	//set the button positions
 	disconnectButton.SetX(50);
@@ -261,12 +263,12 @@ void World::RenderFrame(SDL_Renderer* renderer) {
 	shutdownButton.DrawTo(renderer);
 
 	//FPS
-	fpsTextLine.DrawTo(renderer, 0, 0);
+	fpsTextLine.DrawTo(renderer);
 	int fpsRet = fps.Calculate();
 	if (fpsRet != -1) {
 		std::ostringstream msg;
 		msg << "FPS: " << fpsRet;
-		fpsTextLine.SetText(renderer, font, msg.str(), {255, 255, 255, 255});
+		fpsTextLine.SetText(renderer, font, WHITE, msg.str());
 	}
 }
 
