@@ -20,6 +20,17 @@
  * distribution.
 */
 
+-------------------------
+--defines
+-------------------------
+
+PRAGMA foreign_keys = ON;
+
+-------------------------
+--table definitions
+-------------------------
+
+
 CREATE TABLE IF NOT EXISTS UserAccounts (
 	uid			INTEGER PRIMARY KEY AUTOINCREMENT,
 	username	varchar(100) UNIQUE, --TODO: (3) Swap username for email address
@@ -39,7 +50,7 @@ CREATE TABLE IF NOT EXISTS LiveCharacters (
 	uid			INTEGER PRIMARY KEY AUTOINCREMENT,
 
 	--metadata
-	owner		INTEGER REFERENCES Accounts(uid),
+	owner		INTEGER REFERENCES UserAccounts(uid),
 	handle		varchar(100) UNIQUE,
 	avatar		varchar(100),
 	birth		timestamp NOT NULL DEFAULT (datetime()),
@@ -47,24 +58,21 @@ CREATE TABLE IF NOT EXISTS LiveCharacters (
 	--physically exists in the world
 	roomIndex	INTEGER DEFAULT 0,
 	originX		INTEGER DEFAULT 0,
-	originY		INTEGER DEFAULT 0,
-	boundsX		INTEGER DEFAULT 0,
-	boundsY		INTEGER DEFAULT 0,
-	boundsW		INTEGER DEFAULT 0,
-	boundsH		INTEGER DEFAULT 0
+	originY		INTEGER DEFAULT 0
 );
 
 CREATE TABLE IF NOT EXISTS DeadCharacters (
 	uid INTEGER PRIMARY KEY,
 
 	--metadata
-	owner		INTEGER REFERENCES Accounts(uid),
+	owner		INTEGER REFERENCES UserAccounts(uid),
 	handle		varchar(100),
 	avatar		varchar(100),
-	birth		timestamp NOT NULL
+	birth		timestamp NOT NULL,
+	death		timestamp NOT NULL DEFAULT (datetime())
 );
 
-CREATE TABLE IF NOT EXISTS LiveMonsters (
+CREATE TABLE IF NOT EXISTS LiveCreatures (
 	uid INTEGER PRIMARY KEY AUTOINCREMENT,
 
 	--metadata
@@ -77,26 +85,14 @@ CREATE TABLE IF NOT EXISTS LiveMonsters (
 	--physically exists in the world
 	roomIndex	INTEGER DEFAULT 0,
 	originX		INTEGER DEFAULT 0,
-	originY		INTEGER DEFAULT 0,
-	boundsX		INTEGER DEFAULT 0,
-	boundsY		INTEGER DEFAULT 0,
-	boundsW		INTEGER DEFAULT 0,
-	boundsH		INTEGER DEFAULT 0
-);
-
-CREATE TABLE IF NOT EXISTS DeadMonsters (
-	uid INTEGER PRIMARY KEY,
-
-	--metadata
-	handle		varchar(100) UNIQUE,
-	avatar		varchar(100)
+	originY		INTEGER DEFAULT 0
 );
 
 -------------------------
---Utility tables
+--member tables
 -------------------------
 
-CREATE TABLE IF NOT EXISTS StatisticSets (
+CREATE TABLE IF NOT EXISTS CombatStatistics (
 	--metadata
 	uid				INTEGER PRIMARY KEY AUTOINCREMENT,
 
@@ -111,48 +107,44 @@ CREATE TABLE IF NOT EXISTS StatisticSets (
 	defence			INTEGER DEFAULT 0,
 	intelligence	INTEGER DEFAULT 0,
 	resistance		INTEGER DEFAULT 0,
-	speed			INTEGER DEFAULT 0,
 	accuracy		REAL DEFAULT 0.0,
 	evasion			REAL DEFAULT 0.0,
+	speed			INTEGER DEFAULT 0,
 	luck			REAL DEFAULT 0.0
-);
-
-CREATE TABLE IF NOT EXISTS InWorldItems (
-	--metadata
-	uid			INTEGER PRIMARY KEY AUTOINCREMENT,
-	itemType	INTEGER,
-
-	--position in the world
-	roomIndex	INTEGER DEFAULT 0,
-	originX		INTEGER DEFAULT 0,
-	originY		INTEGER DEFAULT 0,
-
-	--unique information
-	stackSize	INTEGER DEFAULT 0,
-	durability	INTEGER DEFAULT 0,
-	stats		INTEGER REFERENCES StatisticSets(uid)
 );
 
 CREATE TABLE IF NOT EXISTS InventoryItems (
 	--metadata
 	uid			INTEGER PRIMARY KEY AUTOINCREMENT,
-	owner		INTEGER REFERENCES Characters(uid),
 	itemType	INTEGER,
 
 	--unique information
 	stackSize	INTEGER DEFAULT 0,
-	durability	INTEGER DEFAULT 0,
-	stats		INTEGER REFERENCES StatisticSets(uid)
+	durability	INTEGER DEFAULT 0
 );
 
-CREATE TABLE IF NOT EXISTS WornEquipment (
-	--metadata
-	uid			INTEGER PRIMARY KEY AUTOINCREMENT,
-	owner		INTEGER REFERENCES Characters(uid),
-	itemType	INTEGER,
+-------------------------
+--cross reference tables
+-------------------------
 
-	--unique information
-	durability	INTEGER DEFAULT 0,
-	stats		INTEGER REFERENCES StatisticSets(uid)
-	--attached script?
+CREATE TABLE IF NOT EXISTS CharacterStatistics (
+	character	INTEGER,
+	statistic	INTEGER,
+	FOREIGN KEY (character)	REFERENCES LiveCharacters(uid),
+	FOREIGN KEY (statistic)	REFERENCES CombatStatistics(uid)
 );
+
+CREATE TABLE IF NOT EXISTS CharacterItems (
+	character	INTEGER,
+	item		INTEGER,
+	FOREIGN KEY (character)	REFERENCES LiveCharacters(uid),
+	FOREIGN KEY (item)		REFERENCES InventoryItem(uid)
+);
+
+CREATE TABLE IF NOT EXISTS CharacterEquipment (
+	character	INTEGER,
+	item		INTEGER,
+	FOREIGN KEY (character)	REFERENCES LiveCharacters(uid),
+	FOREIGN KEY (item)		REFERENCES InventoryItem(uid)
+);
+

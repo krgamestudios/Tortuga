@@ -39,12 +39,8 @@
 static const char* CREATE_CHARACTER = "INSERT INTO LiveCharacters ("
 	"owner, "
 	"handle, "
-	"avatar, "
-	"boundsX, "
-	"boundsY, "
-	"boundsW, "
-	"boundsH"
-	") VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7);";
+	"avatar "
+	") VALUES (?1, ?2, ?3);";
 
 static const char* LOAD_CHARACTER = "SELECT "
 	"uid, "
@@ -53,21 +49,13 @@ static const char* LOAD_CHARACTER = "SELECT "
 	"avatar, "
 	"roomIndex, "
 	"originX, "
-	"originY, "
-	"boundsX, "
-	"boundsY, "
-	"boundsW, "
-	"boundsH "
+	"originY "
 	"FROM LiveCharacters WHERE handle = ?;";
 
 static const char* SAVE_CHARACTER = "UPDATE OR FAIL LiveCharacters SET "
 	"roomIndex = ?2, "
 	"originX = ?3, "
-	"originY = ?4, "
-	"boundsX = ?5, "
-	"boundsY = ?6, "
-	"boundsW = ?7, "
-	"boundsH = ?8 "
+	"originY = ?4 "
 	"WHERE uid = ?1;";
 
 static const char* DELETE_CHARACTER = "DELETE FROM LiveCharacters WHERE uid = ?;";
@@ -93,10 +81,6 @@ int CharacterManager::Create(int owner, std::string handle, std::string avatar) 
 	ret |= sqlite3_bind_int(statement, 1, owner);
 	ret |= sqlite3_bind_text(statement, 2, handle.c_str(), handle.size() + 1, SQLITE_STATIC);
 	ret |= sqlite3_bind_text(statement, 3, avatar.c_str(), avatar.size() + 1, SQLITE_STATIC);
-	ret |= sqlite3_bind_int(statement, 4, CHARACTER_BOUNDS_X);
-	ret |= sqlite3_bind_int(statement, 5, CHARACTER_BOUNDS_Y);
-	ret |= sqlite3_bind_int(statement, 6, CHARACTER_BOUNDS_WIDTH);
-	ret |= sqlite3_bind_int(statement, 7, CHARACTER_BOUNDS_HEIGHT);
 
 	//check for binding errors
 	if (ret) {
@@ -167,10 +151,10 @@ int CharacterManager::Load(int owner, std::string handle, std::string avatar) {
 		newChar.origin.x = (double)sqlite3_column_int(statement, 5);
 		newChar.origin.y = (double)sqlite3_column_int(statement, 6);
 		//bounds
-		newChar.bounds.x = (int)sqlite3_column_int(statement, 7);
-		newChar.bounds.y = (int)sqlite3_column_int(statement, 8);
-		newChar.bounds.w = (int)sqlite3_column_int(statement, 9);
-		newChar.bounds.h = (int)sqlite3_column_int(statement, 10);
+		newChar.bounds.x = CHARACTER_BOUNDS_X;
+		newChar.bounds.y = CHARACTER_BOUNDS_Y;
+		newChar.bounds.w = CHARACTER_BOUNDS_WIDTH;
+		newChar.bounds.h = CHARACTER_BOUNDS_HEIGHT;
 
 		//gameplay components: equipment, items, buffs, debuffs...
 
@@ -212,12 +196,8 @@ int CharacterManager::Save(int uid) {
 	ret |= sqlite3_bind_int(statement, 2, character.roomIndex) != SQLITE_OK;
 	ret |= sqlite3_bind_int(statement, 3, (int)character.origin.x) != SQLITE_OK;
 	ret |= sqlite3_bind_int(statement, 4, (int)character.origin.y) != SQLITE_OK;
-	ret |= sqlite3_bind_int(statement, 5, character.bounds.x) != SQLITE_OK;
-	ret |= sqlite3_bind_int(statement, 6, character.bounds.y) != SQLITE_OK;
-	ret |= sqlite3_bind_int(statement, 7, character.bounds.w) != SQLITE_OK;
-	ret |= sqlite3_bind_int(statement, 8, character.bounds.h) != SQLITE_OK;
 
-	//gameplay components: equipment, items, buffs, debuffs...
+	//TODO: gameplay components: equipment, items, buffs, debuffs...
 
 	//check for binding errors
 	if (ret) {
