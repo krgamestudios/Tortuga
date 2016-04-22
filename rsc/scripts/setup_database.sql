@@ -32,6 +32,14 @@ INSERT OR IGNORE INTO InventoryItems (name, type, durability) VALUES
 		("potion", "consumable", 100)
 ;
 
+--DEBUG: Test cases
+INSERT INTO LiveCharacters
+
 --DEBUG: this is supposed to archive the dead characters
-INSERT INTO DeadCharacters (uid, owner, handle, avatar, birth) SELECT uid, owner, handle, avatar, birth FROM LiveCharacters;
+--Insert into DeadCharacters From LiveCharacters all characters who's HP has reached zero or below
+INSERT INTO DeadCharacters (uid, owner, handle, avatar, birth)
+	SELECT uid, owner, handle, avatar, birth FROM LiveCharacters WHERE
+		SELECT character FROM CharacterStatistics WHERE
+			SELECT uid FROM CombatStatistics WHERE health <= 0;
+
 DELETE FROM LiveCharacters WHERE uid IN (SELECT uid FROM DeadCharacters);

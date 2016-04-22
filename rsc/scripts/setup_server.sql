@@ -50,7 +50,7 @@ CREATE TABLE IF NOT EXISTS LiveCharacters (
 
 	--metadata
 	owner		INTEGER REFERENCES UserAccounts(uid),
-	handle		varchar(100) UNIQUE,
+	handle		varchar(100),
 	avatar		varchar(100),
 	birth		timestamp NOT NULL DEFAULT (datetime()),
 
