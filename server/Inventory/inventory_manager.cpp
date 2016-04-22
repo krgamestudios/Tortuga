@@ -19,33 +19,16 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#pragma once
+#include "inventory_manager.hpp"
 
-//components
-#include "character_defines.hpp"
-#include "entity.hpp"
-#include "inventory.hpp"
+static const char* CREATE_CHARACTER_ITEMS = "INSERT INTO CharacterItems (character, item) VALUES (?1, ?2);";
 
-//std namespace
-#include <string>
-#include <cmath>
+static const char* DELETE_CHARACTER_ITEMS = "DELETE FROM CharacterItems WHERE (character=?1, item=?2);";
 
-class CharacterData: public Entity {
-public:
-	CharacterData();
-	~CharacterData() = default;
+static const char* CREATE_CHARACTER_EQUIPMENT = "INSERT INTO CharacterEquipment (character, item) VALUES (?1, ?2);";
 
-	//database stuff
-	int GetOwner();
-	std::string GetHandle();
-	std::string GetAvatar();
-	Inventory* GetInventory();
+static const char* DELETE_CHARACTER_EQUIPMENT = "DELETE FROM CharacterEquipment WHERE (character=?1, item=?2);";
 
-private:
-	friend class CharacterManager;
-
-	int owner = -1;
-	std::string handle;
-	std::string avatar;
-	Inventory inventory;
-};
+int InventoryManager::CreateItem(int owner, ItemType itemType) {
+	sqlite3_stmt* statement = nullptr;
+}

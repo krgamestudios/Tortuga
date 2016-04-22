@@ -19,33 +19,19 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#pragma once
 
-//components
-#include "character_defines.hpp"
-#include "entity.hpp"
-#include "inventory.hpp"
+-------------------------
+--fill the global tables with gameplay data
+-------------------------
 
-//std namespace
-#include <string>
-#include <cmath>
+INSERT OR IGNORE INTO InventoryItems (name, type, durability) VALUES 
+		("sword", "weapon", 100),
+		("dagger", "weapon", 100),
+		("staff", "weapon", 100),
+		("shield", "armour", 100),
+		("potion", "consumable", 100)
+;
 
-class CharacterData: public Entity {
-public:
-	CharacterData();
-	~CharacterData() = default;
-
-	//database stuff
-	int GetOwner();
-	std::string GetHandle();
-	std::string GetAvatar();
-	Inventory* GetInventory();
-
-private:
-	friend class CharacterManager;
-
-	int owner = -1;
-	std::string handle;
-	std::string avatar;
-	Inventory inventory;
-};
+--DEBUG: this is supposed to archive the dead characters
+INSERT INTO DeadCharacters (uid, owner, handle, avatar, birth) SELECT uid, owner, handle, avatar, birth FROM LiveCharacters;
+DELETE FROM LiveCharacters WHERE uid IN (SELECT uid FROM DeadCharacters);

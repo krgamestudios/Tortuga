@@ -19,33 +19,5 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#pragma once
-
-//components
-#include "character_defines.hpp"
-#include "entity.hpp"
 #include "inventory.hpp"
 
-//std namespace
-#include <string>
-#include <cmath>
-
-class CharacterData: public Entity {
-public:
-	CharacterData();
-	~CharacterData() = default;
-
-	//database stuff
-	int GetOwner();
-	std::string GetHandle();
-	std::string GetAvatar();
-	Inventory* GetInventory();
-
-private:
-	friend class CharacterManager;
-
-	int owner = -1;
-	std::string handle;
-	std::string avatar;
-	Inventory inventory;
-};

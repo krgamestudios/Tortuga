@@ -21,31 +21,13 @@
 */
 #pragma once
 
-//components
-#include "character_defines.hpp"
-#include "entity.hpp"
 #include "inventory.hpp"
 
-//std namespace
-#include <string>
-#include <cmath>
-
-class CharacterData: public Entity {
+class InventoryManager {
 public:
-	CharacterData();
-	~CharacterData() = default;
-
-	//database stuff
-	int GetOwner();
-	std::string GetHandle();
-	std::string GetAvatar();
-	Inventory* GetInventory();
+	InventoryManager() = default;
+	~InventoryManager() = default;
 
 private:
-	friend class CharacterManager;
-
-	int owner = -1;
-	std::string handle;
-	std::string avatar;
-	Inventory inventory;
+	//
 };

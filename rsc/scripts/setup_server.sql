@@ -30,14 +30,13 @@ PRAGMA foreign_keys = ON;
 --table definitions
 -------------------------
 
-
 CREATE TABLE IF NOT EXISTS UserAccounts (
 	uid			INTEGER PRIMARY KEY AUTOINCREMENT,
 	username	varchar(100) UNIQUE, --TODO: (3) Swap username for email address
 
 	--server-client security
---	passhash	varchar(100),
---	passsalt	varchar(100),
+	passhash	varchar(100),
+	passsalt	varchar(100),
 
 	--server controls
 	blacklisted	BIT DEFAULT 0,
@@ -89,6 +88,20 @@ CREATE TABLE IF NOT EXISTS LiveCreatures (
 );
 
 -------------------------
+--global tables
+-------------------------
+
+CREATE TABLE IF NOT EXISTS InventoryItems (
+	--metadata
+	uid		INTEGER PRIMARY KEY AUTOINCREMENT,
+	name	varchar(100) UNIQUE,
+	type	varchar(100), --tmp type
+
+	--unique information
+	durability	INTEGER DEFAULT 0
+);
+
+-------------------------
 --member tables
 -------------------------
 
@@ -111,16 +124,6 @@ CREATE TABLE IF NOT EXISTS CombatStatistics (
 	evasion			REAL DEFAULT 0.0,
 	speed			INTEGER DEFAULT 0,
 	luck			REAL DEFAULT 0.0
-);
-
-CREATE TABLE IF NOT EXISTS InventoryItems (
-	--metadata
-	uid			INTEGER PRIMARY KEY AUTOINCREMENT,
-	itemType	INTEGER,
-
-	--unique information
-	stackSize	INTEGER DEFAULT 0,
-	durability	INTEGER DEFAULT 0
 );
 
 -------------------------

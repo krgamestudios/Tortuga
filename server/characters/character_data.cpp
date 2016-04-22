@@ -41,3 +41,7 @@ std::string CharacterData::GetHandle() {
 std::string CharacterData::GetAvatar() {
 	return avatar;
 }
+
+Inventory* CharacterData::GetInventory() {
+	return &inventory;
+}
