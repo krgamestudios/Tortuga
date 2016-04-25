@@ -19,27 +19,24 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
+#pragma once
 
--------------------------
---fill the global tables with gameplay data
--------------------------
+#include "server_packet.hpp"
+#include "udp_network_utility.hpp"
 
-INSERT OR IGNORE INTO InventoryItems (name, type, durability) VALUES 
-		("sword", "weapon", 100),
-		("dagger", "weapon", 100),
-		("staff", "weapon", 100),
-		("shield", "armour", 100),
-		("potion", "consumable", 100)
-;
+#include <chrono>
 
---DEBUG: Test cases
-INSERT INTO LiveCharacters
+class HeartbeatUtility {
+public:
+	//heartbeat system
+	void hPing(ServerPacket* const);
+	void hPong(ServerPacket* const);
 
---DEBUG: this is supposed to archive the dead characters
---Insert into DeadCharacters From LiveCharacters all characters who's HP has reached zero or below
-INSERT INTO DeadCharacters (uid, owner, handle, avatar, birth)
-	SELECT uid, owner, handle, avatar, birth FROM LiveCharacters WHERE
-		SELECT character FROM CharacterStatistics WHERE
-			SELECT uid FROM CombatStatistics WHERE health <= 0;
+	int CheckHeartBeat();
 
-DELETE FROM LiveCharacters WHERE uid IN (SELECT uid FROM DeadCharacters);
+private:
+	UDPNetworkUtility& network = UDPNetworkUtility::GetSingleton();
+	typedef std::chrono::steady_clock Clock;
+	Clock::time_point lastBeat = Clock::now();
+	int attemptedBeats = 0;
+};

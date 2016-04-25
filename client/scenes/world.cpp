@@ -77,12 +77,16 @@ World::World(int* const argClientIndex,	int* const argAccountIndex):
 	disconnectButton.SetText(GetRenderer(), font, WHITE, "Disconnect");
 	shutdownButton.SetBackgroundTexture(GetRenderer(), buttonImage.GetTexture());
 	shutdownButton.SetText(GetRenderer(), font, WHITE, "Shutdown");
+	inventoryButton.SetBackgroundTexture(GetRenderer(), buttonImage.GetTexture());
+	inventoryButton.SetText(GetRenderer(), font, WHITE, "Inventory");
 
 	//set the button positions
 	disconnectButton.SetX(50);
 	disconnectButton.SetY(50);
 	shutdownButton.SetX(50);
 	shutdownButton.SetY(70);
+	inventoryButton.SetX(50);
+	inventoryButton.SetY(90);
 
 	//load the tilesheet
 	//TODO: (2) Tile size and tile sheet should be loaded elsewhere
@@ -161,7 +165,12 @@ void World::Update() {
 	delete reinterpret_cast<char*>(packetBuffer);
 
 	//heartbeat system
-	CheckHeartBeat();
+	if (heartbeatUtility.CheckHeartBeat()) {
+		//escape to the disconnect screen
+		SendDisconnectRequest();
+		SetSceneSignal(SceneSignal::DISCONNECTEDSCREEN);
+		ConfigUtility::GetSingleton()["client.disconnectMessage"] = "Error: Lost connection to the server";
+	}
 
 	//update all entities
 	for (auto& it : characterMap) {
@@ -261,6 +270,7 @@ void World::RenderFrame(SDL_Renderer* renderer) {
 	//draw UI
 	disconnectButton.DrawTo(renderer);
 	shutdownButton.DrawTo(renderer);
+	inventoryButton.DrawTo(renderer);
 
 	//FPS
 	fpsTextLine.DrawTo(renderer);
@@ -285,11 +295,13 @@ void World::QuitEvent() {
 void World::MouseMotion(SDL_MouseMotionEvent const& event) {
 	disconnectButton.MouseMotion(event);
 	shutdownButton.MouseMotion(event);
+	inventoryButton.MouseMotion(event);
 }
 
 void World::MouseButtonDown(SDL_MouseButtonEvent const& event) {
 	disconnectButton.MouseButtonDown(event);
 	shutdownButton.MouseButtonDown(event);
+	inventoryButton.MouseButtonDown(event);
 }
 
 void World::MouseButtonUp(SDL_MouseButtonEvent const& event) {
@@ -298,6 +310,9 @@ void World::MouseButtonUp(SDL_MouseButtonEvent const& event) {
 	}
 	if (shutdownButton.MouseButtonUp(event) == Button::State::RELEASED) {
 		SendAdminShutdownRequest();
+	}
+	if (inventoryButton.MouseButtonUp(event) == Button::State::RELEASED) {
+		//TODO: show the inventory screen
 	}
 }
 
@@ -411,10 +426,10 @@ void World::HandlePacket(SerialPacket* const argPacket) {
 	switch(argPacket->type) {
 		//heartbeat system
 		case SerialPacketType::PING:
-			hPing(static_cast<ServerPacket*>(argPacket));
+			heartbeatUtility.hPing(static_cast<ServerPacket*>(argPacket));
 		break;
 		case SerialPacketType::PONG:
-			hPong(static_cast<ServerPacket*>(argPacket));
+			heartbeatUtility.hPong(static_cast<ServerPacket*>(argPacket));
 		break;
 
 		//game server connections
@@ -517,44 +532,6 @@ void World::HandlePacket(SerialPacket* const argPacket) {
 			throw(std::runtime_error(msg.str()));
 		}
 		break;
-	}
-}
-
-//-------------------------
-//heartbeat system
-//-------------------------
-
-void World::hPing(ServerPacket* const argPacket) {
-	ServerPacket newPacket;
-	newPacket.type = SerialPacketType::PONG;
-	network.SendTo(argPacket->srcAddress, &newPacket);
-}
-
-void World::hPong(ServerPacket* const argPacket) {
-	if (*network.GetIPAddress(Channels::SERVER) != argPacket->srcAddress) {
-		throw(std::runtime_error("Heartbeat message received from an unknown source"));
-	}
-	attemptedBeats = 0;
-	lastBeat = Clock::now();
-}
-
-void World::CheckHeartBeat() {
-	//check the connection (heartbeat)
-	if (Clock::now() - lastBeat > std::chrono::seconds(3)) {
-		if (attemptedBeats > 2) {
-			//escape to the disconnect screen
-			SendDisconnectRequest();
-			SetSceneSignal(SceneSignal::DISCONNECTEDSCREEN);
-			ConfigUtility::GetSingleton()["client.disconnectMessage"] = "Error: Lost connection to the server";
-		}
-		else {
-			ServerPacket newPacket;
-			newPacket.type = SerialPacketType::PING;
-			network.SendTo(Channels::SERVER, &newPacket);
-
-			attemptedBeats++;
-			lastBeat = Clock::now();
-		}
 	}
 }
 

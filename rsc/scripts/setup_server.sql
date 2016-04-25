@@ -57,7 +57,23 @@ CREATE TABLE IF NOT EXISTS LiveCharacters (
 	--physically exists in the world
 	roomIndex	INTEGER DEFAULT 0,
 	originX		INTEGER DEFAULT 0,
-	originY		INTEGER DEFAULT 0
+	originY		INTEGER DEFAULT 0,
+
+	--combat stats
+	level			INTEGER DEFAULT 0,
+	exp				INTEGER DEFAULT 0,
+	maxHP			INTEGER DEFAULT 0,
+	health			INTEGER DEFAULT 0,
+	maxMP			INTEGER DEFAULT 0,
+	mana			INTEGER DEFAULT 0,
+	attack			INTEGER DEFAULT 0,
+	defence			INTEGER DEFAULT 0,
+	intelligence	INTEGER DEFAULT 0,
+	resistance		INTEGER DEFAULT 0,
+	accuracy		INTEGER DEFAULT 0,
+	evasion			INTEGER DEFAULT 0,
+	speed			INTEGER DEFAULT 0,
+	luck			INTEGER DEFAULT 0
 );
 
 CREATE TABLE IF NOT EXISTS DeadCharacters (
@@ -68,23 +84,21 @@ CREATE TABLE IF NOT EXISTS DeadCharacters (
 	handle		varchar(100),
 	avatar		varchar(100),
 	birth		timestamp NOT NULL,
-	death		timestamp NOT NULL DEFAULT (datetime())
-);
+	death		timestamp NOT NULL DEFAULT (datetime()),
 
-CREATE TABLE IF NOT EXISTS LiveCreatures (
-	uid INTEGER PRIMARY KEY AUTOINCREMENT,
-
-	--metadata
-	handle		varchar(100) UNIQUE,
-	avatar		varchar(100),
-
-	--actions
---	script
-
-	--physically exists in the world
-	roomIndex	INTEGER DEFAULT 0,
-	originX		INTEGER DEFAULT 0,
-	originY		INTEGER DEFAULT 0
+	--combat stats
+	level			INTEGER DEFAULT 0,
+	exp				INTEGER DEFAULT 0,
+	maxHP			INTEGER DEFAULT 0,
+	maxMP			INTEGER DEFAULT 0,
+	attack			INTEGER DEFAULT 0,
+	defence			INTEGER DEFAULT 0,
+	intelligence	INTEGER DEFAULT 0,
+	resistance		INTEGER DEFAULT 0,
+	accuracy		INTEGER DEFAULT 0,
+	evasion			INTEGER DEFAULT 0,
+	speed			INTEGER DEFAULT 0,
+	luck			INTEGER DEFAULT 0
 );
 
 -------------------------
@@ -105,49 +119,4 @@ CREATE TABLE IF NOT EXISTS InventoryItems (
 --member tables
 -------------------------
 
-CREATE TABLE IF NOT EXISTS CombatStatistics (
-	--metadata
-	uid				INTEGER PRIMARY KEY AUTOINCREMENT,
-
-	--general use statistics
-	level			INTEGER DEFAULT 0,
-	exp				INTEGER DEFAULT 0,
-	maxHP			INTEGER DEFAULT 0,
-	health			INTEGER DEFAULT 0,
-	maxMP			INTEGER DEFAULT 0,
-	mana			INTEGER DEFAULT 0,
-	attack			INTEGER DEFAULT 0,
-	defence			INTEGER DEFAULT 0,
-	intelligence	INTEGER DEFAULT 0,
-	resistance		INTEGER DEFAULT 0,
-	accuracy		REAL DEFAULT 0.0,
-	evasion			REAL DEFAULT 0.0,
-	speed			INTEGER DEFAULT 0,
-	luck			REAL DEFAULT 0.0
-);
-
--------------------------
---cross reference tables
--------------------------
-
-CREATE TABLE IF NOT EXISTS CharacterStatistics (
-	character	INTEGER,
-	statistic	INTEGER,
-	FOREIGN KEY (character)	REFERENCES LiveCharacters(uid),
-	FOREIGN KEY (statistic)	REFERENCES CombatStatistics(uid)
-);
-
-CREATE TABLE IF NOT EXISTS CharacterItems (
-	character	INTEGER,
-	item		INTEGER,
-	FOREIGN KEY (character)	REFERENCES LiveCharacters(uid),
-	FOREIGN KEY (item)		REFERENCES InventoryItem(uid)
-);
-
-CREATE TABLE IF NOT EXISTS CharacterEquipment (
-	character	INTEGER,
-	item		INTEGER,
-	FOREIGN KEY (character)	REFERENCES LiveCharacters(uid),
-	FOREIGN KEY (item)		REFERENCES InventoryItem(uid)
-);
-
+--TODO

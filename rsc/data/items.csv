@@ -1,0 +1,5 @@
+#Format (4 columns): "name", type, "sprite.png", stackable
+"Sword",weapon,"sword.png",false
+"Staff",weapon,"staff.png",false
+"Dagger",weapon,"dagger.png",false
+"Potion",consumable,"potion.png",true

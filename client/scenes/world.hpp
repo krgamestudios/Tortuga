@@ -43,6 +43,7 @@
 #include "base_scene.hpp"
 #include "base_barrier.hpp"
 #include "base_creature.hpp"
+#include "heartbeat_utility.hpp"
 #include "local_character.hpp"
 
 #include "SDL2/SDL.h"
@@ -79,12 +80,6 @@ private:
 
 	//handle incoming traffic
 	void HandlePacket(SerialPacket* const);
-
-	//heartbeat system
-	void hPing(ServerPacket* const);
-	void hPong(ServerPacket* const);
-
-	void CheckHeartBeat();
 
 	//basic connections
 	void SendLogoutRequest();
@@ -148,6 +143,7 @@ private:
 	TTF_Font* font = nullptr;
 	Button disconnectButton;
 	Button shutdownButton;
+	Button inventoryButton;
 	FrameRate fps;
 	TextLine fpsTextLine;
 
@@ -165,11 +161,9 @@ private:
 	LocalCharacter* localCharacter = nullptr;
 
 	//heartbeat
-	//TODO: (2) Heartbeat needs it's own utility
+	HeartbeatUtility heartbeatUtility;
 	typedef std::chrono::steady_clock Clock;
-	Clock::time_point lastBeat = Clock::now();
 	Clock::time_point queryTime = Clock::now() - std::chrono::seconds(4); //back 4 seconds to trigger automatically
-	int attemptedBeats = 0;
 
 	//ugly references; I hate this
 	ConfigUtility& config = ConfigUtility::GetSingleton();
