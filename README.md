@@ -1,3 +1,5 @@
+This project is officially cancelled. It's too big, it's taken too much from me, and I can't keep going anymore.
+
 ## Outline
 
 Tortuga is a 2D MMORPG featuring permadeath, with an emphasis on multiplayer cooperation, exploration and customization. The game runs on customizable public and private servers.
