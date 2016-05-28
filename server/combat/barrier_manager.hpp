@@ -27,6 +27,7 @@
 #include "sqlite3.h"
 
 #include <algorithm>
+#include <functional>
 #include <list>
 #include <map>
 

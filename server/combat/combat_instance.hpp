@@ -24,6 +24,8 @@
 #include "character_data.hpp"
 #include "creature_data.hpp"
 
+#include <functional>
+
 class CombatInstance {
 public:
 	CombatInstance();

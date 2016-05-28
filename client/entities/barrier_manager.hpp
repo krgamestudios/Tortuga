@@ -23,6 +23,7 @@
 
 #include "base_barrier.hpp"
 
+#include <functional>
 #include <list>
 #include <string>
 
