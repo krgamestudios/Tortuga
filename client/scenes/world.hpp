@@ -143,7 +143,6 @@ private:
 	TTF_Font* font = nullptr;
 	Button disconnectButton;
 	Button shutdownButton;
-	Button inventoryButton;
 	FrameRate fps;
 	TextLine fpsTextLine;
 

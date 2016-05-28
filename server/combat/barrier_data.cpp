@@ -39,6 +39,7 @@ BarrierData::~BarrierData() {
 int BarrierData::Update(lua_State* L) {
 	int ret = 0;
 
+	//NOTE: this is here mostly for the "barrier tick" effect
 	if (scriptRef != LUA_NOREF) {
 		//Call the script reference
 		lua_pushinteger(L, scriptRef);

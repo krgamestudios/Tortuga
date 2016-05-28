@@ -31,7 +31,7 @@
 #include <stack>
 #include <stdexcept>
 
-//TODO: (9) character collisions should be preformed client-side
+//NOTE: character collisions should be preformed client-side
 void RoomData::RunFrame() {
 	//get the hook
 	lua_rawgeti(lua, LUA_REGISTRYINDEX, tickRef);
@@ -67,6 +67,27 @@ void RoomData::RunFrame() {
 	creatureMgr.Update(&creatureList, updateAll);
 	barrierMgr.Update(&barrierList, updateAll);
 
+	//update the combat instances
+	combatInstanceMgr.Update();
+
+	//send the creature updates
+	for (auto& it : creatureList) {
+		CreaturePacket packet;
+		copyCreatureToPacket(&packet, it.second, it.first);
+		packet.type = SerialPacketType::CREATURE_UPDATE;
+		packet.roomIndex = roomIndex;
+		pumpPacketProximity(reinterpret_cast<SerialPacket*>(&packet), roomIndex, it.second->GetOrigin(), INFLUENCE_RADIUS);
+	}
+
+	//send the barrier updates
+	for (auto& it : barrierList) {
+		BarrierPacket packet;
+		copyBarrierToPacket(&packet, it.second, it.first);
+		packet.type = SerialPacketType::BARRIER_UPDATE;
+		packet.roomIndex = roomIndex;
+		pumpPacketProximity(reinterpret_cast<SerialPacket*>(&packet), roomIndex, it.second->GetOrigin(), INFLUENCE_RADIUS);
+	}
+
 	//build a list of entities for use with the triggers
 	std::stack<Entity*> entityStack;
 	for (auto& it : characterList) {
@@ -76,7 +97,7 @@ void RoomData::RunFrame() {
 	//Compare the triggers to the entities, using their real hitboxes
 	triggerMgr.Compare(entityStack);
 
-	//Creature/character collisions, O(m*n)
+	//Creature/character collisions, O(m*n), making the barriers
 	for (auto characterIt : characterList) {
 		BoundingBox characterBox = characterIt->GetBounds() + characterIt->GetOrigin();
 
@@ -86,7 +107,7 @@ void RoomData::RunFrame() {
 			BoundingBox creatureBox = creatureIt.second.GetBounds() + creatureIt.second.GetOrigin();
 
 			if (characterBox.CheckOverlap(creatureBox)) {
-				int barrierIndex = barrierMgr.Create(-1);
+				int barrierIndex = barrierMgr.Create(combatInstanceMgr.Create()); //link the barrier to an instance
 				BarrierData* barrierData = barrierMgr.Find(barrierIndex);
 				barrierData->SetRoomIndex(roomIndex);
 				barrierData->SetOrigin({
@@ -119,22 +140,23 @@ void RoomData::RunFrame() {
 		}
 	}
 
-	//send the creature updates
-	for (auto& it : creatureList) {
-		CreaturePacket packet;
-		copyCreatureToPacket(&packet, it.second, it.first);
-		packet.type = SerialPacketType::CREATURE_UPDATE;
-		packet.roomIndex = roomIndex;
-		pumpPacketProximity(reinterpret_cast<SerialPacket*>(&packet), roomIndex, it.second->GetOrigin(), INFLUENCE_RADIUS);
-	}
+	//TODO: check for character collisions with barriers, O(m*n)
+	for (auto characterIt : characterList) {
+		BoundingBox characterBox = characterIt->GetBounds() + characterIt->GetOrigin();
 
-	//send the barrier updates
-	for (auto& it : barrierList) {
-		BarrierPacket packet;
-		copyBarrierToPacket(&packet, it.second, it.first);
-		packet.type = SerialPacketType::BARRIER_UPDATE;
-		packet.roomIndex = roomIndex;
-		pumpPacketProximity(reinterpret_cast<SerialPacket*>(&packet), roomIndex, it.second->GetOrigin(), INFLUENCE_RADIUS);
+		for (auto barrierIt : *barrierMgr.GetContainer()) {
+			BoundingBox barrierBox = barrierIt.second.GetBounds() + barrierIt.second.GetOrigin();
+
+			if (characterBox.CheckOverlap(barrierBox)) {
+				//TODO: (0) actually move the character to an instance
+				CombatInstance* instance = combatInstanceMgr.Find(barrierIt.second.GetInstanceIndex());
+
+				//...
+
+				//only confirm one barrier per character
+				break;
+			}
+		}
 	}
 }
 

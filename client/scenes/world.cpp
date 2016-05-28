@@ -77,16 +77,12 @@ World::World(int* const argClientIndex,	int* const argAccountIndex):
 	disconnectButton.SetText(GetRenderer(), font, WHITE, "Disconnect");
 	shutdownButton.SetBackgroundTexture(GetRenderer(), buttonImage.GetTexture());
 	shutdownButton.SetText(GetRenderer(), font, WHITE, "Shutdown");
-	inventoryButton.SetBackgroundTexture(GetRenderer(), buttonImage.GetTexture());
-	inventoryButton.SetText(GetRenderer(), font, WHITE, "Inventory");
 
 	//set the button positions
 	disconnectButton.SetX(50);
 	disconnectButton.SetY(50);
 	shutdownButton.SetX(50);
 	shutdownButton.SetY(70);
-	inventoryButton.SetX(50);
-	inventoryButton.SetY(90);
 
 	//load the tilesheet
 	//TODO: (2) Tile size and tile sheet should be loaded elsewhere
@@ -270,7 +266,6 @@ void World::RenderFrame(SDL_Renderer* renderer) {
 	//draw UI
 	disconnectButton.DrawTo(renderer);
 	shutdownButton.DrawTo(renderer);
-	inventoryButton.DrawTo(renderer);
 
 	//FPS
 	fpsTextLine.DrawTo(renderer);
@@ -295,13 +290,11 @@ void World::QuitEvent() {
 void World::MouseMotion(SDL_MouseMotionEvent const& event) {
 	disconnectButton.MouseMotion(event);
 	shutdownButton.MouseMotion(event);
-	inventoryButton.MouseMotion(event);
 }
 
 void World::MouseButtonDown(SDL_MouseButtonEvent const& event) {
 	disconnectButton.MouseButtonDown(event);
 	shutdownButton.MouseButtonDown(event);
-	inventoryButton.MouseButtonDown(event);
 }
 
 void World::MouseButtonUp(SDL_MouseButtonEvent const& event) {
@@ -310,9 +303,6 @@ void World::MouseButtonUp(SDL_MouseButtonEvent const& event) {
 	}
 	if (shutdownButton.MouseButtonUp(event) == Button::State::RELEASED) {
 		SendAdminShutdownRequest();
-	}
-	if (inventoryButton.MouseButtonUp(event) == Button::State::RELEASED) {
-		//TODO: show the inventory screen
 	}
 }
 
