@@ -152,6 +152,7 @@ void RoomData::RunFrame() {
 				CombatInstance* instance = combatInstanceMgr.Find(barrierIt.second.GetInstanceIndex());
 
 				//...
+				std::cout << barrierIt.first << "\t" << barrierIt.second.GetInstanceIndex() << std::endl;
 
 				//only confirm one barrier per character
 				break;

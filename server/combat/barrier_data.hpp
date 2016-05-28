@@ -21,6 +21,7 @@
 */
 #pragma once
 
+#include "barrier_defines.hpp"
 #include "entity.hpp"
 
 #include "lua.hpp"

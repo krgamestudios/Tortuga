@@ -30,6 +30,13 @@ BarrierData::BarrierData(int i):
 {
 	instanceIndex = i;
 	memset(status, 0, sizeof(int) * 8);
+
+	SetBounds({
+		BARRIER_BOUNDS_X,
+		BARRIER_BOUNDS_Y,
+		BARRIER_BOUNDS_WIDTH,
+		BARRIER_BOUNDS_HEIGHT
+	});
 }
 
 BarrierData::~BarrierData() {
