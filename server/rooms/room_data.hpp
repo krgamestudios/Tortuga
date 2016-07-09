@@ -74,6 +74,13 @@ public:
 	std::string GetTag(std::string key);
 
 private:
+	//hi-cohesion methods for one-time use
+	bool RunFrameLuaOnTick();
+	void RunFrameUpdates(bool updateAll);
+	void RunFrameTriggers();
+	void RunFrameCharacterCreatureCollisions();
+	void RunFrameCharacterBarrierCollisions();
+
 	//metadata
 	std::string roomName;
 	std::string tilesetName;

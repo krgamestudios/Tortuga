@@ -62,6 +62,17 @@
 
 //NOTE: character collisions should be preformed client-side
 void RoomData::RunFrame() {
+	RunFrameUpdates(RunFrameLuaOnTick());
+	RunFrameTriggers();
+	RunFrameCharacterCreatureCollisions();
+	RunFrameCharacterBarrierCollisions();
+}
+
+//-------------------------
+//hi-cohesion methods for one-time use
+//-------------------------
+
+bool RoomData::RunFrameLuaOnTick() {
 	//get the hook
 	lua_rawgeti(lua, LUA_REGISTRYINDEX, tickRef);
 
@@ -75,7 +86,7 @@ void RoomData::RunFrame() {
 		}
 
 		//pump creatures & barriers
-		if (lua_tonumber(lua, -1)) {
+		if (lua_tonumber(lua, -1) > 0) {
 			updateAll = true;
 		}
 
@@ -85,6 +96,10 @@ void RoomData::RunFrame() {
 		lua_pop(lua, 1);
 	}
 
+	return updateAll;
+}
+
+void RoomData::RunFrameUpdates(bool updateAll) {
 	//lists of non-character entities that need updating client-side
 	std::list<std::pair<const int, CreatureData*>> creatureList;
 	std::list<std::pair<const int, BarrierData*>> barrierList;
@@ -118,8 +133,12 @@ void RoomData::RunFrame() {
 	}
 
 	//TODO: send the combat instance updates
+}
 
+void RoomData::RunFrameTriggers() {
+	
 	//build a list of entities for use with the triggers
+	//currently, this only uses characters
 	std::stack<Entity*> entityStack;
 	for (auto& it : characterList) {
 		entityStack.push(it);
@@ -127,7 +146,9 @@ void RoomData::RunFrame() {
 
 	//Compare the triggers to the entities, using their real hitboxes
 	triggerMgr.Compare(entityStack);
+}
 
+void RoomData::RunFrameCharacterCreatureCollisions() {
 	//Creature/character collisions, O(m*n), making the barriers
 	for (auto characterIt : characterList) {
 		BoundingBox characterBox = characterIt->GetBounds() + characterIt->GetOrigin();
@@ -171,7 +192,9 @@ void RoomData::RunFrame() {
 			creatureMgr.Unload(it);
 		}
 	}
+}
 
+void RoomData::RunFrameCharacterBarrierCollisions() {
 	//TODO: check for character collisions with barriers, O(m*n)
 	for (auto characterIt : characterList) {
 		BoundingBox characterBox = characterIt->GetBounds() + characterIt->GetOrigin();
@@ -192,6 +215,10 @@ void RoomData::RunFrame() {
 		}
 	}
 }
+
+//-------------------------
+//Utility methods
+//-------------------------
 
 std::string RoomData::SetName(std::string s) {
 	return roomName = s;
