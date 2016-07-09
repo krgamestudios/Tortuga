@@ -81,6 +81,7 @@ static const luaL_Reg barrierLib[] = {
 	{"GetScript", getScript},
 	{"SetTag", setTag},
 	{"GetTag", getTag},
+	//NOTE: Why is the instance mutable?
 	{"SetInstance", setInstance},
 	{"GetInstance", getInstance},
 	{"SetStatus", setStatus},

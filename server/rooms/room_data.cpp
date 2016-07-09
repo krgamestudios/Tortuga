@@ -31,6 +31,35 @@
 #include <stack>
 #include <stdexcept>
 
+/* DOCS: this is the process for RoomData::RunFrame(), read more
+ * 
+ * updateAll = OnTick()
+ * 
+ * characterList	.UpdateAll()
+ * creatureMgr		.Update(updateAll)
+ * barrierMgr		.Update(updateAll)
+ * combatMgr		.Update(updateAll)
+ * 
+ * creatureMgr		.SendUpdates()
+ * barrierMgr		.SendUpdates()
+ * //combatMgr		.SendUpdates() //TODO: incomplete
+ * 
+ * triggerMgr		.Compare(characterList)
+ * 
+ * if (a character collides with a creature)
+ *   barrierMgr		.Create()
+ *   combatMgr		.Create()
+ * 
+ *   barrierMgr		.Send()
+ * 
+ *   creatureMgr	.Delete()
+ * endif
+ * 
+ * if (a character collides with a barrier)
+ *   //TODO: incomplete
+ * endif
+*/
+
 //NOTE: character collisions should be preformed client-side
 void RoomData::RunFrame() {
 	//get the hook
@@ -88,6 +117,8 @@ void RoomData::RunFrame() {
 		pumpPacketProximity(reinterpret_cast<SerialPacket*>(&packet), roomIndex, it.second->GetOrigin(), INFLUENCE_RADIUS);
 	}
 
+	//TODO: send the combat instance updates
+
 	//build a list of entities for use with the triggers
 	std::stack<Entity*> entityStack;
 	for (auto& it : characterList) {
@@ -107,6 +138,7 @@ void RoomData::RunFrame() {
 			BoundingBox creatureBox = creatureIt.second.GetBounds() + creatureIt.second.GetOrigin();
 
 			if (characterBox.CheckOverlap(creatureBox)) {
+				//create the barrier and instance
 				int barrierIndex = barrierMgr.Create(combatInstanceMgr.Create()); //link the barrier to an instance
 				BarrierData* barrierData = barrierMgr.Find(barrierIndex);
 				barrierData->SetRoomIndex(roomIndex);
@@ -151,7 +183,7 @@ void RoomData::RunFrame() {
 				//TODO: (0) actually move the character to an instance
 				CombatInstance* instance = combatInstanceMgr.Find(barrierIt.second.GetInstanceIndex());
 
-				//...
+				//DEBUG: output barrierIndex, instanceIndex
 				std::cout << barrierIt.first << "\t" << barrierIt.second.GetInstanceIndex() << std::endl;
 
 				//only confirm one barrier per character

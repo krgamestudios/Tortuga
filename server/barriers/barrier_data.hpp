@@ -39,6 +39,7 @@ public:
 	int SetScriptReference(int);
 	int GetScriptReference();
 
+	//NOTE: Why does this have tags? Are the tags used?
 	std::string SetTag(std::string key, std::string value);
 	std::string GetTag(std::string key);
 
