@@ -19,33 +19,45 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#include "combat_instance.hpp"
+#pragma once
 
-CombatInstance::CombatInstance() {
-	//
-}
+#include "battle.hpp"
 
-CombatInstance::~CombatInstance() {
-	//
-}
+#include "lua.hpp"
+#include "sqlite3.h"
 
-void CombatInstance::Update() {
-	//
-}
+#include <algorithm>
+#include <map>
 
-//accessors and mutators
-void CombatInstance::PushCharacter(CharacterData* const characterData) {
-	//
-}
+class BattleManager {
+public:
+	BattleManager();
+	~BattleManager();
 
-void CombatInstance::PopCharacter(CharacterData* const characterData) {
-	//
-}
+	//common public methods
+	void Update();
 
-void CombatInstance::PushCreature(CreatureData* const creatureData) {
-	//
-}
+	int Create();
+	void Unload(int uid);
 
-void CombatInstance::PopCreature(CreatureData* const creatureData) {
-	//
-}
+	void UnloadAll();
+	void UnloadIf(std::function<bool(std::pair<const int, Battle const&>)> fn);
+
+	//accessors & mutators
+	Battle* Find(int uid);
+	int GetLoadedCount();
+	std::map<int, Battle>* GetContainer();
+
+	//hooks
+	lua_State* SetLuaState(lua_State* L);
+	lua_State* GetLuaState();
+	sqlite3* SetDatabase(sqlite3* db);
+	sqlite3* GetDatabase();
+
+private:
+	//members
+	std::map<int, Battle> elementMap;
+	int counter = 0;
+	lua_State* lua = nullptr;
+	sqlite3* database = nullptr;
+};

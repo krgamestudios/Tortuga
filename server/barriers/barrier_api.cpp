@@ -52,15 +52,17 @@ static int getTag(lua_State* L) {
 	return 1;
 }
 
-static int setInstance(lua_State* L) {
+/*
+static int setBattleIndex(lua_State* L) {
 	BarrierData* barrier = static_cast<BarrierData*>(lua_touserdata(L, 1));
-	barrier->SetInstanceIndex(lua_tointeger(L, 2));
+	barrier->SetBattleIndex(lua_tointeger(L, 2));
 	return 0;
 }
+*/
 
-static int getInstance(lua_State* L) {
+static int getBattleIndex(lua_State* L) {
 	BarrierData* barrier = static_cast<BarrierData*>(lua_touserdata(L, 1));
-	lua_pushinteger(L, barrier->GetInstanceIndex());
+	lua_pushinteger(L, barrier->GetBattleIndex());
 	return 1;
 }
 
@@ -81,9 +83,8 @@ static const luaL_Reg barrierLib[] = {
 	{"GetScript", getScript},
 	{"SetTag", setTag},
 	{"GetTag", getTag},
-	//NOTE: Why is the instance mutable?
-	{"SetInstance", setInstance},
-	{"GetInstance", getInstance},
+//	{"SetBattleIndex", setBattleIndex},
+	{"GetBattleIndex", getBattleIndex},
 	{"SetStatus", setStatus},
 	{"GetStatus", getStatus},
 	{nullptr, nullptr}

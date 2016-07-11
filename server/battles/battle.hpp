@@ -26,10 +26,10 @@
 
 #include <functional>
 
-class CombatInstance {
+class Battle {
 public:
-	CombatInstance();
-	~CombatInstance();
+	Battle();
+	~Battle();
 
 	void Update();
 

@@ -31,7 +31,7 @@
 
 class BarrierData: public Entity {
 public:
-	BarrierData(int instanceIndex);
+	BarrierData(int battleIndex);
 	~BarrierData();
 
 	int Update(lua_State*);
@@ -43,8 +43,8 @@ public:
 	std::string SetTag(std::string key, std::string value);
 	std::string GetTag(std::string key);
 
-	int SetInstanceIndex(int i);
-	int GetInstanceIndex() const;
+	int SetBattleIndex(int i);
+	int GetBattleIndex() const;
 
 	int SetStatus(int k, int v);
 	int GetStatus(int k);
@@ -55,7 +55,7 @@ private:
 	int scriptRef = LUA_NOREF;
 	std::map<std::string, std::string> tags;
 
-	int instanceIndex;
+	int battleIndex;
 
 	int status[8];
 };

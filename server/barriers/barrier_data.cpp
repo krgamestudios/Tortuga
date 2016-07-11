@@ -28,7 +28,7 @@
 BarrierData::BarrierData(int i):
 	Entity::Entity("barrier")
 {
-	instanceIndex = i;
+	battleIndex = i;
 	memset(status, 0, sizeof(int) * 8);
 
 	SetBounds({
@@ -85,12 +85,12 @@ std::string BarrierData::GetTag(std::string key) {
 	return tags[key];
 }
 
-int BarrierData::SetInstanceIndex(int i) {
-	return instanceIndex = i;
+int BarrierData::SetBattleIndex(int i) {
+	return battleIndex = i;
 }
 
-int BarrierData::GetInstanceIndex() const {
-	return instanceIndex;
+int BarrierData::GetBattleIndex() const {
+	return battleIndex;
 }
 
 int BarrierData::SetStatus(int k, int v) {

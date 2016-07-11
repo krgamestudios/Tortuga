@@ -19,26 +19,26 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#include "combat_instance_manager.hpp"
+#include "battle_manager.hpp"
 
-CombatInstanceManager::CombatInstanceManager() {
+BattleManager::BattleManager() {
 	//EMPTY
 }
 
-CombatInstanceManager::~CombatInstanceManager() {
+BattleManager::~BattleManager() {
 	UnloadAll();
 }
 
 //arg: a list of combats to be updated in the clients
-void CombatInstanceManager::Update() {
+void BattleManager::Update() {
 	for (auto& it : elementMap) {
 		it.second.Update();
 	}
 }
 
-int CombatInstanceManager::Create() {
+int BattleManager::Create() {
 	//implicitly create the new object
-	elementMap.emplace( std::pair<int, CombatInstance>(counter, CombatInstance()) );
+	elementMap.emplace( std::pair<int, Battle>(counter, Battle()) );
 
 	//TODO: do various things like saving to the database
 	return counter++;
@@ -46,16 +46,16 @@ int CombatInstanceManager::Create() {
 
 //TODO: (1) combat load, save
 
-void CombatInstanceManager::Unload(int uid) {
+void BattleManager::Unload(int uid) {
 	elementMap.erase(uid);
 }
 
-void CombatInstanceManager::UnloadAll() {
+void BattleManager::UnloadAll() {
 	elementMap.clear();
 }
 
-void CombatInstanceManager::UnloadIf(std::function<bool(std::pair<const int, CombatInstance const&>)> fn) {
-	std::map<int, CombatInstance>::iterator it = elementMap.begin();
+void BattleManager::UnloadIf(std::function<bool(std::pair<const int, Battle const&>)> fn) {
+	std::map<int, Battle>::iterator it = elementMap.begin();
 	while (it != elementMap.end()) {
 		if (fn(*it)) {
 			it = elementMap.erase(it);
@@ -66,8 +66,8 @@ void CombatInstanceManager::UnloadIf(std::function<bool(std::pair<const int, Com
 	}
 }
 
-CombatInstance* CombatInstanceManager::Find(int uid) {
-	std::map<int, CombatInstance>::iterator it = elementMap.find(uid);
+Battle* BattleManager::Find(int uid) {
+	std::map<int, Battle>::iterator it = elementMap.find(uid);
 
 	if (it == elementMap.end()) {
 		return nullptr;
@@ -76,26 +76,26 @@ CombatInstance* CombatInstanceManager::Find(int uid) {
 	return &it->second;
 }
 
-int CombatInstanceManager::GetLoadedCount() {
+int BattleManager::GetLoadedCount() {
 	return elementMap.size();
 }
 
-std::map<int, CombatInstance>* CombatInstanceManager::GetContainer() {
+std::map<int, Battle>* BattleManager::GetContainer() {
 	return &elementMap;
 }
 
-lua_State* CombatInstanceManager::SetLuaState(lua_State* L) {
+lua_State* BattleManager::SetLuaState(lua_State* L) {
 	return lua = L;
 }
 
-lua_State* CombatInstanceManager::GetLuaState() {
+lua_State* BattleManager::GetLuaState() {
 	return lua;
 }
 
-sqlite3* CombatInstanceManager::SetDatabase(sqlite3* db) {
+sqlite3* BattleManager::SetDatabase(sqlite3* db) {
 	return database = db;
 }
 
-sqlite3* CombatInstanceManager::GetDatabase() {
+sqlite3* BattleManager::GetDatabase() {
 	return database;
 }

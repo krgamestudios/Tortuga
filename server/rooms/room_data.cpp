@@ -38,17 +38,17 @@
  * characterList	.UpdateAll()
  * creatureMgr		.Update(updateAll)
  * barrierMgr		.Update(updateAll)
- * combatMgr		.Update(updateAll)
+ * battleMgr		.Update(updateAll)
  * 
  * creatureMgr		.SendUpdates()
  * barrierMgr		.SendUpdates()
- * //combatMgr		.SendUpdates() //TODO: incomplete
+ * //battleMgr		.SendUpdates() //TODO: incomplete
  * 
  * triggerMgr		.Compare(characterList)
  * 
  * if (a character collides with a creature)
  *   barrierMgr		.Create()
- *   combatMgr		.Create()
+ *   battleMgr		.Create()
  * 
  *   barrierMgr		.Send()
  * 
@@ -111,8 +111,8 @@ void RoomData::RunFrameUpdates(bool updateAll) {
 	creatureMgr.Update(&creatureList, updateAll);
 	barrierMgr.Update(&barrierList, updateAll);
 
-	//update the combat instances
-	combatInstanceMgr.Update();
+	//update the battles
+	battleMgr.Update();
 
 	//send the creature updates
 	for (auto& it : creatureList) {
@@ -132,7 +132,7 @@ void RoomData::RunFrameUpdates(bool updateAll) {
 		pumpPacketProximity(reinterpret_cast<SerialPacket*>(&packet), roomIndex, it.second->GetOrigin(), INFLUENCE_RADIUS);
 	}
 
-	//TODO: send the combat instance updates
+	//TODO: send the battle updates
 }
 
 void RoomData::RunFrameTriggers() {
@@ -159,8 +159,8 @@ void RoomData::RunFrameCharacterCreatureCollisions() {
 			BoundingBox creatureBox = creatureIt.second.GetBounds() + creatureIt.second.GetOrigin();
 
 			if (characterBox.CheckOverlap(creatureBox)) {
-				//create the barrier and instance
-				int barrierIndex = barrierMgr.Create(combatInstanceMgr.Create()); //link the barrier to an instance
+				//create the barrier and battle
+				int barrierIndex = barrierMgr.Create(battleMgr.Create()); //link the barrier to a battle
 				BarrierData* barrierData = barrierMgr.Find(barrierIndex);
 				barrierData->SetRoomIndex(roomIndex);
 				barrierData->SetOrigin({
@@ -203,11 +203,11 @@ void RoomData::RunFrameCharacterBarrierCollisions() {
 			BoundingBox barrierBox = barrierIt.second.GetBounds() + barrierIt.second.GetOrigin();
 
 			if (characterBox.CheckOverlap(barrierBox)) {
-				//TODO: (0) actually move the character to an instance
-				CombatInstance* instance = combatInstanceMgr.Find(barrierIt.second.GetInstanceIndex());
+				//TODO: (0) actually move the character to a battle
+				Battle* battle = battleMgr.Find(barrierIt.second.GetBattleIndex());
 
-				//DEBUG: output barrierIndex, instanceIndex
-				std::cout << barrierIt.first << "\t" << barrierIt.second.GetInstanceIndex() << std::endl;
+				//DEBUG: output barrierIndex, battleIndex
+				std::cout << barrierIt.first << "\t" << barrierIt.second.GetBattleIndex() << std::endl;
 
 				//only confirm one barrier per character
 				break;

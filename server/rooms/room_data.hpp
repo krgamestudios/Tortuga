@@ -23,7 +23,7 @@
 
 #include "barrier_manager.hpp"
 #include "character_data.hpp"
-#include "combat_instance_manager.hpp"
+#include "battle_manager.hpp"
 #include "creature_manager.hpp"
 #include "region_pager_lua.hpp"
 #include "trigger_manager.hpp"
@@ -89,7 +89,7 @@ private:
 	int roomIndex = 0;
 	BarrierManager barrierMgr;
 	std::list<CharacterData*> characterList;
-	CombatInstanceManager combatInstanceMgr;
+	BattleManager battleMgr;
 	CreatureManager creatureMgr;
 	RegionPagerLua pager;
 	TriggerManager triggerMgr;
