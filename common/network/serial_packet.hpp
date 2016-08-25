@@ -34,15 +34,16 @@
 typedef SerialPacketBase SerialPacket;
 
 //DOCS: NETWORK_VERSION is used to discern compatible servers and clients
-constexpr int NETWORK_VERSION = 20160404;
+constexpr int NETWORK_VERSION = 20160825;
 
 union MaxPacket {
-	CharacterPacket a;
-	ClientPacket b;
-	CreaturePacket c;
-	RegionPacket d;
-	ServerPacket e;
-	TextPacket f;
+	BarrierPacket a;
+	CharacterPacket b;
+	ClientPacket c;
+	CreaturePacket d;
+	RegionPacket e;
+	ServerPacket f;
+	TextPacket g;
 };
 
 constexpr int MAX_PACKET_SIZE = sizeof(MaxPacket);

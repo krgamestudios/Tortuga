@@ -70,12 +70,12 @@ void serializePacket(void* buffer, SerialPacketBase* packet) {
 		serializeCreature(buffer, static_cast<CreaturePacket*>(packet));
 	}
 
-	if (BOUNDS(packet->type, SerialPacketType::FORMAT_COMBAT, SerialPacketType::FORMAT_END_COMBAT)) {
-		serializeBarrier(buffer, static_cast<BarrierPacket*>(packet));
-	}
-
 	if (BOUNDS(packet->type, SerialPacketType::FORMAT_TEXT, SerialPacketType::FORMAT_END_TEXT)) {
 		serializeText(buffer, static_cast<TextPacket*>(packet));
+	}
+
+	if (BOUNDS(packet->type, SerialPacketType::FORMAT_BARRIER, SerialPacketType::FORMAT_END_BARRIER)) {
+		serializeBarrier(buffer, static_cast<BarrierPacket*>(packet));
 	}
 }
 
@@ -104,11 +104,11 @@ void deserializePacket(void* buffer, SerialPacketBase* packet) {
 		deserializeCreature(buffer, static_cast<CreaturePacket*>(packet));
 	}
 
-	if (BOUNDS(type, SerialPacketType::FORMAT_COMBAT, SerialPacketType::FORMAT_END_COMBAT)) {
-		deserializeBarrier(buffer, static_cast<BarrierPacket*>(packet));
-	}
-
 	if (BOUNDS(type, SerialPacketType::FORMAT_TEXT, SerialPacketType::FORMAT_END_TEXT)) {
 		deserializeText(buffer, static_cast<TextPacket*>(packet));
+	}
+
+		if (BOUNDS(type, SerialPacketType::FORMAT_BARRIER, SerialPacketType::FORMAT_END_BARRIER)) {
+		deserializeBarrier(buffer, static_cast<BarrierPacket*>(packet));
 	}
 }

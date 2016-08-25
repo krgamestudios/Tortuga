@@ -19,33 +19,28 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
 */
-#include "battle.hpp"
+#pragma once
 
-Battle::Battle() {
-	//
-}
+#include "character_data.hpp"
+#include "creature_data.hpp"
 
-Battle::~Battle() {
-	//
-}
+#include <functional>
 
-void Battle::Update() {
-	//
-}
+class BattleData {
+public:
+	BattleData();
+	~BattleData();
 
-//accessors and mutators
-void Battle::PushCharacter(CharacterData* const characterData) {
-	//
-}
+	void Update();
 
-void Battle::PopCharacter(CharacterData* const characterData) {
-	//
-}
+	//accessors and mutators
+	void PushCharacter(CharacterData* const characterData);
+	void PopCharacter(CharacterData* const characterData);
 
-void Battle::PushCreature(CreatureData* const creatureData) {
-	//
-}
+	void PushCreature(CreatureData* const creatureData);
+	void PopCreature(CreatureData* const creatureData);
 
-void Battle::PopCreature(CreatureData* const creatureData) {
-	//
-}
+private:
+	std::array<CharacterData*, 8> characterArray;
+	std::array<CreatureData*, 8> creatureArray;
+};

@@ -38,7 +38,7 @@ void BattleManager::Update() {
 
 int BattleManager::Create() {
 	//implicitly create the new object
-	elementMap.emplace( std::pair<int, Battle>(counter, Battle()) );
+	elementMap.emplace( std::pair<int, BattleData>(counter, BattleData()) );
 
 	//TODO: do various things like saving to the database
 	return counter++;
@@ -54,8 +54,8 @@ void BattleManager::UnloadAll() {
 	elementMap.clear();
 }
 
-void BattleManager::UnloadIf(std::function<bool(std::pair<const int, Battle const&>)> fn) {
-	std::map<int, Battle>::iterator it = elementMap.begin();
+void BattleManager::UnloadIf(std::function<bool(std::pair<const int, BattleData const&>)> fn) {
+	std::map<int, BattleData>::iterator it = elementMap.begin();
 	while (it != elementMap.end()) {
 		if (fn(*it)) {
 			it = elementMap.erase(it);
@@ -66,8 +66,8 @@ void BattleManager::UnloadIf(std::function<bool(std::pair<const int, Battle cons
 	}
 }
 
-Battle* BattleManager::Find(int uid) {
-	std::map<int, Battle>::iterator it = elementMap.find(uid);
+BattleData* BattleManager::Find(int uid) {
+	std::map<int, BattleData>::iterator it = elementMap.find(uid);
 
 	if (it == elementMap.end()) {
 		return nullptr;
@@ -80,7 +80,7 @@ int BattleManager::GetLoadedCount() {
 	return elementMap.size();
 }
 
-std::map<int, Battle>* BattleManager::GetContainer() {
+std::map<int, BattleData>* BattleManager::GetContainer() {
 	return &elementMap;
 }
 

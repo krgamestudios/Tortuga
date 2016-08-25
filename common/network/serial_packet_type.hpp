@@ -143,25 +143,6 @@ enum class SerialPacketType {
 	FORMAT_END_CREATURE = 599,
 
 	//-------------------------
-	//BarrierPacket
-	//  barrier index,
-	//  bounds,
-	//  roomIndex, origin, motion
-	//  status
-	//-------------------------
-
-	FORMAT_COMBAT = 700,
-
-	BARRIER_UPDATE = 701,
-
-	BARRIER_CREATE = 702,
-	BARRIER_UNLOAD = 703,
-
-	QUERY_BARRIER_EXISTS = 704,
-
-	FORMAT_END_COMBAT = 799,
-
-	//-------------------------
 	//TextPacket
 	//  name, text
 	//-------------------------
@@ -183,6 +164,28 @@ enum class SerialPacketType {
 	QUERY_REJECTION = 610,
 
 	FORMAT_END_TEXT = 699,
+
+	//-------------------------
+	//BarrierPacket
+	//  barrier index,
+	//  bounds,
+	//  roomIndex, origin, motion
+	//  status
+	//-------------------------
+
+	FORMAT_BARRIER = 700,
+
+	BARRIER_UPDATE = 701,
+
+	BARRIER_CREATE = 702,
+	BARRIER_UNLOAD = 703,
+
+	QUERY_BARRIER_EXISTS = 704,
+
+	BARRIER_ENTRY = 705,
+	BARRIER_EXIT = 706,
+
+	FORMAT_END_BARRIER = 799,
 
 	//-------------------------
 	//not used

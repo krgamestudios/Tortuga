@@ -21,7 +21,7 @@
 */
 #pragma once
 
-#include "battle.hpp"
+#include "battle_data.hpp"
 
 #include "lua.hpp"
 #include "sqlite3.h"
@@ -41,12 +41,12 @@ public:
 	void Unload(int uid);
 
 	void UnloadAll();
-	void UnloadIf(std::function<bool(std::pair<const int, Battle const&>)> fn);
+	void UnloadIf(std::function<bool(std::pair<const int, BattleData const&>)> fn);
 
 	//accessors & mutators
-	Battle* Find(int uid);
+	BattleData* Find(int uid);
 	int GetLoadedCount();
-	std::map<int, Battle>* GetContainer();
+	std::map<int, BattleData>* GetContainer();
 
 	//hooks
 	lua_State* SetLuaState(lua_State* L);
@@ -56,7 +56,7 @@ public:
 
 private:
 	//members
-	std::map<int, Battle> elementMap;
+	std::map<int, BattleData> elementMap;
 	int counter = 0;
 	lua_State* lua = nullptr;
 	sqlite3* database = nullptr;

@@ -160,6 +160,7 @@ void RoomData::RunFrameCharacterCreatureCollisions() {
 
 			if (characterBox.CheckOverlap(creatureBox)) {
 				//create the barrier and battle
+				//TODO: Barrier needs data about the creatures inside it.
 				int barrierIndex = barrierMgr.Create(battleMgr.Create()); //link the barrier to a battle
 				BarrierData* barrierData = barrierMgr.Find(barrierIndex);
 				barrierData->SetRoomIndex(roomIndex);
@@ -197,20 +198,32 @@ void RoomData::RunFrameCharacterCreatureCollisions() {
 void RoomData::RunFrameCharacterBarrierCollisions() {
 	//TODO: check for character collisions with barriers, O(m*n)
 	for (auto characterIt : characterList) {
+		//character bounds
 		BoundingBox characterBox = characterIt->GetBounds() + characterIt->GetOrigin();
 
 		for (auto barrierIt : *barrierMgr.GetContainer()) {
+			//barrier bounds
 			BoundingBox barrierBox = barrierIt.second.GetBounds() + barrierIt.second.GetOrigin();
 
 			if (characterBox.CheckOverlap(barrierBox)) {
-				//TODO: (0) actually move the character to a battle
-				Battle* battle = battleMgr.Find(barrierIt.second.GetBattleIndex());
+				//Actually move the character to a battle
+				BattleData* battle = battleMgr.Find(barrierIt.second.GetBattleIndex());
+//				battle->PushCharacter(characterIt.second);
+//				characterList.
+
 
 				//DEBUG: output barrierIndex, battleIndex
 				std::cout << barrierIt.first << "\t" << barrierIt.second.GetBattleIndex() << std::endl;
 
-				//only confirm one barrier per character
-				break;
+				//Send the entry message to the client
+				BarrierPacket newPacket;
+				newPacket.type = SerialPacketType::BARRIER_ENTRY;
+				newPacket.barrierIndex = barrierIt.first;
+
+//				udpNetworkUtility.Send();
+
+				//only confirm one barrier/character collison per frame
+				return;
 			}
 		}
 	}
