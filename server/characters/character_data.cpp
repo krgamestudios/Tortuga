@@ -30,6 +30,10 @@ CharacterData::CharacterData(): Entity("character") {
 	});
 }
 
+int CharacterData::GetIndex() {
+	return index;
+}
+
 int CharacterData::GetOwner() {
 	return owner;
 }

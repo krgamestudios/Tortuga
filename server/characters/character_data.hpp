@@ -36,6 +36,7 @@ public:
 	~CharacterData() = default;
 
 	//database stuff
+	int GetIndex();
 	int GetOwner();
 	std::string GetHandle();
 	std::string GetAvatar();
@@ -44,6 +45,7 @@ public:
 private:
 	friend class CharacterManager;
 
+	int index = -1;
 	int owner = -1;
 	std::string handle;
 	std::string avatar;

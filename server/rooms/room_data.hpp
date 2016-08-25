@@ -89,7 +89,7 @@ private:
 	std::string tilesetName;
 
 	//members
-	int roomIndex = 0; //NOTE: What's this doing here?
+	int roomIndex = 0;
 	BarrierManager barrierMgr;
 	std::list<CharacterData*> characterList;
 	BattleManager battleMgr;

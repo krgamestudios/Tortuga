@@ -141,6 +141,7 @@ int CharacterManager::Load(int owner, std::string handle, std::string avatar) {
 		CharacterData& newChar = elementMap[uid];
 
 		//metadata
+		newChar.index = uid;
 		newChar.owner = owner;
 		newChar.handle = reinterpret_cast<const char*>(sqlite3_column_text(statement, 2));
 		newChar.avatar = reinterpret_cast<const char*>(sqlite3_column_text(statement, 3));

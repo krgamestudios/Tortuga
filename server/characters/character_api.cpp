@@ -28,50 +28,42 @@
 #include "server_utilities.hpp"
 
 #include <stdexcept>
-
+#include <iostream>
 static int setRoom(lua_State* L) {
-	//reverse engineer the character index
-	int characterIndex = -1;
+	//variables
 	CharacterData* character = static_cast<CharacterData*>(lua_touserdata(L, 1));
 	CharacterManager& characterMgr = CharacterManager::GetSingleton();
 
-	for (auto& it : *characterMgr.GetContainer()) {
-		if (character == &it.second) {
-			characterIndex = it.first;
-			break;
-		}
-	}
-
 	//error checking
-	if (characterIndex == -1) {
-		throw(std::runtime_error("Lua Error: Failed to find character index by reference"));
+	if (characterMgr.Find(character->GetIndex()) != character) {
+		throw(std::runtime_error("Lua Error: Failed to verify character index by reference"));
 	}
 
 	//get the room index, depending on the parameter type
 	int roomIndex = -1;
-	RoomManager& roomMgr = RoomManager::GetSingleton();
 	switch(lua_type(L, 2)) {
 		case LUA_TNUMBER:
+			//simple integer
 			roomIndex = lua_tointeger(L, 2);
 		break;
-		case LUA_TLIGHTUSERDATA:
-			//reverse engineer the room index
-			for (auto& it : *roomMgr.GetContainer()) {
-				if (lua_touserdata(L, 2) == &it.second) {
-					roomIndex = it.first;
-					break;
-				}
-			}
-		break;
-	}
+		case LUA_TLIGHTUSERDATA: {
+			//check that this is a room first
+			RoomData* room = static_cast<RoomData*>(lua_touserdata(L, 2));
+			RoomManager& roomMgr = RoomManager::GetSingleton();
 
-	//error checking
-	if (roomIndex == -1) {
-		throw(std::runtime_error("Lua Error: Failed to find room index by reference"));
+			if (roomMgr.Find(room->GetRoomIndex()) != room) {
+				std::cout << room->GetRoomIndex() << std::endl;
+				throw(std::runtime_error("Lua Error: Failed to verify room index by reference"));
+			}
+			roomIndex = room->GetRoomIndex();
+		}
+		break;
+		default:
+			throw(std::runtime_error("Lua Error: Failed to find room index by reference"));
 	}
 
 	//send the delete & create messages
-	pumpAndChangeRooms(character, roomIndex, characterIndex);
+	pumpAndChangeRooms(character, roomIndex, character->GetIndex());
 	return 0;
 }
 
