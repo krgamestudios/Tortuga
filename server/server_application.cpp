@@ -596,6 +596,7 @@ void ServerApplication::hQueryCharacterExists(CharacterPacket* const argPacket) 
 	//respond with all character data
 	CharacterPacket newPacket;
 
+	//TODO: move this expensive lookup
 	for (auto& it : *characterMgr.GetContainer()) {
 		if (argPacket->roomIndex != -1 && it.second.GetRoomIndex() != argPacket->roomIndex) {
 			continue;

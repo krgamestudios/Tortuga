@@ -205,20 +205,28 @@ void RoomData::RunFrameCharacterBarrierCollisions() {
 			//barrier bounds
 			BoundingBox barrierBox = barrierIt.second.GetBounds() + barrierIt.second.GetOrigin();
 
+			//move the character to the battle screen
 			if (characterBox.CheckOverlap(barrierBox)) {
-				//Actually move the character to a battle
-				BattleData* battle = battleMgr.Find(barrierIt.second.GetBattleIndex());
-//				battle->PushCharacter(characterIt.second);
-//				characterList.
+				//pump character unload
+				CharacterPacket charPacket;
+				charPacket.type = SerialPacketType::CHARACTER_UNLOAD;
+				charPacket.characterIndex = characterIt->GetIndex();
+				pumpPacketProximity(static_cast<SerialPacket*>(&charPacket), characterIt->GetRoomIndex());
 
+				std::cout << "CharacterList size: " << characterList.size() << std::endl;
+
+				//Actually move the character to a battle
+				BattleData* battle = battleMgr.Find(barrierIt.second.GetBattleIndex()); //TODO: barriers should hold the battle's pointer
+				battle->PushCharacter(characterIt);
+				PopCharacter(characterIt);
 
 				//DEBUG: output barrierIndex, battleIndex
-				std::cout << barrierIt.first << "\t" << barrierIt.second.GetBattleIndex() << std::endl;
+				std::cout << "CharacterList size: " << characterList.size() << std::endl;
 
 				//Send the entry message to the client
-				BarrierPacket newPacket;
-				newPacket.type = SerialPacketType::BARRIER_ENTRY;
-				newPacket.barrierIndex = barrierIt.first;
+//				BarrierPacket newPacket;
+//				newPacket.type = SerialPacketType::BARRIER_ENTRY;
+//				newPacket.barrierIndex = barrierIt.first;
 
 //				udpNetworkUtility.Send();
 
