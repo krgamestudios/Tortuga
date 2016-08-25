@@ -111,7 +111,7 @@ void RoomManager::UnloadIf(std::function<bool(std::pair<const int, RoomData cons
 	lua_pop(lua, 1);
 }
 
-void RoomManager::PushCharacter(CharacterData* character) {
+void RoomManager::PushCharacter(CharacterData* const character) {
 	if (!character) {
 		throw(std::runtime_error("Failed to push a null character to a room"));
 	}
@@ -119,27 +119,25 @@ void RoomManager::PushCharacter(CharacterData* character) {
 	RoomData* room = Find(character->GetRoomIndex());
 
 	if (!room) {
-		throw(std::runtime_error("Failed to push an character to a non-existant room"));
+		throw(std::runtime_error("Failed to push a character to a non-existant room"));
 	}
 
-	room->GetCharacterList()->push_back(character);
+	room->PushCharacter(character);
 }
 
-void RoomManager::PopCharacter(CharacterData const* character) {
+void RoomManager::PopCharacter(CharacterData const * const character) {
 	//NOTE: to pop an character from a room, the character must first exist
 	if (!character) {
-		throw(std::runtime_error("Failed to pop a null character to a room"));
+		throw(std::runtime_error("Failed to pop a null character from a room"));
 	}
 
 	RoomData* room = Find(character->GetRoomIndex());
 
 	if (!room) {
-		throw(std::runtime_error("Failed to pop an character to a non-existant room"));
+		throw(std::runtime_error("Failed to pop a character to a non-existant room"));
 	}
 
-	room->GetCharacterList()->remove_if([character](CharacterData* ptr) {
-		return character == ptr;
-	});
+	room->PopCharacter(character);
 }
 
 //TODO: rename these functions from Get to Find

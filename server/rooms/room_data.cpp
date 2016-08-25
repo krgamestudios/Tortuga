@@ -257,6 +257,37 @@ int RoomData::GetRoomIndex() {
 	return roomIndex;
 }
 
+void RoomData::PushCharacter(CharacterData* const character) {
+	if (!character) {
+		throw(std::logic_error("Failed to push a null character to RoomData"));
+	}
+
+	//check to see if the character is already here
+	for (auto& it : characterList) {
+		if (it == character) {
+			throw(std::logic_error("double insertion of CharacterData in RoomData"));
+		}
+	}
+
+	characterList.push_back(character);
+}
+
+void RoomData::PopCharacter(CharacterData const * const character) {
+	if (!character) {
+		throw(std::logic_error("Failed to pop a null character to RoomData"));
+	}
+
+	//check to see if the character isn't here
+	for (auto& it : characterList) {
+		if (it == character) {
+			characterList.remove(it);
+			return;
+		}
+	}
+
+	throw(std::logic_error("cannot remove a non-existant instance of CharacterData in RoomData"));
+}
+
 BarrierManager* RoomData::GetBarrierMgr() {
 	return &barrierMgr;
 }

@@ -39,8 +39,8 @@ public:
 	void UnloadAll();
 	void UnloadIf(std::function<bool(std::pair<const int, RoomData const&>)> fn);
 
-	void PushCharacter(CharacterData* character);
-	void PopCharacter(CharacterData const* character);
+	void PushCharacter(CharacterData* const character);
+	void PopCharacter(CharacterData const * const character);
 
 	//accessors and mutators
 	RoomData* Find(int uid);

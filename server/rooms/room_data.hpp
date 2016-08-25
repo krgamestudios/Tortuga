@@ -53,6 +53,9 @@ public:
 	int SetRoomIndex(int i);
 	int GetRoomIndex();
 
+	void PushCharacter(CharacterData* const character);
+	void PopCharacter(CharacterData const * const character);
+
 	BarrierManager* GetBarrierMgr();
 	std::list<CharacterData*>* GetCharacterList();
 	CreatureManager* GetCreatureMgr();
@@ -86,7 +89,7 @@ private:
 	std::string tilesetName;
 
 	//members
-	int roomIndex = 0;
+	int roomIndex = 0; //NOTE: What's this doing here?
 	BarrierManager barrierMgr;
 	std::list<CharacterData*> characterList;
 	BattleManager battleMgr;

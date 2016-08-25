@@ -195,7 +195,7 @@ void pumpAndChangeRooms(int characterIndex, int newRoomIndex) {
 	pumpAndChangeRooms(character, newRoomIndex, characterIndex);
 }
 
-//TODO: (0) refactor this
+//NOTE: This is one of those ugly things that you just need to put up with
 void pumpAndChangeRooms(CharacterData* const characterData, int newRoomIndex, int characterIndex) {
 	//delete the character from the old room
 	CharacterPacket newPacket;
