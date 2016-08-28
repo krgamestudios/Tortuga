@@ -9,6 +9,12 @@ This game is inspired by classic 2D RPGs (Final Fantasy, The Legend of Zelda), a
 * The most recent stable build for Windows can be found [here](https://dl.dropboxusercontent.com/u/46669050/Tortuga-win.rar).
 * The most recent stable build for Linux can be found [here](https://dl.dropboxusercontent.com/u/46669050/Tortuga-linux.tar).
 
+## Patreon
+
+If you would like to support the development of Tortuga, please consider becoming a patron below.
+
+* [My Patreon Page](https://patreon.com/user?u=2811779)
+
 ## Documentation
 
 * [Tortuga Wiki](https://github.com/Ratstail91/Tortuga/wiki) - Full documentation (incomplete)
