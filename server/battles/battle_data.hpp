@@ -28,19 +28,21 @@
 
 class BattleData {
 public:
+	constexpr static int BATTLE_SIZE = 8;
+
 	BattleData();
 	~BattleData();
 
 	void Update();
 
 	//accessors and mutators
-	void PushCharacter(CharacterData* const characterData);
-	void PopCharacter(CharacterData* const characterData);
+	int PushCharacter(CharacterData* const characterData);
+	int PopCharacter(CharacterData const * const characterData);
 
-	void PushCreature(CreatureData* const creatureData);
-	void PopCreature(CreatureData* const creatureData);
+	int PushCreature(CreatureData* const creatureData);
+	int PopCreature(CreatureData const * const creatureData);
 
 private:
-	std::array<CharacterData*, 8> characterArray;
-	std::array<CreatureData*, 8> creatureArray;
+	std::array<CharacterData*, BATTLE_SIZE> characterArray;
+	std::array<CreatureData*, BATTLE_SIZE> creatureArray;
 };

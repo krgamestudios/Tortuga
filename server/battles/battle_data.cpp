@@ -21,31 +21,55 @@
 */
 #include "battle_data.hpp"
 
+#include <algorithm>
+
 BattleData::BattleData() {
-	//
+	for (int i = 0; i < BATTLE_SIZE; i++) {
+		characterArray[i] = nullptr;
+		creatureArray[i] = nullptr;
+	}
 }
 
 BattleData::~BattleData() {
-	//
+	for (int i = 0; i < BATTLE_SIZE; i++) {
+		if (characterArray[i] != nullptr || creatureArray[i] != nullptr) {
+			//breaking a cardinal sin
+			throw(std::runtime_error("BattleData not empty on destruction"));
+		}
+	}
 }
 
 void BattleData::Update() {
-	//
+	//TODO: (0) EMPTY
 }
 
 //accessors and mutators
-void BattleData::PushCharacter(CharacterData* const characterData) {
-	//
+int BattleData::PushCharacter(CharacterData* const characterData) {
+	//push the character into the battle object
+	for (int i = 0; i < BATTLE_SIZE; i++) {
+		if (characterArray[i] == nullptr) {
+			characterArray[i] = characterData;
+			return 1;
+		}
+	}
+	return 0;
 }
 
-void BattleData::PopCharacter(CharacterData* const characterData) {
-	//
+int BattleData::PopCharacter(CharacterData const * const characterData) {
+	//pop the character from the battle object
+	for (int i = 0; i < BATTLE_SIZE; i++) {
+		if (characterArray[i] == characterData) {
+			characterArray[i] = nullptr;
+			return 1;
+		}
+	}
+	return 0;
 }
 
-void BattleData::PushCreature(CreatureData* const creatureData) {
-	//
+int BattleData::PushCreature(CreatureData* const creatureData) {
+	//TODO: (0) EMPTY
 }
 
-void BattleData::PopCreature(CreatureData* const creatureData) {
-	//
+int BattleData::PopCreature(CreatureData const * const creatureData) {
+	//TODO: (0) EMPTY
 }

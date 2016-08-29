@@ -596,12 +596,36 @@ void ServerApplication::hQueryCharacterExists(CharacterPacket* const argPacket) 
 	//respond with all character data
 	CharacterPacket newPacket;
 
-	//TODO: move this expensive lookup
-	for (auto& it : *characterMgr.GetContainer()) {
-		if (argPacket->roomIndex != -1 && it.second.GetRoomIndex() != argPacket->roomIndex) {
-			continue;
+	//retrieve all character data
+	if (argPacket->roomIndex == -1) {
+		for (auto& it : *characterMgr.GetContainer()) {
+			copyCharacterToPacket(&newPacket, &it.second, it.first);
+			newPacket.type = SerialPacketType::QUERY_CHARACTER_EXISTS;
+			network.SendTo(argPacket->srcAddress, static_cast<SerialPacket*>(&newPacket));
 		}
-		copyCharacterToPacket(&newPacket, it.first);
+		return;
+	}
+
+	//look for the room
+	RoomData* room = roomMgr.Find(argPacket->roomIndex);
+
+	//room not found
+	if (!room) {
+		//build the error message
+		std::ostringstream msg;
+		msg << "Room not found: " << argPacket->roomIndex;
+
+		//build & send the packet
+		TextPacket newPacket;
+		newPacket.type = SerialPacketType::CHARACTER_REJECTION;
+		strncpy(newPacket.text, msg.str().c_str(), PACKET_STRING_SIZE);
+		network.SendTo(argPacket->srcAddress, static_cast<SerialPacket*>(&newPacket));
+
+		return;
+	}
+
+	for (auto& it : *room->GetCharacterList()) {
+		copyCharacterToPacket(&newPacket, it, it->GetIndex());
 		newPacket.type = SerialPacketType::QUERY_CHARACTER_EXISTS;
 		network.SendTo(argPacket->srcAddress, static_cast<SerialPacket*>(&newPacket));
 	}

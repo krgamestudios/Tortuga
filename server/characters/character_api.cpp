@@ -67,6 +67,12 @@ static int setRoom(lua_State* L) {
 	return 0;
 }
 
+static int getIndex(lua_State* L) {
+	CharacterData* character = static_cast<CharacterData*>(lua_touserdata(L, 1));
+	lua_pushinteger(L, character->GetIndex());
+	return 1;
+}
+
 static int getOwner(lua_State* L) {
 	CharacterData* character = static_cast<CharacterData*>(lua_touserdata(L, 1));
 	lua_pushinteger(L, character->GetOwner());
@@ -87,6 +93,7 @@ static int getAvatar(lua_State* L) {
 
 static const luaL_Reg characterLib[] = {
 	{"SetRoom", setRoom},
+	{"GetIndex", getIndex},
 //	{"GetOwner", getOwner}, //unusable without account API
 	{"GetHandle", getHandle},
 	{"GetAvatar", getAvatar},

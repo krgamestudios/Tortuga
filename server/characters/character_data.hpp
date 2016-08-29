@@ -45,6 +45,7 @@ public:
 private:
 	friend class CharacterManager;
 
+	//database stuff
 	int index = -1;
 	int owner = -1;
 	std::string handle;

@@ -207,6 +207,8 @@ void RoomData::RunFrameCharacterBarrierCollisions() {
 
 			//move the character to the battle screen
 			if (characterBox.CheckOverlap(barrierBox)) {
+				//TODO: (0) What if the barrier is full?
+				//TODO: (0) What if the player logs in on top of a barrier?
 				//pump character unload
 				CharacterPacket charPacket;
 				charPacket.type = SerialPacketType::CHARACTER_UNLOAD;
@@ -289,6 +291,13 @@ void RoomData::PopCharacter(CharacterData const * const character) {
 	for (auto& it : characterList) {
 		if (it == character) {
 			characterList.remove(it);
+			return;
+		}
+	}
+
+	//check the battles to see if the character isn't there
+	for (auto& it : *battleMgr.GetContainer()) {
+		if (it.second.PopCharacter(character)) {
 			return;
 		}
 	}

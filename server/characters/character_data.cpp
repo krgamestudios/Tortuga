@@ -30,6 +30,10 @@ CharacterData::CharacterData(): Entity("character") {
 	});
 }
 
+//-------------------------
+//database stuff
+//-------------------------
+
 int CharacterData::GetIndex() {
 	return index;
 }
