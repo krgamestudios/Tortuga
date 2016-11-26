@@ -7,10 +7,12 @@
 OUTDIR=out
 BINDIR=bin
 
-all: $(OUTDIR) binary
+all: $(OUTDIR) dll
+	$(MAKE) -C TurtleGUI
+	$(MAKE) -C TurtleMap
 	$(MAKE) -C common
-	$(MAKE) -C server
-	$(MAKE) -C client
+#	$(MAKE) -C server
+#	$(MAKE) -C client
 
 debug: export CXXFLAGS+=-g
 debug: clean all
@@ -27,7 +29,7 @@ else ifeq ($(shell uname), Linux)
 	tar -C $(OUTDIR) -zcvf Tortuga-linux.tar client server ../rsc ../copyright.txt ../instructions.txt
 endif
 
-binary: $(OUTDIR)
+dll: $(OUTDIR)
 ifeq ($(OS),Windows_NT)
 	xcopy /Y $(BINDIR)\\*.dll $(OUTDIR)
 endif
