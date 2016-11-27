@@ -11,8 +11,8 @@ all: $(OUTDIR) dll
 	$(MAKE) -C TurtleGUI
 	$(MAKE) -C TurtleMap
 	$(MAKE) -C common
-#	$(MAKE) -C server
-#	$(MAKE) -C client
+	$(MAKE) -C server
+	$(MAKE) -C client
 
 debug: export CXXFLAGS+=-g
 debug: clean all
