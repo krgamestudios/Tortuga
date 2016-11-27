@@ -1,12 +1,10 @@
 #output
-export OUTDIR=..
+export OUTDIR=../..
 export OUT=$(addprefix $(OUTDIR)/,libcommon.a)
 
 all: $(OUTDIR)
 	$(MAKE) -C debugging
-	$(MAKE) -C gameplay
-	$(MAKE) -C graphics
-	$(MAKE) -C map
+	$(MAKE) -C global_defines
 	$(MAKE) -C network
 	$(MAKE) -C utilities
 

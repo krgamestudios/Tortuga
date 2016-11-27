@@ -1,9 +1,9 @@
 #include directories
-INCLUDES+=. entities scenes ../common/debugging ../common/gameplay ../common/graphics ../common/map ../common/network ../common/network/packet_types ../common/ui ../common/utilities
+INCLUDES+=. entities scenes ../common/debugging ../common/global_defines ../common/network ../common/network/packet_types ../common/utilities ../TurtleGUI ../TurtleMap
 
 #libraries
 #the order of the $(LIBS) is important, at least for MinGW
-LIBS+=client.a ../common/libcommon.a -lSDL2_net
+LIBS+=client.a ../libcommon.a ../libturtlegui.a ../libturtlemap.a -lSDL2_net
 ifeq ($(OS),Windows_NT)
 	LIBS+=-lwsock32 -liphlpapi -lmingw32
 endif

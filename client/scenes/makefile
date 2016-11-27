@@ -1,5 +1,5 @@
 #config
-INCLUDES+=. .. ../client_utilities ../entities ../../common/gameplay ../../common/graphics ../../common/map ../../common/network ../../common/network/packet_types ../../common/ui ../../common/utilities
+INCLUDES+=. .. ../entities ../../common/debugging ../../common/global_defines ../../common/network ../../common/network/packet_types ../../common/utilities ../../TurtleGUI ../../TurtleMap
 LIBS+=
 CXXFLAGS+=-std=c++11 $(addprefix -I,$(INCLUDES))
 
