@@ -17,7 +17,6 @@ all: $(OUTDIR) dll
 debug: export CXXFLAGS+=-g
 debug: clean all
 
-release: export CXXFLAGS+=-static-libgcc -static-libstdc++
 release: clean all package
 
 #For use on my machine ONLY
