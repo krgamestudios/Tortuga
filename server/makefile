@@ -7,10 +7,12 @@ LIBS+=server.a ../libcommon.a ../libturtlegui.a ../libturtlemap.a -lSDL2_net
 ifeq ($(OS),Windows_NT)
 	LIBS+=-lwsock32 -liphlpapi -lmingw32
 endif
-LIBS+=-lSDL2main -lSDL2 -llua -lsqlite3
+LIBS+=-lSDL2main -lSDL2 -lsqlite3
 ifeq ($(shell uname), Linux)
 	#I don't know what this does, but Ubuntu needs it (dynamic linking for lua)
-	LIBS+=-ldl
+	LIBS+=/usr/local/lib/liblua.a -ldl
+else
+	LIBS+=-llua
 endif
 
 #flags
