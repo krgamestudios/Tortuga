@@ -213,7 +213,7 @@ void RoomData::RunFrameCharacterBarrierCollisions() {
 
 
 				//DEBUG: output barrierIndex, battleIndex
-				std::cout << barrierIt.first << "\t" << barrierIt.second.GetBattleIndex() << std::endl;
+//				std::cout << barrierIt.first << "\t" << barrierIt.second.GetBattleIndex() << std::endl;
 
 				//Send the entry message to the client
 				BarrierPacket newPacket;
