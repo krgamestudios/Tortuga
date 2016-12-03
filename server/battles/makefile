@@ -1,5 +1,5 @@
 #config
-INCLUDES+=. .. ../characters ../creatures ../entities ../inventory ../../common/global_defines ../../common/utilities
+INCLUDES+=. .. ../characters ../creatures ../entities ../inventory ../../common/global_defines ../../common/utilities ../../TurtleGUI
 LIBS+=
 CXXFLAGS+=-std=c++11 $(addprefix -I,$(INCLUDES))
 

@@ -1,5 +1,5 @@
 #config
-INCLUDES+=. .. ../barriers ../battles ../characters ../creatures ../entities ../inventory ../monsters ../triggers ../../common/global_defines ../../common/network ../../common/network/packet_types ../../common/utilities ../../TurtleMap
+INCLUDES+=. .. ../barriers ../battles ../characters ../creatures ../entities ../inventory ../monsters ../triggers ../../common/global_defines ../../common/network ../../common/network/packet_types ../../common/utilities ../../TurtleGUI ../../TurtleMap
 LIBS+=
 CXXFLAGS+=-std=c++11 $(addprefix -I,$(INCLUDES))
 

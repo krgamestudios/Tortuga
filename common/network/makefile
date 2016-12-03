@@ -1,5 +1,5 @@
 #config
-INCLUDES+=. packet_types ../global_defines ../utilities ../../TurtleMap
+INCLUDES+=. packet_types ../global_defines ../utilities ../../TurtleGUI ../../TurtleMap
 LIBS+=
 CXXFLAGS+=-std=c++11 $(addprefix -I,$(INCLUDES))
 
