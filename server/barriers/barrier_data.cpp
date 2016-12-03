@@ -62,6 +62,7 @@ int BarrierData::Update(lua_State* L) {
 		}
 
 		ret += lua_tonumber(L, -1);
+		lua_pop(L, 1);
 	}
 
 	Entity::Update();
