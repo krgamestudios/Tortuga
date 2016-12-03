@@ -17,6 +17,9 @@ all: $(OUTDIR) dll
 debug: export CXXFLAGS+=-g
 debug: clean all
 
+ifeq ($(OS),Windows_NT)
+release: export CXXFLAGS+=-static-libgcc -static-libstdc++
+endif
 release: clean all package
 
 #For use on my machine ONLY

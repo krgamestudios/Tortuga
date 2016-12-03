@@ -290,14 +290,16 @@ void LobbyMenu::HandleLoginRejection(TextPacket* const argPacket) {
 //-------------------------
 
 void LobbyMenu::SendBroadcastRequest() {
-	//broadcast to the network, or a specific server
-		ClientPacket packet;
-		packet.type = SerialPacketType::BROADCAST_REQUEST;
-		network.SendTo(config["server.host"].c_str(), config.Int("server.port"), &packet);
+	//broadcast to the home server, and to the LAN
+	ClientPacket packet;
 
-		//reset the server list
-		serverVector.clear();
-		selection = nullptr;
+	packet.type = SerialPacketType::BROADCAST_REQUEST;
+	network.SendTo(config["server.home"].c_str(), config.Int("server.port"), &packet);
+	network.SendTo(config["server.host"].c_str(), config.Int("server.port"), &packet);
+
+	//reset the server list
+	serverVector.clear();
+	selection = nullptr;
 }
 
 void LobbyMenu::SendJoinRequest() {
