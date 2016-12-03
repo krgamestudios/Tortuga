@@ -23,3 +23,4 @@ TODO: Add a screenshot of the game to README.md
 TODO: joystick/gamepad support
 TODO: add the tilesheet to the map system
 TODO: Better collision logic
+TODO: cleaner shutdowns
