@@ -189,6 +189,12 @@ void ClientApplication::Init(int argc, char* argv[]) {
 	DEBUG_INTERNAL_VAR(static_cast<int>(SerialPacketType::LAST));
 
 	//-------------------------
+	//BUGFIX
+	//-------------------------
+
+	SDL_StopTextInput();
+
+	//-------------------------
 	//finalize the startup
 	//-------------------------
 
@@ -296,6 +302,10 @@ void ClientApplication::ProcessEvents() {
 
 			case SDL_KEYUP:
 				activeScene->KeyUp(event.key);
+			break;
+
+			case SDL_TEXTINPUT:
+				activeScene->TextInput(event.text);
 			break;
 
 			//TODO: (9) joystick and controller events

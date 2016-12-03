@@ -47,8 +47,9 @@ public:
 	virtual void MouseWheel(SDL_MouseWheelEvent const& event);
 	virtual void KeyDown(SDL_KeyboardEvent const& event);
 	virtual void KeyUp(SDL_KeyboardEvent const& event);
+	virtual void TextInput(SDL_TextInputEvent const& event);
 
-	//TODO: (9) joystick and controller events
+	//TODO: joystick and controller events
 
 protected:
 	//control

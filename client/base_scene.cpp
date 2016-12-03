@@ -103,3 +103,7 @@ void BaseScene::KeyDown(SDL_KeyboardEvent const& event) {
 void BaseScene::KeyUp(SDL_KeyboardEvent const& event) {
 	//EMPTY
 }
+
+void BaseScene::TextInput(SDL_TextInputEvent const& event) {
+	//EMPTY
+}
