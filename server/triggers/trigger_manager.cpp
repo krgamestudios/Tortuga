@@ -50,6 +50,9 @@ void TriggerManager::Compare(std::stack<Entity*> entityStack) {
 					continue;
 				}
 
+				//push to the exclusion list
+				triggerPair.second.GetExclusionList()->push_back(entity);
+
 				//run the trigger script
 				lua_rawgeti(lua, LUA_REGISTRYINDEX, triggerPair.second.GetScriptReference());
 				lua_pushlightuserdata(lua, entity);
@@ -58,13 +61,10 @@ void TriggerManager::Compare(std::stack<Entity*> entityStack) {
 					//error
 					throw(std::runtime_error(std::string() + "Lua error: " + lua_tostring(lua, -1) ));
 				}
-
-				//push to the exclusion list
-				triggerPair.second.GetExclusionList()->push_back(entity);
 			}
 			else {
 				//remove members of the exclusion list
-				//NOTE: characters in different rooms won't be removed, but that shouldn't be a problem
+				//NOTE: characters in different rooms won't be removed, which does tend to be a problem
 				triggerPair.second.GetExclusionList()->remove_if([entity](Entity* ptr) -> bool {
 					return entity == ptr;
 				});
