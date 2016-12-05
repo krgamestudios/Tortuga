@@ -66,6 +66,10 @@ function doorUtility.CreateDoorPair(handle, roomOne, Xone, Yone, roomTwo, Xtwo, 
 		--disable the other trigger
 		local triggerTwo = triggerManagerAPI.FindTrigger(roomAPI.GetTriggerMgr(roomTwo), handle)
 		triggerAPI.PushExclusionEntity(triggerTwo, entity)
+
+		--bookkeeping: remove from the original trigger's exclusion list
+		local triggerOne = triggerManagerAPI.FindTrigger(roomAPI.GetTriggerMgr(roomOne), handle)
+		triggerAPI.RemoveExclusionEntity(triggerOne, entity)
 	end
 
 	local function scriptTwo(entity)
@@ -79,6 +83,10 @@ function doorUtility.CreateDoorPair(handle, roomOne, Xone, Yone, roomTwo, Xtwo, 
 		--disable the other trigger
 		local triggerOne = triggerManagerAPI.FindTrigger(roomAPI.GetTriggerMgr(roomOne), handle)
 		triggerAPI.PushExclusionEntity(triggerOne, entity)
+
+		--bookkeeping: remove from the original trigger's exclusion list
+		local triggerTwo = triggerManagerAPI.FindTrigger(roomAPI.GetTriggerMgr(roomTwo), handle)
+		triggerAPI.RemoveExclusionEntity(triggerTwo, entity)
 	end
 
 	--create the triggers proper
