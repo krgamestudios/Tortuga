@@ -43,6 +43,11 @@ std::list<int> ClientManager::CheckConnections() {
 	for (auto& it : elementMap) {
 		if (it.second.GetAttempts() > 2) {
 			returnList.push_back(it.first);
+
+			//send the drop message
+			ServerPacket newPacket;
+			newPacket.type = SerialPacketType::ADMIN_DISCONNECT_FORCED;
+			UDPNetworkUtility::GetSingleton().SendTo(it.second.GetAddress(), &newPacket);
 		}
 	}
 
