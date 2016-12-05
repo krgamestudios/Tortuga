@@ -33,3 +33,15 @@ Instructions For Setup
 	from the main menu; this displays the list of available servers.
 7. Select the name of a server (default is 'Public') and select 'Join'.
 8. Welcome to Tortuga, enjoy your stay.
+
+-------------------------
+Linux Users
+-------------------------
+
+Before running this on linux, you may need to run the following commands:
+
+sudo apt-get install libsdl2-net-2.0-0
+sudo apt-get install libsdl2-image-2.0-0
+sudo apt-get install libsdl2-ttf-2.0-0
+
+
