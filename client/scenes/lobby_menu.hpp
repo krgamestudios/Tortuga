@@ -25,6 +25,7 @@
 #include "image.hpp"
 #include "button.hpp"
 #include "bounding_box.hpp"
+#include "text_field.hpp"
 #include "text_line.hpp"
 
 #include "SDL2/SDL_ttf.h"
@@ -61,6 +62,7 @@ protected:
 	void MouseWheel(SDL_MouseWheelEvent const& event) override;
 	void KeyDown(SDL_KeyboardEvent const& event) override;
 	void KeyUp(SDL_KeyboardEvent const& event) override;
+	void TextInput(SDL_TextInputEvent const& event) override;
 
 	//Network handlers
 	void HandlePacket(SerialPacket* const);
@@ -102,6 +104,10 @@ protected:
 	Button searchButton;
 	Button joinButton;
 	Button backButton;
+	TextField username;
+	TextField password;
+	TextField handle;
+	TextField avatar;
 
 	std::vector<ServerInfo> serverVector;
 	ServerInfo* selection = nullptr;

@@ -102,6 +102,7 @@ private:
 	void hCharacterUnload(CharacterPacket* const);
 	void hQueryCharacterExists(CharacterPacket* const);
 	void hCharacterMovement(CharacterPacket* const);
+	void hCharacterRejection(TextPacket* const);
 
 	//creature management
 	void hCreatureUpdate(CreaturePacket* const);

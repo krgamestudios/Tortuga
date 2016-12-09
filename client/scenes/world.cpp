@@ -154,7 +154,7 @@ void World::Update() {
 		throw(e);
 	}
 	catch(std::exception& e) {
-		std::cerr << "HandlePacket Error: " << e.what() << std::endl;
+		std::cerr << "HandlePacket Error (" << (int)(reinterpret_cast<SerialPacket*>(packetBuffer)->type) << "): " << e.what() << std::endl;
 	}
 
 	//free the buffer
@@ -458,6 +458,10 @@ void World::HandlePacket(SerialPacket* const argPacket) {
 			hCharacterMovement(static_cast<CharacterPacket*>(argPacket));
 		break;
 
+		case SerialPacketType::CHARACTER_REJECTION:
+			hCharacterRejection(static_cast<TextPacket*>(argPacket));
+		break;
+
 		//creature management
 		case SerialPacketType::CREATURE_UPDATE:
 			hCreatureUpdate(static_cast<CreaturePacket*>(argPacket));
@@ -507,7 +511,6 @@ void World::HandlePacket(SerialPacket* const argPacket) {
 
 		//general rejection messages
 		case SerialPacketType::REGION_REJECTION:
-		case SerialPacketType::CHARACTER_REJECTION:
 		case SerialPacketType::QUERY_REJECTION:
 			throw(fatal_error(static_cast<TextPacket*>(argPacket)->text));
 		break;
@@ -808,6 +811,18 @@ void World::hCharacterMovement(CharacterPacket* const argPacket) {
 		characterIt->second.SetMotion(argPacket->motion);
 		characterIt->second.CorrectSprite();
 	}
+}
+
+void World::hCharacterRejection(TextPacket* const argPacket) {
+	//NOTE: simply crap out
+	config["client.disconnectMessage"] = std::string() + "Character rejected: " + argPacket->text;
+	SetSceneSignal(SceneSignal::DISCONNECTEDSCREEN);
+
+	//avoid crashes from the heartbeat system
+	ClientPacket newPacket;
+	newPacket.type = SerialPacketType::DISCONNECT_REQUEST;
+	newPacket.clientIndex = clientIndex;
+	network.SendTo(argPacket->srcAddress, &newPacket);
 }
 
 //-------------------------

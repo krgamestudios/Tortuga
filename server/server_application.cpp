@@ -22,6 +22,7 @@
 #include "server_application.hpp"
 
 //utility functions
+#include "file_hash.hpp"
 #include "sql_tools.hpp"
 
 //std & STL
@@ -181,7 +182,7 @@ void ServerApplication::Proc() {
 				HandlePacket(packetBuffer);
 			}
 			catch(std::exception& e) {
-				std::cerr << "HandlePacket Error: " << e.what() << std::endl;
+				std::cerr << "HandlePacket Error (" << (int)(packetBuffer->type) << "): " << e.what() << std::endl;
 			}
 			//reset the buffer
 			memset(packetBuffer, 0, MAX_PACKET_SIZE);
@@ -607,8 +608,25 @@ void ServerApplication::hQueryCharacterExists(CharacterPacket* const argPacket) 
 }
 
 void ServerApplication::hCharacterCreate(CharacterPacket* const argPacket) {
+	//check to see of the character's files are valid
+	if (getFileHash(config["dir.sprites"] + argPacket->avatar) == -1) {
+		//build the error message
+		std::ostringstream msg;
+		msg << "Character avatar is invalid on this server: " << argPacket->avatar;
+
+		//build & send the packet
+		TextPacket newPacket;
+		newPacket.type = SerialPacketType::CHARACTER_REJECTION;
+		strncpy(newPacket.text, msg.str().c_str(), PACKET_STRING_SIZE);
+		network.SendTo(argPacket->srcAddress, static_cast<SerialPacket*>(&newPacket));
+
+		return;
+	}
+
+	//create the character
 	int characterIndex = characterMgr.Create(argPacket->accountIndex, argPacket->handle, argPacket->avatar);
 
+	//check to see of the character already exists
 	if (characterIndex < 0) {
 		//build the error message
 		std::ostringstream msg;
@@ -683,8 +701,25 @@ void ServerApplication::hCharacterDelete(CharacterPacket* const argPacket) {
 }
 
 void ServerApplication::hCharacterLoad(CharacterPacket* const argPacket) {
+	//check to see of the character's files are valid
+	if (getFileHash(config["dir.sprites"] + argPacket->avatar) == -1) {
+		//build the error message
+		std::ostringstream msg;
+		msg << "Character avatar is invalid on this server: " << argPacket->avatar;
+
+		//build & send the packet
+		TextPacket newPacket;
+		newPacket.type = SerialPacketType::CHARACTER_REJECTION;
+		strncpy(newPacket.text, msg.str().c_str(), PACKET_STRING_SIZE);
+		network.SendTo(argPacket->srcAddress, static_cast<SerialPacket*>(&newPacket));
+
+		return;
+	}
+
+	//load the character
 	int characterIndex = characterMgr.Load(argPacket->accountIndex, argPacket->handle, argPacket->avatar);
 
+	//check to see if the character is already loaded
 	if (characterIndex < 0) {
 		//build the error message
 		std::ostringstream msg;

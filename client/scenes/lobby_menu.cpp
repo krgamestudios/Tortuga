@@ -68,6 +68,26 @@ LobbyMenu::LobbyMenu(int* const argClientIndex, int* const argAccountIndex):
 	backButton.SetX(50);
 	backButton.SetY(90);
 
+	//setup the text fields
+	username.SetText(GetRenderer(), font, WHITE, config["client.username"]);
+	password.SetText(GetRenderer(), font, WHITE, config["client.password"]);
+	handle.SetText(GetRenderer(), font, WHITE, config["client.handle"]);
+	avatar.SetText(GetRenderer(), font, WHITE, config["client.avatar"]);
+
+	username.SetBounds(BoundingBox{0, 0, 300, 20});
+	password.SetBounds(BoundingBox{0, 0, 300, 20});
+	handle.SetBounds(BoundingBox{0, 0, 300, 20});
+	avatar.SetBounds(BoundingBox{0, 0, 300, 20});
+
+	username.SetX(50);
+	username.SetY(110);
+	password.SetX(50);
+	password.SetY(130);
+	handle.SetX(50);
+	handle.SetY(150);
+	avatar.SetX(50);
+	avatar.SetY(170);
+
 	//pseudo-list selection
 	//TODO: move this into the UI library?
 	boundingBox = {300, 50, 200, 12};
@@ -115,6 +135,11 @@ void LobbyMenu::RenderFrame(SDL_Renderer* renderer) {
 	joinButton.DrawTo(renderer);
 	backButton.DrawTo(renderer);
 
+	username.DrawTo(renderer);
+	password.DrawTo(renderer);
+	handle.DrawTo(renderer);
+	avatar.DrawTo(renderer);
+
 	//TODO: (3) draw headers for the server list
 	//TODO: (3) ping/delay displayed in the server list
 	for (int i = 0; i < serverVector.size(); i++) {
@@ -148,6 +173,35 @@ void LobbyMenu::MouseButtonDown(SDL_MouseButtonEvent const& event) {
 	searchButton.MouseButtonDown(event);
 	joinButton.MouseButtonDown(event);
 	backButton.MouseButtonDown(event);
+
+	if (username.MouseButtonDown(event)) {
+		//GUI trick
+		if (!username.GetText().compare(config["client.username"])) {
+			username.SetText(GetRenderer(), font, WHITE, "");
+		}
+		SDL_StartTextInput();
+	}
+	if (password.MouseButtonDown(event)) {
+		//GUI trick
+		if (!password.GetText().compare(config["client.password"])) {
+			password.SetText(GetRenderer(), font, WHITE, "");
+		}
+		SDL_StartTextInput();
+	}
+	if (handle.MouseButtonDown(event)) {
+		//GUI trick
+		if (!handle.GetText().compare(config["client.handle"])) {
+			handle.SetText(GetRenderer(), font, WHITE, "");
+		}
+		SDL_StartTextInput();
+	}
+	if (avatar.MouseButtonDown(event)) {
+		//GUI trick
+		if (!avatar.GetText().compare(config["client.avatar"])) {
+			avatar.SetText(GetRenderer(), font, WHITE, "");
+		}
+		SDL_StartTextInput();
+	}
 }
 
 void LobbyMenu::MouseButtonUp(SDL_MouseButtonEvent const& event) {
@@ -182,11 +236,42 @@ void LobbyMenu::KeyDown(SDL_KeyboardEvent const& event) {
 		case SDLK_ESCAPE:
 			SetSceneSignal(SceneSignal::MAINMENU);
 		break;
+
+		case SDLK_BACKSPACE:
+			//easier than mucking about with SDL_TextEditEvent
+			if (username.GetFocus()) {
+				username.PopChars(GetRenderer(), font, WHITE, 1);
+			}
+			if (password.GetFocus()) {
+				password.PopChars(GetRenderer(), font, WHITE, 1);
+			}
+			if (handle.GetFocus()) {
+				handle.PopChars(GetRenderer(), font, WHITE, 1);
+			}
+			if (avatar.GetFocus()) {
+				avatar.PopChars(GetRenderer(), font, WHITE, 1);
+			}
+		break;
 	}
 }
 
 void LobbyMenu::KeyUp(SDL_KeyboardEvent const& event) {
 	//
+}
+
+void LobbyMenu::TextInput(SDL_TextInputEvent const& event) {
+	if (username.GetFocus()) {
+		username.PushText(GetRenderer(), font, WHITE, std::string(event.text));
+	}
+	if (password.GetFocus()) {
+		password.PushText(GetRenderer(), font, WHITE, std::string(event.text));
+	}
+	if (handle.GetFocus()) {
+		handle.PushText(GetRenderer(), font, WHITE, std::string(event.text));
+	}
+	if (avatar.GetFocus()) {
+		avatar.PushText(GetRenderer(), font, WHITE, std::string(event.text));
+	}
 }
 
 //-------------------------
@@ -278,11 +363,19 @@ void LobbyMenu::HandleLoginResponse(ClientPacket* const argPacket) {
 }
 
 void LobbyMenu::HandleJoinRejection(TextPacket* const argPacket) {
-	//TODO: (9) LobbyMenu::HandleJoinRejection()
+	//NOTE: NEVER HAPPENS
+	throw(std::runtime_error("HandleJoinRejection"));
 }
 
 void LobbyMenu::HandleLoginRejection(TextPacket* const argPacket) {
-	//TODO: (9) LobbyMenu::HandleLoginRejection
+	config["client.disconnectMessage"] = std::string() + "Join request rejected: " + argPacket->text;
+	SetSceneSignal(SceneSignal::DISCONNECTEDSCREEN);
+
+	//avoid crashes from the heartbeat system
+	ClientPacket newPacket;
+	newPacket.type = SerialPacketType::DISCONNECT_REQUEST;
+	newPacket.clientIndex = clientIndex;
+	network.SendTo(argPacket->srcAddress, &newPacket);
 }
 
 //-------------------------
@@ -303,13 +396,14 @@ void LobbyMenu::SendBroadcastRequest() {
 }
 
 void LobbyMenu::SendJoinRequest() {
+	//BUG: 101 received in LobbyMenu on failed join
 	//pack the packet
-		ClientPacket packet;
-		packet.type = SerialPacketType::JOIN_REQUEST;
+	ClientPacket packet;
+	packet.type = SerialPacketType::JOIN_REQUEST;
 
-		//join the selected server
-		network.SendTo(selection->address, &packet);
-		selection = nullptr;
+	//join the selected server
+	network.SendTo(selection->address, &packet);
+	selection = nullptr;
 }
 
 void LobbyMenu::SendLoginRequest() {
@@ -318,7 +412,13 @@ void LobbyMenu::SendLoginRequest() {
 	ClientPacket packet;
 	packet.type = SerialPacketType::LOGIN_REQUEST;
 	packet.clientIndex = clientIndex;
-	strncpy(packet.username, config["client.username"].c_str(), PACKET_STRING_SIZE+1);
+	strncpy(packet.username, username.GetText().c_str(), PACKET_STRING_SIZE+1);
 
 	network.SendTo(Channels::SERVER, &packet);
+
+	//TODO: remove
+	config["client.username"] = username.GetText();
+	config["client.password"] = password.GetText();
+	config["client.handle"] = handle.GetText();
+	config["client.avatar"] = avatar.GetText();
 }

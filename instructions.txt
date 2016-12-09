@@ -15,24 +15,16 @@ Instructions For Setup
 -------------------------
 
 1. To create a server, simply run server.exe
-	(a public server is provided by default)
-2. To join a server, your player information must be input into rsc/config.cfg
-	(NOTE: This process will be streamlined later)
-3. To change the config settings, open rsc/config.cfg
-4. These settings must be unique for each player:
+	(a public server "Island Home" is provided by default)
+2. To play, run client.exe
+3. Your unique information should be inputted into the lobby screen, replacing
+	the default values.
+4. There are currently two options for avatars:
 
-* client.username
-* client.handle
+* character1.png #male
+* character2.png #female
 
-5. There are currently two options for 'client.avatar':
-
-* client.avatar = character1.png #male
-* client.avatar = character2.png #female
-
-6. When you've correctly set these values, run client.exe, and select 'Start'
-	from the main menu; this displays the list of available servers.
-7. Select the name of a server (default is 'Public') and select 'Join'.
-8. Welcome to Tortuga, enjoy your stay.
+5. Select a server, and click join.
 
 -------------------------
 Linux Users
