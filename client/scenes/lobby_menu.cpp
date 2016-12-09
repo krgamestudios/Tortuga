@@ -347,11 +347,19 @@ void LobbyMenu::HandleLoginResponse(ClientPacket* const argPacket) {
 }
 
 void LobbyMenu::HandleJoinRejection(TextPacket* const argPacket) {
-	//TODO: (9) LobbyMenu::HandleJoinRejection()
+	//NOTE: NEVER HAPPENS
+	throw(std::runtime_error("HandleJoinRejection"));
 }
 
 void LobbyMenu::HandleLoginRejection(TextPacket* const argPacket) {
-	//TODO: (9) LobbyMenu::HandleLoginRejection
+	config["client.disconnectMessage"] = std::string() + "Join request rejected: " + argPacket->text;
+	SetSceneSignal(SceneSignal::DISCONNECTEDSCREEN);
+
+	//avoid crashes from the heartbeat system
+	ClientPacket newPacket;
+	newPacket.type = SerialPacketType::DISCONNECT_REQUEST;
+	newPacket.clientIndex = clientIndex;
+	network.SendTo(argPacket->srcAddress, &newPacket);
 }
 
 //-------------------------
