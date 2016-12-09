@@ -60,12 +60,16 @@ function doorUtility.CreateDoorPair(handle, roomOne, Xone, Yone, roomTwo, Xtwo, 
 
 		--move the character
 		characterAPI.SetRoom(entity, roomTwo)
-		characterAPI.SetOrigin(entity, Xtwo, Ytwo-16)
+		characterAPI.SetOrigin(entity, Xtwo, Ytwo+16)
 		networkAPI.PumpCharacterUpdate(entity)
 
 		--disable the other trigger
 		local triggerTwo = triggerManagerAPI.FindTrigger(roomAPI.GetTriggerMgr(roomTwo), handle)
 		triggerAPI.PushExclusionEntity(triggerTwo, entity)
+
+		--bookkeeping: remove from the original trigger's exclusion list
+		local triggerOne = triggerManagerAPI.FindTrigger(roomAPI.GetTriggerMgr(roomOne), handle)
+		triggerAPI.RemoveExclusionEntity(triggerOne, entity)
 	end
 
 	local function scriptTwo(entity)
@@ -73,12 +77,16 @@ function doorUtility.CreateDoorPair(handle, roomOne, Xone, Yone, roomTwo, Xtwo, 
 
 		--move the character
 		characterAPI.SetRoom(entity, roomOne)
-		characterAPI.SetOrigin(entity, Xone, Yone-16) --NOTE: the 16 pixel margin for presentation
+		characterAPI.SetOrigin(entity, Xone, Yone+16) --NOTE: +16 should prevent double collision issues
 		networkAPI.PumpCharacterUpdate(entity)
 
 		--disable the other trigger
 		local triggerOne = triggerManagerAPI.FindTrigger(roomAPI.GetTriggerMgr(roomOne), handle)
 		triggerAPI.PushExclusionEntity(triggerOne, entity)
+
+		--bookkeeping: remove from the original trigger's exclusion list
+		local triggerTwo = triggerManagerAPI.FindTrigger(roomAPI.GetTriggerMgr(roomTwo), handle)
+		triggerAPI.RemoveExclusionEntity(triggerTwo, entity)
 	end
 
 	--create the triggers proper
