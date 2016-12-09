@@ -154,7 +154,7 @@ void World::Update() {
 		throw(e);
 	}
 	catch(std::exception& e) {
-		std::cerr << "HandlePacket Error: " << e.what() << std::endl;
+		std::cerr << "HandlePacket Error (" << (int)(reinterpret_cast<SerialPacket*>(packetBuffer)->type) << "): " << e.what() << std::endl;
 	}
 
 	//free the buffer
