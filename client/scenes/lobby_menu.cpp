@@ -175,15 +175,31 @@ void LobbyMenu::MouseButtonDown(SDL_MouseButtonEvent const& event) {
 	backButton.MouseButtonDown(event);
 
 	if (username.MouseButtonDown(event)) {
+		//GUI trick
+		if (!username.GetText().compare(config["client.username"])) {
+			username.SetText(GetRenderer(), font, WHITE, "");
+		}
 		SDL_StartTextInput();
 	}
 	if (password.MouseButtonDown(event)) {
+		//GUI trick
+		if (!password.GetText().compare(config["client.password"])) {
+			password.SetText(GetRenderer(), font, WHITE, "");
+		}
 		SDL_StartTextInput();
 	}
 	if (handle.MouseButtonDown(event)) {
+		//GUI trick
+		if (!handle.GetText().compare(config["client.handle"])) {
+			handle.SetText(GetRenderer(), font, WHITE, "");
+		}
 		SDL_StartTextInput();
 	}
 	if (avatar.MouseButtonDown(event)) {
+		//GUI trick
+		if (!avatar.GetText().compare(config["client.avatar"])) {
+			avatar.SetText(GetRenderer(), font, WHITE, "");
+		}
 		SDL_StartTextInput();
 	}
 }
